@@ -15,6 +15,18 @@ build: ## build docker image
 interactive: ## get a bash shell in the container
 	docker run -it -p 8080:3000 $(IMAGE_NAME)
 
+.PHONY: launch
+launch: ## launch application in development
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+.PHONY: launch-local
+launch-local: ## launch application for local development
+	docker-compose -f docker-compose.yml -f docker-compose.local.yml up
+
+.PHONY: stop-local
+stop-local: ## stop application for local development
+	docker-compose -f docker-compose.yml -f docker-compose.local.yml down
+
 .PHONY: help
 help:  ## show all make commands
 ifeq ($(OS),Windows_NT)
