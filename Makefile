@@ -9,11 +9,11 @@ endif
 
 .PHONY: build
 build: ## build docker image
-	docker build -t $(IMAGE_NAME) .
+	docker build -t $(IMAGE_NAME):1.0.0 .
 
 .PHONY: interactive
 interactive: ## get a bash shell in the container
-	docker run -it -p 8080:3000 $(IMAGE_NAME)
+	docker run -it -p 8080:4000 $(IMAGE_NAME)
 
 .PHONY: launch
 launch: ## launch application in development
@@ -21,7 +21,7 @@ launch: ## launch application in development
 
 .PHONY: launch-local
 launch-local: ## launch application for local development
-	docker-compose -f docker-compose.yml -f docker-compose.local.yml up
+	docker-compose -f docker-compose.yml -f docker-compose.local.yml up --build
 
 .PHONY: stop-local
 stop-local: ## stop application for local development

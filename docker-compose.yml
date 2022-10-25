@@ -3,7 +3,6 @@ version: '3.8'
 
 services:
   nestapp:
-    image: ms-nestjs-template:1.0.0
     container_name: api_nestjs_template
     restart: unless-stopped
     env_file:
@@ -15,7 +14,7 @@ services:
       - UNLEASH_API_URL=
       - UNLEASH_API_TOKEN=
     ports:
-      - "3000:3000"
+      - "3000:4000"
     depends_on:
       - unleash
     networks:

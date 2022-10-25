@@ -4,7 +4,6 @@ version: '3.8'
 services:
   nestapp:
     image: ms-nestjs-template:latest
-    container_name: api_nestjs_template
     restart: unless-stopped
     build:
       context: .
