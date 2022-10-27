@@ -1,0 +1,8 @@
+{
+  "debug.internalConsoleOptions": "neverOpen",
+  "jest.disabledWorkspaceFolders": ["ms-nestjs-template"],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+  }
+}
