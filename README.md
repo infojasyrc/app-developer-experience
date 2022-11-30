@@ -1,6 +1,6 @@
 # Microservice Nestjs Template
 
-This project is a template for microservices using nestjs
+This project is a template for microservices using nestjs with hexagonal architecture.
 
 ## What is it
 

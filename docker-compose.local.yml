@@ -29,12 +29,19 @@ services:
   postgres:
     image: postgres
     container_name: unleash_database
+    command: postgres -c 'max_connections=200'
+    restart: always
     environment:
       - POSTGRES_PASSWORD=some_password
       - POSTGRES_USER=unleash_user
       - POSTGRES_DB=unleash
+    volumes:
+      - 'app_db:/var/lib/postgresql/data'
     networks:
       app-network:
 
 networks:
   app-network:
+
+volumes:
+  app_db: null
