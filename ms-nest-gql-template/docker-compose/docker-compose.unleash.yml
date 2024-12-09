@@ -1,0 +1,42 @@
+---
+
+services:
+  unleash-app:
+    image: unleashorg/unleash-server
+    container_name: unleash-app
+    restart: unless-stopped
+    platform: ${PLATFORM}
+    environment:
+      - DATABASE_HOST=unleash-db
+      - DATABASE_NAME=unleash
+      - DATABASE_USERNAME=unleash_user
+      - DATABASE_PASSWORD=some_password
+      - DATABASE_SSL=false
+    ports:
+      - "4242:4242"
+    depends_on:
+      unleash-db:
+        condition: service_healthy
+
+  unleash-db:
+    image: postgres:13-alpine
+    container_name: unleash-db
+    restart: always
+    platform: ${PLATFORM}
+    environment:
+      - POSTGRES_PASSWORD=some_password
+      - POSTGRES_USER=unleash_user
+      - POSTGRES_DB=unleash
+    ports:
+      - 5433:5432
+    volumes:
+      - 'unleash_db:/var/lib/postgresql/data'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U unleash_user -d unleash"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  unleash_db: null
