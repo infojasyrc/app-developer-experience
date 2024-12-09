@@ -1,17 +1,29 @@
-FROM node:18.11-alpine
+ARG NODE_VERSION=20.18.1
 
-EXPOSE 3000
+# base stage
+FROM node:${NODE_VERSION}-alpine AS base
 
-WORKDIR /opt/msbase/app
+WORKDIR /app
+
+# build stage
+FROM base AS build
+
+COPY package*.json ./
+
+# install all dependencies
+RUN echo "Installing" && npm ci --quiet
 
 COPY . .
 
-# Everything in a single RUN, to avoid unecessary docker layers.
-RUN echo "Starting" \
-     && npm install \
-     && npm run build \
-     && npm prune --production \
-     && rm -f .npmrc 
+RUN npm run build --quiet
 
-# Silent start because we want to have our log format as the first log
-CMD ["npm", "run", "start:prod"]
+# release stage
+FROM base AS release
+
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+
+EXPOSE 3000
+
+# run application
+CMD ["node", "dist/main.js"]
