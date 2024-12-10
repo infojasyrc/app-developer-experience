@@ -6,3 +6,6 @@
 
 # ide
 .vscode/
+
+# examples
+examples/
