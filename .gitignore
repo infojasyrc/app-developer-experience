@@ -1,2 +1,8 @@
+# os files
+*.DS_Store
+
 # for backends
 /**/node_modules/
+
+# ide
+.vscode/
