@@ -1,12 +1,9 @@
 ---
-version: '3.8'
 
 services:
   nestapp:
-    container_name: api_nestjs_template
+    container_name: nestjs-gql-tpl
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
       - HTTP_PORT=4000
       - INTEGRATION_ENVIRONMENT_URL_LIVENESS=

@@ -5,7 +5,7 @@ include $(ENV_FILE)
 
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
-COMPOSE_PROJECT_NAME = ms-nestjs-template
+COMPOSE_PROJECT_NAME = ms-nestjs-gql-tpl
 CONTAINER_APP_FOLDER = /app
 
 # available platforms linux/amd64 | linux/arm64/v8 | linux/x86_64
