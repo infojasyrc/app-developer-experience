@@ -1,0 +1,22 @@
+---
+
+services:
+  nestapp:
+    image: ${COMPOSE_PROJECT_NAME}:latest
+    container_name: ms-gql
+    working_dir: /app
+    command: /bin/ash -ci "npm run start:dev"
+    restart: unless-stopped
+    platform: ${PLATFORM}
+    ports:
+      - "8080:3000"
+    environment:
+      - NODE_ENV=local
+    volumes:
+      - ../:/app:rw
+      - backend-packages:/app/node_modules
+
+volumes:
+  backend-packages:
+    name: ${COMPOSE_PROJECT_NAME}-packages
+    external: true
