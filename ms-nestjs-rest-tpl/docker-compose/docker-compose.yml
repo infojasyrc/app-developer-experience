@@ -1,0 +1,24 @@
+---
+version: '3.8'
+
+services:
+  nestapp:
+    container_name: api_nestjs_template
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - HTTP_PORT=4000
+      - INTEGRATION_ENVIRONMENT_URL_LIVENESS=
+      - INTEGRATION_API_TOKEN=
+      - UNLEASH_API_URL=
+      - UNLEASH_API_TOKEN=
+    ports:
+      - "3000:4000"
+    depends_on:
+      - unleash
+    networks:
+      - app-network
+
+networks:
+  app-network:

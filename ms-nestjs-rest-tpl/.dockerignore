@@ -1,0 +1,9 @@
+# exclude everything
+*
+
+# include only specific files
+!src/
+!package.json
+!package-lock.json
+!tsconfig.build.json
+!tsconfig.json
