@@ -30,7 +30,6 @@
     "@nestjs/terminus": "^10.2.3",
     "@types/moment": "^2.13.0",
     "@types/unzipper": "^0.10.10",
-    "graphql": "^16.9.0",
     "moment": "^2.30.1",
     "papaparse": "^5.4.1",
     "reflect-metadata": "^0.2.2",
