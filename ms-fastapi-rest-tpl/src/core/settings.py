@@ -1,3 +1,4 @@
+from functools import lru_cache
 from pydantic_settings import BaseSettings
 from starlette.middleware.cors import ALL_METHODS
 
@@ -20,7 +21,7 @@ class Settings(BaseSettings):
     # The version of the application
     APP_VERSION: str = "0.1.0"
     # The environment the application is running in
-    ENVIRONMENT: Environment = Environment.DEVELOPMENT
+    environment: Environment = Environment.development
     # The host the application will run on
     HOST: str = ""
 
@@ -49,6 +50,24 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_expiration: int = 180
     jwt_refresh_expiration: int = 720
+
+    @property
+    def fastapi_kwargs(self) -> dict[str, any]:
+        return {
+            "debug": self.debug,
+            "docs_url": self.docs_url,
+            "redoc_url": self.redoc_url,
+            "openapi_url": self.openapi_url,
+            "openapi_prefix": self.openapi_prefix,
+            "title": self.APP_NAME,
+            "version": self.APP_VERSION,
+            "host": self.HOST,
+            "log_level": self.log_level,
+            "log_format": self.log_format,
+            "log_date_format": self.log_date_format,
+            "root_path": self.api_prefix,
+            "disable_write_endpoints": self.disable_write_endpoints,
+        }
 
 @lru_cache()
 def get_settings() -> Settings:
