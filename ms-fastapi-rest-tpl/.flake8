@@ -1,0 +1,196 @@
+[flake8]
+allowed-domain-names=data,params
+exclude=.venv,venv,build,migrations
+max-arguments=12
+max-attributes=10
+max-cognitive-average=9
+max-imports=16
+max-line-complexity=20
+max-line-length=120
+max-local-variables=8
+max-methods=12
+max-module-members=11
+ignore =
+    # Docstring related issues. Reason to ignore: we are currently unable to maintain and refactor legacy docstrings. TODO: enable this check and add docstrings everywhere
+    D,
+    # Double quotes found but single quotes preferred. Reason to ignore: we use double strings as a default string literals sign.
+    Q000,
+    # line break before binary operator. Reason to ignore: conflicts with PEP8 https://peps.python.org/pep-0008/#should-a-line-break-before-or-after-a-binary-operator
+    W503,
+    # Found upper-case constant in a class. Reason to ignore: PEP8 recommends to keep upper-level constants on module level. In this project we use class-level upper-case constants as well.
+    WPS115,
+    # Found string literal over-use. Reason to ignore: string literals are used in pipelines, some of the API parsing components.
+    WPS226,
+    # Found local folder import. Reason to ignore: this is a style thing and we use relative imports to shorten import paths
+    WPS300,
+    # Found dotted raw import. Reason to ignore: dotted raw imports are fine when code readability is not affected.
+    WPS301,
+    # Found f string. Reason to ignore: the ease of use outweighs the disadvantages described
+    WPS305,
+    # Found implicit string concatenation. Reason to ignore: we use implicit string concatenation for splitting logging messages between lines. Moreover, we forbid explicit string concatenation in favour of usage of `f`-strings.
+    WPS326,
+    # Found a line that starts with a dot. Reason to ignore: stylish thing. We stuck to an opposite convention
+    WPS348,
+    # Found wrong metadata variable: __version__. Reason to ignore: we assign package versions inside code explicitly using __version__ variable. This is approach is considered as a best practice.
+    WPS410,
+    # Found `__init__.py` module with logic. Reason to ignore: we keep __version__ variable in __init__.py and this is considered as a best practice.
+    WPS412,
+    # Found nested import. Reason to ignore: we handle optional dependencies for packages using the nested imports.
+    WPS433,
+    # Found executable mismatch. Reason to ignore: 1) was raising false positive on Docker on a Mac M1 2) We got the error because the "file is executable but no shebang is present", and adding a shebang at the beginning of the file is incompatible with the copyright message.
+    WPS453,
+    # Found comparison with float or complex number. Reason to ignore: we compare numbers not only to compare errors and those comparisons of floating points cannot be refactored in the proposed by the authors way.
+    WPS459,
+    # Found unpacking used to get a single element from a collection. Reason to ignore: unpacking into a single element is a good way & only way to work with iterables, where indexing is not supported.
+    WPS472,
+    # Found incorrect not with compare usage. Reason to ignore: this check does not consider chained comparison where operator not is essential.
+    WPS508,
+    # Found implicit `.get()` dict usage. Reason to ignore: it looks like another look-before-you-leap and easier-to-ask-for-forgiveness-than-permission approaches. In this scenario we strive to be able to use both.
+    WPS529,
+    # Found using `@staticmethod`. Reason to ignore: design decision, i.e. sometimes we use abstract staticmethods rather that asking user to provide callable object for initialization
+    WPS602,
+    # Found method without arguments. Reason to ignore: design decision, i.e. sometimes we use abstract staticmethods rather that asking user to provide callable object for initialization
+    WPS605,
+    # Standard pseudo-random generators are not suitable for security/cryptographic purposes. Reason to ignore:  OptimusAI's does not use random generators for cryptographic purposes. Triggered by random.choice.
+    S311,
+    # Too many base classes. Reason to ignore: we use API definitions that use protocols that require a lot of base classes
+    WPS215,
+    # Found an unnecessary blank line before a bracket. Reason to ignore: code style preference. Plus, black is ok with that.
+    WPS355,
+    # Found a too complex `f` string. Reason to ignore: we're using a bunch of complex f-strings for writing complex SQL queries.
+    WPS237,
+    # Possible SQL injection vector through string-based query construction. Reason to ignore: unfortunately,
+    # ALL our queries are using f-strings, where schema name is added to the string query. It's impossible to parametrize that.
+    S608,
+    # Found module with too many imports
+    WPS201,
+    # Found class without a base class
+    # Reason to ignore: seems outdated and too controversial
+    WPS306,
+    # Found too many await expressions. Reason to ignore: we're using FastAPI, which is asynchronous, so we have to
+    # write a bunch of await statements
+    WPS217,
+
+
+per-file-ignores =
+    # Standard set of ignores for `__init__.py`
+    # F401   Module imported but unused
+    # F403   Unable to detect undefined names
+    # WPS235 Found too many imported names from a module
+    # WPS347 Found vague import that may cause confusion: *
+    # WPS436 Forbid importing protected modules # This should be definitely ignored in the init files and enforced everywhere else
+    __init__.py:F401,F403,WPS235,WPS347,WPS436
+
+    # Standard set of ignores for tests.
+    # D103   Missing docstring in public function
+    # D401   First line should be in imperative mood
+    # DAR101 Missing parameter(s) in Docstring
+    # DAR201 Missing "Returns" in Docstring: - return
+    # DAR301 Missing "Yields" in Docstring
+    # E800   Found commented out code
+    # N806   Variable XX in function should be lowercase
+    # S101   Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+    # S105   Possible hardcoded password
+    # WPS110 Found wrong variable name: value
+    # WPS111 flake8: Found too short name
+    # WPS116 Found consecutive underscores name
+    # WPS118 Found too long name
+    # WPS201 Found module with too many imports
+    # WPS202 Found too many module members
+    # WPS210 Found too many local variables
+    # WPS211 Found too many arguments
+    # WPS213 Found too many expressions
+    # WPS214 Found too many methods
+    # WPS217 Found too many await expressions
+    # WPS218 Found to many assert statements
+    # WPS221 Found line with high Jones Complexity
+    # WPS235 Found too many imported names from a module
+    # WPS237 Found a too complex `f` string
+    # WPS331 Found local variable that are only used in `return` statements
+    # WPS358 Found a float zero (0.0)
+    # WPS420 Found wrong keyword
+    # WPS421 Found wrong function call: dir
+    # WPS428 Found statement that has no effect
+    # WPS431 Found nested class
+    # WPS432 Found magic number
+    # WPS436 Found protected module import
+    # WPS437 Found protected attribute usage
+    # WPS441 Found control variable used after block
+    # WPS442 Found outer scope names shadowing (for fixtures)
+    # WPS462 Wrong multiline string usage
+    # WPS432 Forbid magic numbers
+    # WPS450 Found protected object import
+    #
+    # Custom set of ignores for tests
+    # WPS306 Found class without a base class
+    # WPS435 Found list multiply
+    # WPS335 Found incorrect `for` loop iter type
+    # S608   Possible SQL injection vector through string-based query construction.
+    # WPS114 Found underscored number name pattern
+    test_*:D103,WPS442,S101,WPS218,WPS441,WPS217,D401,DAR201,
+           WPS331,DAR101,WPS214,DAR301,WPS437,S105,WPS116,
+           WPS111,WPS431,N806,WPS204,WPS211,WPS210,WPS110,WPS118,
+           WPS421,WPS202,WPS432,WPS235,WPS358,WPS462,WPS221,
+           WPS201,WPS428,E800,WPS213,WPS420,WPS237,WPS436,WPS432,WPS450,WPS306,
+           S608,WPS435,WPS226,WPS335,WPS114
+
+    # Applying to ``conftest.py`` the same per-file-ignore as ``test_*``
+    conftest.py:D103,WPS442,S101,WPS218,WPS441,WPS217,D401,DAR201,
+           WPS331,DAR101,WPS214,DAR301,WPS437,S105,WPS116,
+           WPS111,WPS431,N806,WPS204,WPS211,WPS210,WPS110,WPS118,
+           WPS421,WPS202,WPS432,WPS235,WPS358,WPS462,WPS221,
+           WPS201,WPS428,E800,WPS213,WPS420,WPS237,WPS436,WPS432,WPS450,WPS306,
+           S608,WPS435,WPS226
+
+    # Applying to ``factories.py`` the same per-file-ignore as ``test_*``
+    src/tests/factories.py:D103,WPS442,S101,WPS218,WPS441,WPS217,D401,DAR201,
+           WPS331,DAR101,WPS214,DAR301,WPS437,S105,WPS116,
+           WPS111,WPS431,N806,WPS204,WPS211,WPS210,WPS110,WPS118,
+           WPS421,WPS202,WPS432,WPS235,WPS358,WPS462,WPS221,
+           WPS201,WPS428,E800,WPS213,WPS420,WPS237,WPS436,WPS432,WPS450,WPS306,
+           S608,WPS435,WPS226,WPS231
+    # Applying to ``main_router.py``
+    # - WPS201 Found module with too many imports
+    #     - Reason to ignore: there's not need to split main_router.py
+    src/api/main_router.py:WPS201
+
+    # Applying to ``main.py``
+    # - WPS201 Found module with too many imports
+    #     - Reason to ignore: there's not need to split main.py
+    src/main.py:WPS201
+
+    # Applying to ``exceptions.py``
+    # - WPS420 Found wrong keyword: pass
+    # - WPS110 Found wrong variable name: content
+    # - WPS604 Found incorrect node inside `class` body
+
+    # Specific ignores for pydantic classes
+    #
+    # - N805 first argument of a method should be named 'self'
+    # - WPS110 Found wrong variable name: value
+
+    # Specific ignores related to FastAPI dependency injection
+    #
+    # - WPS404 Found complex default value
+    # - B008 Do not perform function calls in argument defaults.  The call is performed only once at function definition time. All calls to your function will reuse the result of that definition-time function call.  If this is intended, assign the function call to a module-level variable and use that variable as a default value.
+
+    # Other specific ignores
+    #
+    # - E266 too many leading '#' for block comment
+    # - WPS473  Found too many empty lines in `def`: 33 > 14
+    # - WPS210 Found too many local variables: 15 > 8
+    # - S101 Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+    # - WPS202 Found too many module members: 30 > 11
+    # - WPS231 Found function with too much cognitive complexity: 17 > 12
+    # - WPS213 Found function with too much cognitive complexity: 17 > 12s
+    # - WPS473 Found too many empty lines in `def`: 5 > 4
+    # - WPS430 Found nested function: start_apps
+    # - WPS441 Found control variable used after block: session
+    # - WPS407 Found mutable module constant
+    # - WPS323 Found `%` string formatting
+    # - WPS600 Found subclassing a builtin: str
+    # - WPS600 Found subclassing a builtin: str
+    # - WPS457 Found an infinite while loop
+    # - WPS220 Found too deep nesting: 24 > 20
+    # - WPS420 Found wrong keyword pass
+    # - WPS110 Found wrong variable name: files
