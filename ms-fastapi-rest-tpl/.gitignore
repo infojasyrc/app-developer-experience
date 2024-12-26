@@ -3,3 +3,13 @@
 
 # virtual environment
 .venv/
+
+# python template cache
+__pycache__/
+*$py.class
+*.py[cod]
+
+# test results
+test-results.xml
+.coverage
+.reports/

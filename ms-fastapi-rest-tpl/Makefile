@@ -43,6 +43,13 @@ interactive: ## get a bash shell in the container
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME) /bin/ash
 
+.PHONY: install-dependencies
+install-dependencies: ## install packages from pipfile
+	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "pipenv install --dev"
+
 .PHONY: launch-local
 launch-local: ## launch application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.yml up
