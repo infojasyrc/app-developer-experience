@@ -1,8 +1,10 @@
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
-IMAGE_NAME = ms-nestjs-template
-GQL_FOLDER_TEMPLATE = ms-nestjs-gql-template
+GQL_FOLDER_TEMPLATE = ms-nestjs-gql-tpl
 NEW_GQL_SERVICE ?= ms-gql-example
+
+FASTAPI_FOLDER_TEMPLATE = ms-fastapi-rest-tpl
+NEW_FASTAPI_SERVICE ?= ms-fastapi-example
 
 OUT_FOLDER = examples
 
@@ -15,7 +17,7 @@ endif
 .PHONY: create-gql
 create-gql: clean-example ## create a ms gql for bff microservice
 	@if [ -z "$(NEW_GQL_SERVICE)" ]; then \
-		echo "Error: GQL_FOLDER_TEMPLATE variable is not set"; \
+		echo "Error: NEW_GQL_SERVICE variable is not set"; \
 		exit 1; \
 	fi
 	@echo "creating new gql microservice"
@@ -25,11 +27,22 @@ create-gql: clean-example ## create a ms gql for bff microservice
 		rm package.json.bak package-lock.json.bak
 	@echo "microservice created sucessfully at $(NEW_GQL_SERVICE)."
 
-.PHONY: clean-example
-clean-example: ## clean previous example
-	@echo "cleanning previous example $(NEW_GQL_SERVICE)"
+.PHONY: create-rest-py-fastapi
+create-rest-py-fastapi: clean-example ## create a microservice with fastapi
+	@if [ -z "$(NEW_FASTAPI_SERVICE)" ]; then \
+		echo "Error: NEW_FASTAPI_SERVICE variable is not set"; \
+		exit 1; \
+	fi
+	@echo "creating new gql microservice"
+	@cp -r $(FASTAPI_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(NEW_FASTAPI_SERVICE)"
+	@echo "microservice created sucessfully at $(NEW_FASTAPI_SERVICE)."
+
+.PHONY: clean-examples
+clean-examples: ## clean previous examples
+	@echo "cleanning previous examples"
 	@find ./$(OUT_FOLDER) -type d -name "$(NEW_GQL_SERVICE)" -exec rm -rf {} +
-	@echo "removed previous example"
+	@find ./$(OUT_FOLDER) -type d -name "$(NEW_FASTAPI_SERVICE)" -exec rm -rf {} +
+	@echo "removed previous examples"
 
 .PHONY: help
 help:  ## show all make commands
