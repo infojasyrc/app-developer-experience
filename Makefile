@@ -3,6 +3,9 @@
 GQL_FOLDER_TEMPLATE = ms-nestjs-gql-tpl
 NEW_GQL_SERVICE ?= ms-gql-example
 
+NODEJS_REST_FOLDER_TEMPLATE = ms-nestjs-rest-tpl
+NEW_NODEJS_REST_SERVICE ?= ms-nodejs-rest-example
+
 FASTAPI_FOLDER_TEMPLATE = ms-fastapi-rest-tpl
 NEW_FASTAPI_SERVICE ?= ms-fastapi-example
 
@@ -14,18 +17,28 @@ else
 	DIR := "$$(pwd)"
 endif
 
-.PHONY: create-gql
-create-gql: clean-example ## create a ms gql for bff microservice
+.PHONY: create-nodejs-gql
+create-nodejs-gql: clean-example ## create a microservice with nodejs and graphql
 	@if [ -z "$(NEW_GQL_SERVICE)" ]; then \
 		echo "Error: NEW_GQL_SERVICE variable is not set"; \
 		exit 1; \
 	fi
-	@echo "creating new gql microservice"
-	@cp -r $(GQL_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(NEW_GQL_SERVICE)"
+	@echo "creating new microservice usign nodejs and graphql"
+	@cp -r backend/$(GQL_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(NEW_GQL_SERVICE)"
 	@cd "./$(OUT_FOLDER)/$(NEW_GQL_SERVICE)" && \
 		sed -i.bak 's/$(GQL_FOLDER_TEMPLATE)/$(NEW_GQL_SERVICE)/g' package.json package-lock.json && \
 		rm package.json.bak package-lock.json.bak
 	@echo "microservice created sucessfully at $(NEW_GQL_SERVICE)."
+
+.PHONY: create-nodejs-rest
+create-nodejs-rest: clean-example ## create a microservice with nodejs and nestjs
+	@if [ -z "$(NEW_NODEJS_REST_SERVICE)" ]; then \
+		echo "Error: NEW_NODEJS_REST_SERVICE variable is not set"; \
+		exit 1; \
+	fi
+	@echo "creating new rest microservice using nodejs and nestjs"
+	@cp -r backend/$(NODEJS_REST_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(NEW_NODEJS_REST_SERVICE)"
+	@echo "microservice created sucessfully at $(NEW_NODEJS_REST_SERVICE)."
 
 .PHONY: create-rest-py-fastapi
 create-rest-py-fastapi: clean-example ## create a microservice with fastapi
