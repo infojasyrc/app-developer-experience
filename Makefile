@@ -1,10 +1,10 @@
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
-GQL_FOLDER_TEMPLATE = ms-nestjs-gql-tpl
-NEW_GQL_SERVICE ?= ms-gql-example
+NODEJS_GQL_FOLDER_TEMPLATE = ms-nestjs-gql-tpl
+NODEJS_NEW_GQL_SERVICE ?= ms-nodejs-gql-example
 
 NODEJS_REST_FOLDER_TEMPLATE = ms-nestjs-rest-tpl
-NEW_NODEJS_REST_SERVICE ?= ms-nodejs-rest-example
+NODEJS_NEW_REST_SERVICE ?= ms-nodejs-rest-example
 
 FASTAPI_FOLDER_TEMPLATE = ms-fastapi-rest-tpl
 NEW_FASTAPI_SERVICE ?= ms-fastapi-example
@@ -18,30 +18,30 @@ else
 endif
 
 .PHONY: create-nodejs-gql
-create-nodejs-gql: clean-example ## create a microservice with nodejs and graphql
-	@if [ -z "$(NEW_GQL_SERVICE)" ]; then \
-		echo "Error: NEW_GQL_SERVICE variable is not set"; \
+create-nodejs-gql: clean-examples ## create a microservice with nodejs and graphql
+	@if [ -z "$(NODEJS_NEW_GQL_SERVICE)" ]; then \
+		echo "Error: NODEJS_NEW_GQL_SERVICE variable is not set"; \
 		exit 1; \
 	fi
 	@echo "creating new microservice usign nodejs and graphql"
-	@cp -r backend/$(GQL_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(NEW_GQL_SERVICE)"
-	@cd "./$(OUT_FOLDER)/$(NEW_GQL_SERVICE)" && \
-		sed -i.bak 's/$(GQL_FOLDER_TEMPLATE)/$(NEW_GQL_SERVICE)/g' package.json package-lock.json && \
+	@cp -r backend/$(NODEJS_GQL_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(NODEJS_NEW_GQL_SERVICE)"
+	@cd "./$(OUT_FOLDER)/$(NODEJS_NEW_GQL_SERVICE)" && \
+		sed -i.bak 's/$(NODEJS_GQL_FOLDER_TEMPLATE)/$(NODEJS_NEW_GQL_SERVICE)/g' package.json package-lock.json && \
 		rm package.json.bak package-lock.json.bak
-	@echo "microservice created sucessfully at $(NEW_GQL_SERVICE)."
+	@echo "microservice created sucessfully at $(NODEJS_NEW_GQL_SERVICE)."
 
 .PHONY: create-nodejs-rest
-create-nodejs-rest: clean-example ## create a microservice with nodejs and nestjs
-	@if [ -z "$(NEW_NODEJS_REST_SERVICE)" ]; then \
-		echo "Error: NEW_NODEJS_REST_SERVICE variable is not set"; \
+create-nodejs-rest: clean-examples ## create a microservice with nodejs and nestjs
+	@if [ -z "$(NODEJS_NEW_REST_SERVICE)" ]; then \
+		echo "Error: NODEJS_NEW_REST_SERVICE variable is not set"; \
 		exit 1; \
 	fi
 	@echo "creating new rest microservice using nodejs and nestjs"
-	@cp -r backend/$(NODEJS_REST_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(NEW_NODEJS_REST_SERVICE)"
-	@echo "microservice created sucessfully at $(NEW_NODEJS_REST_SERVICE)."
+	@cp -r backend/$(NODEJS_REST_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(NODEJS_NEW_REST_SERVICE)"
+	@echo "microservice created sucessfully at $(NODEJS_NEW_REST_SERVICE)."
 
-.PHONY: create-rest-py-fastapi
-create-rest-py-fastapi: clean-example ## create a microservice with fastapi
+.PHONY: create-py-rest
+create-py-rest: clean-examples ## create a microservice with fastapi
 	@if [ -z "$(NEW_FASTAPI_SERVICE)" ]; then \
 		echo "Error: NEW_FASTAPI_SERVICE variable is not set"; \
 		exit 1; \
@@ -53,7 +53,8 @@ create-rest-py-fastapi: clean-example ## create a microservice with fastapi
 .PHONY: clean-examples
 clean-examples: ## clean previous examples
 	@echo "cleanning previous examples"
-	@find ./$(OUT_FOLDER) -type d -name "$(NEW_GQL_SERVICE)" -exec rm -rf {} +
+	@find ./$(OUT_FOLDER) -type d -name "$(NODEJS_NEW_GQL_SERVICE)" -exec rm -rf {} +
+	@find ./$(OUT_FOLDER) -type d -name "$(NODEJS_NEW_REST_SERVICE)" -exec rm -rf {} +
 	@find ./$(OUT_FOLDER) -type d -name "$(NEW_FASTAPI_SERVICE)" -exec rm -rf {} +
 	@echo "removed previous examples"
 
