@@ -1,0 +1,31 @@
+# name: Terraform Destroy AWS
+
+# on: workflow_dispatch
+
+# jobs:
+#   destroy:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       id-token: write
+#       contents: read
+#     steps:
+#       - name: Git Checkout
+#         uses: actions/checkout@v4
+
+#       - name: HashiCorp - Setup Terraform
+#         uses: hashicorp/setup-terraform@v3.0.0
+
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+#         with:
+#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+#           aws-region: us-east-1
+
+#       - name: Terraform Init
+#         id: init
+#         run: |
+#           terraform init \
+#           -backend-config="bucket=${{secrets.BACKEND_AWS_S3_BUCKET}}"
+
+#       - name: Terraform Destroy
+#         run: terraform destroy -auto-approve
