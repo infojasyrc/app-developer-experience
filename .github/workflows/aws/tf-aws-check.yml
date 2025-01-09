@@ -1,0 +1,30 @@
+# name: Terraform Check
+# on:
+#   push:
+#     paths:
+#       - "*.tf"
+#       - "*.hcl"
+#       - modules/*/*.tf
+#       - modules/*/*.hcl
+
+# jobs:
+#   check-terraform:
+#     permissions:
+#       id-token: write
+#       contents: read
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Git Checkout
+#         uses: actions/checkout@v4
+
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+#         with:
+#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+#           aws-region: us-east-1
+
+#       - name: HashiCorp - Setup Terraform
+#         uses: hashicorp/setup-terraform@v3.0.0
+
+#       - name: Terraform Fmt
+#         run: terraform fmt -check

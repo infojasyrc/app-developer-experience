@@ -1,0 +1,62 @@
+---
+# this is a workflow file that will run when a pull request is opened or updated
+name: Run unit tests for backend
+
+on:
+  pull_request:
+    paths:
+      - backend/**
+
+jobs:
+  test:
+    name: run unit tests
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+          cache-dependency-path: backend/yarn.lock
+
+      - name: Install dependencies
+        run: |
+          cd backend/project
+          npm install
+
+      - name: Run Linting
+        run: |
+          cd backend/project
+          npm run lint
+
+      - name: Run Unit Tests
+        run: |
+          cd backend/project
+          npm run test:unit-tests
+
+  # megalinter:
+  #   name: Lint Code with MegaLinter
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #     issues: write
+  #     pull-requests: write
+  #   steps:
+  #     # Git Checkout
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         fetch-depth: 0 # If you use VALIDATE_ALL_CODEBASE = true, you can remove this line to improve performances
+
+  #     - name: MegaLinter
+  #       id: ml
+  #       continue-on-error: true
+  #       uses: oxsecurity/megalinter@v7.9.0
+  #       env:
+  #         VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }} # Validates all source when push on main, else just the git diff with main. Override with true if you always want to lint all sources
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         DISABLE: COPYPASTE,SPELL # Uncomment to disable copy-paste and spell checks
