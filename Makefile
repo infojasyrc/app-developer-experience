@@ -6,8 +6,8 @@ NODEJS_NEW_GQL_SERVICE ?= ms-nodejs-gql-example
 NODEJS_REST_FOLDER_TEMPLATE = ms-nestjs-rest-tpl
 NODEJS_NEW_REST_SERVICE ?= ms-nodejs-rest-example
 
-FASTAPI_FOLDER_TEMPLATE = ms-fastapi-rest-tpl
-NEW_FASTAPI_SERVICE ?= ms-fastapi-example
+PY_FASTAPI_FOLDER_TEMPLATE = ms-fastapi-rest-tpl
+PY_NEW_FASTAPI_SERVICE ?= ms-fastapi-example
 
 OUT_FOLDER = examples
 
@@ -42,20 +42,20 @@ create-nodejs-rest: clean-examples ## create a microservice with nodejs and nest
 
 .PHONY: create-py-rest
 create-py-rest: clean-examples ## create a microservice with fastapi
-	@if [ -z "$(NEW_FASTAPI_SERVICE)" ]; then \
-		echo "Error: NEW_FASTAPI_SERVICE variable is not set"; \
+	@if [ -z "$(PY_NEW_FASTAPI_SERVICE)" ]; then \
+		echo "Error: PY_NEW_FASTAPI_SERVICE variable is not set"; \
 		exit 1; \
 	fi
 	@echo "creating new gql microservice"
-	@cp -r $(FASTAPI_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(NEW_FASTAPI_SERVICE)"
-	@echo "microservice created sucessfully at $(NEW_FASTAPI_SERVICE)."
+	@cp -r backend/$(PY_FASTAPI_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(PY_NEW_FASTAPI_SERVICE)"
+	@echo "microservice created sucessfully at $(PY_NEW_FASTAPI_SERVICE)."
 
 .PHONY: clean-examples
 clean-examples: ## clean previous examples
 	@echo "cleanning previous examples"
 	@find ./$(OUT_FOLDER) -type d -name "$(NODEJS_NEW_GQL_SERVICE)" -exec rm -rf {} +
 	@find ./$(OUT_FOLDER) -type d -name "$(NODEJS_NEW_REST_SERVICE)" -exec rm -rf {} +
-	@find ./$(OUT_FOLDER) -type d -name "$(NEW_FASTAPI_SERVICE)" -exec rm -rf {} +
+	@find ./$(OUT_FOLDER) -type d -name "$(PY_NEW_FASTAPI_SERVICE)" -exec rm -rf {} +
 	@echo "removed previous examples"
 
 .PHONY: help
