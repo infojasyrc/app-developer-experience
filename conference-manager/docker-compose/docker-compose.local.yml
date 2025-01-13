@@ -5,7 +5,7 @@ services:
     container_name: conference-bff
     image: ${COMPOSE_PROJECT_NAME}-backend-dev:latest
     ports:
-      - '5002:5002'
+      - 5002:5002
     working_dir: /usr/src/app
     command: /bin/ash -ci "yarn start:dev"
     platform: ${PLATFORM}
