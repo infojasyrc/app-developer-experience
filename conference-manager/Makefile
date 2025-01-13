@@ -11,7 +11,9 @@ DB_URL     = mongodb://mongoDev:Passw0rd@localhost:27017/?authSource=admin
 DEFAULT_DB = mongodb
 TOKEN_SCRIPT_FILE = scripts/firebase-auth-test
 
-# Available platforms: linux/amd64 | linux/arm64/v8 | linux/x86_64
+COMPOSE_PROJECT_NAME = ms-conference
+
+# Available platforms: linux/amd64 | linux/arm64/v8 | linux/x86_64 | linux/arm/v7
 PLATFORM = linux/x86_64
 
 ifeq ($(OS),Windows_NT)
@@ -65,19 +67,19 @@ interactive: ## run the api standalone only for healthcheck and no db connection
 
 .PHONY: launch-db
 launch-db: docker-clean ## launch db container on local machine
-	docker-compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.yml up
+	docker-compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml up
 
 .PHONY: launch-local
 launch-local: docker-clean ## launch the multi-container on local machine
-	docker-compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.local.yml up
+	docker-compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.yml up
 
 .PHONY: stop-db
 stop-db: ## locally stop all containers for local development
-	docker-compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.yml down
+	docker-compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.db.yml down
 
 .PHONY: stop-local
 stop-local: ## locally stop all containers for local development
-	docker-compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.local.yml down
+	docker-compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.yml down
 
 .PHONY: help
 help:  ## show all make commands
