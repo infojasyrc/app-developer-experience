@@ -1,20 +1,6 @@
 ---
-version: '3.7'
 
 services:
-  mongodb:
-    container_name: events-db
-    image: mongo:6.0.6
-    ports:
-      - '27017:27017'
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${DB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-      - MONGO_INITDB_DATABASE=${DEFAULT_DB}
-    volumes:
-      - dev-db:/data/db
-      - ../backend/scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-
   api:
     container_name: conference-bff
     image: ${COMPOSE_PROJECT_NAME}-backend-dev:latest
