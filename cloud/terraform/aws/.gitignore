@@ -1,0 +1,14 @@
+.DS_Store
+
+.terraform/
+terraform-log*
+*.tfplan
+.terraform.lock*
+terraform.tfstate.d/
+plans/
+
+.idea/
+
+terraform.dev.tfvars
+terraform.qa.tfvars
+terraform.production.tfvars
