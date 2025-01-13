@@ -1,0 +1,37 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "node": true,
+    "mocha": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "promise"
+  ],
+  "rules": {
+    "eqeqeq": 2,
+    // Require error handling in callbacks
+    "handle-callback-err": 2,
+    "no-console": 0,
+    "no-unused-vars": 0,
+    // Prefer using arrow functions for callbacks
+    "prefer-arrow-callback": 1,
+    // Warn against nested then() or catch() statements
+    "promise/no-nesting": 1,
+    "quotes": ["error", "single"]
+  },
+  "overrides": [
+    {
+      "files": ["api/*/*.js", "services/*.js"],
+      "rules": {
+        "quotes": ["error", "single"]
+      }
+    }
+  ]
+}

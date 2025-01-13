@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "typeRoots": ["./node_modules/@types"],
+    "declaration": true,
+    "declarationDir": "./dist",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "strictNullChecks": false
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["./tests/**/*"]
+}

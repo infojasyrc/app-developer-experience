@@ -1,0 +1,8 @@
+# Include everything to be ignored
+*
+
+# Exclude application files
+!src/
+!package.json
+!yarn.lock
+!tsconfig.json
