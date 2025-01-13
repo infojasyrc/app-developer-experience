@@ -38,7 +38,6 @@ resource "aws_security_group_rule" "default_deny_all_egress" {
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_vpc.main.default_security_group_id
 }
-}
 
 resource "aws_subnet" "private" {
   count             = var.az_count
