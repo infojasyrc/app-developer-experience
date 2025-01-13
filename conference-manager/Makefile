@@ -65,6 +65,30 @@ interactive: ## run the api standalone only for healthcheck and no db connection
 		-p "5002:5002" \
 		$(COMPOSE_PROJECT_NAME)-backend-dev:latest /bin/ash
 
+.PHONY: lint
+lint: ## run lint for all the project
+	cd ./backend; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUMES) \
+		$(COMPOSE_PROJECT_NAME)-backend-dev:latest /bin/ash -ci "yarn run lint"
+
+.PHONY: unit-tests
+unit-tests: unit-tests-v1 unit-tests-v2 ## run all unit tests
+
+.PHONY: unit-tests-v1
+unit-tests-v1: ## run all unit tests using ava
+	cd ./backend; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUMES) \
+		$(COMPOSE_PROJECT_NAME)-backend-dev:latest /bin/ash -ci "yarn run test:unit-tests:v1"
+
+.PHONY: unit-tests-v2
+unit-tests-v2: ## run all unit tests using jest
+	cd ./backend; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUMES) \
+		$(COMPOSE_PROJECT_NAME)-backend-dev:latest /bin/ash -ci "yarn run test:unit-tests:v2"
+
 .PHONY: launch-db
 launch-db: docker-clean ## launch db container on local machine
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml up

@@ -1,19 +1,19 @@
 {
-  "name": "events-manager",
+  "name": "conference-manager",
   "version": "1.0.0",
-  "description": "Events Manager",
+  "description": "Conference Manager API",
   "scripts": {
-    "test:unit-tests:v1": "nyc --reporter=lcov ava",
-    "watch:test": "ava --watch",
+    "build": "nest build",
     "lint": "npx eslint .",
     "prepare": "husky",
-    "test:ci": "yarn test --coverage",
-    "test:coverage": "yarn test --coverage",
-    "build": "nest build",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "test:ci": "yarn test --coverage",
+    "test:coverage": "yarn test --coverage",
+    "test:unit-tests:v1": "nyc --reporter=lcov ava",
     "test:unit-tests:v2": "jest",
-    "test:watch": "jest --watch"
+    "test:watch:v1": "ava --watch",
+    "test:watch:v2": "jest --watch"
   },
   "repository": {
     "type": "git",
