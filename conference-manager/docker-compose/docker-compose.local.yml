@@ -2,8 +2,8 @@
 
 services:
   api:
-    container_name: conference-bff
-    image: ${COMPOSE_PROJECT_NAME}-backend-dev:latest
+    container_name: ${COMPOSE_PROJECT_NAME}-api
+    image: ${COMPOSE_PROJECT_NAME}-api:latest
     ports:
       - 5002:5002
     working_dir: /usr/src/app

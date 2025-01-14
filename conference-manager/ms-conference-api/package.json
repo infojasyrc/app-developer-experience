@@ -1,5 +1,5 @@
 {
-  "name": "conference-manager",
+  "name": "@appdevexp/msa-conference-api",
   "version": "1.0.0",
   "description": "Conference Manager API",
   "scripts": {

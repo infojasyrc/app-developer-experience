@@ -38,56 +38,56 @@ endif
 
 .PHONY: build-dev-backend
 build-dev-backend: ## build dev container image for backend
-	cd ./backend; docker build -t $(COMPOSE_PROJECT_NAME)-backend-dev \
+	cd ./ms-conference-api; docker build -t $(COMPOSE_PROJECT_NAME)-api \
 		--target development \
 		--platform $(PLATFORM) .
 
 .PHONY: backend-install-packages
 backend-install-packages: ## install node packages for backend dev server into volume
-	cd ./backend; docker run -t --workdir="$(LOCAL_APP_FOLDER)" $(DEV_VOLUMES) \
+	cd ./ms-conference-api; docker run -t --workdir="$(LOCAL_APP_FOLDER)" $(DEV_VOLUMES) \
 		--platform $(PLATFORM) \
-		$(COMPOSE_PROJECT_NAME)-backend-dev /bin/ash -ci "yarn install"
+		$(COMPOSE_PROJECT_NAME)-api /bin/ash -ci "yarn install"
 
 .PHONY: build-prod-backend
 build-prod-backend: ## build prod container image for backend
-	cd ./backend; docker build -t $(COMPOSE_PROJECT_NAME)-backend-prod \
+	cd ./ms-conference-api; docker build -t $(COMPOSE_PROJECT_NAME)-backend-prod \
 		--platform $(PLATFORM) .
 
 .PHONY: get-token
 get-token: ## Retrieve an access token for admin or user roles [ROLE=admin|ROLE=user]
-	cd ./backend; node $(TOKEN_SCRIPT_FILE) $(ROLE)
+	cd ./ms-conference-api; node $(TOKEN_SCRIPT_FILE) $(ROLE)
 
 .PHONY: interactive
 interactive: ## run the api standalone only for healthcheck and no db connection
-	cd ./backend; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+	cd ./ms-conference-api; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUMES) \
 		-p "5002:5002" \
-		$(COMPOSE_PROJECT_NAME)-backend-dev:latest /bin/ash
+		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash
 
 .PHONY: lint
 lint: ## run lint for all the project
-	cd ./backend; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+	cd ./ms-conference-api; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUMES) \
-		$(COMPOSE_PROJECT_NAME)-backend-dev:latest /bin/ash -ci "yarn run lint"
+		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash -ci "yarn run lint"
 
 .PHONY: unit-tests
 unit-tests: unit-tests-v1 unit-tests-v2 ## run all unit tests
 
 .PHONY: unit-tests-v1
 unit-tests-v1: ## run all unit tests using ava
-	cd ./backend; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+	cd ./ms-conference-api; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUMES) \
-		$(COMPOSE_PROJECT_NAME)-backend-dev:latest /bin/ash -ci "yarn run test:unit-tests:v1"
+		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash -ci "yarn run test:unit-tests:v1"
 
 .PHONY: unit-tests-v2
 unit-tests-v2: ## run all unit tests using jest
-	cd ./backend; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+	cd ./ms-conference-api; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUMES) \
-		$(COMPOSE_PROJECT_NAME)-backend-dev:latest /bin/ash -ci "yarn run test:unit-tests:v2"
+		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash -ci "yarn run test:unit-tests:v2"
 
 .PHONY: launch-db
 launch-db: docker-clean ## launch db container on local machine
