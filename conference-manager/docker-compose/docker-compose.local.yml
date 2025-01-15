@@ -43,7 +43,7 @@ services:
     links:
       - mongodb
     volumes:
-      - ../backend/:/usr/src/app:rw
+      - ../ms-conference-api/:/usr/src/app:rw
       - backend-packages:/usr/src/app/node_modules
 
 networks:
