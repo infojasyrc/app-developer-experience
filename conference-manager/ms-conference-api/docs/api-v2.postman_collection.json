@@ -1,0 +1,995 @@
+{
+  "info": {
+    "_postman_id": "0d4e84c0-aecc-48b6-9aa7-3a0eef863eef",
+    "name": "Events Manager API v2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+    "_exporter_id": "15183713"
+  },
+  "item": [
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Admin",
+          "item": [
+            {
+              "name": "create",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "var data = {",
+                      "    \"name\": \"Master Event 1d3\",",
+                      "    \"address\": \"70 Quinta Camacho Street\",",
+                      "    \"eventDate\": \"2024-02-01T19:00:00.000\",",
+                      "    \"type\": \"Networking\",",
+                      "    \"tags\": \"Devops\",",
+                      "    \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",",
+                      "    \"description\": \"This is a description for the end of the year event, that is going to be really huge\"",
+                      "}",
+                      "",
+                      "pm.variables.set(\"jsonData\", JSON.stringify(data))"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": {
+                    "token": "{{adminToken}}"
+                  }
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "multipart/form-data",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "Event With Image 21",
+                      "contentType": "application/json",
+                      "type": "text"
+                    },
+                    {
+                      "key": "address",
+                      "value": "Medayork",
+                      "contentType": "application/json",
+                      "type": "text"
+                    },
+                    {
+                      "key": "eventDate",
+                      "value": "2024-02-01T19:00:00.000",
+                      "contentType": "application/json",
+                      "type": "text"
+                    },
+                    {
+                      "key": "type",
+                      "value": "Software",
+                      "contentType": "application/json",
+                      "type": "text"
+                    },
+                    {
+                      "key": "tags",
+                      "value": "programming",
+                      "contentType": "application/json",
+                      "type": "text"
+                    },
+                    {
+                      "key": "headquarter",
+                      "value": "654d4ac398b7a0abaa3c3a40",
+                      "contentType": "application/json",
+                      "type": "text"
+                    },
+                    {
+                      "key": "description",
+                      "value": "We are testing how is the upload image at create event",
+                      "contentType": "application/json",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image",
+                      "contentType": "",
+                      "type": "file",
+                      "src": "postman-cloud:///1eecadc3-bc92-4d40-b09c-b2d7e3f9dde1"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "src": "/Users/sofiagarcia/Downloads/9f15109746df254c5a030a7ba9239f8a4bb5dadb-1456x816.png.webp",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "url": "http://localhost:5002/v2/events"
+              },
+              "response": [
+                {
+                  "name": "passed image not allowed",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "multipart/form-data",
+                        "type": "text",
+                        "disabled": true
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "name",
+                          "value": "Event With Image 12",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "address",
+                          "value": "Medayork",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "eventDate",
+                          "value": "2024-02-01T19:00:00.000",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "type",
+                          "value": "Software",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "tags",
+                          "value": "programming",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "headquarter",
+                          "value": "654d4ac398b7a0abaa3c3a40",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "description",
+                          "value": "We are testing how is the upload image at create event",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "image",
+                          "contentType": "",
+                          "type": "file",
+                          "src": "postman-cloud:///1eecadc3-bc92-4d40-b09c-b2d7e3f9dde1",
+                          "disabled": true
+                        },
+                        {
+                          "key": "image",
+                          "type": "file",
+                          "src": "/Users/sofiagarcia/Downloads/9f15109746df254c5a030a7ba9239f8a4bb5dadb-1456x816.png.webp"
+                        }
+                      ]
+                    },
+                    "url": "http://localhost:5002/v2/events"
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "81"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"51-KjfNMU+CLZntJe5gAjuRIMIVLws\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 14 Feb 2024 21:08:10 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 400,\n    \"message\": \"Bad request exception: Only JPG images are allowed\"\n}"
+                },
+                {
+                  "name": "create event with image",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "multipart/form-data",
+                        "type": "text",
+                        "disabled": true
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "name",
+                          "value": "Event With Image 12",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "address",
+                          "value": "Medayork",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "eventDate",
+                          "value": "2024-02-01T19:00:00.000",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "type",
+                          "value": "Software",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "tags",
+                          "value": "programming",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "headquarter",
+                          "value": "654d4ac398b7a0abaa3c3a40",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "description",
+                          "value": "We are testing how is the upload image at create event",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "image",
+                          "contentType": "",
+                          "type": "file",
+                          "src": "postman-cloud:///1eecadc3-bc92-4d40-b09c-b2d7e3f9dde1"
+                        },
+                        {
+                          "key": "image",
+                          "type": "file",
+                          "src": "/Users/sofiagarcia/Downloads/9f15109746df254c5a030a7ba9239f8a4bb5dadb-1456x816.png.webp",
+                          "disabled": true
+                        }
+                      ]
+                    },
+                    "url": "http://localhost:5002/v2/events"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "569"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"239-Cn1bKF7T4EvI572AdYC3HP7YpMs\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 14 Feb 2024 21:09:03 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"data\": {\n        \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n        \"tags\": \"programming\",\n        \"name\": \"Event With Image 12\",\n        \"year\": \"2024\",\n        \"type\": \"Software\",\n        \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n        \"images\": [\n            \"https://storage.googleapis.com/chupito-c5p5t.appspot.com/1707944939348-Programming.jpg\"\n        ],\n        \"status\": \"created\",\n        \"address\": \"Medayork\",\n        \"description\": \"We are testing how is the upload image at create event\",\n        \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n        \"attendees\": [],\n        \"_id\": \"65cd2bef27d8249a09a0bcf1\",\n        \"createdAt\": \"2024-02-14T21:09:03.399Z\",\n        \"updatedAt\": \"2024-02-14T21:09:03.399Z\",\n        \"__v\": 0\n    },\n    \"status\": 200\n}"
+                },
+                {
+                  "name": "event name already exist",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "multipart/form-data",
+                        "type": "text",
+                        "disabled": true
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "name",
+                          "value": "Event With Image 12",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "address",
+                          "value": "Medayork",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "eventDate",
+                          "value": "2024-02-01T19:00:00.000",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "type",
+                          "value": "Software",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "tags",
+                          "value": "programming",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "headquarter",
+                          "value": "654d4ac398b7a0abaa3c3a40",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "description",
+                          "value": "We are testing how is the upload image at create event",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "image",
+                          "contentType": "",
+                          "type": "file",
+                          "src": "postman-cloud:///1eecadc3-bc92-4d40-b09c-b2d7e3f9dde1",
+                          "disabled": true
+                        },
+                        {
+                          "key": "image",
+                          "type": "file",
+                          "src": "/Users/sofiagarcia/Downloads/9f15109746df254c5a030a7ba9239f8a4bb5dadb-1456x816.png.webp",
+                          "disabled": true
+                        }
+                      ]
+                    },
+                    "url": "http://localhost:5002/v2/events"
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "109"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"6d-GZFpJmYeTPy8lohGzWH0jxmjUts\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 14 Feb 2024 21:09:26 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 400,\n    \"message\": \"Bad request exception: The event with name: Event With Image 12, already exist\"\n}"
+                },
+                {
+                  "name": "create event without image",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "multipart/form-data",
+                        "type": "text",
+                        "disabled": true
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "name",
+                          "value": "Event With Image 13",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "address",
+                          "value": "Medayork",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "eventDate",
+                          "value": "2024-02-01T19:00:00.000",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "type",
+                          "value": "Software",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "tags",
+                          "value": "programming",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "headquarter",
+                          "value": "654d4ac398b7a0abaa3c3a40",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "description",
+                          "value": "We are testing how is the upload image at create event",
+                          "contentType": "application/json",
+                          "type": "text"
+                        },
+                        {
+                          "key": "image",
+                          "contentType": "",
+                          "type": "file",
+                          "src": "postman-cloud:///1eecadc3-bc92-4d40-b09c-b2d7e3f9dde1",
+                          "disabled": true
+                        },
+                        {
+                          "key": "image",
+                          "type": "file",
+                          "src": "/Users/sofiagarcia/Downloads/9f15109746df254c5a030a7ba9239f8a4bb5dadb-1456x816.png.webp",
+                          "disabled": true
+                        }
+                      ]
+                    },
+                    "url": "http://localhost:5002/v2/events"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "481"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"1e1-IPD8Hqh0taKxIlayRgL72zBi2Ks\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 14 Feb 2024 21:09:47 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"data\": {\n        \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n        \"tags\": \"programming\",\n        \"name\": \"Event With Image 13\",\n        \"year\": \"2024\",\n        \"type\": \"Software\",\n        \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n        \"images\": [],\n        \"status\": \"created\",\n        \"address\": \"Medayork\",\n        \"description\": \"We are testing how is the upload image at create event\",\n        \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n        \"attendees\": [],\n        \"_id\": \"65cd2c1b27d8249a09a0bcf5\",\n        \"createdAt\": \"2024-02-14T21:09:47.056Z\",\n        \"updatedAt\": \"2024-02-14T21:09:47.056Z\",\n        \"__v\": 0\n    },\n    \"status\": 200\n}"
+                }
+              ]
+            },
+            {
+              "name": "update",
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"eventDate\": \"2030-02-05T19:00:00.000\",\n    \"status\": \"inactive\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": "http://localhost:5002/v2/events/65a9b222dcfdcb71fa59fa18"
+              },
+              "response": [
+                {
+                  "name": "event updated",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"eventDate\": \"2030-02-05T19:00:00.000\",\n    \"status\": \"active\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": "http://localhost:5002/v2/events/65c516a7eae2b91375ecba6e"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "533"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"215-PZMZB9mee7KSH32SXEDVL/XJrmc\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Thu, 08 Feb 2024 19:42:07 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"data\": {\n        \"_id\": \"65c516a7eae2b91375ecba6e\",\n        \"eventDate\": \"2030-02-06T00:00:00.000Z\",\n        \"tags\": \"Devops\",\n        \"name\": \"End of the Year\",\n        \"year\": \"2030\",\n        \"type\": \"Networking\",\n        \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n        \"status\": \"active\",\n        \"address\": \"70 Quinta Camacho Street\",\n        \"description\": \"This is a description for the end of the year event, that is going to be really huge\",\n        \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n        \"attendees\": [\n            \"65a9ae1f615ad496533cde52\"\n        ],\n        \"createdAt\": \"2024-02-08T18:00:07.773Z\",\n        \"updatedAt\": \"2024-02-08T19:42:07.060Z\",\n        \"__v\": 1\n    },\n    \"status\": 200\n}"
+                }
+              ]
+            },
+            {
+              "name": "add attendee to event",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": {
+                    "token": "{{adminToken}}"
+                  }
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"User\",\n    \"lastName\": \"App\",\n    \"email\": \"testuser@chupito.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": "http://localhost:5002/v2/events/65c65bba59d8a4974f139570/attendee/65a9ae1f615ad496533cde52"
+              },
+              "response": [
+                {
+                  "name": "user already registered",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"name\": \"User\",\n    \"lastName\": \"App\",\n    \"email\": \"testuser@chupito.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": "http://localhost:5002/v2/events/65c516a7eae2b91375ecba6e/attendee/65a9ae1f615ad496533cde52"
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "145"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"91-QMmG+zssrcJFxHODwHBHQIRw8A8\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Thu, 08 Feb 2024 18:51:54 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 400,\n    \"message\": \"Bad request exception: User with id: 65a9ae1f615ad496533cde52 is already attending event: 65c516a7eae2b91375ecba6e\"\n}"
+                },
+                {
+                  "name": "event id not found",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"name\": \"User\",\n    \"lastName\": \"App\",\n    \"email\": \"testuser@chupito.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": "http://localhost:5002/v2/events/65c516a7eae2b91375ecba6a/attendee/65a9ae1f615ad496533cde52"
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "141"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"8d-FrqttsVK7wWxeT1dnK4l+HnXw2g\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Thu, 08 Feb 2024 18:54:20 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 404,\n    \"message\": \"Not found exception: Error at add attendee to event service, event _id: 65c516a7eae2b91375ecba6a was not found\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "list events",
+              "request": {
+                "method": "GET",
+                "header": []
+              },
+              "response": [
+                {
+                  "name": "Lista Usuario",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": "http://localhost:5002/v2/events"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "4195"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"1063-04gVFU+66lymBfmBtFVSGNG+IJQ\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 12 Feb 2024 23:52:40 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"data\": [\n        {\n            \"attendees\": [],\n            \"_id\": \"65a9b222dcfdcb71fa59fa18\",\n            \"images\": [],\n            \"name\": \"Values Day\",\n            \"eventDate\": \"2030-02-06T00:00:00.000Z\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"type\": \"Sales\",\n            \"tags\": \"Design\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a3e\",\n            \"description\": \"one of the most significant events in our firm\",\n            \"address\": \"85 Salvio Street\",\n            \"phoneNumber\": \"\",\n            \"status\": \"active\",\n            \"year\": \"2030\",\n            \"updatedAt\": \"2024-02-09T05:18:33.773Z\"\n        },\n        {\n            \"_id\": \"65a9b245dcfdcb71fa59fa19\",\n            \"images\": [],\n            \"name\": \"Storm\",\n            \"eventDate\": \"2023-11-22T00:00:00.000Z\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"type\": \"Recruiting\",\n            \"tags\": \"Architecture\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a3f\",\n            \"description\": \"A description\",\n            \"address\": \"2323 El Dorado Avenue\",\n            \"phoneNumber\": \"\",\n            \"status\": \"active\",\n            \"year\": \"NaN\"\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65a9b313786c6d5d9b574dce\",\n            \"images\": [],\n            \"name\": \"End of Year\",\n            \"eventDate\": \"2023-12-02T00:00:00.000Z\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"type\": \"Networking\",\n            \"tags\": \"Devops\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"description\": \"A description\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"phoneNumber\": \"\",\n            \"status\": \"active\",\n            \"year\": \"NaN\"\n        },\n        {\n            \"_id\": \"65aaafdcd0842779e0280224\",\n            \"images\": [],\n            \"name\": \"Demo\",\n            \"eventDate\": \"2023-12-02T00:00:00.000Z\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"type\": \"Networking\",\n            \"tags\": \"Devops\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"description\": \"Demo video description demo demo\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"phoneNumber\": \"\",\n            \"status\": \"active\",\n            \"year\": \"NaN\"\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65b9373f6f3ef0a59e20975a\",\n            \"eventDate\": \"2029-12-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Update Event\",\n            \"year\": \"2029\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"active\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-01-30T17:51:59.188Z\",\n            \"updatedAt\": \"2024-02-01T17:29:16.238Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65b9395f08981487e091bfb8\",\n            \"eventDate\": \"2025-12-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Event constants\",\n            \"year\": \"2025\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"active\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-01-30T18:01:03.233Z\",\n            \"updatedAt\": \"2024-01-31T01:42:00.592Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65bc31ff516c97c52709a7fc\",\n            \"eventDate\": \"2024-02-06T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Demo Prueba Update\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"active\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-02T00:06:23.743Z\",\n            \"updatedAt\": \"2024-02-02T00:06:55.855Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c174e4e5bbf3e786a30c3a\",\n            \"eventDate\": \"2030-02-06T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing interface\",\n            \"year\": \"2030\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"active\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-05T23:53:08.623Z\",\n            \"updatedAt\": \"2024-02-08T19:00:45.889Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"65c516a7eae2b91375ecba6e\",\n            \"eventDate\": \"2030-02-06T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"End of the Year\",\n            \"year\": \"2030\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"active\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"This is a description for the end of the year event, that is going to be really huge\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"attendees\": [\n                \"65a9ae1f615ad496533cde52\",\n                \"65a9ae1f615ad496533cde52\"\n            ],\n            \"createdAt\": \"2024-02-08T18:00:07.773Z\",\n            \"updatedAt\": \"2024-02-08T19:49:21.338Z\",\n            \"__v\": 2\n        },\n        {\n            \"_id\": \"65c65bba59d8a4974f139570\",\n            \"eventDate\": \"2030-02-06T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Master Event\",\n            \"year\": \"2030\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"active\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"This is a description for the end of the year event, that is going to be really huge\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"attendees\": [\n                \"65a9ae1f615ad496533cde52\"\n            ],\n            \"createdAt\": \"2024-02-09T17:07:06.809Z\",\n            \"updatedAt\": \"2024-02-09T18:32:59.600Z\",\n            \"__v\": 1\n        }\n    ],\n    \"status\": 200\n}"
+                },
+                {
+                  "name": "Lista Admin",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": "http://localhost:5002/v2/events"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "44164"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"ac84-F/q94R54uh+6Mxef8XUFuicfHdc\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 12 Feb 2024 23:53:49 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"data\": [\n        {\n            \"attendees\": [],\n            \"_id\": \"65a9b222dcfdcb71fa59fa18\",\n            \"images\": [],\n            \"name\": \"Values Day\",\n            \"eventDate\": \"2030-02-06T00:00:00.000Z\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"type\": \"Sales\",\n            \"tags\": \"Design\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a3e\",\n            \"description\": \"one of the most significant events in our firm\",\n            \"address\": \"85 Salvio Street\",\n            \"phoneNumber\": \"\",\n            \"status\": \"active\",\n            \"year\": \"2030\",\n            \"updatedAt\": \"2024-02-09T05:18:33.773Z\"\n        },\n        {\n            \"_id\": \"65a9b245dcfdcb71fa59fa19\",\n            \"images\": [],\n            \"name\": \"Storm\",\n            \"eventDate\": \"2023-11-22T00:00:00.000Z\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"type\": \"Recruiting\",\n            \"tags\": \"Architecture\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a3f\",\n            \"description\": \"A description\",\n            \"address\": \"2323 El Dorado Avenue\",\n            \"phoneNumber\": \"\",\n            \"status\": \"active\",\n            \"year\": \"NaN\"\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65a9b313786c6d5d9b574dce\",\n            \"images\": [],\n            \"name\": \"End of Year\",\n            \"eventDate\": \"2023-12-02T00:00:00.000Z\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"type\": \"Networking\",\n            \"tags\": \"Devops\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"description\": \"A description\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"phoneNumber\": \"\",\n            \"status\": \"active\",\n            \"year\": \"NaN\"\n        },\n        {\n            \"_id\": \"65aaafdcd0842779e0280224\",\n            \"images\": [],\n            \"name\": \"Demo\",\n            \"eventDate\": \"2023-12-02T00:00:00.000Z\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"type\": \"Networking\",\n            \"tags\": \"Devops\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"description\": \"Demo video description demo demo\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"phoneNumber\": \"\",\n            \"status\": \"active\",\n            \"year\": \"NaN\"\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65af23408c576f5129cc4a86\",\n            \"images\": [],\n            \"name\": \"Nest\",\n            \"eventDate\": \"2023-12-02T00:00:00.000Z\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"type\": \"Networking\",\n            \"tags\": \"Devops\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"description\": \"Demo description\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"phoneNumber\": \"\",\n            \"status\": \"created\",\n            \"year\": \"NaN\"\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65b2b1d80620ffbd13c26aaa\",\n            \"images\": [],\n            \"name\": \"Nest env test\",\n            \"eventDate\": \"2023-12-02T00:00:00.000Z\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"type\": \"Networking\",\n            \"tags\": \"Devops\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"description\": \"Demo description\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"phoneNumber\": \"\",\n            \"status\": \"created\",\n            \"year\": \"NaN\"\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65b2b276f1a0352f2aa30804\",\n            \"images\": [],\n            \"name\": \"Nest env tesssttt\",\n            \"eventDate\": \"2023-12-02T00:00:00.000Z\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"type\": \"Networking\",\n            \"tags\": \"Devops\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"description\": \"Demo description\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"phoneNumber\": \"\",\n            \"status\": \"created\",\n            \"year\": \"NaN\"\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65b9373f6f3ef0a59e20975a\",\n            \"eventDate\": \"2029-12-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Update Event\",\n            \"year\": \"2029\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"active\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-01-30T17:51:59.188Z\",\n            \"updatedAt\": \"2024-02-01T17:29:16.238Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65b9395f08981487e091bfb8\",\n            \"eventDate\": \"2025-12-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Event constants\",\n            \"year\": \"2025\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"active\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-01-30T18:01:03.233Z\",\n            \"updatedAt\": \"2024-01-31T01:42:00.592Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65bbc8f50088e3939262aa1b\",\n            \"eventDate\": \"2023-12-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing interceptor\",\n            \"year\": \"2023\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-01T16:38:13.811Z\",\n            \"updatedAt\": \"2024-02-01T16:38:13.811Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65bbc9081c42624de5894e10\",\n            \"images\": [],\n            \"name\": \"interceptor v1\",\n            \"eventDate\": \"2023-12-02T00:00:00.000Z\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"type\": \"Networking\",\n            \"tags\": \"Devops\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"description\": \"Demo description\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"phoneNumber\": \"\",\n            \"status\": \"created\",\n            \"year\": \"NaN\"\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65bbca276fc097cf31ebb6bc\",\n            \"eventDate\": \"2023-12-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing interceptor 1\",\n            \"year\": \"2023\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-01T16:43:19.127Z\",\n            \"updatedAt\": \"2024-02-01T16:43:19.127Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65bc31ff516c97c52709a7fc\",\n            \"eventDate\": \"2024-02-06T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Demo Prueba Update\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"active\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-02T00:06:23.743Z\",\n            \"updatedAt\": \"2024-02-02T00:06:55.855Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c174e4e5bbf3e786a30c3a\",\n            \"eventDate\": \"2030-02-06T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing interface\",\n            \"year\": \"2030\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"active\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-05T23:53:08.623Z\",\n            \"updatedAt\": \"2024-02-08T19:00:45.889Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c1bf26b93f1332166cc563\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"ACTIVE\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-06T05:09:58.150Z\",\n            \"updatedAt\": \"2024-02-06T05:09:58.150Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c1c0f617eaca9afe6cfa70\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 1\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"ACTIVE\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-06T05:17:42.978Z\",\n            \"updatedAt\": \"2024-02-06T05:17:42.978Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3ac8dec4eaf60deaf07db\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 2\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:15:09.056Z\",\n            \"updatedAt\": \"2024-02-07T16:15:09.056Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3acb30f1aa137a7d83cbc\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 3\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:15:47.666Z\",\n            \"updatedAt\": \"2024-02-07T16:15:47.666Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3accc4790c4da882e576b\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 4\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:16:12.036Z\",\n            \"updatedAt\": \"2024-02-07T16:16:12.036Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3ad87bcbe8fb01cb785be\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 7\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:19:19.224Z\",\n            \"updatedAt\": \"2024-02-07T16:19:19.224Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3ada6bcbe8fb01cb785c2\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 10\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:19:50.157Z\",\n            \"updatedAt\": \"2024-02-07T16:19:50.157Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3adbda9e66dde38597f12\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 11\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:20:13.683Z\",\n            \"updatedAt\": \"2024-02-07T16:20:13.683Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3aebefd4a33eced5c7dd1\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 12\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:24:30.532Z\",\n            \"updatedAt\": \"2024-02-07T16:24:30.532Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b0060796be75dd8fa663\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 13\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:29:58.782Z\",\n            \"updatedAt\": \"2024-02-07T16:29:58.782Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b0834f72260b40eff135\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 15\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:32:03.029Z\",\n            \"updatedAt\": \"2024-02-07T16:32:03.029Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b0d676acdcf5a85f975b\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 35\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:33:26.420Z\",\n            \"updatedAt\": \"2024-02-07T16:33:26.420Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b133ecb6fbe8901285cb\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 45\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:34:59.679Z\",\n            \"updatedAt\": \"2024-02-07T16:34:59.679Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b1408179c78dace1f274\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 55\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:35:12.063Z\",\n            \"updatedAt\": \"2024-02-07T16:35:12.063Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b32407f918eebdefc33d\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5w5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:43:16.524Z\",\n            \"updatedAt\": \"2024-02-07T16:43:16.524Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b39290fb9a85645952ad\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5w45\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:45:06.674Z\",\n            \"updatedAt\": \"2024-02-07T16:45:06.674Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b3a34e81842f3e05fa4b\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5we45\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:45:23.829Z\",\n            \"updatedAt\": \"2024-02-07T16:45:23.829Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b3cfa3b9a63439c28620\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wwe45\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:46:07.375Z\",\n            \"updatedAt\": \"2024-02-07T16:46:07.375Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b580afe71e3779b2eb39\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwe45\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:53:20.956Z\",\n            \"updatedAt\": \"2024-02-07T16:53:20.956Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b62f94ee784499f1dcf1\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwee45\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:56:15.753Z\",\n            \"updatedAt\": \"2024-02-07T16:56:15.753Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b6ffe1b6587439ecdd93\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwee4e5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:59:43.052Z\",\n            \"updatedAt\": \"2024-02-07T16:59:43.052Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b707e1b6587439ecdd97\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwee4ed5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T16:59:51.311Z\",\n            \"updatedAt\": \"2024-02-07T16:59:51.311Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b71ae1b6587439ecdd9d\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwee4edd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:00:10.990Z\",\n            \"updatedAt\": \"2024-02-07T17:00:10.990Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b7351a2f7159229d1948\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwweef4edd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:00:37.718Z\",\n            \"updatedAt\": \"2024-02-07T17:00:37.718Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b858c2fd0c88bbff7a10\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwfeef4edd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:05:28.817Z\",\n            \"updatedAt\": \"2024-02-07T17:05:28.817Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b8d0280c3028f2342fe6\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwfeefj4edd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:07:28.486Z\",\n            \"updatedAt\": \"2024-02-07T17:07:28.486Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3b9ac444b7d42558bc67f\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwfeefj4iedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:11:08.389Z\",\n            \"updatedAt\": \"2024-02-07T17:11:08.389Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3bc6f2a2a5fe74b52ed18\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwfheefj4iedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:22:55.692Z\",\n            \"updatedAt\": \"2024-02-07T17:22:55.692Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3bd7f4753372c36c7585a\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwfheefj4iiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:27:27.922Z\",\n            \"updatedAt\": \"2024-02-07T17:27:27.922Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c144e7750f39357e97b2\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwffheefj4iiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:43:32.053Z\",\n            \"updatedAt\": \"2024-02-07T17:43:32.053Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c25551a954f97ed88f19\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwffheefj4difiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:48:05.834Z\",\n            \"updatedAt\": \"2024-02-07T17:48:05.834Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c26251a954f97ed88f1d\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwffheefj4deifiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:48:18.653Z\",\n            \"updatedAt\": \"2024-02-07T17:48:18.653Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c28b8b8c85351622c9d3\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwffheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:48:59.170Z\",\n            \"updatedAt\": \"2024-02-07T17:48:59.170Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c2a5426bcb7fc187a493\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guard 5wfwwfdfheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:49:25.031Z\",\n            \"updatedAt\": \"2024-02-07T17:49:25.031Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c2c4ec76442dbdc4e282\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guardf 5wfwwfdfheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:49:56.512Z\",\n            \"updatedAt\": \"2024-02-07T17:49:56.512Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c2efec76442dbdc4e284\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guardf 5wffwwfdfheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:50:39.416Z\",\n            \"updatedAt\": \"2024-02-07T17:50:39.416Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c4869d45b3f0ce3e32e2\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guardsf 5wffwwfdfheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:57:26.564Z\",\n            \"updatedAt\": \"2024-02-07T17:57:26.564Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c50b598bf807667f9fca\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guardsf 5wffwwdfdfheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:59:39.957Z\",\n            \"updatedAt\": \"2024-02-07T17:59:39.957Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c51d0b99bde75e3cbb2c\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guardsf 5wffwfwdfdfheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T17:59:57.193Z\",\n            \"updatedAt\": \"2024-02-07T17:59:57.193Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c55447f53f43c39eb795\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testing Guardsf 5Fwffwfwdfdfheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T18:00:52.757Z\",\n            \"updatedAt\": \"2024-02-07T18:00:52.757Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c5fa95981036dd9eb06b\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testinfg Guardsf 5Fwffwfwdfdfheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T18:03:38.339Z\",\n            \"updatedAt\": \"2024-02-07T18:03:38.339Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c69077c1292f4366d420\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testinfg Guardsf d5Fwffwfwdfdfheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T18:06:08.221Z\",\n            \"updatedAt\": \"2024-02-07T18:06:08.221Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3c9d6a20ca3a4a3c4d262\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testinfg Guardsf d5dFwffwfwdfdfheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T18:20:06.387Z\",\n            \"updatedAt\": \"2024-02-07T18:20:06.387Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d150117fb9fd3b0bd981\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Testinfg Guarddsf d5dFwffwfwdfdfheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T18:52:00.811Z\",\n            \"updatedAt\": \"2024-02-07T18:52:00.811Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d1e70b419fcdc5b008e4\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4deiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T18:54:31.606Z\",\n            \"updatedAt\": \"2024-02-07T18:54:31.606Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d2ad821d1d1d51292802\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4defiggfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T18:57:49.537Z\",\n            \"updatedAt\": \"2024-02-07T18:57:49.537Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d38ef1333c277b73bfe1\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4defiggdfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:01:34.277Z\",\n            \"updatedAt\": \"2024-02-07T19:01:34.277Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d4732bf011f7052bcffe\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4deffiggdfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:05:23.064Z\",\n            \"updatedAt\": \"2024-02-07T19:05:23.064Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d49572b5b85a290d604d\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4deffiggddfiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:05:57.585Z\",\n            \"updatedAt\": \"2024-02-07T19:05:57.585Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d4c2b80a62e39e6e9b2f\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4deffiggddefiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:06:42.110Z\",\n            \"updatedAt\": \"2024-02-07T19:06:42.110Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d512b0220497534bbdfe\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4deffigdgddefiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:08:02.515Z\",\n            \"updatedAt\": \"2024-02-07T19:08:02.515Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d52e7c764fef2e63e275\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4deffigfdgddefiedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:08:30.542Z\",\n            \"updatedAt\": \"2024-02-07T19:08:30.542Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d6119c24be5b7ac4e500\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4deffigfdgddefidedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:12:17.664Z\",\n            \"updatedAt\": \"2024-02-07T19:12:17.664Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d6686b33393f69476d75\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4deffigfdgdddefidedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:13:44.131Z\",\n            \"updatedAt\": \"2024-02-07T19:13:44.131Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d7604ae3db5a63c215bc\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4deffigfdgdddefdidedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:17:52.244Z\",\n            \"updatedAt\": \"2024-02-07T19:17:52.244Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3d833c9dfbe024537b573\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4deffigdfdgdddefdidedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:21:23.906Z\",\n            \"updatedAt\": \"2024-02-07T19:21:23.906Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3db1cf3f28fcdfd218694\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4deffigdfdfgdddefdidedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:33:48.909Z\",\n            \"updatedAt\": \"2024-02-07T19:33:48.909Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3db4b61a3762d713c93ea\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4deffigdfdfgdddefdidsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:34:35.222Z\",\n            \"updatedAt\": \"2024-02-07T19:34:35.222Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3dbbb6882e1c44e724fe7\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4defsfigdfdfddgdddefdidsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:36:27.744Z\",\n            \"updatedAt\": \"2024-02-07T19:36:27.744Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3dc3093afa41bee87941e\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4defsfigdfdfddgdddefdiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:38:24.304Z\",\n            \"updatedAt\": \"2024-02-07T19:38:24.304Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3dc48247d622f9eba70ff\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4defsfigddfdfddgdddefdiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:38:48.013Z\",\n            \"updatedAt\": \"2024-02-07T19:38:48.013Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3dc6c96839ef0208dd7fd\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4defsfigddfdfddgdddefddiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:39:24.460Z\",\n            \"updatedAt\": \"2024-02-07T19:39:24.460Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3dcd800f4d5efb777e71a\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4defsfigddfedfddgdddefddiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:41:12.925Z\",\n            \"updatedAt\": \"2024-02-07T19:41:12.925Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3dcfa00f4d5efb777e71e\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4ddefsfigddfedfddgdddefddiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:41:46.845Z\",\n            \"updatedAt\": \"2024-02-07T19:41:46.845Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3dd4abba46e3a41b92d66\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4ddefsfigdddfedfddgdddefddiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:43:06.976Z\",\n            \"updatedAt\": \"2024-02-07T19:43:06.976Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3dd71bbce95ca49bd8b45\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4ddefsfigddddfedfddgdddefddiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:43:45.795Z\",\n            \"updatedAt\": \"2024-02-07T19:43:45.795Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3dde1534e1d2b4bd9b289\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4ddefsfigddddfeddfddgdddefddiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:45:37.955Z\",\n            \"updatedAt\": \"2024-02-07T19:45:37.955Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3ddfb534e1d2b4bd9b28d\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4ddefsfigdddddfeddfddgdddefddiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:46:03.434Z\",\n            \"updatedAt\": \"2024-02-07T19:46:03.434Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3decb190819cd4e597e04\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4ddefsfigdddddfeddfddgdddefdddiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:49:31.474Z\",\n            \"updatedAt\": \"2024-02-07T19:49:31.474Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3dee349064736f45882b3\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4ddefsfigddddddfeddfddgdddefdddiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:49:55.363Z\",\n            \"updatedAt\": \"2024-02-07T19:49:55.363Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3df23fee3ce9c5b16b226\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4ddefsfigdsdddddfeddfddgddddefdddiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:50:59.687Z\",\n            \"updatedAt\": \"2024-02-07T19:50:59.687Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3df42836ae08a7a70e117\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefj4ddefsfigdsdddddfeddfddgeddddefdddiddsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:51:30.082Z\",\n            \"updatedAt\": \"2024-02-07T19:51:30.082Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3df5e836ae08a7a70e119\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefjndsedd5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:51:58.276Z\",\n            \"updatedAt\": \"2024-02-07T19:51:58.276Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3df858e68803a4663837b\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefjndseded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:52:37.705Z\",\n            \"updatedAt\": \"2024-02-07T19:52:37.705Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3e0d9d781215e4dd6c143\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefjndfsedded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T19:58:17.984Z\",\n            \"updatedAt\": \"2024-02-07T19:58:17.984Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3e17d64022d4131ea35eb\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefjnddfseddded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T20:01:01.631Z\",\n            \"updatedAt\": \"2024-02-07T20:01:01.631Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3e18364022d4131ea35ef\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefjnddfsedddded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T20:01:07.354Z\",\n            \"updatedAt\": \"2024-02-07T20:01:07.354Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3e2412ba94bee47be380d\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefjcddfsedddded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T20:04:17.098Z\",\n            \"updatedAt\": \"2024-02-07T20:04:17.098Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3e2532ba94bee47be3811\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefjcddfseddddded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T20:04:35.730Z\",\n            \"updatedAt\": \"2024-02-07T20:04:35.730Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3e3b57b4ed151355b6602\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefgjdcddfseddddded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T20:10:29.834Z\",\n            \"updatedAt\": \"2024-02-07T20:10:29.834Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3e538601d817cde7c5882\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfheefgjdcddfsedddddded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T20:16:56.004Z\",\n            \"updatedAt\": \"2024-02-07T20:16:56.004Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3e5779bbc766b9e10cb7b\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfhedefgjdcddfsedddddded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T20:17:59.077Z\",\n            \"updatedAt\": \"2024-02-07T20:17:59.077Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3e66ae893a22c96889088\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfhedefgjdcddfseddddddded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T20:22:02.967Z\",\n            \"updatedAt\": \"2024-02-07T20:22:02.967Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3e79c829b3aed30128685\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfhedefgjdcddfsedsdddddded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T20:27:08.938Z\",\n            \"updatedAt\": \"2024-02-07T20:27:08.938Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3e7cc8740f6c923ca5810\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfhedefgjdcdddfseddsdddddded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T20:27:56.509Z\",\n            \"updatedAt\": \"2024-02-07T20:27:56.509Z\",\n            \"__v\": 0\n        },\n        {\n            \"attendees\": [],\n            \"_id\": \"65c3e7d78740f6c923ca5814\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Tfhedefgjdcddddfseddsdddddded5\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"Demo description\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"createdAt\": \"2024-02-07T20:28:07.457Z\",\n            \"updatedAt\": \"2024-02-07T20:28:07.457Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"65c516a7eae2b91375ecba6e\",\n            \"eventDate\": \"2030-02-06T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"End of the Year\",\n            \"year\": \"2030\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"active\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"This is a description for the end of the year event, that is going to be really huge\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"attendees\": [\n                \"65a9ae1f615ad496533cde52\",\n                \"65a9ae1f615ad496533cde52\"\n            ],\n            \"createdAt\": \"2024-02-08T18:00:07.773Z\",\n            \"updatedAt\": \"2024-02-08T19:49:21.338Z\",\n            \"__v\": 2\n        },\n        {\n            \"_id\": \"65c65bba59d8a4974f139570\",\n            \"eventDate\": \"2030-02-06T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Master Event\",\n            \"year\": \"2030\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"active\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"This is a description for the end of the year event, that is going to be really huge\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"attendees\": [\n                \"65a9ae1f615ad496533cde52\"\n            ],\n            \"createdAt\": \"2024-02-09T17:07:06.809Z\",\n            \"updatedAt\": \"2024-02-09T18:32:59.600Z\",\n            \"__v\": 1\n        },\n        {\n            \"_id\": \"65caaed4319748f561cdfdcb\",\n            \"eventDate\": \"2024-02-02T00:00:00.000Z\",\n            \"tags\": \"Devops\",\n            \"name\": \"Master Event 1\",\n            \"year\": \"2024\",\n            \"type\": \"Networking\",\n            \"owner\": \"2qWPHHeRY9b3ouN8deae8GkCUnx1\",\n            \"status\": \"created\",\n            \"address\": \"70 Quinta Camacho Street\",\n            \"description\": \"This is a description for the end of the year event, that is going to be really huge\",\n            \"headquarter\": \"654d4ac398b7a0abaa3c3a40\",\n            \"attendees\": [],\n            \"createdAt\": \"2024-02-12T23:50:44.748Z\",\n            \"updatedAt\": \"2024-02-12T23:50:44.748Z\",\n            \"__v\": 0\n        }\n    ],\n    \"status\": 200\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get user information",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:5002/v2/users/sRrmUhxMgrhA1WeMyQp9CzzxyO92"
+          },
+          "response": [
+            {
+              "name": "200",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "http://localhost:5002/v2/users/sRrmUhxMgrhA1WeMyQp9CzzxyO92"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "4195"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1063-04gVFU+66lymBfmBtFVSGNG+IJQ\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 12 Feb 2024 23:52:40 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": []
+            }
+          ]
+        },
+        {
+          "name": "Register new user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "token": "{{userToken}}"
+              }
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "uid",
+                  "value": "",
+                  "contentType": "application/json",
+                  "type": "text"
+                },
+                {
+                  "key": "firstName",
+                  "value": "",
+                  "contentType": "application/json",
+                  "type": "text"
+                },
+                {
+                  "key": "lastName",
+                  "value": "",
+                  "contentType": "application/json",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "",
+                  "contentType": "application/json",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": "http://localhost:5002/v2/users"
+          },
+          "response": [
+            {
+              "name": "created new user successfully",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "http://localhost:5002/v2/healthcheck"
+      },
+      "response": []
+    }
+  ]
+}

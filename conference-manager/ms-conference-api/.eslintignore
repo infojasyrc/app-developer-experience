@@ -1,0 +1,4 @@
+*.spec.js
+scripts/
+dist/
+node_modules/

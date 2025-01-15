@@ -1,0 +1,26 @@
+# OS files
+.DS_Store
+
+/node_modules/
+
+
+# Unit tests
+/coverage/
+/.nyc_output/
+
+# Environment variables
+.env
+.env.development
+.env.test
+.env.production
+
+/services-config/app.prod.json
+/services-config/app.web.prod.json
+/services-config/app.web.json
+
+# Credential files
+credentials/*.json
+
+# Transitional nestjs files to ignore 
+dist/
+

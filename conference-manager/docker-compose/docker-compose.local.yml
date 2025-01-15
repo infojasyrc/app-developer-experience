@@ -1,0 +1,58 @@
+---
+
+services:
+  api:
+    container_name: ${COMPOSE_PROJECT_NAME}-api
+    image: ${COMPOSE_PROJECT_NAME}-api:latest
+    ports:
+      - 5002:5002
+    working_dir: /usr/src/app
+    command: /bin/ash -ci "yarn start:dev"
+    platform: ${PLATFORM}
+    depends_on:
+      - mongodb
+    environment:
+      - NODE_ENV=development
+      # Database variables
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_ROOT_USERNAME=${DB_ROOT_USERNAME}
+      - DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - DEFAULT_DB=${DEFAULT_DB}
+      - PORT=${PORT}
+      # Firebase variables
+      - AUTH_PROJECT_ID=${AUTH_PROJECT_ID}
+      - AUTH_PRIVATE_KEY_ID=${AUTH_PRIVATE_KEY_ID}
+      - AUTH_PRIVATE_KEY=${AUTH_PRIVATE_KEY}
+      - AUTH_CLIENT_EMAIL=${AUTH_CLIENT_EMAIL}
+      - AUTH_CLIENT_ID=${AUTH_CLIENT_ID}
+      - AUTH_CLIENT_CERT_URL=${AUTH_CLIENT_CERT_URL}
+      - AUTH_STORAGE_BUCKET=${AUTH_STORAGE_BUCKET}
+      - PRIVATE_KEY_V2=${PRIVATE_KEY_V2}
+      - PRIVATE_KEY_ADMIN_V2=${PRIVATE_KEY_ADMIN_V2}
+      # No Identify variables
+      # - AUTH_URI=${AUTH_URI}
+      # - TOKEN_URI=${TOKEN_URI}
+      # - AUTH_PROVIDER_CERT_URL=${AUTH_PROVIDER_CERT_URL}
+      # - AUTH_API_KEY=${AUTH_API_KEY}
+      # - AUTH_DOMAIN=${AUTH_DOMAIN}
+      # - AUTH_MESSAGING_SENDER_ID=${AUTH_MESSAGING_SENDER_ID}
+      # - AUTH_APP_ID=${AUTH_APP_ID}
+      # - AUTH_MEASUREMENT_ID=${AUTH_MEASUREMENT_ID}
+    tty: true
+    links:
+      - mongodb
+    volumes:
+      - ../ms-conference-api/:/usr/src/app:rw
+      - backend-packages:/usr/src/app/node_modules
+
+networks:
+  default:
+    name: ${COMPOSE_PROJECT_NAME}-network
+
+volumes:
+  dev-db:
+    name: ${COMPOSE_PROJECT_NAME}-dev-db
+  backend-packages:
+    name: ${COMPOSE_PROJECT_NAME}-backend-packages
+    external: true
