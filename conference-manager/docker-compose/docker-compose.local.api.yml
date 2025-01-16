@@ -54,5 +54,5 @@ volumes:
   dev-db:
     name: ${COMPOSE_PROJECT_NAME}-dev-db
   backend-packages:
-    name: ${COMPOSE_PROJECT_NAME}-backend-packages
+    name: ${COMPOSE_PROJECT_NAME}-api-packages
     external: true
