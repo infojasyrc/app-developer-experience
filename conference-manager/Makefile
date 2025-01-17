@@ -12,6 +12,8 @@ DEFAULT_DB = mongodb
 TOKEN_SCRIPT_FILE = scripts/firebase-auth-test
 
 COMPOSE_PROJECT_NAME = ms-conference
+MS_API_FOLDER = ms-conference-api
+MS_ADMIN_FOLDER = ms-conference-admin
 
 # Available platforms: linux/amd64 | linux/arm64/v8 | linux/x86_64 | linux/arm/v7
 PLATFORM = linux/arm64/v8
@@ -23,10 +25,15 @@ else
 endif
 
 # include dependencies and codebase to a container excluding local dependencies that could conflict with one from volumes
-DEV_VOLUMES = \
+DEV_VOLUME_API = \
 	-v $(DIR):$(LOCAL_APP_FOLDER) \
 	-v $(LOCAL_APP_FOLDER)/node_modules \
-	-v $(COMPOSE_PROJECT_NAME)-backend-packages:$(LOCAL_APP_FOLDER)/node_modules
+	-v $(COMPOSE_PROJECT_NAME)-api-packages:$(LOCAL_APP_FOLDER)/node_modules
+
+DEV_VOLUME_ADMIN = \
+	-v $(DIR):$(CONTAINER_APP_FOLDER) \
+	-v $(CONTAINER_APP_FOLDER)/.venv \
+	-v $(COMPOSE_PROJECT_NAME)-admin-packages:$(CONTAINER_APP_FOLDER)/.venv
 
 .PHONY: docker-clean
 docker-clean: ## stop+kill all running containers. prune stopped containers. remove all untagged images
@@ -36,74 +43,100 @@ else
 	docker ps -qa | xargs docker kill; docker container prune --force; docker system prune --force;
 endif
 
-.PHONY: build-dev-backend
-build-dev-backend: ## build dev container image for backend
-	cd ./ms-conference-api; docker build -t $(COMPOSE_PROJECT_NAME)-api \
-		--target development \
-		--platform $(PLATFORM) .
+.PHONY: build-dev-api
+build-dev-api: ## build dev container image for backend
+	cd ./$(MS_API_FOLDER); docker build --platform $(PLATFORM) --target development \
+		-t $(COMPOSE_PROJECT_NAME)-api .
 
-.PHONY: backend-install-packages
-backend-install-packages: ## install node packages for backend dev server into volume
-	cd ./ms-conference-api; docker run -t --workdir="$(LOCAL_APP_FOLDER)" $(DEV_VOLUMES) \
-		--platform $(PLATFORM) \
-		$(COMPOSE_PROJECT_NAME)-api /bin/ash -ci "yarn install"
+.PHONY: build-dev-admin
+build-dev-admin: ## build container image for admin local development
+	cd ./$(MS_ADMIN_FOLDER); docker build --platform $(PLATFORM) --target build \
+		-t $(COMPOSE_PROJECT_NAME)-admin .
 
-.PHONY: build-prod-backend
-build-prod-backend: ## build prod container image for backend
-	cd ./ms-conference-api; docker build -t $(COMPOSE_PROJECT_NAME)-backend-prod \
+.PHONY: build-prod-api
+build-prod-api: ## build prod container image for backend
+	cd ./$(MS_API_FOLDER); docker build -t $(COMPOSE_PROJECT_NAME)-backend-prod \
 		--platform $(PLATFORM) .
 
 .PHONY: get-token
 get-token: ## Retrieve an access token for admin or user roles [ROLE=admin|ROLE=user]
-	cd ./ms-conference-api; node $(TOKEN_SCRIPT_FILE) $(ROLE)
+	cd ./$(MS_API_FOLDER); node $(TOKEN_SCRIPT_FILE) $(ROLE)
 
-.PHONY: interactive
-interactive: ## run the api standalone only for healthcheck and no db connection
-	cd ./ms-conference-api; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+.PHONY: interactive-api
+interactive-api: ## run the api standalone only for healthcheck and no db connection
+	cd ./$(MS_API_FOLDER); docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
-		$(DEV_VOLUMES) \
+		$(DEV_VOLUME_API) \
 		-p "5002:5002" \
 		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash
 
+.PHONY: interactive-admin
+interactive-admin: ## get a bash shell in the container
+	cd ./$(MS_ADMIN_FOLDER); docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME_ADMIN) \
+		$(COMPOSE_PROJECT_NAME) /bin/ash
+
+.PHONY: install-dependencies-api
+install-dependencies-api: ## install node packages for api dev server into volume
+	cd ./$(MS_API_FOLDER); docker run -t --workdir="$(LOCAL_APP_FOLDER)" $(DEV_VOLUME_API) \
+		--platform $(PLATFORM) \
+		$(COMPOSE_PROJECT_NAME)-api /bin/ash -ci "yarn install"
+
+.PHONY: install-dependencies-admin
+install-dependencies-admin: ## install packages from pipfile
+	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME_ADMIN) \
+		$(COMPOSE_PROJECT_NAME)-admin /bin/ash -ci "pipenv install --dev"
+
 .PHONY: lint
 lint: ## run lint for all the project
-	cd ./ms-conference-api; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+	cd ./$(MS_API_FOLDER); docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
-		$(DEV_VOLUMES) \
+		$(DEV_VOLUME_API) \
 		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash -ci "yarn run lint"
 
-.PHONY: unit-tests
-unit-tests: unit-tests-v1 unit-tests-v2 ## run all unit tests
+.PHONY: unit-tests-api
+unit-tests-api: unit-tests-v1 unit-tests-v2 ## run all unit tests
 
 .PHONY: unit-tests-v1
 unit-tests-v1: ## run all unit tests using ava
-	cd ./ms-conference-api; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+	cd ./$(MS_API_FOLDER); docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
-		$(DEV_VOLUMES) \
+		$(DEV_VOLUME_API) \
 		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash -ci "yarn run test:unit-tests:v1"
 
 .PHONY: unit-tests-v2
 unit-tests-v2: ## run all unit tests using jest
-	cd ./ms-conference-api; docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+	cd ./$(MS_API_FOLDER); docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
-		$(DEV_VOLUMES) \
+		$(DEV_VOLUME_API) \
 		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash -ci "yarn run test:unit-tests:v2"
 
 .PHONY: launch-db
 launch-db: docker-clean ## launch db container on local machine
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml up
 
-.PHONY: launch-local
-launch-local: docker-clean ## launch the multi-container on local machine
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.yml up
+.PHONY: launch-api-local
+launch-api-local: docker-clean ## launch the multi-container on local machine
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.api.yml up
 
 .PHONY: stop-db
 stop-db: ## locally stop all containers for local development
 	docker compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.db.yml down
 
-.PHONY: stop-local
-stop-local: ## locally stop all containers for local development
-	docker compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.yml down
+.PHONY: stop-api-local
+stop-api-local: ## locally stop all containers for local development
+	docker compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.api.yml down
+
+.PHONY: launch-admin-local
+launch-admin-local: ## launch application for local development
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.yml up
+
+.PHONY: stop-admin-local
+stop-admin-local: ## stop application for local development
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.yml down
 
 .PHONY: help
 help:  ## show all make commands
