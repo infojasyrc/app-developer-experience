@@ -6,6 +6,7 @@ include $(ENV_FILE)
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
 LOCAL_APP_FOLDER  = /usr/src/app
+CONTAINER_APP_FOLDER = /app
 
 DB_URL     = mongodb://mongoDev:Passw0rd@localhost:27017/?authSource=admin
 DEFAULT_DB = mongodb
@@ -68,14 +69,14 @@ interactive-api: ## run the api standalone only for healthcheck and no db connec
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		-p "5002:5002" \
-		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash
+		$(COMPOSE_PROJECT_NAME)-api /bin/ash
 
 .PHONY: interactive-admin
 interactive-admin: ## get a bash shell in the container
 	cd ./$(MS_ADMIN_FOLDER); docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_ADMIN) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash
+		$(COMPOSE_PROJECT_NAME)-admin /bin/ash
 
 .PHONY: install-dependencies-api
 install-dependencies-api: ## install node packages for api dev server into volume
@@ -85,7 +86,7 @@ install-dependencies-api: ## install node packages for api dev server into volum
 
 .PHONY: install-dependencies-admin
 install-dependencies-admin: ## install packages from pipfile
-	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+	cd ./$(MS_ADMIN_FOLDER); docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_ADMIN) \
 		$(COMPOSE_PROJECT_NAME)-admin /bin/ash -ci "pipenv install --dev"
@@ -132,11 +133,11 @@ stop-api-local: ## locally stop all containers for local development
 
 .PHONY: launch-admin-local
 launch-admin-local: ## launch application for local development
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.yml up
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.admin.yml up
 
 .PHONY: stop-admin-local
 stop-admin-local: ## stop application for local development
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.yml down
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.admin.yml down
 
 .PHONY: help
 help:  ## show all make commands
