@@ -2,7 +2,17 @@
 
 ## Project or Area
 
-<!-- Backend: ms-nestjs-gql-tpl, ms-nestjs-rest-tpl, u other / Mobile App: whitewalker -->
+- Mobile App
+  - [ ] React Native
+  - [ ] Expo
+- Microservices
+  - [ ] FastApi template
+  - [ ] Nestjs REST template
+  - [ ] Nestjs BFF GQL
+- Conference Manager
+  - [ ] ms-conference-admin
+  - [ ] ms-conference-api
+  - [ ] status-aggregator
 
 ## Issue ticket number and link
 
