@@ -5,13 +5,22 @@ from core.settings import get_settings
 from api.main_router import main_router
 
 
-def get_application() -> CORSMiddleware:
-    """Returns a FastAPI application with CORS middleware"""
+def get_core_app() -> FastAPI:
+    """Initializes the FastAPI application"""
     settings = get_settings()
 
     app = FastAPI(**settings.fastapi_kwargs)
 
     include_routers(app)
+
+    return app
+
+
+def get_application() -> CORSMiddleware:
+    """Returns a FastAPI application with CORS middleware"""
+    settings = get_settings()
+
+    app = get_core_app()
 
     return CORSMiddleware(
         app,
