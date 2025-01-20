@@ -115,6 +115,16 @@ unit-tests-v2: ## run all unit tests using jest
 		$(DEV_VOLUME_API) \
 		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash -ci "yarn run test:unit-tests:v2"
 
+.PHONY: run-tests-admin
+run-admin-tests: ## run integration tests against admin microservice
+	cd ./$(MS_ADMIN_FOLDER); docker run -t --net=$(COMPOSE_PROJECT_NAME)-admin-network \
+		--workdir="$(CONTAINER_APP_FOLDER)/src" \
+		$(DEV_VOLUME_ADMIN) \
+		--env JWT_SECRET_KEY=$(JWT_SECRET_KEY) \
+		--env JWT_REFRESH_SECRET_KEY=$(JWT_REFRESH_SECRET_KEY) \
+		--platform $(PLATFORM) \
+		$(COMPOSE_PROJECT_NAME)-admin /bin/ash -ci "pipenv run python -m pytest tests/"
+
 .PHONY: launch-db
 launch-db: docker-clean ## launch db container on local machine
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml up

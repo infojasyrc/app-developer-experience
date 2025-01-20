@@ -19,6 +19,10 @@ services:
       - ../ms-conference-admin/:/app:rw
       - backend-packages:/app/.venv:rw
 
+networks:
+    default:
+        name: ${COMPOSE_PROJECT_NAME}-admin-network
+
 volumes:
   backend-packages:
     name: ${COMPOSE_PROJECT_NAME}-admin-packages

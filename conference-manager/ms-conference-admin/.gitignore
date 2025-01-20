@@ -8,6 +8,7 @@
 __pycache__/
 *$py.class
 *.py[cod]
+*.py_test_cache/
 
 # test results
 test-results.xml
