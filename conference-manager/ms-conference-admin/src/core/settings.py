@@ -13,11 +13,11 @@ class Settings(BaseSettings):
     openapi_url: str = "/openapi.json"
     openapi_prefix: str = ""
     api_host: str = "http://localhost"
-    api_port: int = 4000
+    api_port: int = 3000
     disable_write_endpoints: bool = False
 
     # The name of the application
-    APP_NAME: str = "ms-fastapi-rest-tpl"
+    APP_NAME: str = "ms-conference-admin"
     # The version of the application
     APP_VERSION: str = "0.1.0"
     # The environment the application is running in
