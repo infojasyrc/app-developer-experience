@@ -1,20 +1,21 @@
 import logging
+from fastapi import FastAPI
 from fastapi.logger import logger
 
 from application import get_application
-from core.environment import Environment
+from core.constants import Environment
 from core.settings import get_settings
 
 
-def launch_app():
-    app = get_application()
-    return app
+def get_app() -> FastAPI:
+    """Returns the FastAPI application"""
+    return get_application()
 
 
 settings = get_settings()
-app = launch_app()
+app = get_app()
 
-if settings.environment == Environment.production:
+if settings.environment == Environment.PRODUCTION:
     gunicorn_error_logger = logging.getLogger("gunicorn.error")
     gunicorn_logger = logging.getLogger("gunicorn")
     root_logger = logging.getLogger()

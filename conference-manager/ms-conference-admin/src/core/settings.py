@@ -2,7 +2,7 @@ from functools import lru_cache
 from pydantic_settings import BaseSettings
 from starlette.middleware.cors import ALL_METHODS
 
-from core.environment import Environment
+from core.constants import Environment
 
 
 class Settings(BaseSettings):
@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     # The version of the application
     APP_VERSION: str = "0.1.0"
     # The environment the application is running in
-    environment: Environment = Environment.development
+    environment: Environment = Environment.DEVELOPMENT
     # The host the application will run on
     HOST: str = ""
 

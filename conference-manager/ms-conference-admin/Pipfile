@@ -25,6 +25,7 @@ pyjwt = "==2.8.0"
 apscheduler = "==3.10.4"
 async-lru = "==2.0.4"
 tzdata = "==2023.3"
+typer = "==0.15.1"
 
 [dev-packages]
 # code formatting and quality
