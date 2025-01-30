@@ -1,3 +1,4 @@
+import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from core.environment import get_database_url
@@ -14,7 +15,7 @@ async def run_migration():
 
 
 async def main():
-    await init_db()
+    await run_migration()
 
 
 asyncio.run(main())

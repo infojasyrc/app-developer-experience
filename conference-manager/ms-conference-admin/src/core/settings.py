@@ -1,5 +1,5 @@
 from functools import lru_cache
-from pydantic_settings import BaseSettings
+from pydantic import BaseSettings
 from starlette.middleware.cors import ALL_METHODS
 
 from core.constants import Environment
