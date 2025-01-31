@@ -15,6 +15,16 @@ services:
       - ENVIRONMENT=development
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - JWT_REFRESH_SECRET_KEY=${JWT_REFRESH_SECRET_KEY}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_ROOT_USERNAME=${DB_ROOT_USERNAME}
+      - DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - DEFAULT_DB=${DEFAULT_DB}
+      - PORT=${PORT}
+    depends_on:
+      - mongodb
+    links:
+      - mongodb
     volumes:
       - ../ms-conference-admin/:/app:rw
       - backend-packages:/app/.venv:rw

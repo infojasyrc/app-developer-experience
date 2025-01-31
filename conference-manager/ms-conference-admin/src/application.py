@@ -1,15 +1,32 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from core.settings import get_settings
+from db.connection import connect_to_db
 from api.main_router import main_router
+
+# run migrations
+from db.migrations.migration_01 import run_migration
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Context manager for the FastAPI application lifespan"""
+    # Connect to the database
+    await connect_to_db()
+
+    # Run migrations
+    await run_migration()
+
+    yield
 
 
 def get_core_app() -> FastAPI:
     """Initializes the FastAPI application"""
     settings = get_settings()
 
-    app = FastAPI(**settings.fastapi_kwargs)
+    app = FastAPI(lifespan=lifespan, **settings.fastapi_kwargs)
 
     include_routers(app)
 
