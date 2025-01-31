@@ -13,9 +13,4 @@ async def run_migration():
 
     await db.headquarters.create_index("name", unique=True)
 
-
-async def main():
-    await run_migration()
-
-
-asyncio.run(main())
+    print("Migration completed")
