@@ -5,7 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 from core.settings import get_settings
 from db.connection import connect_to_db
 from api.main_router import main_router
-from admin import set_admin
+from admin import get_admin
 
 
 # run migrations
@@ -31,8 +31,9 @@ def get_core_app() -> FastAPI:
     app = FastAPI(lifespan=lifespan, **settings.fastapi_kwargs)
 
     include_routers(app)
-    add_admin(app)
+    admin_app = get_admin()
 
+    app.mount("/admin", admin_app)
     return app
 
 
@@ -55,8 +56,3 @@ def include_routers(app: FastAPI) -> None:
     """Includes routers in the FastAPI application"""
 
     app.include_router(main_router)
-
-
-def add_admin(app: FastAPI) -> None:
-    """Adds an admin interface to the FastAPI application"""
-    set_admin(app=app)
