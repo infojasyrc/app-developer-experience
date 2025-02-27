@@ -29,7 +29,7 @@
             "path": "./mobile-app/whitewolf-rn"
         },
         {
-            "name": "connference-manager-admin",
+            "name": "conference-manager-admin",
             "path": "./conference-manager/ms-conference-admin"
         },
         {
@@ -42,6 +42,10 @@
             "app-developer-experience",
             "conference-manager-admin",
             "fastapi-rest-template"
-        ]
+        ],
+        "editor.fontFamily": "Monaco, Menlo, 'Courier New', monospace",
+        "editor.fontSize": 12,
+        "terminal.integrated.fontFamily": "Monaco",
+        "terminal.integrated.fontSize": 12,
     }
 }
