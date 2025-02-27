@@ -1,0 +1,47 @@
+{
+    "folders": [
+        {
+            "name": "app-developer-experience",
+            "path": "."
+        },
+        {
+            "name": "conference-manager",
+            "path": "./conference-manager"
+        },
+        {
+            "name": "nestjs-gql-template",
+            "path": "./backend/ms-nestjs-gql-tpl"
+        },
+        {
+            "name": "nestjs-rest-template",
+            "path": "./backend/ms-nestjs-rest-tpl"
+        },
+        {
+            "name": "fastapi-rest-template",
+            "path": "./backend/ms-fastapi-rest-tpl"
+        },
+        {
+            "name": "whitewalker",
+            "path": "./mobile-app/whitewalker"
+        },
+        {
+            "name": "whitewolf-rn",
+            "path": "./mobile-app/whitewolf-rn"
+        },
+        {
+            "name": "connference-manager-admin",
+            "path": "./conference-manager/ms-conference-admin"
+        },
+        {
+            "name": "connference-manager-api",
+            "path": "./conference-manager/ms-conference-api"
+        },
+    ],
+    "settings": {
+        "jest.disabledWorkspaceFolders": [
+            "app-developer-experience",
+            "conference-manager-admin",
+            "fastapi-rest-template"
+        ]
+    }
+}
