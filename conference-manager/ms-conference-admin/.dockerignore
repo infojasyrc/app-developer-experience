@@ -1,7 +1,0 @@
-# Exclude everything
-*
-
-# include only application files
-!Pipfile
-!Pipfile.lock
-!src/
