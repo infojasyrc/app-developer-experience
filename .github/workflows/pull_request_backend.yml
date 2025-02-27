@@ -1,11 +1,17 @@
----
-# this is a workflow file that will run when a pull request is opened or updated
-name: Run unit tests for backend
+name: Run nestjs rest template unit tests
+
+permissions:
+  contents: read
 
 on:
   pull_request:
+    branches:
+      - feat/**
+      - fix/**
+      - hotfix/**
+      - refactor/**
     paths:
-      - backend/**
+      - backend/ms-nestjs-rest-tpl/**
 
 jobs:
   test:
@@ -18,13 +24,22 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: yarn
-          cache-dependency-path: backend/yarn.lock
+          check-latest: true
+        id: nvm
+
+      - name: Set up Node.js using .nvmrc
+        run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+          node_version=$(cat backend/ms-nestjs-rest-tpl/.nvmrc)
+          nvm install $node_version
+          nvm use $node_version
+        shell: bash
 
       - name: Install dependencies
         run: |
-          cd backend/project
+          cd backend/ms-nestjs-rest-tpl
           npm install
 
       - name: Run Linting
@@ -34,29 +49,5 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          cd backend/project
+          cd backend/ms-nestjs-rest-tpl
           npm run test:unit-tests
-
-  # megalinter:
-  #   name: Lint Code with MegaLinter
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: write
-  #     issues: write
-  #     pull-requests: write
-  #   steps:
-  #     # Git Checkout
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v4
-  #       with:
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-  #         fetch-depth: 0 # If you use VALIDATE_ALL_CODEBASE = true, you can remove this line to improve performances
-
-  #     - name: MegaLinter
-  #       id: ml
-  #       continue-on-error: true
-  #       uses: oxsecurity/megalinter@v7.9.0
-  #       env:
-  #         VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }} # Validates all source when push on main, else just the git diff with main. Override with true if you always want to lint all sources
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         DISABLE: COPYPASTE,SPELL # Uncomment to disable copy-paste and spell checks
