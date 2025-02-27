@@ -1,6 +1,6 @@
 import datetime
-from beanie import Document
 from typing import Optional
+from beanie import Document
 
 
 class Headquarter(Document):

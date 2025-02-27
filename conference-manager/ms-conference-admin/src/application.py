@@ -5,6 +5,8 @@ from starlette.middleware.cors import CORSMiddleware
 from core.settings import get_settings
 from db.connection import connect_to_db
 from api.main_router import main_router
+from admin import get_admin
+
 
 # run migrations
 from db.migrations.migration_01 import run_migration
@@ -29,7 +31,9 @@ def get_core_app() -> FastAPI:
     app = FastAPI(lifespan=lifespan, **settings.fastapi_kwargs)
 
     include_routers(app)
+    admin_app = get_admin()
 
+    app.mount("/admin", admin_app)
     return app
 
 
