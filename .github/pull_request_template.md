@@ -2,6 +2,8 @@
 
 ## Project or Area
 
+- MonoRepo
+  - [ ] App Developer Experience
 - Mobile App
   - [ ] React Native
   - [ ] Expo
