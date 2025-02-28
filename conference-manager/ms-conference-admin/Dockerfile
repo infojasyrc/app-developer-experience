@@ -32,3 +32,7 @@ RUN pipenv run pipenv install --deploy --ignore-pipfile && \
 
 # copy source code
 COPY ./src /app
+
+EXPOSE 3000
+
+CMD [ "python", "manage.py", "runserver", "0.0.0.0:3000" ]
