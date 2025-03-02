@@ -28,7 +28,7 @@ environment_variables = get_environment_variables()
 # Application definition
 
 INSTALLED_APPS = [
-    'adminmanager.apps.AdminmanagerConfig',
+    'manager.apps.AdminmanagerConfig',
     'quickstart.apps.MongoAdminConfig',
     'quickstart.apps.MongoAuthConfig',
     'quickstart.apps.MongoContentTypesConfig',
