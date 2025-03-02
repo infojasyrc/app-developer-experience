@@ -1,10 +1,4 @@
-# Django MongoDB Backend - Project Template
-
-This is a Django project starter template for the Django MongoDB Backend.
-In order to use it with your version of Django: 
-
-- Find your Django version. To do so from the command line, make sure you
-  have Django installed and run:
+# Using django
 
 ```bash
 django-admin --version
