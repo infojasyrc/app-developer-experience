@@ -52,7 +52,7 @@ build-dev-api: ## build dev container image for backend
 .PHONY: build-dev-admin
 build-dev-admin: ## build container image for admin local development
 	cd ./$(MS_ADMIN_FOLDER); docker build --platform $(PLATFORM) --target build \
-		-t $(COMPOSE_PROJECT_NAME)-admin .
+		-t $(COMPOSE_PROJECT_NAME)-admin-dev .
 
 .PHONY: build-prod-api
 build-prod-api: ## build prod container image for backend
@@ -76,7 +76,7 @@ interactive-admin: ## get a bash shell in the container
 	cd ./$(MS_ADMIN_FOLDER); docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_ADMIN) \
-		$(COMPOSE_PROJECT_NAME)-admin /bin/ash
+		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash
 
 .PHONY: install-dependencies-api
 install-dependencies-api: ## install node packages for api dev server into volume
@@ -148,6 +148,14 @@ launch-admin-local: ## launch application for local development
 .PHONY: stop-admin-local
 stop-admin-local: ## stop application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.admin.yml down
+
+.PHONY: launch-admin-dev
+launch-admin-dev: ## launch application for local development
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.dev.admin.yml up
+
+.PHONY: stop-admin-dev
+stop-admin-dev: ## stop application for local development
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.dev.admin.yml down
 
 .PHONY: help
 help:  ## show all make commands
