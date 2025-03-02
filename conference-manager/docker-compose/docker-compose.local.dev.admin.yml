@@ -2,28 +2,36 @@
 
 services:
   admin:
-    container_name: ${COMPOSE_PROJECT_NAME}-admin
-    image: ${COMPOSE_PROJECT_NAME}-admin:latest
+    container_name: ${COMPOSE_PROJECT_NAME}-admin-dev
+    image: ${COMPOSE_PROJECT_NAME}-admin-dev:latest
+    working_dir: /app/src
+    command: /bin/ash -ci "pipenv run python manage.py runserver 0.0.0.0:3000"
     restart: unless-stopped
     platform: ${PLATFORM}
     tty: true
     ports:
-      - 3000:3000
+      - 3001:3000
     environment:
       - ENVIRONMENT=development
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - JWT_REFRESH_SECRET_KEY=${JWT_REFRESH_SECRET_KEY}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_ROOT_USERNAME=${DB_ROOT_USERNAME}
       - DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
       - DEFAULT_DB=${DEFAULT_DB}
-      - PORT=${PORT}
+      - MS_PORT=${MS_PORT}
     depends_on:
       - mongodb
     links:
       - mongodb
+    volumes:
+      - ../ms-conference-admin/:/app:rw
+      - backend-packages:/app/.venv:rw
 
 networks:
     default:
         name: ${COMPOSE_PROJECT_NAME}-admin-network
+
+volumes:
+  backend-packages:
+    name: ${COMPOSE_PROJECT_NAME}-admin-packages
+    external: true
