@@ -33,15 +33,20 @@
             "path": "./conference-manager/ms-conference-admin"
         },
         {
-            "name": "connference-manager-api",
+            "name": "conference-manager-api",
             "path": "./conference-manager/ms-conference-api"
+        },
+        {
+            "name": "terraform-aws",
+            "path": "./cloud/terraform/aws"
         },
     ],
     "settings": {
         "jest.disabledWorkspaceFolders": [
             "app-developer-experience",
             "conference-manager-admin",
-            "fastapi-rest-template"
+            "fastapi-rest-template",
+            "terraform-aws"
         ],
         "editor.fontFamily": "Monaco, Menlo, 'Courier New', monospace",
         "editor.fontSize": 12,
