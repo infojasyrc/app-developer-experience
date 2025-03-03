@@ -3,7 +3,7 @@
 services:
   api:
     container_name: ${COMPOSE_PROJECT_NAME}-api
-    image: ${COMPOSE_PROJECT_NAME}-api:latest
+    image: ${COMPOSE_PROJECT_NAME}-api-dev:latest
     ports:
       - 5002:5002
     working_dir: /usr/src/app
@@ -42,6 +42,9 @@ services:
     tty: true
     links:
       - mongodb
+    volumes:
+      - ../ms-conference-api/:/usr/src/app:rw
+      - backend-packages:/usr/src/app/node_modules
 
 networks:
   default:
@@ -50,3 +53,6 @@ networks:
 volumes:
   dev-db:
     name: ${COMPOSE_PROJECT_NAME}-dev-db
+  backend-packages:
+    name: ${COMPOSE_PROJECT_NAME}-api-packages
+    external: true

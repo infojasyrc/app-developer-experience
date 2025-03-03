@@ -47,17 +47,22 @@ endif
 .PHONY: build-dev-api
 build-dev-api: ## build dev container image for backend
 	cd ./$(MS_API_FOLDER); docker build --platform $(PLATFORM) --target development \
-		-t $(COMPOSE_PROJECT_NAME)-api .
+		-t $(COMPOSE_PROJECT_NAME)-api-dev .
 
 .PHONY: build-dev-admin
 build-dev-admin: ## build container image for admin local development
 	cd ./$(MS_ADMIN_FOLDER); docker build --platform $(PLATFORM) --target build \
 		-t $(COMPOSE_PROJECT_NAME)-admin-dev .
 
-.PHONY: build-prod-api
-build-prod-api: ## build prod container image for backend
-	cd ./$(MS_API_FOLDER); docker build -t $(COMPOSE_PROJECT_NAME)-backend-prod \
-		--platform $(PLATFORM) .
+.PHONY: build-admin
+build-admin: ## build container image for admin local development
+	cd ./$(MS_ADMIN_FOLDER); docker build --platform $(PLATFORM) \
+		-t $(COMPOSE_PROJECT_NAME)-admin .
+
+.PHONY: build-api
+build-api: ## build prod container image for backend
+	cd ./$(MS_API_FOLDER); docker build --platform $(PLATFORM) \
+		-t $(COMPOSE_PROJECT_NAME)-api .
 
 .PHONY: get-token
 get-token: ## Retrieve an access token for admin or user roles [ROLE=admin|ROLE=user]
@@ -69,7 +74,7 @@ interactive-api: ## run the api standalone only for healthcheck and no db connec
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		-p "5002:5002" \
-		$(COMPOSE_PROJECT_NAME)-api /bin/ash
+		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash
 
 .PHONY: interactive-admin
 interactive-admin: ## get a bash shell in the container
@@ -82,21 +87,21 @@ interactive-admin: ## get a bash shell in the container
 install-dependencies-api: ## install node packages for api dev server into volume
 	cd ./$(MS_API_FOLDER); docker run -t --workdir="$(LOCAL_APP_FOLDER)" $(DEV_VOLUME_API) \
 		--platform $(PLATFORM) \
-		$(COMPOSE_PROJECT_NAME)-api /bin/ash -ci "yarn install"
+		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn install"
 
 .PHONY: install-dependencies-admin
 install-dependencies-admin: ## install packages from pipfile
 	cd ./$(MS_ADMIN_FOLDER); docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_ADMIN) \
-		$(COMPOSE_PROJECT_NAME)-admin /bin/ash -ci "pipenv install --dev"
+		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash -ci "pipenv install --dev"
 
 .PHONY: lint
 lint: ## run lint for all the project
 	cd ./$(MS_API_FOLDER); docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
-		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash -ci "yarn run lint"
+		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run lint"
 
 .PHONY: unit-tests-api
 unit-tests-api: unit-tests-v1 unit-tests-v2 ## run all unit tests
@@ -106,36 +111,34 @@ unit-tests-v1: ## run all unit tests using ava
 	cd ./$(MS_API_FOLDER); docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
-		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash -ci "yarn run test:unit-tests:v1"
+		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v1"
 
 .PHONY: unit-tests-v2
 unit-tests-v2: ## run all unit tests using jest
 	cd ./$(MS_API_FOLDER); docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
-		$(COMPOSE_PROJECT_NAME)-api:latest /bin/ash -ci "yarn run test:unit-tests:v2"
+		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v2"
 
-.PHONY: run-tests-admin
-run-admin-tests: ## run integration tests against admin microservice
-	cd ./$(MS_ADMIN_FOLDER); docker run -t --net=$(COMPOSE_PROJECT_NAME)-admin-network \
-		--workdir="$(CONTAINER_APP_FOLDER)/src" \
-		$(DEV_VOLUME_ADMIN) \
-		--env JWT_SECRET_KEY=$(JWT_SECRET_KEY) \
-		--env JWT_REFRESH_SECRET_KEY=$(JWT_REFRESH_SECRET_KEY) \
-		--platform $(PLATFORM) \
-		$(COMPOSE_PROJECT_NAME)-admin /bin/ash -ci "pipenv run python -m pytest tests/"
+# .PHONY: run-tests-admin
+# run-admin-tests: ## run integration tests against admin microservice
+# 	cd ./$(MS_ADMIN_FOLDER); docker run -t --net=$(COMPOSE_PROJECT_NAME)-admin-network \
+# 		--workdir="$(CONTAINER_APP_FOLDER)/src" \
+# 		$(DEV_VOLUME_ADMIN) \
+# 		--platform $(PLATFORM) \
+# 		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash -ci "pipenv run python -m pytest tests/"
 
 .PHONY: launch-db
 launch-db: docker-clean ## launch db container on local machine
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml up
 
-.PHONY: launch-api-local
-launch-api-local: docker-clean ## launch the multi-container on local machine
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.api.yml up
-
 .PHONY: stop-db
 stop-db: ## locally stop all containers for local development
 	docker compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.db.yml down
+
+.PHONY: launch-api-local
+launch-api-local: docker-clean ## launch the multi-container on local machine
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.api.yml up
 
 .PHONY: stop-api-local
 stop-api-local: ## locally stop all containers for local development
@@ -148,6 +151,14 @@ launch-admin-local: ## launch application for local development
 .PHONY: stop-admin-local
 stop-admin-local: ## stop application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.admin.yml down
+
+.PHONY: launch-api-dev
+launch-api-dev: ## launch application for local development
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.dev.api.yml up
+
+.PHONY: stop-api-dev
+stop-api-dev: ## stop application for local development
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.dev.api.yml down
 
 .PHONY: launch-admin-dev
 launch-admin-dev: ## launch application for local development
