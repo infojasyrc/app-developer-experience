@@ -1,6 +1,27 @@
 ---
 
 services:
+
+  migrations:
+    container_name: ${COMPOSE_PROJECT_NAME}-admin-migrations
+    image: ${COMPOSE_PROJECT_NAME}-admin:latest
+    working_dir: /app/src
+    command: /bin/ash -ci "pipenv run python manage.py migrate"
+    platform: ${PLATFORM}
+    tty: true
+    environment:
+      - ENVIRONMENT=development
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_ROOT_USERNAME=${DB_ROOT_USERNAME}
+      - DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - DEFAULT_DB=${DEFAULT_DB}
+      - MS_PORT=${MS_PORT}
+    depends_on:
+      - mongodb
+    links:
+      - mongodb
+
   admin:
     container_name: ${COMPOSE_PROJECT_NAME}-admin
     image: ${COMPOSE_PROJECT_NAME}-admin:latest
@@ -8,22 +29,20 @@ services:
     platform: ${PLATFORM}
     tty: true
     ports:
-      - 3000:3000
+      - 3001:3000
     environment:
       - ENVIRONMENT=development
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - JWT_REFRESH_SECRET_KEY=${JWT_REFRESH_SECRET_KEY}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_ROOT_USERNAME=${DB_ROOT_USERNAME}
       - DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
       - DEFAULT_DB=${DEFAULT_DB}
-      - PORT=${PORT}
+      - MS_PORT=${MS_PORT}
     depends_on:
-      - mongodb
+      - migrations
     links:
       - mongodb
 
 networks:
-    default:
-        name: ${COMPOSE_PROJECT_NAME}-admin-network
+  default:
+    name: ${COMPOSE_PROJECT_NAME}-admin-network
