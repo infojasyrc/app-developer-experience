@@ -81,6 +81,13 @@ interactive-admin: ## get a bash shell in the container
 	cd ./$(MS_ADMIN_FOLDER); docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_ADMIN) \
+		--env PATH="/app/.venv/bin:$PATH" \
+		--env PIPENV_PIPFILE=/app/Pipfile \
+		--env DB_ROOT_USERNAME=$(DB_ROOT_USERNAME) \
+		--env DB_ROOT_PASSWORD=$(DB_ROOT_PASSWORD) \
+		--env DB_HOST=localhost \
+		--env DB_PORT=$(DB_PORT) \
+		--env DEFAULT_DB=$(DEFAULT_DB) \
 		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash
 
 .PHONY: install-dependencies-api
