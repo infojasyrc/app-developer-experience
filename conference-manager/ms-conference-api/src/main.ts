@@ -89,7 +89,7 @@ async function bootstrap() {
     exposedHeaders: ['Authorization'],
   })
   await app.init()
-  app.listen(Number(configService.get<string>('PORT', '5002')))
+  app.listen(Number(configService.get<string>('MS_PORT', '3000')))
 }
 
 bootstrap()
