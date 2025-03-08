@@ -11,8 +11,8 @@ import { UserIdDto } from './dto/user-id.dto'
 import { Event } from './event.entity'
 import EventMapper from './event.mapper'
 import { EventResponse } from './interfaces/event-response'
-import { ChupitosNotFoundException } from '../../exceptions/chupitos-not-found.exception'
-import { ChupitosBadRequestException } from '../../exceptions/chupitos-bad-request'
+import { NotFoundException } from '../../exceptions/NotFound.exception'
+import { BadRequestException } from '../../exceptions/BadRequest'
 import { FirebaseUploadService } from '../firebase-auth/firebase-upload-file.service'
 
 @Injectable()
@@ -48,7 +48,7 @@ export class EventService {
 
   validateEventImage(image: Express.Multer.File): void {
     if (!image.mimetype.startsWith('image/jpeg')) {
-      throw new ChupitosBadRequestException('Only JPG images are allowed')
+      throw new BadRequestException('Only JPG images are allowed')
     }
     return
   }
@@ -56,7 +56,7 @@ export class EventService {
   async validateEventNameAlreadyExisting(event: Event): Promise<void> {
     const verificationEvent = await this.eventModel.findOne({ name: event.name })
     if (verificationEvent)
-      throw new ChupitosBadRequestException(`The event with name: ${event.name}, already exist`)
+      throw new BadRequestException(`The event with name: ${event.name}, already exist`)
     return
   }
 
@@ -67,7 +67,7 @@ export class EventService {
       .findOneAndUpdate({ _id: id }, mappedEvent, { new: true })
       .exec()
     if (!updatedEvent)
-      throw new ChupitosNotFoundException(`Error at update event service, _id: ${id} was not found`)
+      throw new NotFoundException(`Error at update event service, _id: ${id} was not found`)
     return updatedEvent
   }
 
@@ -88,7 +88,7 @@ export class EventService {
 
     const event = await this.eventModel.findById(eventId)
     if (!event)
-      throw new ChupitosNotFoundException(
+      throw new NotFoundException(
         `Error at add attendee to event service, event _id: ${eventId} was not found`
       )
 
@@ -101,7 +101,7 @@ export class EventService {
 
   private validateEventStatus(eventId: EventIdDto, event: Event) {
     if (event.status !== EventStatus.ACTIVE) {
-      throw new ChupitosBadRequestException(
+      throw new BadRequestException(
         `Event with id: ${eventId} cannot accept attendees because is not active`
       )
     }
@@ -109,7 +109,7 @@ export class EventService {
 
   private validateUserAttendingEvent(event: Event, eventId: EventIdDto, userId: UserIdDto) {
     if (event.attendees.includes(new Types.ObjectId(String(userId)))) {
-      throw new ChupitosBadRequestException(
+      throw new BadRequestException(
         `User with id: ${userId} is already attending event: ${eventId}`
       )
     }
@@ -120,7 +120,7 @@ export class EventService {
     const getEvent = await this.eventModel.findById(eventId)
 
     if (!getEvent)
-      throw new ChupitosNotFoundException(
+      throw new NotFoundException(
         `Error at get event by id service, _id: ${eventId} was not found`
       )
 

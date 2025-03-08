@@ -6,8 +6,8 @@ import { ObjectId } from 'mongodb'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 
 import { EventStatus } from './dto/create-event.dto'
-import { ChupitosBadRequestException } from '../../exceptions/chupitos-bad-request'
-import { ChupitosNotFoundException } from '../../exceptions/chupitos-not-found.exception'
+import { BadRequestException } from '../../exceptions/BadRequest'
+import { NotFoundException } from '../../exceptions/NotFound.exception'
 import {
   EVENT_RESPONSE_MOCK,
   LIST_EVENT_MOCK,
@@ -170,7 +170,7 @@ describe('EventService', () => {
       jest.spyOn(eventModel, 'findById').mockResolvedValue(null);
 
       await expect(eventService.addAttendeeToEvent(Object(EVENT_ID_MOCK), Object(USER_ID_MOCK), ATTENDEE_DATA_MOCK))
-        .rejects.toThrow(ChupitosNotFoundException);
+        .rejects.toThrow(NotFoundException);
     });
 
     it('should throw BadRequestException if event status is not ACTIVE', async () => {
@@ -179,7 +179,7 @@ describe('EventService', () => {
       jest.spyOn(eventModel, 'findById').mockResolvedValue(event);
 
       await expect(eventService.addAttendeeToEvent(Object(EVENT_ID_MOCK), Object(USER_ID_MOCK), ATTENDEE_DATA_MOCK))
-        .rejects.toThrow(ChupitosBadRequestException);
+        .rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException if user is already attending the event', async () => {
@@ -188,7 +188,7 @@ describe('EventService', () => {
 
       jest.spyOn(eventModel, 'findById').mockResolvedValue(event);
       await expect(eventService.addAttendeeToEvent(Object(EVENT_ID_MOCK), Object(USER_ID_MOCK), ATTENDEE_DATA_MOCK))
-        .rejects.toThrow(ChupitosBadRequestException);
+        .rejects.toThrow(BadRequestException);
     });
   });
 })
