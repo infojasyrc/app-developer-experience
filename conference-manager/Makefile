@@ -8,7 +8,7 @@ include $(ENV_FILE)
 LOCAL_APP_FOLDER  = /usr/src/app
 CONTAINER_APP_FOLDER = /app
 
-DB_URL     = mongodb://mongoDev:Passw0rd@localhost:27017/?authSource=admin
+DB_URL     = mongodb://$(DB_ROOT_USERNAME):$(DB_ROOT_PASSWORD)@localhost:$(DB_PORT)/?authSource=admin
 DEFAULT_DB = mongodb
 TOKEN_SCRIPT_FILE = scripts/firebase-auth-test
 
@@ -92,8 +92,9 @@ interactive-admin: ## get a bash shell in the container
 
 .PHONY: install-dependencies-api
 install-dependencies-api: ## install node packages for api dev server into volume
-	cd ./$(MS_API_FOLDER); docker run -t --workdir="$(LOCAL_APP_FOLDER)" $(DEV_VOLUME_API) \
+	cd ./$(MS_API_FOLDER); docker run -t --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
+		$(DEV_VOLUME_API) \
 		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn install"
 
 .PHONY: install-dependencies-admin
