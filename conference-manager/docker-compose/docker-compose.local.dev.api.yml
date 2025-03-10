@@ -30,6 +30,7 @@ services:
       - AUTH_STORAGE_BUCKET=${AUTH_STORAGE_BUCKET}
       - PRIVATE_KEY_V2=${PRIVATE_KEY_V2}
       - PRIVATE_KEY_ADMIN_V2=${PRIVATE_KEY_ADMIN_V2}
+      - REQUIRES_AUTH=${REQUIRES_AUTH}
       # No Identify variables
       # - AUTH_URI=${AUTH_URI}
       # - TOKEN_URI=${TOKEN_URI}
