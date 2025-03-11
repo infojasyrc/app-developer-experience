@@ -1,5 +1,6 @@
 import express from 'express'
 
+import getEnvironmentVariables from '../infrastructure/environment'
 import serviceContainer from '../services/service.container'
 
 const checkPublicUrls = (request: express.Request) => {
@@ -16,6 +17,13 @@ const checkPublicUrls = (request: express.Request) => {
 }
 
 const requestvalidation = async (request: any, response: any, next: any) => {
+  const environmentVariables = getEnvironmentVariables()
+  // This validation enables insecure endpoints
+  if (!environmentVariables.REQUIRES_AUTH) {
+    next()
+    return
+  }
+
   if (checkPublicUrls(request)) {
     next()
     return

@@ -1,4 +1,4 @@
----
+name: ${COMPOSE_PROJECT_NAME}
 
 services:
   api:
@@ -10,7 +10,8 @@ services:
     command: /bin/ash -ci "yarn start:dev"
     platform: ${PLATFORM}
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_started
     environment:
       - NODE_ENV=development
       # Database variables
