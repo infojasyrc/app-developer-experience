@@ -1,11 +1,13 @@
 'use strict'
 
+const getEnvironmentVariables = require('./../infrastructure/environment')
 const setupFirebaseAdminSDKApp = require('./firebase-admin.application')
 const Mongo = require('./mongo-client')
 
 module.exports = async () => {
-  // TODO: Thos should be called only when authentication is required
-  const adminSDK = setupFirebaseAdminSDKApp()
+  const environmentVariables = getEnvironmentVariables()
+
+  const adminSDK = environmentVariables.REQUIRES_AUTH ? setupFirebaseAdminSDKApp() : null
   const adminAuth = adminSDK ? adminSDK.auth() : null
   const dbInstance = adminSDK ? adminSDK.firestore() : null
   const bucket = adminSDK ? adminSDK.storage().bucket() : null

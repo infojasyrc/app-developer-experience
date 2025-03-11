@@ -35,6 +35,8 @@ const getURLForDBConnection = () => {
 }
 
 function getEnvironmentVariables() {
+  let requires_auth = !process.env.REQUIRES_AUTH ? true : process.env.REQUIRES_AUTH === 'true'
+
   if (!process.env.AUTH_PRIVATE_KEY) {
     throw new Error('AUTH_PRIVATE_KEY is required for running the application')
   }
@@ -61,6 +63,7 @@ function getEnvironmentVariables() {
     STORAGE_BUCKET: process.env.AUTH_STORAGE_BUCKET,
     PRIVATE_KEY_V2: process.env.PRIVATE_KEY_V2,
     PRIVATE_KEY_ADMIN_V2: process.env.PRIVATE_KEY_ADMIN_V2,
+    REQUIRES_AUTH: requires_auth,
   }
 
   return all_variables
