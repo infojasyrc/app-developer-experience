@@ -217,6 +217,18 @@ launch-admin-dev: ## launch application for local development
 stop-admin-dev: ## stop application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.dev.admin.yml down
 
+.PHONY: launch-webapp-dev
+launch-webapp-dev: docker-clean ## launch the multi-container on local machine
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+		-f docker-compose/docker-compose.local.dev.api.yml \
+		-f docker-compose/docker-compose.local.dev.app.yml up
+
+.PHONY: stop-webapp-dev
+stop-webapp-dev: ## stop application for local development
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+		-f docker-compose/docker-compose.local.dev.api.yml \
+		-f docker-compose/docker-compose.local.dev.app.yml down
+
 .PHONY: help
 help:  ## show all make commands
 ifeq ($(OS),Windows_NT)
