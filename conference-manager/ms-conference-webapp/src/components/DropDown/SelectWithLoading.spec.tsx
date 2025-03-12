@@ -31,8 +31,8 @@ describe('select with loading component', () => {
       attributeValue: '',
       attributeRequired: true,
       attributeOptions: [
-        { id: 'piura', name: 'Piura' },
-        { id: 'lima', name: 'Lima' },
+        { _id: 'piura', name: 'Piura' },
+        { _id: 'lima', name: 'Lima' },
       ],
       error: false,
       errorMessage: '',
@@ -56,8 +56,8 @@ describe('select with loading component', () => {
       attributeValue: '',
       attributeRequired: true,
       attributeOptions: [
-        { id: 'piura', name: 'Piura' },
-        { id: 'lima', name: 'Lima' },
+        { _id: 'piura', name: 'Piura' },
+        { _id: 'lima', name: 'Lima' },
       ],
       error: true,
       errorMessage: 'This is an error',
