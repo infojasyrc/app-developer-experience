@@ -7,7 +7,7 @@ services:
     ports:
       - 8080:3000
     working_dir: /app
-    command: /bin/ash -ci "npm start"
+    command: /bin/ash -ci "npm run dev"
     platform: ${PLATFORM}
     restart: unless-stopped
     depends_on:

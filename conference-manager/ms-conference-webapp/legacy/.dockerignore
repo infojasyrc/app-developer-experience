@@ -4,8 +4,11 @@
 # Include only required files
 !src/
 !public/
+!index.js
 !package.json
 !package-lock.json
 !tsconfig.json
-!postcss.config.mjs
-!next.config.ts
+!sw-precache-config.js
+
+# Environment variables:
+!.env

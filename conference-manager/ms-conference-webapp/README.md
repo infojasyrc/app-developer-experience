@@ -1,112 +1,36 @@
-# Event Manager Webapp
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-The Event Manager Frontend is a web application built with React designed to efficiently manage events. It provides essential features such as event creation, updating, removal, and event listing
+## Getting Started
 
-## Contents
-
-- [Event Manager Webapp](#event-manager-webapp)
-- [Contents](#contents)
-- [Dependencies](#dependencies)
-- [Getting started](#getting-started)
-- [Local Development](#local-development)
-- [Folder structure](#folder-structure)
-- [Testing](#testing)
-- [Docker Integraton](#docker-integration)
-- [Resources](#resources)
-
-## Dependencies
-
-For this application, we are using Node.js v16. (You will check .nvmrc file)
-
-For MacOS:
+First, run the development server:
 
 ```bash
-brew install nvm
-nvm install v16
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-> :bulb: **Tip:** If nvm isn't functioning correctly after installation, consider run the line ```source ~/.nvm/nvm.sh```. This ensures that nvm is properly initialized and integrated into your shell session.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Getting started
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-### Local Development
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-For local development, follow these steps:
+## Learn More
 
-1. **Environment Configuration**
+To learn more about Next.js, take a look at the following resources:
 
-  Copy the `.env.public` file and rename it as `.env`. Then, configure the environment variables according to your specific environment:
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-| Key                       | Description                                               |
-| :-------------------------| :-------------------------------------------------------- |
-| **REACT_APP_BASE_PATH**   | Local URL for the app                                     |
-| **REACT_APP_VERSION**     | App version                                               |
-| **REACT_APP_API_KEY**     | API Identifier.                                           |
-| **REACT_APP_AUTH_DOMAIN** | App Domain for the project.                               |
-| **REACT_APP_DATABASE_URL**        | URL to Firebase GService Database.                |
-| **REACT_APP_PROJECT_ID**  | Project Identifier in GService.                           |
-| **REACT_APP_STORAGE_BUCKET**      | Storage URN for project GService.                 |
-| **REACT_APP_MESSAGING_SENDER_ID** | Firebase Cloud Messaging Identifier.              |
-| **REACT_APP_FIREBASE_APP_ID** | Firebase APP Identifier.              |
-| **REACT_APP_MEASUREMENT_ID** | Firebase Measurement Identifier.              |
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-**NOTE:**   Ensure that you have followed the necessary steps on the backend to have the required services up and running for managing, storing, and retrieving data for the app.
+## Deploy on Vercel
 
-2. **Installation:**
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Ensure you have the required Node.js version installed. If not, you can set it up using Node Version Manager (NVM), which should already be installed.
-To select the appropriate Node.js version, use the following command:
-
-```bash
-nvm use v16
-```
-
-Then, install project dependencies with:
-
-```bash
-npm install
-```
-
-3. **Run the application**
-
-- To run the application, use the following command:
-
-```bash
-npm start
-```
-
-These steps will help you set up your local development environment for the Event Manager Frontend.
-
-## Folder structure
-
-`api`: This folder groups HTTP requests to the backend API   
-`components`: This folder will group all the required UI components   
-`contexts`: This folder groups all contexts used in the UI   
-`database`: This folder groups all data configuration and operations for managing data, specifically within an IndexedDB database   
-`pages`: This folder groups all React components required for the UI   
-`providers`: This folder groups all React components that serve as context providers   
-`styles`: This folder groups all styles required for the UI.   
-
-## Testing:
-
-You can run tests for the application using the following command:
-
-```bash
-npm run test:ci
-```
-
-## Docker Integration
-
-**Dockerfile:** Configuration file that specifies the environment setup, dependencies installation, and prepares the application for execution within a Docker container.
-
-**Make command:** To facilitate the Docker image creation process, a make command is  defined in the `Makefile`.
-To create a Docker image of the frontend, please execute:
-
-  ```bash
-make build
-  ```
-
-## Resources
-
-[React Testing Library - Common mistakes](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
-[How to test a select with React Testing Library](https://cathalmacdonnacha.com/how-to-test-a-select-element-with-react-testing-library)
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
