@@ -1,0 +1,53 @@
+// TODO: Unit tests bad design, depends on auth context
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
+
+import AppRoutes from './AppRoutes'
+
+const mockEventsPage = jest.fn()
+jest.mock('../../pages/Events/Events', () => () => mockEventsPage())
+
+const mockEventPage = jest.fn()
+jest.mock('../../pages/Event/Event', () => () => mockEventPage())
+
+const mockUsersPage = jest.fn()
+jest.mock('../../pages/Users/Users', () => () => mockUsersPage())
+
+const mockUserPage = jest.fn()
+jest.mock('../../pages/User/User', () => () => mockUserPage())
+
+const mockPlayEventPage = jest.fn()
+jest.mock('../../pages/PlayEvent/PlayEvent', () => () => mockPlayEventPage())
+
+const mockLoginPage = jest.fn()
+jest.mock('../../pages/Login/Login', () => () => mockLoginPage())
+
+const mockEventInfoPage = jest.fn()
+jest.mock('../../pages/EventInfo/EventInfo', () => () => mockEventInfoPage())
+
+const mockEventsAdminPage = jest.fn()
+jest.mock('../../pages/EventsAdmin/EventsAdmin', () => () => mockEventsAdminPage())
+
+const mockEventEditPage = jest.fn()
+jest.mock('../../pages/EventEdit/EventEdit', () => () => mockEventEditPage())
+
+const mockProtectedRoutes = jest.fn()
+jest.mock('./ProtectedRoute/ProtectedRoutes', () => () => mockProtectedRoutes())
+
+describe('app routes component', () => {
+  it('should render event-info path', () => {
+    mockEventPage.mockReturnValue(<div>Event</div>)
+    mockEventsPage.mockReturnValue(<div>Conferences</div>)
+    mockUsersPage.mockReturnValue(<div>Users</div>)
+    mockUserPage.mockReturnValue(<div>User</div>)
+    mockPlayEventPage.mockReturnValue(<div>Play Event</div>)
+    mockEventInfoPage.mockReturnValue(<div>Event Info</div>)
+    
+    render(
+      <MemoryRouter initialEntries={['/event-info']}>
+        <AppRoutes />
+      </MemoryRouter>
+    )
+    expect(screen.getByText('Event Info')).toBeInTheDocument()
+  })
+})

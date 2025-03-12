@@ -1,0 +1,42 @@
+{
+  "header": {
+    "profile": "Profile",
+    "logout": "Logout",
+    "login": "LOGIN"
+  },
+  "home": {
+    "headquarter": "Choose a Headquarter",
+    "loading": "Loading HQs",
+    "title_year": "Year",
+    "title_dates": "Sort Dates",
+    "arr_sorter": [
+      {
+        "key": "desc",
+        "label": "Descending"
+      },
+      {
+        "key": "asc",
+        "label": "Ascending"
+      }
+    ],
+    "nothing_data": "No results found for the selected year and headquarter"
+  },
+  "login": {
+    "btn_title": "Login",
+    "lbl_user":"Email",
+    "lbl_pass":"Password",
+    "btn_google": "Sign in with Google"
+  },
+  "events": {
+    "load_events": "Loading events",
+    "title":"Events",
+    "load":"Loading...",
+    "load_headquarter": "Loading Headquarters...",
+    "register":"Register",
+    "card_info": "+more info",
+    "card_join": "Joined",
+    "subscribe": "Subscribed",
+    "card_register": "Register"
+  }
+}
+

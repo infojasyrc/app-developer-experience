@@ -15,6 +15,7 @@ TOKEN_SCRIPT_FILE = scripts/firebase-auth-test
 COMPOSE_PROJECT_NAME = ms-conference
 MS_API_FOLDER = ms-conference-api
 MS_ADMIN_FOLDER = ms-conference-admin
+MS_WEBAPP_FOLDER = ms-conference-webapp
 
 # Available platforms: linux/amd64 | linux/arm64/v8 | linux/x86_64 | linux/arm/v7
 PLATFORM = linux/arm64/v8
@@ -24,6 +25,11 @@ ifeq ($(OS),Windows_NT)
 else
 	DIR := "$$(pwd)"
 endif
+
+DEV_VOLUME_WEBAPP = \
+	-v $(DIR):$(CONTAINER_APP_FOLDER) \
+	-v $(CONTAINER_APP_FOLDER)/node_modules \
+	-v $(COMPOSE_PROJECT_NAME)-webapp-packages:$(CONTAINER_APP_FOLDER)/node_modules
 
 # include dependencies and codebase to a container excluding local dependencies that could conflict with one from volumes
 DEV_VOLUME_API = \
@@ -44,6 +50,11 @@ else
 	docker ps -qa | xargs docker kill; docker container prune --force; docker system prune --force;
 endif
 
+.PHONY: build-dev-webapp
+build-dev-webapp: ## build dev container image for webapp
+	cd ./$(MS_WEBAPP_FOLDER); docker build --platform $(PLATFORM) --target development \
+		-t $(COMPOSE_PROJECT_NAME)-webapp-dev .
+
 .PHONY: build-dev-api
 build-dev-api: ## build dev container image for backend
 	cd ./$(MS_API_FOLDER); docker build --platform $(PLATFORM) --target development \
@@ -53,6 +64,22 @@ build-dev-api: ## build dev container image for backend
 build-dev-admin: ## build container image for admin local development
 	cd ./$(MS_ADMIN_FOLDER); docker build --platform $(PLATFORM) --target build \
 		-t $(COMPOSE_PROJECT_NAME)-admin-dev .
+
+.PHONY: build-webapp
+build-webapp: ## build container image for webapp
+	cd ./$(MS_WEBAPP_FOLDER); docker build \
+		--build-arg REACT_APP_BASE_PATH=${REACT_APP_BASE_PATH} \
+		--build-arg REACT_APP_VERSION=${REACT_APP_VERSION} \
+		--build-arg REACT_APP_API_KEY=${REACT_APP_API_KEY} \
+		--build-arg REACT_APP_AUTH_DOMAIN=${REACT_APP_AUTH_DOMAIN} \
+		--build-arg REACT_APP_DATABASE_URL=${REACT_APP_DATABASE_URL} \
+		--build-arg REACT_APP_PROJECT_ID=${REACT_APP_PROJECT_ID} \
+		--build-arg REACT_APP_STORAGE_BUCKET=${REACT_APP_STORAGE_BUCKET} \
+		--build-arg REACT_APP_MESSAGING_SENDER_ID=${REACT_APP_MESSAGING_SENDER_ID} \
+		--build-arg REACT_APP_FIREBASE_APP_ID=${REACT_APP_FIREBASE_APP_ID} \
+		--build-arg REACT_APP_MEASUREMENT_ID=${REACT_APP_MEASUREMENT_ID} \
+		--platform $(PLATFORM) . \
+		-t $(COMPOSE_PROJECT_NAME)-webapp
 
 .PHONY: build-admin
 build-admin: ## build container image for admin local development
@@ -90,6 +117,13 @@ interactive-admin: ## get a bash shell in the container
 		--env DEFAULT_DB=$(DEFAULT_DB) \
 		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash
 
+.PHONY: interactive-webapp
+interactive-webapp: ## get a bash shell in the container
+	cd ./$(MS_WEBAPP_FOLDER); docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME_WEBAPP) \
+		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash
+
 .PHONY: install-dependencies-api
 install-dependencies-api: ## install node packages for api dev server into volume
 	cd ./$(MS_API_FOLDER); docker run -t --workdir="$(LOCAL_APP_FOLDER)" \
@@ -104,8 +138,15 @@ install-dependencies-admin: ## install packages from pipfile
 		$(DEV_VOLUME_ADMIN) \
 		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash -ci "pipenv install --dev"
 
-.PHONY: lint
-lint: ## run lint for all the project
+.PHONY: install-dependencies-webapp
+install-dependencies-webapp: ## install node packages for webapp dev server into volume
+	cd ./$(MS_WEBAPP_FOLDER); docker run -t --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME_WEBAPP) \
+		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm install"
+
+.PHONY: lint-api
+lint-api: ## run lint for api
 	cd ./$(MS_API_FOLDER); docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
