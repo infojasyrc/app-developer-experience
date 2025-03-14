@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "chupito-c5p5t"
+  },
+  "targets": {
+    "chupito-c5p5t": {
+      "hosting": {
+        "dev": [
+          "chupito-c5p5t"
+        ]
+      }
+    }
+  }
+}

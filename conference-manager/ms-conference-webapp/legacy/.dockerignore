@@ -1,0 +1,14 @@
+# Exclude everything
+*
+
+# Include only required files
+!src/
+!public/
+!index.js
+!package.json
+!package-lock.json
+!tsconfig.json
+!sw-precache-config.js
+
+# Environment variables:
+!.env
