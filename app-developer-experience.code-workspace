@@ -29,6 +29,10 @@
             "path": "./mobile-app/whitewolf-rn"
         },
         {
+            "name": "conference-manager-webapp",
+            "path": "./conference-manager/ms-conference-webapp"
+        },
+        {
             "name": "conference-manager-admin",
             "path": "./conference-manager/ms-conference-admin"
         },
