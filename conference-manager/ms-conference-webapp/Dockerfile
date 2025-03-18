@@ -57,6 +57,14 @@ FROM nginx:alpine
 
 COPY --from=build /app/build /usr/share/nginx/html
 
+# Create a non-root user and switch to it
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+USER appuser
+
 EXPOSE 80
+
+# Add a healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD curl -f http://localhost/ || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]
