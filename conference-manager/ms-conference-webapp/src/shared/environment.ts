@@ -2,12 +2,17 @@ interface IEnvironment {
   ENVIRON: string;
 }
 
-const getEnvironmentVariables = () => {
-  const ENVIRON = process.env.NODE_ENV === "development" || "development";
+const getEnvironmentVariables = (): IEnvironment => {
+  const ENVIRON = process.env.NODE_ENV || "development";
 
   return {
     ENVIRON,
   };
 };
 
-export { getEnvironmentVariables };
+const isDevelopment = (): boolean => {
+  const { ENVIRON } = getEnvironmentVariables();
+  return ENVIRON === "development";
+};
+
+export { getEnvironmentVariables, isDevelopment };
