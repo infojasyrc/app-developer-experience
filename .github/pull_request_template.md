@@ -12,6 +12,7 @@
   - [ ] Nestjs REST template
   - [ ] Nestjs BFF GQL
 - Conference Manager
+  - [ ] ms-conference-webapp
   - [ ] ms-conference-admin
   - [ ] ms-conference-api
   - [ ] status-aggregator
