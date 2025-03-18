@@ -1,0 +1,11 @@
+# Exclude everything
+*
+
+# Include only required files
+!src/
+!public/
+!package.json
+!package-lock.json
+!tsconfig.json
+!postcss.config.mjs
+!next.config.ts

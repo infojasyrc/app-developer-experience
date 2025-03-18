@@ -1,0 +1,41 @@
+{
+  "header": {
+    "profile": "Perfil",
+    "logout": "Cerrar sesion",
+    "login": "Iniciar sesion"
+  },
+  "home": {
+    "headquarter": "Elige una sede",
+    "loading": "Cargando HQs",
+    "title_year": "Años",
+    "title_dates": "Fechas",
+    "arr_sorter": [
+      {
+        "key": "desc",
+        "label": "Descendiente"
+      },
+      {
+        "key": "asc",
+        "label": "Ascendiente"
+      }
+    ],
+    "nothing_data": "No se encontraron resultados para el año y la sede seleccionados"
+  },
+  "login": {
+    "btn_title": "Iniciar sesión",
+    "lbl_user":"Correo",
+    "lbl_pass":"Contraseña",
+    "btn_google": "Iniciar sesión con Google"
+  },
+  "events": {
+    "load_events": "Cargando eventos",
+    "title":"Eventos",
+    "load":"Cargando...",
+    "load_headquarter": "Cargando sedes...",
+    "register":"Registrar",
+    "card_info": "+mas info",
+    "card_join": "Conectado",
+    "subscribe": "Suscrito",
+    "card_register": "Registrar"
+  }
+}
