@@ -5,7 +5,7 @@ import {
   CardText,
   CardActions,
   CardActionButton,
-} from "./../atoms";
+} from "../atoms";
 
 interface BasicCardProps {
   title: string;
