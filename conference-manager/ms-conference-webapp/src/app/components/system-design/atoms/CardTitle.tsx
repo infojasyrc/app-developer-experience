@@ -1,14 +1,11 @@
-// Card Container
-import { ReactNode } from 'react';
-
 interface CardTitleProps {
-  children: ReactNode;
+  title: string;
   className?: string;
 }
 
-const CardTitle = ({ children, className = "" }: CardTitleProps) => (
+const CardTitle = ({ title, className = "" }: CardTitleProps) => (
   <h2 className={`text-xl font-medium text-gray-800 mb-2 ${className}`}>
-    {children}
+    {title}
   </h2>
 );
 

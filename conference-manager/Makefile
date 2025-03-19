@@ -124,6 +124,14 @@ interactive-webapp: ## get a bash shell in the container
 		$(DEV_VOLUME_WEBAPP) \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash
 
+.PHONY: run-storybook
+run-storybook: ## run storybook
+	cd ./$(MS_WEBAPP_FOLDER); docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME_WEBAPP) \
+		-p "6006:6006" \
+		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run storybook -- --no-open --host 0.0.0.0"
+
 .PHONY: install-dependencies-api
 install-dependencies-api: ## install node packages for api dev server into volume
 	cd ./$(MS_API_FOLDER); docker run -t --workdir="$(LOCAL_APP_FOLDER)" \
