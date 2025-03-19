@@ -32,6 +32,22 @@ services:
       - ../ms-conference-webapp/:/app:rw
       - frontend-packages:/app/node_modules
 
+  storybook:
+    container_name: ${COMPOSE_PROJECT_NAME}-webapp-storybook
+    image: ${COMPOSE_PROJECT_NAME}-webapp-dev:latest
+    ports:
+      - 6006:6006
+    working_dir: /app
+    command: /bin/ash -c "npm run storybook -- --no-open --host 0.0.0.0"
+    platform: ${PLATFORM}
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+    tty: true
+    volumes:
+      - ../ms-conference-webapp/:/app:rw
+      - frontend-packages:/app/node_modules
+
 networks:
   default:
     name: ${COMPOSE_PROJECT_NAME}-api-network
