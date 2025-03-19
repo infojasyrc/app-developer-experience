@@ -38,7 +38,7 @@ services:
     ports:
       - 6006:6006
     working_dir: /app
-    command: /bin/ash -ci "npm run storybook"
+    command: /bin/ash -c "npm run storybook -- --no-open --host 0.0.0.0"
     platform: ${PLATFORM}
     restart: unless-stopped
     environment:
