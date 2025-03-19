@@ -160,6 +160,13 @@ lint-api: ## run lint for api
 		$(DEV_VOLUME_API) \
 		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run lint"
 
+.PHONY: lint-webapp
+lint-webapp: ## run linter for webapp
+	cd ./$(MS_WEBAPP_FOLDER); docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME_WEBAPP) \
+		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run lint"
+
 .PHONY: unit-tests-api
 unit-tests-api: unit-tests-v1 unit-tests-v2 ## run all unit tests
 
