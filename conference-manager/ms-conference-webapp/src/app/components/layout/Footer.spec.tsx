@@ -19,7 +19,7 @@ describe("Footer", () => {
     expect(links[1]).toHaveAttribute("href", "");
     expect(links[2]).toHaveAttribute("href", "");
 
-    links.forEach(link => {
+    links.forEach((link) => {
       expect(link).toHaveAttribute("target", "_blank");
       expect(link).toHaveAttribute("rel", "noopener noreferrer");
     });
