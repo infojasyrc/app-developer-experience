@@ -1,4 +1,6 @@
 import { render, screen } from "@testing-library/react";
+import { describe, it } from "vitest";
+
 import Footer from "./Footer";
 
 describe("Footer", () => {
@@ -8,27 +10,25 @@ describe("Footer", () => {
     expect(footerElement).toBeInTheDocument();
   });
 
-  it("renders all links with correct href attributes", () => {
+  it("renders all links with correct attributes", () => {
     render(<Footer />);
-    const links = screen.getAllByRole("link");
+    const footerElement = screen.getByRole("contentinfo");
+    const links = footerElement.querySelectorAll("a");
     expect(links).toHaveLength(3);
-    expect(links[0]).toHaveAttribute(
-      "href",
-      "https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app",
-    );
-    expect(links[1]).toHaveAttribute(
-      "href",
-      "https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app",
-    );
-    expect(links[2]).toHaveAttribute(
-      "href",
-      "https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app",
-    );
+    expect(links[0]).toHaveAttribute("href", "");
+    expect(links[1]).toHaveAttribute("href", "");
+    expect(links[2]).toHaveAttribute("href", "");
+
+    links.forEach(link => {
+      expect(link).toHaveAttribute("target", "_blank");
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    });
   });
 
   it("renders all images with correct alt attributes", () => {
     render(<Footer />);
-    const images = screen.getAllByRole("img");
+    const footerElement = screen.getByRole("contentinfo");
+    const images = footerElement.querySelectorAll("img");
     expect(images).toHaveLength(3);
     expect(images[0]).toHaveAttribute("alt", "File icon");
     expect(images[1]).toHaveAttribute("alt", "Window icon");
