@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react';
 import Main from './Main';
 
 describe('Main component', () => {
-    it('renders Next.js logo', () => {
+    it('renders logo', () => {
         render(<Main />);
-        const logo = screen.getByAltText('Next.js logo');
+        const logo = screen.getByAltText('logo');
         expect(logo).toBeInTheDocument();
     });
 
@@ -17,7 +17,7 @@ describe('Main component', () => {
 
     it('renders Image component with correct props', () => {
         render(<Main />);
-        const image = screen.getByAltText('Next.js logo');
+        const image = screen.getByAltText('logo');
         expect(image).toHaveAttribute('src', '/next.svg');
         expect(image).toHaveAttribute('width', '180');
         expect(image).toHaveAttribute('height', '38');
