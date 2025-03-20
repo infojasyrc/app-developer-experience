@@ -18,8 +18,9 @@ This is a project to build an application using microservices considering a mono
   - ms-fastapi-rest-tpl: build microservice using python, fastapi for rest
 - [conference-manager](./conference-manager/README.md):
   - docker-compose: orchestrate all the elements of the solution
-  - ms-conference-admin: microservice to show an admin dashboard to manage all information
-  - ms-conference-api: microservice to handle all REST operations
+  - [ms-conference-webapp](./conference-manager/ms-conference-webapp/README.md): webapp to connect with ms-conference-api to bring all data
+  - [ms-conference-admin](./conference-manager/ms-conference-admin/README.md): microservice to show an admin dashboard to manage all information
+  - [ms-conference-api](./conference-manager/ms-conference-api/README.md): microservice to handle all REST operations
 - docs:
   - [code review](./docs/CodeReview.md): guideline for an effective code review
   - [security](./docs/Security.md): guideline to consider all security aspects to develop solutions with containers

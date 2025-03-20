@@ -1,11 +1,11 @@
-# Event Manager Backend
+# Conference Manager API REST
 
 The Event Manager Backend is a RESTful API designed to manage events, including creation, updating,
 removal, and listing of events. It utilizes Firebase service for Authentication.
 
 ## Contents
 
-- [Event Manager Backend](#event-manager-backend)
+- [Conference Manager API REST](#conference-manager-api-rest)
 - [Contents](#contents)
 - [Dependencies](#dependencies)
 - [Folder structure](#folder-structure)
@@ -173,7 +173,7 @@ You can run unit tests using the following command:
 yarn test:ci
 ```
 
-### Launch application using containers:
+### Launch application using containers
 
 Use the following command:
 
@@ -265,7 +265,7 @@ Private endpoints: Authorization header with a valid token is required to get a 
 - delete http://localhost:5001/v1/users/:id
 ```
 
-### Troubleshooting:
+### Troubleshooting
 
 Collection in Mongo are not created:
 

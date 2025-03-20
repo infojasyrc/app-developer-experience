@@ -1,6 +1,6 @@
-# Conference Admin
+# Conference Manager Admin
 
-This is a microservice to handle all data in mongodb
+This is a microservice to handle all data with django admin and mongodb
 
 ## Content
 
