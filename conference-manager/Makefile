@@ -167,6 +167,13 @@ lint-webapp: ## run linter for webapp
 		$(DEV_VOLUME_WEBAPP) \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run lint"
 
+.PHONY: unit-tests-webapp
+unit-tests-webapp: ## run all unit tests for webapp
+	cd ./$(MS_WEBAPP_FOLDER); docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME_WEBAPP) \
+		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run test:watch"
+
 .PHONY: unit-tests-api
 unit-tests-api: unit-tests-v1 unit-tests-v2 ## run all unit tests
 
