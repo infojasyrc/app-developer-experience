@@ -1,0 +1,54 @@
+name: Run nextjs unit tests
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches:
+      - feat/**
+      - fix/**
+      - hotfix/**
+      - refactor/**
+    paths:
+      - conference-manager/ms-conference-webapp/**
+
+jobs:
+  test:
+    name: run unit tests
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          check-latest: true
+        id: nvm
+
+      - name: Set up Node.js using .nvmrc
+        run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+          node_version=$(cat conference-manager/ms-conference-webapp/.nvmrc)
+          nvm install $node_version
+          nvm use $node_version
+        shell: bash
+
+      - name: Install dependencies
+        run: |
+          cd conference-manager/ms-conference-webapp
+          npm install
+
+      - name: Run Linting
+        continue-on-error: true
+        run: |
+          cd conference-manager/ms-conference-webapp
+          npm run lint
+
+      - name: Run Unit Tests
+        run: |
+          cd conference-manager/ms-conference-webapp
+          npm run test:ci
