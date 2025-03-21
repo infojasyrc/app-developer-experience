@@ -9,3 +9,6 @@
 
 # examples
 examples/
+
+# code formatting
+.trunk/
