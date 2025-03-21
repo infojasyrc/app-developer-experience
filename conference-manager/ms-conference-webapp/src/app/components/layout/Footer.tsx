@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
+    <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center fixed bottom-0 left-0 right-0 bg-white p-4">
       <a
         className="flex items-center gap-2 hover:underline hover:underline-offset-4"
         href=""
