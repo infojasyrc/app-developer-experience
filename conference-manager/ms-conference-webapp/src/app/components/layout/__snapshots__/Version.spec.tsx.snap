@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Version component > should match snapshot with mocked version 1`] = `
+<DocumentFragment>
+  <div
+    class="fixed right-10 bottom-0 p-2 bg-white"
+  >
+    Version: 2.0.0
+  </div>
+</DocumentFragment>
+`;
