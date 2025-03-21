@@ -6,10 +6,7 @@ permissions:
 on:
   pull_request:
     branches:
-      - feat/**
-      - fix/**
-      - hotfix/**
-      - refactor/**
+      - main
     paths:
       - conference-manager/ms-conference-webapp/**
 
@@ -38,17 +35,20 @@ jobs:
         shell: bash
 
       - name: Install dependencies
+        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
         run: |
           cd conference-manager/ms-conference-webapp
           npm install
 
       - name: Run Linting
+        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
         continue-on-error: true
         run: |
           cd conference-manager/ms-conference-webapp
           npm run lint
 
       - name: Run Unit Tests
+        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
         run: |
           cd conference-manager/ms-conference-webapp
           npm run test:ci
