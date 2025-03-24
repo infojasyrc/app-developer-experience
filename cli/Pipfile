@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+inquirer = "*"
+gitpython = "*"
+click = "==8.1.8"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
