@@ -48,6 +48,8 @@
     "settings": {
         "jest.disabledWorkspaceFolders": [
             "app-developer-experience",
+            "conference-manager",
+            "conference-manager-webapp",
             "conference-manager-admin",
             "fastapi-rest-template",
             "terraform-aws"
