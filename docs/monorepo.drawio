@@ -1,0 +1,46 @@
+<mxfile host="65bd71144e">
+    <diagram id="MGo1HoTLdUoSCvDEGyLK" name="Page-1">
+        <mxGraphModel dx="873" dy="816" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="" style="rounded=1;whiteSpace=wrap;html=1;arcSize=2;" parent="1" vertex="1">
+                    <mxGeometry x="140" y="290" width="640" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="backend: templates for backend developer: nodejs, fastapi, rest and gql" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=12;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="300" width="310" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="conference-manager: use case for a specific application" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=12;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="370" width="310" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="devops: pipelines examples for continuos integration and continuos deployment" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=12;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="440" width="310" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="docs: general documentation of the project" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=12;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="510" width="310" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="mobile-app: templates for mobile development" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=12;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="580" width="310" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="App Developer Experience" style="rounded=1;whiteSpace=wrap;html=1;arcSize=5;" parent="1" vertex="1">
+                    <mxGeometry x="170" y="330" width="250" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="Challenges&lt;br&gt;&lt;div&gt;&lt;ul style=&quot;padding-left: 20px;&quot;&gt;&lt;li&gt;Commits are done seeing all changes&lt;/li&gt;&lt;li&gt;Developers rely on the editor to execute commit and manual selection&lt;/li&gt;&lt;li&gt;Manual process brings more errors&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="150" width="410" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="CLI" style="rounded=1;whiteSpace=wrap;html=1;arcSize=5;" parent="1" vertex="1">
+                    <mxGeometry x="175" y="423" width="105" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="&lt;ul style=&quot;padding-left: 20px;&quot;&gt;&lt;li&gt;A default project should be configured&lt;/li&gt;&lt;li&gt;Commits should be handle by a controlled unit&lt;/li&gt;&lt;li&gt;All domain or project (template or folder) should run all unit tests for each commit&lt;/li&gt;&lt;/ul&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="175" y="483" width="245" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="Quality" style="rounded=1;whiteSpace=wrap;html=1;arcSize=5;" parent="1" vertex="1">
+                    <mxGeometry x="140" y="680" width="105" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="&lt;ul style=&quot;padding-left: 20px;&quot;&gt;&lt;li&gt;Each project should have a CI pipeline to avoid breaking the app&lt;/li&gt;&lt;/ul&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="139" y="730" width="290" height="70" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

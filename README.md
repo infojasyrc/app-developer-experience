@@ -24,3 +24,10 @@ This is a project to build an application using microservices considering a mono
 - docs:
   - [code review](./docs/CodeReview.md): guideline for an effective code review
   - [security](./docs/Security.md): guideline to consider all security aspects to develop solutions with containers
+
+## Understanding the challenges
+
+Because Microservices is on trending, most of the companies believe managing multiple repos, is the best way to go.
+However, Monorepos brings another perspective and also some challenges to be consider before using it.
+
+![Mono Repo Analysis](./docs/media/monorepo.png)
