@@ -1,9 +1,14 @@
 import pytest
+import os
+
+os.environ["GIT_PYTHON_REFRESH"] = "quiet"
+
 from unittest.mock import MagicMock
 import git
 import click
 
-from core.repo import validate_git_repo
+
+from src.core.repo import validate_git_repo
 
 
 def test_validate_git_repo_valid(mocker):
