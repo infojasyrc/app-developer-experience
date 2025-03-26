@@ -1,3 +1,7 @@
+ENV_FILE = $(shell [ -e ".env" ] && echo ".env" || echo ".env.public")
+
+include $(ENV_FILE)
+
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
 CONTAINER_APP_FOLDER = /app
@@ -34,6 +38,14 @@ install-dependencies: ## install all dependencies
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv install --dev"
+
+.PHONY: cli
+cli: ## basic message
+	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)/src" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		--env GIT_PYTHON_REFRESH=$(GIT_PYTHON_REFRESH) \
+		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv run python main.py"
 
 .PHONY: basic-commit
 basic-commit: ## basic commit

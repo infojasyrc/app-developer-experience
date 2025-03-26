@@ -2,11 +2,11 @@ import click
 import inquirer
 import re
 
-from appcli.core import validate_git_repo
-from appcli.constants import CONVENTIONAL_TYPES
+from core.repo import validate_git_repo
+from constants import CONVENTIONAL_TYPES
 
 
-repo = validate_git_repo()
+# repo = validate_git_repo()
 
 @click.group()
 def cli():
