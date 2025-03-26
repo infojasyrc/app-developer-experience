@@ -4,12 +4,13 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-inquirer = "*"
-gitpython = "*"
+inquirer = "==3.4.0"
+gitpython = "==3.1.44"
 click = "==8.1.8"
 pyinstaller = "==6.12.0"
 
 [dev-packages]
+pytest = "==8.3.5"
 
 [requires]
 python_version = "3.11"

@@ -47,6 +47,13 @@ cli: ## basic message
 		--env GIT_PYTHON_REFRESH=$(GIT_PYTHON_REFRESH) \
 		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv run python main.py"
 
+.PHONY: run-unit-tests
+run-unit-tests: ## run all unit tests
+	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv run python -m pytest tests/"
+
 .PHONY: basic-commit
 basic-commit: ## basic commit
 	ifeq ($(m),)
