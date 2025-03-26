@@ -12,3 +12,6 @@ examples/
 
 # code formatting
 .trunk/
+
+# cli
+appdevexp
