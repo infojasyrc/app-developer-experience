@@ -20,11 +20,11 @@ FROM build AS dependencies
 WORKDIR /app
 
 # Copy project files
-COPY monocommit.py .
+COPY ./src .
 COPY requirements.txt .
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set the entrypoint to execute the CLI
-ENTRYPOINT ["python", "/app/monocommit.py"]
+ENTRYPOINT ["python", "/app/main.py"]

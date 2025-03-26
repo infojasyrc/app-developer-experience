@@ -1,3 +1,7 @@
+ENV_FILE = $(shell [ -e ".env" ] && echo ".env" || echo ".env.public")
+
+include $(ENV_FILE)
+
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
 CONTAINER_APP_FOLDER = /app
@@ -33,7 +37,22 @@ install-dependencies: ## install all dependencies
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/ash -ci "pipenv install --dev"
+		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv install --dev"
+
+.PHONY: cli
+cli: ## basic message
+	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)/src" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		--env GIT_PYTHON_REFRESH=$(GIT_PYTHON_REFRESH) \
+		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv run python main.py"
+
+.PHONY: run-unit-tests
+run-unit-tests: ## run all unit tests
+	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv run python -m pytest tests/"
 
 .PHONY: basic-commit
 basic-commit: ## basic commit
@@ -43,14 +62,14 @@ basic-commit: ## basic commit
 	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv run python appcli/main.py commit -m $(m)"
+		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv run python src/main.py commit -m $(m)"
 
 .PHONY: interactive-commit
 interactive-commit: ## interactive commit
 	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv run python appcli/main.py commit"
+		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv run python src/main.py commit"
 
 .PHONY: help
 help:  ## show all make commands
