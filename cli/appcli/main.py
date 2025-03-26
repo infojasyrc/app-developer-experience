@@ -1,17 +1,12 @@
 import click
-import git
 import inquirer
 import re
 
+from appcli.core import validate_git_repo
 from appcli.constants import CONVENTIONAL_TYPES
 
-# Initialize Git Repo
-try:
-    repo = git.Repo(search_parent_directories=True)
-except git.exc.InvalidGitRepositoryError:
-    click.echo("Error: Not a valid Git repository.")
-    exit(1)
 
+repo = validate_git_repo()
 
 @click.group()
 def cli():

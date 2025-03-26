@@ -35,6 +35,16 @@ install-dependencies: ## install all dependencies
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/ash -ci "pipenv install --dev"
 
+.PHONY: basic-commit
+basic-commit: ## basic commit
+	ifeq ($(m),)
+		$(error m is not set)
+	endif
+	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv run python appcli/main.py commit -m $(m)"
+
 .PHONY: interactive-commit
 interactive-commit: ## interactive commit
 	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
