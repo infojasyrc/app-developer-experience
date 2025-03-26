@@ -1,0 +1,55 @@
+name: Run unit tests for cli
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - cli/**
+
+env:
+  PLATFORM: linux/amd64
+  IMAGE_NAME: appdevexp-cli-dev
+  DEV_VOLUME: |
+    -v $(pwd):/app \
+    -v /app/.venv \
+    -v $(IMAGE_NAME)-packages:/app/.venv
+
+jobs:
+  test:
+    name: run unit tests
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build container image
+        run: |
+          cd cli
+          docker build --target build \
+            -t $(IMAGE_NAME) .
+
+      - name: Install dependencies
+        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
+        run: |
+          cd cli
+          docker run -it --workdir=/app \
+            --platform $(PLATFORM) \
+            $(DEV_VOLUME) \
+            $(IMAGE_NAME) /bin/sh -ci "pipenv install --dev"
+
+      - name: Run unit tests
+        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
+        continue-on-error: true
+        run: |
+          cd cli
+          docker run -it --workdir=/app \
+            --platform $(PLATFORM) \
+            $(DEV_VOLUME) \
+            $(IMAGE_NAME) /bin/sh -ci "pipenv run python -m pytest tests/"
