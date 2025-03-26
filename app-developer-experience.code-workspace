@@ -5,6 +5,10 @@
             "path": "."
         },
         {
+            "name": "app-dev-exp-cli",
+            "path": "./cli"
+        },
+        {
             "name": "conference-manager",
             "path": "./conference-manager"
         },
@@ -48,6 +52,7 @@
     "settings": {
         "jest.disabledWorkspaceFolders": [
             "app-developer-experience",
+            "app-dev-exp-cli",
             "conference-manager",
             "conference-manager-webapp",
             "conference-manager-admin",
