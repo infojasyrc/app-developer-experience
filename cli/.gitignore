@@ -3,6 +3,7 @@
 
 # virtual environment
 .venv/
+.venv*/
 
 # python template cache
 __pycache__/
