@@ -5,8 +5,12 @@ import re
 from core.repo import validate_git_repo
 from constants import CONVENTIONAL_TYPES
 
-
-repo = validate_git_repo()
+questions = [
+    inquirer.List("choice", message="Select an option", choices=["test", "test2"])
+]
+answers = inquirer.prompt(questions)
+print(answers["choice"])
+# repo = validate_git_repo()
 
 @click.group()
 def cli():

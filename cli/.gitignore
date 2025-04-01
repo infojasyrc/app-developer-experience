@@ -19,3 +19,6 @@ test-results.xml
 *.spec
 dist/
 build/
+
+# logs
+*.log
