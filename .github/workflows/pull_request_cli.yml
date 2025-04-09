@@ -13,10 +13,6 @@ on:
 env:
   PLATFORM: linux/amd64
   IMAGE_NAME: appdevexp-cli-dev
-  DEV_VOLUME: |
-    -v $(pwd):/app \
-    -v /app/.venv \
-    -v appdevexp-cli-dev-packages:/app/.venv
 
 jobs:
   test:
@@ -38,7 +34,7 @@ jobs:
         if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
         run: |
           cd cli
-          docker run -it --workdir=/app \
+          docker run --workdir=/app \
             --platform ${{ env.PLATFORM }} \
             -v $(pwd):/app \
             -v /app/.venv \
@@ -50,7 +46,9 @@ jobs:
         continue-on-error: true
         run: |
           cd cli
-          docker run -it --workdir=/app \
+          docker run --workdir=/app \
             --platform ${{ env.PLATFORM }} \
-            ${{ env.DEV_VOLUME }} \
+            -v $(pwd):/app \
+            -v /app/.venv \
+            -v ${{ env.IMAGE_NAME }}-packages:/app/.venv \
             ${{ env.IMAGE_NAME }} /bin/sh -ci "pipenv run python -m pytest tests/"
