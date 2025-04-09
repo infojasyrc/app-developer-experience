@@ -13,10 +13,6 @@ on:
 env:
   PLATFORM: linux/amd64
   IMAGE_NAME: appdevexp-cli-dev
-  DEV_VOLUME: |
-    -v $(pwd):/app \
-    -v /app/.venv \
-    -v $(IMAGE_NAME)-packages:/app/.venv
 
 jobs:
   test:
@@ -32,24 +28,27 @@ jobs:
       - name: Build container image
         run: |
           cd cli
-          docker build --target build \
-            -t $(IMAGE_NAME) .
+          docker build --target dev -t ${{ env.IMAGE_NAME }} .
 
       - name: Install dependencies
         if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
         run: |
           cd cli
-          docker run -it --workdir=/app \
-            --platform $(PLATFORM) \
-            $(DEV_VOLUME) \
-            $(IMAGE_NAME) /bin/sh -ci "pipenv install --dev"
+          docker run --workdir=/app \
+            --platform ${{ env.PLATFORM }} \
+            -v $(pwd):/app \
+            -v /app/.venv \
+            -v ${{ env.IMAGE_NAME }}-packages:/app/.venv \
+            ${{ env.IMAGE_NAME }} /bin/sh -ci "pipenv install --dev"
 
       - name: Run unit tests
         if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
         continue-on-error: true
         run: |
           cd cli
-          docker run -it --workdir=/app \
-            --platform $(PLATFORM) \
-            $(DEV_VOLUME) \
-            $(IMAGE_NAME) /bin/sh -ci "pipenv run python -m pytest tests/"
+          docker run --workdir=/app \
+            --platform ${{ env.PLATFORM }} \
+            -v $(pwd):/app \
+            -v /app/.venv \
+            -v ${{ env.IMAGE_NAME }}-packages:/app/.venv \
+            ${{ env.IMAGE_NAME }} /bin/sh -ci "pipenv run python -m pytest tests/"

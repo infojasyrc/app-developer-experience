@@ -20,10 +20,15 @@ DEV_VOLUME = \
 	-v $(CONTAINER_APP_FOLDER)/.venv \
 	-v $(COMPOSE_PROJECT_NAME)-cli-packages:$(CONTAINER_APP_FOLDER)/.venv
 
-.PHONY: build
-build: ## build image for cli
-	docker build --platform $(PLATFORM) --target build \
+.PHONY: build-dev
+build-dev: ## build image for cli
+	docker build --platform $(PLATFORM) --target dev \
 		-t $(COMPOSE_PROJECT_NAME)-cli-dev .
+
+.PHONY: build-prod
+build-prod: ## build image for cli
+	docker build --platform $(PLATFORM) \
+		-t $(COMPOSE_PROJECT_NAME)-cli .
 
 .PHONY: interactive
 interactive: ## get a bash shell in the container
@@ -70,6 +75,13 @@ interactive-commit: ## interactive commit
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv run python src/main.py commit"
+
+.PHONY: build-local-package
+build-local-package: ## build package
+	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(COMPOSE_PROJECT_NAME)-cli-dev /bin/sh -ci "pipenv run pyinstaller --onefile --name=appdevexp src/main.py"
 
 .PHONY: help
 help:  ## show all make commands
