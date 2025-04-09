@@ -8,6 +8,7 @@ inquirer = "==3.4.0"
 gitpython = "==3.1.44"
 click = "==8.1.8"
 pyinstaller = "==6.10.0"
+macholib = { version="==1.16.3" , markers = "sys_platform == 'darwin'" }
 wheel = "==0.45.1"
 
 [dev-packages]
