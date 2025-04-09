@@ -40,7 +40,9 @@ jobs:
           cd cli
           docker run -it --workdir=/app \
             --platform ${{ env.PLATFORM }} \
-            ${{ env.DEV_VOLUME }} \
+            -v $(pwd):/app \
+            -v /app/.venv \
+            -v ${{ env.IMAGE_NAME }}-packages:/app/.venv \
             ${{ env.IMAGE_NAME }} /bin/sh -ci "pipenv install --dev"
 
       - name: Run unit tests
