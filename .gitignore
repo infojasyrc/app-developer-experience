@@ -3,6 +3,7 @@
 
 # for backends
 /**/node_modules/
+node_modules/
 
 # ide
 .vscode/
