@@ -6,6 +6,9 @@ This is a project to build an application using microservices considering a mono
 
 - [Content](#content)
 - [Folder structure](#folder-structure)
+- [Conventional commits](#conventional-commits)
+  - [Why use node tools for git hooks](#why-use-node-tools-for-git-hooks)
+- []
 
 ## Folder structure
 
@@ -31,3 +34,34 @@ Because Microservices is on trending, most of the companies believe managing mul
 However, Monorepos brings another perspective and also some challenges to be consider before using it.
 
 ![Mono Repo Analysis](./docs/media/monorepo.png)
+
+## Conventional commits
+
+In order to handle all projects and packages, the project requires:
+
+- nodejs v22.15.0
+- husky
+- @commitlint/cli
+- @commitlint/config-conventional
+
+### Why use Node tools for git hooks?
+
+Because:
+• Commitlint is the most mature and flexible tool for enforcing Conventional Commits.
+• Husky is the most popular Git hooks manager — works across any tech stack (Python, JS, Go, etc.).
+
+It’s completely fine and common to install these tools just for Git hook purposes in any project, including Python.
+
+## Requirements
+
+- Install nvm
+- Run the following commands
+
+```bash
+# install specific version of nodejs
+nvm install v22.15.0
+# set node version in current shell
+nvm use v22.15.0
+# installing husky validations
+make setup-commit-validation
+```
