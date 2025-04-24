@@ -1,0 +1,33 @@
+{
+  "name": "app-developer-experience",
+  "version": "1.0.0",
+  "description": "App Developer Experience",
+  "main": "",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/infojasyrc/app-developer-experience.git"
+  },
+  "keywords": [
+    "Developer",
+    "Experience"
+  ],
+  "author": "Jose Sal y Rosas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/infojasyrc/app-developer-experience/issues"
+  },
+  "homepage": "https://github.com/infojasyrc/app-developer-experience#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "husky": "^9.1.7"
+  }
+}

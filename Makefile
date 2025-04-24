@@ -58,6 +58,29 @@ clean-examples: ## clean previous examples
 	@find ./$(OUT_FOLDER) -type d -name "$(PY_NEW_FASTAPI_SERVICE)" -exec rm -rf {} +
 	@echo "removed previous examples"
 
+.PHONY: install-dependencies
+install-dependencies: ## install node dependencies
+	npm install
+
+.PHONY: init-husky
+init-husky: ## init husky if not already initialized
+	npx husky init
+
+.PHONY: install-hooks
+install-hooks: ## add commit-msg hook
+	echo "npx --no -- commitlint --edit \\$$1" > .husky/commit-msg
+	chmod +x .husky/commit-msg
+	@echo "✅ commit-msg hook has been created and made executable."
+
+.PHONY: lint-commit
+lint-commit: ## check if a commit message is valid
+	@echo "Checking last commit message..."
+	@commitlint --from=HEAD~1 --to=HEAD
+
+.PHONY: setup-commit-validation
+setup-commit-validation: install-dependencies init-husky install-hooks ## setup commit validation
+	@echo "✅ Commit message validation is ready."
+
 .PHONY: help
 help:  ## show all make commands
 ifeq ($(OS),Windows_NT)
