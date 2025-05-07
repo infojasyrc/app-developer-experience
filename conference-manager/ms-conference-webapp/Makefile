@@ -8,7 +8,6 @@ include $(ENV_FILE)
 CONTAINER_APP_FOLDER = /app
 
 COMPOSE_PROJECT_NAME = ms-conference
-
 # Available platforms: linux/amd64 | linux/arm64/v8 | linux/x86_64 | linux/arm/v7
 PLATFORM = linux/arm64/v8
 
@@ -31,20 +30,20 @@ else
 	docker ps -qa | xargs docker kill; docker container prune --force; docker system prune --force;
 endif
 
-.PHONY: build-dev-webapp
-build-dev-webapp: ## build dev container image for webapp
+.PHONY: build-dev
+build-dev: ## build dev container image for webapp
 	docker build --platform $(PLATFORM) --target development \
 		-t $(COMPOSE_PROJECT_NAME)-webapp-dev .
 
-.PHONY: build-webapp
-build-webapp: ## build container image for webapp
+.PHONY: build-prod
+build-prod: ## build container image for webapp
 	docker build \
 		--build-arg REACT_APP_BASE_PATH=${REACT_APP_BASE_PATH} \
 		--platform $(PLATFORM) . \
 		-t $(COMPOSE_PROJECT_NAME)-webapp
 
-.PHONY: interactive-webapp
-interactive-webapp: ## get a bash shell in the container
+.PHONY: interactive
+interactive: ## get a bash shell in the container
 	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
@@ -58,22 +57,22 @@ run-storybook: ## run storybook
 		-p "6006:6006" \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run storybook -- --no-open --host 0.0.0.0"
 
-.PHONY: install-dependencies-webapp
-install-dependencies-webapp: ## install node packages for webapp dev server into volume
+.PHONY: install-dependencies
+install-dependencies: ## install node packages for webapp dev server into volume
 	docker run -t --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm install"
 
-.PHONY: lint-webapp
-lint-webapp: ## run linter for webapp
+.PHONY: lint
+lint: ## run linter
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run lint"
 
-.PHONY: unit-tests-webapp
-unit-tests-webapp: ## run all unit tests for webapp
+.PHONY: unit-tests
+unit-tests: ## run all unit tests for webapp
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
@@ -85,6 +84,13 @@ commit: ## use conventional commits to commit changes
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run commit"
+
+.PHONY: npm-audit
+npm-audit: ## run npm audit
+	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm audit fix --force"
 
 .PHONY: help
 help:  ## show all make commands

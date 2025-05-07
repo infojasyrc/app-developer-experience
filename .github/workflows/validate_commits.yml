@@ -31,4 +31,10 @@ jobs:
 
       - name: 🧪 Validate all commits in the push or PR
         run: |
-          npx commitlint --from=${{ github.event.before || 'HEAD~1' }} --to=${{ github.sha }}
+          ZERO_COMMIT="0000000000000000000000000000000000000000"
+          if [ "${{ github.event.before }}" != "$ZERO_COMMIT" ] && [ -n "${{ github.event.before }}" ]; then
+            FROM=${{ github.event.before }}
+          else
+            FROM=HEAD~1
+          fi
+          npx commitlint --from=$FROM --to=${{ github.sha }}
