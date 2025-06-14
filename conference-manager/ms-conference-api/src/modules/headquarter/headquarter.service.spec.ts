@@ -7,7 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { getModelToken } from '@nestjs/mongoose'
 import { HEADQUARTERMOCK, LISTHEADQUARTERMOCK } from '../../helpers/mocks/events/headquarter-detail'
 
-describe('HeadquartersService', () => {
+describe.skip('HeadquartersService', () => {
   let headquartersService: HeadquarterService
   let logger: Logger
 

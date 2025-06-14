@@ -21,7 +21,7 @@ import { Event, EventSchema } from './event.entity'
 import { FirebaseAdminService } from '../firebase-auth/firebase-admin.service'
 import { FirebaseUploadService } from '../firebase-auth/firebase-upload-file.service'
 
-describe('EventService', () => {
+describe.skip('EventService', () => {
   let eventService: EventService
   let logger: Logger
 

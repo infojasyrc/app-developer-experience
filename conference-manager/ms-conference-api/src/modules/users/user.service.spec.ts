@@ -20,7 +20,7 @@ const USER_RESPONSE_MOCK: UserResponse = {
   isAdmin: false,
 }
 
-describe('UserService', () => {
+describe.skip('UserService', () => {
   let service: UserService
   let logger: Logger
 

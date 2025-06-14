@@ -6,5 +6,8 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
+  moduleNameMapper: {
+    '^firebase-admin$': '<rootDir>/__mocks__/firebase-admin.ts',
+  },
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
 }

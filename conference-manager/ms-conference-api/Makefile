@@ -85,14 +85,14 @@ unit-tests: unit-tests-v1 unit-tests-v2 ## run all unit tests
 
 .PHONY: unit-tests-v1
 unit-tests-v1: ## run all unit tests using ava
-	docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v1"
 
 .PHONY: unit-tests-v2
 unit-tests-v2: ## run all unit tests using jest
-	docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v2"

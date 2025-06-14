@@ -1,69 +1,57 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { Logger } from '@nestjs/common'
-import { getModelToken } from '@nestjs/mongoose'
-import { Types } from 'mongoose'
+// test/app.controller.spec.ts
+jest.setTimeout(15000);
 
-import { UserController } from './user.controller'
-import { UserService } from '../../modules/users/user.service'
-import { UserResponse } from '../../modules/users/interfaces/user-response'
-import { AdddUserRequestDto } from '../../modules/users/dto/add-user-request.dto'
+import request from 'supertest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 
-const USER_ID_MOCK = new Types.ObjectId('65c516a7eae2b91375ecba6e')
-const USER_UID_MOCK = '2qWPH'
-const USER_RESPONSE_MOCK: UserResponse = {
-  _id: USER_ID_MOCK,
-  uid: USER_UID_MOCK,
-  firstName: 'User',
-  lastName: 'Test',
-  email: 'usertest@project.com',
-  isAdmin: false,
-}
+import { AppModule } from '../../app.module';
 
-describe('UserController', () => {
-  let controller: UserController
-  let service: UserService
+const mockDecodedToken = { uid: 'test-user' };
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [],
-      controllers: [UserController],
-      providers: [
-        UserService,
-        Logger,
-        {
-          provide: getModelToken('User'),
-          useValue: {},
-        },
-      ],
-    }).compile()
+jest.mock('firebase-admin', () => ({
+  auth: () => ({
+    verifyIdToken: jest.fn((token: string) => {
+      if (token === 'valid-token') return Promise.resolve(mockDecodedToken);
+      throw new Error('Invalid token');
+    }),
+  }),
+  credential: {
+    applicationDefault: jest.fn(),
+  },
+  initializeApp: jest.fn(),
+}));
 
-    controller = module.get<UserController>(UserController)
-    service = module.get<UserService>(UserService)
-  })
+describe('AppController (e2e)', () => {
+  let app: INestApplication;
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined()
-  })
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    })
+    .overrideModule(MongooseModule)
+    .useModule({
+      module: class FakeMongooseModule {},
+    })
+    .compile();
 
-  // it('should get by userId', async () => {
-  //   jest.spyOn(service, 'getByUserId').mockResolvedValue(USER_RESPONSE_MOCK)
+    app = moduleFixture.createNestApplication();
+    await app.init();
+  });
 
-  //   const result = await controller.getByUserId(Object(USER_UID_MOCK))
+  it('/users/ (GET) should return user profile with valid token', () => {
+    return request(app.getHttpServer())
+      .get('/users/')
+      .set('Authorization', 'Bearer valid-token')
+      .expect(200)
+      .expect(mockDecodedToken);
+  });
 
-  //   expect(result).toEqual(USER_RESPONSE_MOCK)
-  // })
-
-  // it('should add new user', async () => {
-  //   const mockNewUser: AdddUserRequestDto = {
-  //     uid: USER_UID_MOCK,
-  //     firstName: 'User',
-  //     lastName: 'Test',
-  //     email: 'usertest@project.com',
-  //   }
-  //   jest.spyOn(service, 'addUser').mockResolvedValue(USER_RESPONSE_MOCK)
-
-  //   const result = await controller.addNewUser(mockNewUser)
-
-  //   expect(result).toEqual(USER_RESPONSE_MOCK)
-  // })
-})
+  it('/users/ (GET) should return 401 with invalid token', () => {
+    return request(app.getHttpServer())
+      .get('/users/')
+      .set('Authorization', 'Bearer invalid-token')
+      .expect(401);
+  });
+});
