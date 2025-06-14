@@ -53,7 +53,7 @@ get-token: ## Retrieve an access token for admin or user roles [ROLE=admin|ROLE=
 
 .PHONY: interactive
 interactive: ## run the api standalone only for healthcheck and no db connection
-	docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		-p "5002:5002" \
@@ -105,25 +105,25 @@ launch-db: docker-clean ## launch db container on local machine
 stop-db: ## locally stop all containers for local development
 	docker compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.db.yml down
 
-.PHONY: launch-local
-launch-local: docker-clean ## launch the multi-container on local machine
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
-		-f docker-compose/docker-compose.local.api.yml up
-
-.PHONY: stop-local
-stop-local: ## locally stop all containers for local development
-	docker compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.db.yml \
-		-f docker-compose/docker-compose.local.api.yml down
-
-.PHONY: launch-dev
-launch-dev: ## launch application for local development
+.PHONY: launch-local-dev
+launch-local-dev: ## launch application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml up
 
-.PHONY: stop-dev
-stop-dev: ## stop application for local development
+.PHONY: stop-local-dev
+stop-local-dev: ## stop application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml down
+
+.PHONY: launch-local-prod
+launch-local-prod: docker-clean ## launch the multi-container on local machine
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+		-f docker-compose/docker-compose.local.api.yml up
+
+.PHONY: stop-local-prod
+stop-local-prod: ## locally stop all containers for local production
+	docker compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+		-f docker-compose/docker-compose.local.api.yml down
 
 .PHONY: help
 help:  ## show all make commands
