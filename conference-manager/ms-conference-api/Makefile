@@ -53,7 +53,7 @@ get-token: ## Retrieve an access token for admin or user roles [ROLE=admin|ROLE=
 
 .PHONY: interactive
 interactive: ## run the api standalone only for healthcheck and no db connection
-	docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		-p "5002:5002" \
