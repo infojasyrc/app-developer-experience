@@ -1,0 +1,17 @@
+{
+  "high": true,
+  "critical": true,
+  "allowlist": [
+    "GHSA-3xgq-45jj-v275",
+    "GHSA-4pg4-qvpc-4q3h",
+    "GHSA-9wv6-86v2-598j",
+    "GHSA-c2qf-rxjj-qqgw",
+    "GHSA-g5hg-p3ph-g8qg",
+    "GHSA-grv7-fg5c-xmjg",
+    "GHSA-m7xq-9374-9rvx",
+    "GHSA-qwcr-r2fm-qrc7",
+    "GHSA-rhx6-c78j-4q9w",
+    "GHSA-vg7j-7cwx-8wgw",
+    "GHSA-wm7h-9275-46v2"
+  ]
+}
