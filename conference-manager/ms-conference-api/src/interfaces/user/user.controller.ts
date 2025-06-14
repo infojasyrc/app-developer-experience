@@ -9,7 +9,7 @@ import { FirebaseAuthGuard } from '../auth/firebase.guard'
 import { GetUsersUseCase } from '../../application/use-cases/user/get-users.usecase'
 
 @ApiTags('UserController')
-@Controller('v2/users')
+@Controller('/v2/users')
 export class UserController {
   constructor(private readonly getUsers: GetUsersUseCase, private logger: Logger) {}
   // constructor(private readonly userService: UserService, private logger: Logger) {}

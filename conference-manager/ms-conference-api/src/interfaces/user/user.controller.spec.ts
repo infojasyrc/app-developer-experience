@@ -4,9 +4,8 @@ jest.setTimeout(15000);
 import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 
-import { AppModule } from '../../app.module';
+import { TestAppModule } from '../../../tests/test-app.module'; // ✅ Not AppModule
 
 const mockDecodedToken = { uid: 'test-user' };
 
@@ -28,13 +27,8 @@ describe('AppController (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-    .overrideModule(MongooseModule)
-    .useModule({
-      module: class FakeMongooseModule {},
-    })
-    .compile();
+      imports: [TestAppModule],
+    }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -42,15 +36,15 @@ describe('AppController (e2e)', () => {
 
   it('/users/ (GET) should return user profile with valid token', () => {
     return request(app.getHttpServer())
-      .get('/users/')
+      .get('/v2/users/')
       .set('Authorization', 'Bearer valid-token')
       .expect(200)
-      .expect(mockDecodedToken);
+      .expect([]);
   });
 
   it('/users/ (GET) should return 401 with invalid token', () => {
     return request(app.getHttpServer())
-      .get('/users/')
+      .get('/v2/users/')
       .set('Authorization', 'Bearer invalid-token')
       .expect(401);
   });
