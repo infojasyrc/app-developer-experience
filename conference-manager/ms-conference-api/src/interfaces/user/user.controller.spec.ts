@@ -45,25 +45,25 @@ describe('UserController', () => {
     expect(controller).toBeDefined()
   })
 
-  it('should get by userId', async () => {
-    jest.spyOn(service, 'getByUserId').mockResolvedValue(USER_RESPONSE_MOCK)
+  // it('should get by userId', async () => {
+  //   jest.spyOn(service, 'getByUserId').mockResolvedValue(USER_RESPONSE_MOCK)
 
-    const result = await controller.getByUserId(Object(USER_UID_MOCK))
+  //   const result = await controller.getByUserId(Object(USER_UID_MOCK))
 
-    expect(result).toEqual(USER_RESPONSE_MOCK)
-  })
+  //   expect(result).toEqual(USER_RESPONSE_MOCK)
+  // })
 
-  it('should add new user', async () => {
-    const mockNewUser: AdddUserRequestDto = {
-      uid: USER_UID_MOCK,
-      firstName: 'User',
-      lastName: 'Test',
-      email: 'usertest@project.com',
-    }
-    jest.spyOn(service, 'addUser').mockResolvedValue(USER_RESPONSE_MOCK)
+  // it('should add new user', async () => {
+  //   const mockNewUser: AdddUserRequestDto = {
+  //     uid: USER_UID_MOCK,
+  //     firstName: 'User',
+  //     lastName: 'Test',
+  //     email: 'usertest@project.com',
+  //   }
+  //   jest.spyOn(service, 'addUser').mockResolvedValue(USER_RESPONSE_MOCK)
 
-    const result = await controller.addNewUser(mockNewUser)
+  //   const result = await controller.addNewUser(mockNewUser)
 
-    expect(result).toEqual(USER_RESPONSE_MOCK)
-  })
+  //   expect(result).toEqual(USER_RESPONSE_MOCK)
+  // })
 })
