@@ -4,9 +4,9 @@ import { getModelToken } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
 
 import { UserController } from './user.controller'
-import { UserService } from './user.service'
-import { UserResponse } from './interfaces/user-response'
-import { AdddUserRequestDto } from './dto/add-user-request.dto'
+import { UserService } from '../../modules/users/user.service'
+import { UserResponse } from '../../modules/users/interfaces/user-response'
+import { AdddUserRequestDto } from '../../modules/users/dto/add-user-request.dto'
 
 const USER_ID_MOCK = new Types.ObjectId('65c516a7eae2b91375ecba6e')
 const USER_UID_MOCK = '2qWPH'
