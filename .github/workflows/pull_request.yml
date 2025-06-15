@@ -94,31 +94,22 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
+          node-version: '18'
           check-latest: true
-        id: nvm
-
-      - name: Set up Node.js using .nvmrc
-        run: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-          node_version=$(cat .nvmrc)
-          nvm install $node_version
-          nvm use $node_version
-        shell: bash
+          cache: yarn
 
       - name: Install dependencies
         if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
         run: |
-          npm install
+          yarn install
 
       - name: Run Linting
         if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
         continue-on-error: true
         run: |
-          npm run lint
+          yarn lint
 
       - name: Run Unit Tests
         if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
         run: |
-          npm run test:ci
+          yarn run test:unit-tests:v2
