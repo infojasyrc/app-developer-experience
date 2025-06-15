@@ -1,0 +1,36 @@
+name: Pull Request Verification Workflow
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    branches:
+      - feat/**
+      - fix/**
+      - hotfix/**
+      - refactor/**
+    paths:
+      - backend/ms-nestjs-rest-tpl/**
+
+env:
+  # common variables
+  PLATFORM: linux/amd64
+
+jobs:
+  get-changed-packages:
+    name: Get list of changed packages
+    runs-on: ubuntu-24.04
+    outputs:
+      changed_packages: ${{ steps.changed-packages.outputs.changed_packages }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - id: changed-packages
+        uses: ./.github/actions/get-changed-packages
+      - name: Output changed packages
+        run: |
+          echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"

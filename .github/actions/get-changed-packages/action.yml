@@ -1,0 +1,17 @@
+# Action for getting list of all changed packages in repo
+name: Get changed packages in repo
+description: Gets list of all changed packages in repo
+
+outputs:
+  changed_packages: 
+    description: List of all changed packages in repo
+    value: ${{ steps.changed-packages.outputs.changed_packages }}
+  
+runs:
+  using: composite
+  steps:
+    - name: Get changed packages
+      id: changed-packages
+      shell: bash
+      run: |
+        echo "changed_packages=$(git diff --name-only HEAD^ HEAD | grep -E '^conference-manager' | cut -d'/' -f1-3 | sort | uniq | paste -sd " " -)" >> $GITHUB_OUTPUT
