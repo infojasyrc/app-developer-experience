@@ -12,7 +12,7 @@ on:
       - hotfix/**
       - refactor/**
     paths:
-      - backend/ms-nestjs-rest-tpl/**
+      - conference-manager/**
 
 env:
   # common variables
@@ -26,7 +26,7 @@ jobs:
       changed_packages: ${{ steps.changed-packages.outputs.changed_packages }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
       - id: changed-packages
@@ -34,3 +34,48 @@ jobs:
       - name: Output changed packages
         run: |
           echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
+
+
+  verify-conference-webapp:
+    name: verify conference manager webapp
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp') }}
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./conference-magaer/ms-conference-webapp
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          check-latest: true
+        id: nvm
+
+      - name: Set up Node.js using .nvmrc
+        run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+          node_version=$(cat .nvmrc)
+          nvm install $node_version
+          nvm use $node_version
+        shell: bash
+
+      - name: Install dependencies
+        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
+        run: |
+          npm install
+
+      - name: Run Linting
+        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
+        continue-on-error: true
+        run: |
+          npm run lint
+
+      - name: Run Unit Tests
+        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
+        run: |
+          npm run test:ci
