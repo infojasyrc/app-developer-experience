@@ -8,6 +8,8 @@
     "example": "examples"
   },
   "scripts": {
+    "changelog:backend:fast-api-rest-tpl": "conventional-changelog -p angular -i backend/ms-fastapi-rest-tpl/CHANGELOG.md -s --commit-path backend/ms-fastapi-rest-tpl",
+    "changelog:backend:nestjs-rest-tpl": "conventional-changelog -p angular -i backend/ms-nestjs-rest-tpl/CHANGELOG.md -s --commit-path backend/ms-nestjs-rest-tpl",
     "prepare": "husky",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -28,6 +30,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
+    "conventional-changelog-cli": "^5.0.0",
     "husky": "^9.1.7"
   }
 }
