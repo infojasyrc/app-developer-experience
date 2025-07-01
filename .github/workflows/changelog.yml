@@ -1,0 +1,60 @@
+name: Changelog pipeline
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  get-changed-packages:
+    name: Get list of changed packages
+    runs-on: ubuntu-22.04
+    outputs:
+      changed_packages: ${{ steps.changed-packages.outputs.changed_packages }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - id: changed-packages
+        uses: ./.github/actions/get-changed-packages
+      - name: Output changed packages
+        run: |
+          echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
+
+  changelog:
+    name: changelog for fastapi rest template
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-fastapi-rest-tpl') }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install deps
+        run: npm install
+
+      - name: Generate changelogs
+        run: |
+            npm run changelog:backend:fast-api-rest-tpl || echo "No changelog script for backend:fast-api-rest-tpl"
+
+      - name: Commit changelogs
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add project-*/CHANGELOG.md
+          git commit -m "docs(changelog): update changelogs" || echo "No changes"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
