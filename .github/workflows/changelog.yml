@@ -26,11 +26,14 @@ jobs:
         run: |
           echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
 
-  changelog:
+  changelog-fastapi-rest-tpl:
     name: changelog for fastapi rest template
     needs: get-changed-packages
     if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-fastapi-rest-tpl') }}
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./backend/ms-fastapi-rest-tpl
     steps:
       - name: ⬇️ Checkout code
         uses: actions/checkout@v4
@@ -53,7 +56,7 @@ jobs:
         run: |
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
-          git add project-*/CHANGELOG.md
+          git add CHANGELOG.md
           git commit -m "docs(changelog): update changelogs" || echo "No changes"
           git push
         env:
