@@ -33,7 +33,7 @@ endif
 
 .PHONY: build-dev
 build-dev: ## build docker image for local development
-	docker build --platform $(PLATFORM) --target build \
+	docker build --platform $(PLATFORM) --target dev \
 		-t $(COMPOSE_PROJECT_NAME) .
 
 .PHONY: interactive
