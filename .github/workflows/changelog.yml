@@ -27,37 +27,38 @@ jobs:
           echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
 
   changelog-fastapi-rest-tpl:
-    name: changelog for fastapi rest template
+    name: Run changelog for backend/ms-fastapi-rest-tpl
     needs: get-changed-packages
-    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-fastapi-rest-tpl') }}
+    if: false
     runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: ./backend/ms-fastapi-rest-tpl
     steps:
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v4
+      - name: Generate changelog for backend/ms-fastapi-rest-tpl
+        uses: ./.github/actions/generate-changelog
         with:
-          fetch-depth: 0
+          working-directory: ./backend/ms-fastapi-rest-tpl
+          npm-script: changelog:backend:fastapi-rest-tpl
+          project-name: ms-fastapi-rest-tpl
+          version: ${{ github.event.inputs.version || '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 📦 Setup Node.js
-        uses: actions/setup-node@v4
+  changelog-nestjs-rest-tpl:
+    name: Run changelog for backend/ms-nestjs-rest-tpl
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-nestjs-rest-tpl') }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Get version from package.json
+        id: pkg
+        run: |
+          echo "version=$(jq -r .version ./backend/ms-nestjs-rest-tpl/package.json)" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog for backend/ms-nestjs-rest-tpl
+        uses: ./.github/actions/generate-changelog
         with:
-          node-version: 22
-
-      - name: Install deps
-        run: npm install
-
-      - name: Generate changelogs
-        run: |
-            npm run changelog:backend:fast-api-rest-tpl || echo "No changelog script for backend:fast-api-rest-tpl"
-
-      - name: Commit changelogs
-        run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-          git add CHANGELOG.md
-          git commit -m "docs(changelog): update changelogs" || echo "No changes"
-          git push
+          working-directory: ./backend/ms-nestjs-rest-tpl
+          npm-script: changelog:backend:nestjs-rest-tpl
+          project-name: ms-nestjs-rest-tpl
+          version: ${{ steps.pkg.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

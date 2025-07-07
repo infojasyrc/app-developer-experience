@@ -1,0 +1,62 @@
+name: Generate Project Changelog
+
+description: Generate and commit changelog for a specific project
+
+inputs:
+  working-directory:
+    description: Path to the project
+    required: true
+  npm-script:
+    description: The npm script to generate the changelog
+    required: true
+  project-name:
+    description: Name of the project
+    required: true
+  version:
+    description: Version tag to create GitHub release (optional)
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: ⬇️ Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Install deps
+      run: npm install
+      shell: bash
+
+    - name: Generate changelogs
+      run: |
+        npm run ${{ inputs.npm-script }} || echo "No changelog script for ${{ inputs.npm-script }}"
+      shell: bash
+
+    - name: Commit changelogs
+      run: |
+        git config user.name "GitHub Action"
+        git config user.email "action@github.com"
+        git add CHANGELOG.md
+        git commit -m "docs(${{ inputs.project-name }}): update changelogs" || echo "No changes"
+        git push
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: 📦 Create GitHub release
+      if: ${{ inputs.version != '' }}
+      run: |
+        gh release create v${{ inputs.version }} \
+          --title "v${{ inputs.version }}" \
+          --notes-file CHANGELOG.md
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+      working-directory: ${{ inputs.working-directory }}
