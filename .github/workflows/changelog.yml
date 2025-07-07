@@ -45,7 +45,8 @@ jobs:
   changelog-nestjs-rest-tpl:
     name: Run changelog for backend/ms-nestjs-rest-tpl
     needs: get-changed-packages
-    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-nestjs-rest-tpl') }}
+    if: ${{ always() }}
+    # if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-nestjs-rest-tpl') }}
     runs-on: ubuntu-22.04
     steps:
       - name: Get version from package.json
