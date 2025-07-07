@@ -1,14 +1,15 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.10.13-alpine3.18 AS dev
+FROM python:3.13-alpine AS dev
 
 # update package registry
 RUN apk update --no-check-certificate
 
 # install packages
 RUN apk add --no-check-certificate \
-    # python odbc packages
+    # build-essential equivalent in Alpine
     build-base \
+    # python odbc packages
     unixodbc-dev \
     # wait for other containers
     wait4x \
@@ -35,8 +36,8 @@ FROM dev AS build
 WORKDIR /app
 
 # copy only lock files to avoid source code
-COPY ./pyproject.toml /app/pyproject.toml
-COPY ./poetry.lock /app/poetry.lock
+COPY pyproject.toml /app/pyproject.toml
+COPY poetry.lock /app/poetry.lock
 
 # install only production dependencies
 RUN poetry install --no-root --only main

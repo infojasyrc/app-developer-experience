@@ -38,17 +38,17 @@ build-dev: ## build docker image for local development
 
 .PHONY: interactive
 interactive: ## get a bash shell in the container
-	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -it --rm --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash
+		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "source .venv/bin/activate && exec bash"
 
 .PHONY: install-dependencies
 install-dependencies: ## install packages from pipfile
-	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "pipenv install --dev"
+		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "poetry lock && poetry install --with dev --no-root"
 
 .PHONY: launch-local
 launch-local: ## launch application for local development
