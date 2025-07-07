@@ -1,0 +1,72 @@
+name: Changelog pipeline
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  get-changed-packages:
+    name: Get list of changed packages
+    runs-on: ubuntu-22.04
+    outputs:
+      changed_packages: ${{ steps.changed-packages.outputs.changed_packages }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - id: changed-packages
+        uses: ./.github/actions/get-changed-packages
+      - name: Output changed packages
+        run: |
+          echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
+
+  changelog-fastapi-rest-tpl:
+    name: Run changelog for backend/ms-fastapi-rest-tpl
+    needs: get-changed-packages
+    if: false
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Generate changelog for backend/ms-fastapi-rest-tpl
+        uses: ./.github/actions/generate-changelog
+        with:
+          working-directory: ./backend/ms-fastapi-rest-tpl
+          npm-script: changelog:backend:fastapi-rest-tpl
+          project-name: ms-fastapi-rest-tpl
+          version: ${{ github.event.inputs.version || '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  changelog-nestjs-rest-tpl:
+    name: Run changelog for backend/ms-nestjs-rest-tpl
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-nestjs-rest-tpl') }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Get version from package.json
+        id: pkg
+        run: |
+          echo "version=$(jq -r .version ./backend/ms-nestjs-rest-tpl/package.json)" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog for backend/ms-nestjs-rest-tpl
+        uses: ./.github/actions/generate-changelog
+        with:
+          working-directory: ./backend/ms-nestjs-rest-tpl
+          npm-script: changelog:backend:nestjs-rest-tpl
+          project-name: ms-nestjs-rest-tpl
+          version: ${{ steps.pkg.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,5 +1,6 @@
 # getting list of all changed components inside conference-manager
 name: Get changed packages in repo
+
 description: Gets list of all changed packages in repo
 
 outputs:
