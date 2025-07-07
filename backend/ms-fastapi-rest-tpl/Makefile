@@ -41,7 +41,7 @@ interactive: ## get a bash shell in the container
 	docker run -it --rm --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "source .venv/bin/activate && exec bash"
+		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "source .venv/bin/activate && exec ash"
 
 .PHONY: install-dependencies
 install-dependencies: ## install packages from pipfile
