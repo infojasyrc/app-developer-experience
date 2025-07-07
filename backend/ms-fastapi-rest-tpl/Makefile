@@ -50,6 +50,11 @@ install-dependencies: ## install packages from pipfile
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "poetry lock && poetry install --with dev --no-root"
 
+.PHONY: create-volume
+create-volume: ## create a volume for the database
+	@echo "Creating container volume for database..."
+	docker volume create --name $(COMPOSE_PROJECT_NAME)-db-data
+
 .PHONY: launch-local
 launch-local: ## launch application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.yml up

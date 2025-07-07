@@ -13,13 +13,15 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - 'ms_db:/var/lib/postgresql/data'
+      - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready - U postgres"]
+      test: [CMD-SHELL, pg_isready -U postgres]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 30s
 
 volumes:
-  ms_db: null
+  db-data:
+    name: ${COMPOSE_PROJECT_NAME}-db-data
+    external: true
