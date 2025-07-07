@@ -32,6 +32,10 @@ jobs:
     if: false
     runs-on: ubuntu-22.04
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - name: Generate changelog for backend/ms-fastapi-rest-tpl
         uses: ./.github/actions/generate-changelog
         with:
