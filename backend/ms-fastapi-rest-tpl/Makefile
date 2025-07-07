@@ -50,6 +50,13 @@ install-dependencies: ## install packages from pipfile
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "poetry lock && poetry install --with dev --no-root"
 
+.PHONY: run-tests
+run-tests: ## run tests
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "poetry run pytest"
+
 .PHONY: create-volume
 create-volume: ## create a volume for the database
 	@echo "Creating container volume for database..."
