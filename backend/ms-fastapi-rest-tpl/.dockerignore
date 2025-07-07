@@ -2,6 +2,6 @@
 *
 
 # include only application files
-!Pipfile
-!Pipfile.lock
+!pyproject.toml
+!poetry.lock
 !src/
