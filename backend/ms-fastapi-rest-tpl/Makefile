@@ -34,6 +34,11 @@ endif
 .PHONY: build-dev
 build-dev: ## build docker image for local development
 	docker build --platform $(PLATFORM) --target dev \
+		-t $(COMPOSE_PROJECT_NAME)-dev .
+
+.PHONY: build-prod
+build-prod: ## build docker image for local development
+	docker build --platform $(PLATFORM) \
 		-t $(COMPOSE_PROJECT_NAME) .
 
 .PHONY: interactive
@@ -41,21 +46,21 @@ interactive: ## get a bash shell in the container
 	docker run -it --rm --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "source .venv/bin/activate && exec ash"
+		$(COMPOSE_PROJECT_NAME)-dev /bin/ash -ci "source .venv/bin/activate && exec ash"
 
 .PHONY: install-dependencies
 install-dependencies: ## install packages from pipfile
 	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "poetry lock && poetry install --with dev --no-root"
+		$(COMPOSE_PROJECT_NAME)-dev /bin/ash -ci "poetry lock && poetry install --with dev --no-root"
 
 .PHONY: run-tests
 run-tests: ## run tests
 	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "poetry run pytest"
+		$(COMPOSE_PROJECT_NAME)-dev /bin/ash -ci "poetry run pytest"
 
 .PHONY: create-volume
 create-volume: ## create a volume for the database
@@ -64,11 +69,13 @@ create-volume: ## create a volume for the database
 
 .PHONY: launch-local
 launch-local: ## launch application for local development
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.yml up
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+		-f docker-compose/docker-compose.local.yml up
 
 .PHONY: stop-local
 stop-local: ## stop application for local development
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml -f docker-compose/docker-compose.local.yml down
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+		-f docker-compose/docker-compose.local.yml down
 
 .PHONY: help
 help:  ## show all make commands
