@@ -8,7 +8,8 @@ This is a project to build an application using microservices considering a mono
 - [Folder structure](#folder-structure)
 - [Conventional commits](#conventional-commits)
   - [Why use node tools for git hooks](#why-use-node-tools-for-git-hooks)
-- []
+  - [Requirements](#requirements)
+- [Testing](#testing)
 
 ## Folder structure
 
@@ -52,7 +53,7 @@ Because:
 
 It’s completely fine and common to install these tools just for Git hook purposes in any project, including Python.
 
-## Requirements
+### Requirements
 
 - Install nvm
 - Run the following commands
@@ -65,3 +66,7 @@ nvm use v22.15.0
 # installing husky validations
 make setup-commit-validation
 ```
+
+## Testing
+
+Please review [this section](./docs/Testing.md) to understand how to test different parts of the SDLC.

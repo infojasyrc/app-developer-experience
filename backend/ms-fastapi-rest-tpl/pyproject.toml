@@ -1,0 +1,69 @@
+[project]
+name = "ms-fastapi-rest-tpl"
+version = "0.1.0"
+description = ""
+authors = [
+  { name = "Jose Sal y Rosas" }
+]
+requires-python = ">=3.13,<3.14"
+
+dependencies = [
+  "fastapi==0.115.6",
+  "pydantic==2.10.0",
+  "pydantic-settings==2.0.3",
+  "python-dotenv==1.0.0",
+  "gunicorn==23.0.0",
+  "python-multipart==0.0.20",
+  "requests==2.32.3",
+  "sse-starlette==1.6.1",
+  "starlette-context==0.3.6",
+  "uvicorn==0.34.0",
+  "aioodbc==0.5.0",
+  "alembic==1.10.3",
+  "asyncpg==0.30.0",
+  "pyodbc==5.2.0",
+  "sqlalchemy[asyncio]==2.0.25",
+  "sqlalchemy-utils==0.41.1",
+  "pyjwt==2.8.0",
+  "passlib[bcrypt]==1.7.4",
+  "apscheduler==3.10.4",
+  "async-lru==2.0.4",
+  "tzdata==2023.3"
+]
+
+[tool.poetry.group.dev.dependencies]
+  black = "*"
+  flake8 = "4.0.1"
+  isort = "5.13.2"
+  pre-commit = "2.15.0"
+  pytest = "8.3.4"
+  pytest-cov = "6.0.0"
+  pytest-mock = "3.14.0"
+  pytest-asyncio = "0.25.0"
+  httpx = "0.28.1"
+
+[tool.flake8]
+allowed-domain-names = "data,params"
+exclude = ".venv,venv,build,migrations"
+max-arguments = 12
+max-attributes = 10
+max-cognitive-average = 9
+max-imports = 16
+max-line-complexity = 20
+max-line-length = 120
+max-local-variables = 8
+max-methods = 12
+max-module-members = 11
+ignore = [
+  "D", "Q000", "W503", "WPS115", "WPS226", "WPS300", "WPS301", "WPS305", "WPS326", "WPS348", "WPS410",
+  "WPS412", "WPS433", "WPS453", "WPS459", "WPS472", "WPS508", "WPS529", "WPS602", "WPS605", "S311",
+  "WPS215", "WPS355", "WPS237", "S608", "WPS201", "WPS306", "WPS217"
+]
+per-file-ignores = [
+  "__init__.py:F401,F403,WPS235,WPS347,WPS436",
+  "test_*:D103,WPS442,S101,WPS218,WPS441,WPS217,D401,DAR201,WPS331,DAR101,WPS214,DAR301,WPS437,S105,WPS116,WPS111,WPS431,N806,WPS204,WPS211,WPS210,WPS110,WPS118,WPS421,WPS202,WPS432,WPS235,WPS358,WPS462,WPS221,WPS201,WPS428,E800,WPS213,WPS420,WPS237,WPS436,WPS432,WPS450,WPS306,S608,WPS435,WPS226,WPS335,WPS114",
+  "conftest.py:D103,WPS442,S101,WPS218,WPS441,WPS217,D401,DAR201,WPS331,DAR101,WPS214,DAR301,WPS437,S105,WPS116,WPS111,WPS431,N806,WPS204,WPS211,WPS210,WPS110,WPS118,WPS421,WPS202,WPS432,WPS235,WPS358,WPS462,WPS221,WPS201,WPS428,E800,WPS213,WPS420,WPS237,WPS436,WPS432,WPS450,WPS306,S608,WPS435,WPS226",
+  "src/tests/factories.py:D103,WPS442,S101,WPS218,WPS441,WPS217,D401,DAR201,WPS331,DAR101,WPS214,DAR301,WPS437,S105,WPS116,WPS111,WPS431,N806,WPS204,WPS211,WPS210,WPS110,WPS118,WPS421,WPS202,WPS432,WPS235,WPS358,WPS462,WPS221,WPS201,WPS428,E800,WPS213,WPS420,WPS237,WPS436,WPS432,WPS450,WPS306,S608,WPS435,WPS226,WPS231",
+  "src/api/main_router.py:WPS201",
+  "src/main.py:WPS201"
+]

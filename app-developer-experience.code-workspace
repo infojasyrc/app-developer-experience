@@ -59,7 +59,7 @@
             "fastapi-rest-template",
             "terraform-aws"
         ],
-        "editor.fontFamily": "Monaco, Menlo, 'Courier New', monospace",
+        "editor.fontFamily": "Monaco, Menlo, Consolas, 'Courier New', monospace",
         "editor.fontSize": 12,
         "terminal.integrated.fontFamily": "Monaco",
         "terminal.integrated.fontSize": 12,

@@ -33,22 +33,34 @@ endif
 
 .PHONY: build-dev
 build-dev: ## build docker image for local development
-	docker build --platform $(PLATFORM) --target build \
+	docker build --platform $(PLATFORM) --target dev \
 		-t $(COMPOSE_PROJECT_NAME) .
 
 .PHONY: interactive
 interactive: ## get a bash shell in the container
-	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -it --rm --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash
+		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "source .venv/bin/activate && exec ash"
 
 .PHONY: install-dependencies
 install-dependencies: ## install packages from pipfile
-	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "pipenv install --dev"
+		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "poetry lock && poetry install --with dev --no-root"
+
+.PHONY: run-tests
+run-tests: ## run tests
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "poetry run pytest"
+
+.PHONY: create-volume
+create-volume: ## create a volume for the database
+	@echo "Creating container volume for database..."
+	docker volume create --name $(COMPOSE_PROJECT_NAME)-db-data
 
 .PHONY: launch-local
 launch-local: ## launch application for local development
