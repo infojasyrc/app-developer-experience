@@ -49,7 +49,7 @@ jobs:
           project-name: fastapi-rest-tpl
           version: ${{ steps.pkg.outputs.version }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
 
   changelog-nestjs-rest-tpl:
     name: Run changelog for backend/ms-nestjs-rest-tpl
@@ -75,4 +75,4 @@ jobs:
           project-name: nestjs-rest-tpl
           version: ${{ steps.pkg.outputs.version }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
