@@ -38,6 +38,11 @@ Example:
     - `-j <job>`: Specify the name of the job in the GitHub Action.
 
 ```bash
+# run to validate changed packages
+act -e devops/tests/events_simulate_changed_packages_conference_api.json -j get-changed-packages
+```
+
+```bash
 # run to validate changelog for fastapi rest template
 act act -e devops/tests/events_simulate_changelog_fastapi_tpl.json -j changelog-fastapi-rest-tpl
 ```
