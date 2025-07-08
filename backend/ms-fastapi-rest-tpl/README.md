@@ -30,4 +30,8 @@ make install-dependencies
 make interactive
 # run all unit tests
 make run-tests
+# launch api using multi containers
+make launch-local
+# stop containers
+make stop-local
 ```
