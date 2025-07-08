@@ -15,4 +15,4 @@ runs:
       id: changed-packages
       shell: bash
       run: |
-        echo "changed_packages=$(git diff --name-only HEAD^ HEAD | grep -E '^conference-manager' | cut -d'/' -f1-3 | sort | uniq | paste -sd " " -)" >> $GITHUB_OUTPUT
+        echo "changed_packages=$(git diff --name-only HEAD^ HEAD | grep -E '^(conference-manager|backend)' | cut -d'/' -f1-3 | sort | uniq | paste -sd " " -)" >> $GITHUB_OUTPUT
