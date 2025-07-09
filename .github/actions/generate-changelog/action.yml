@@ -55,19 +55,22 @@ runs:
       if: ${{ inputs.version != '' }}
       run: |
         TAG="${{ inputs.project-name }}-v${{ inputs.version }}"
-        ARCHIVE_PREFIX="${{ inputs.project-name }}-${{ inputs.version }}"
         REPO_ROOT="$(git rev-parse --show-toplevel)"
 
+        # Create the Git tag if it doesn't exist
+        git tag "$TAG"
+        git push origin "$TAG"
+
         # Create archives of just the working directory, saved at the repo root
-        zip -r "${REPO_ROOT}/${ARCHIVE_PREFIX}.zip" . > /dev/null
-        tar -czf "${REPO_ROOT}/${ARCHIVE_PREFIX}.tar.gz" . > /dev/null
+        zip -r "${REPO_ROOT}/${TAG}.zip" . > /dev/null
+        tar -czf "${REPO_ROOT}/${TAG}.tar.gz" . > /dev/null
 
         # Create GitHub release and attach scoped archives only
         gh release create "$TAG" \
           --title "${{ inputs.project-name }} v${{ inputs.version }}" \
           --notes-file CHANGELOG.md \
           --verify-tag \
-          "${REPO_ROOT}/${ARCHIVE_PREFIX}.zip" "${REPO_ROOT}/${ARCHIVE_PREFIX}.tar.gz"
+          "${REPO_ROOT}/${TAG}.zip" "${REPO_ROOT}/${TAG}.tar.gz"
       shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
