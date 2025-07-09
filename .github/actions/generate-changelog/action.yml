@@ -54,9 +54,20 @@ runs:
     - name: 📦 Create GitHub release
       if: ${{ inputs.version != '' }}
       run: |
-        gh release create ${{ inputs.project-name }}-v${{ inputs.version }} \
-          --title "${{ inputs.project-name }}: v${{ inputs.version }}" \
+        # Define tag and filenames
+        TAG="${{ inputs.project-name }}-v${{ inputs.version }}"
+        ARCHIVE_NAME="${{ inputs.project-name }}-${{ inputs.version }}"
+
+        # Create archive with only the project contents
+        zip -r "../${ARCHIVE_NAME}.zip" . > /dev/null
+        tar -czf "../${ARCHIVE_NAME}.tar.gz" . > /dev/null
+
+        # Create the release and attach only the scoped archive
+        gh release create $TAG \
+          --title "$TAG" \
           --notes-file CHANGELOG.md
+          --verify-tag \
+          "../${ARCHIVE_NAME}.zip" "../${ARCHIVE_NAME}.tar.gz"
       shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
