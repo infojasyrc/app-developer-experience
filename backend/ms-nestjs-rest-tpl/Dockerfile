@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 ARG NODE_VERSION=20.18.1
 
 # base stage

@@ -27,7 +27,6 @@ endif
 # include codebase and dependencies to run the container in development mode
 DEV_VOLUME = \
 	-v $(DIR):$(CONTAINER_APP_FOLDER) \
-	-v $(USER_NPMRC):/root/.npmrc:ro \
 	-v $(CONTAINER_APP_FOLDER)/node_modules \
 	-v $(COMPOSE_PROJECT_NAME)-packages:$(CONTAINER_APP_FOLDER)/node_modules
 
@@ -42,6 +41,11 @@ endif
 .PHONY: build-dev
 build-dev: ## build docker image for local development
 	docker build --platform $(PLATFORM) --target base \
+		-t $(COMPOSE_PROJECT_NAME) .
+
+.PHONY: build-dev-with-npmrc
+build-dev-with-npmrc: ## build docker image for local development with .npmrc
+	docker build --platform $(PLATFORM) --target base \
 		--build-arg NPMRC="$$(cat $(USER_NPMRC))" \
 		-t $(COMPOSE_PROJECT_NAME) .
 
@@ -51,16 +55,15 @@ build-stable: ## build docker image stable version
 
 .PHONY: install-dependencies
 install-dependencies: ## install dependencies for dev image
-	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" $(DEV_VOLUME) \
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" $(DEV_VOLUME) \
 		--platform $(PLATFORM) \
 		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "npm i"
 
 .PHONY: interactive
 interactive: ## get a bash shell in the container
-	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		-p "8080:3000" \
 		$(COMPOSE_PROJECT_NAME) /bin/ash
 
 .PHONY: launch-unleash
