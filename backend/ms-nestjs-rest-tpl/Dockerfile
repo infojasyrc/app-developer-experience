@@ -5,6 +5,8 @@ ARG NODE_VERSION=20.18.1
 # base stage
 FROM node:${NODE_VERSION}-alpine AS base
 
+RUN apk add --no-cache git==2.47.2-r0
+
 WORKDIR /app
 
 # build stage
