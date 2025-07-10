@@ -3,19 +3,19 @@
 ## Project or Area
 
 - MonoRepo
-  - [ ] App Developer Experience
+  - [ ] App Developer Experience (app-dev-exp)
 - Mobile App
   - [ ] React Native
   - [ ] Expo
-- Microservices
-  - [ ] FastApi template
-  - [ ] Nestjs REST template
-  - [ ] Nestjs BFF GQL
+- Microservices Templates
+  - [ ] FastApi template (fastapi-rest-tpl)
+  - [ ] Nestjs REST template (nestjs-rest-tpl)
+  - [ ] Nestjs BFF GQL (nestjs-gql-tpl)
 - Conference Manager
-  - [ ] ms-conference-webapp
-  - [ ] ms-conference-admin
-  - [ ] ms-conference-api
-  - [ ] status-aggregator
+  - [ ] ms-conference-webapp (conference-webapp)
+  - [ ] ms-conference-admin (conference-admin)
+  - [ ] ms-conference-api (conference-api)
+  - [ ] status-aggregator (status-aggregator)
 
 ## Issue ticket number and link
 
