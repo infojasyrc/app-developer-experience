@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     # The version of the application
     APP_VERSION: str = "0.1.0"
     # The environment the application is running in
-    environment: Environment = Environment.development
+    environment: Environment = Environment.DEVELOPMENT.value
     # The host the application will run on
     HOST: str = ""
 

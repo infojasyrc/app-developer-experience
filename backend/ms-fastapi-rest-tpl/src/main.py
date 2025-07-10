@@ -3,7 +3,7 @@ from fastapi.logger import logger
 
 from application import get_application
 from core.constants import Environment
-from core.settings import get_settings
+from infrastructure.settings import get_settings
 
 
 def launch_app():
