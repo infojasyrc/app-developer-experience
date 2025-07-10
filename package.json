@@ -8,8 +8,8 @@
     "example": "examples"
   },
   "scripts": {
-    "changelog:backend:fastapi-rest-tpl": "conventional-changelog -p angular -i backend/ms-fastapi-rest-tpl/CHANGELOG.md -s --commit-path backend/ms-fastapi-rest-tpl",
-    "changelog:backend:nestjs-rest-tpl": "conventional-changelog -p angular -i backend/ms-nestjs-rest-tpl/CHANGELOG.md -s --commit-path backend/ms-nestjs-rest-tpl",
+    "changelog:backend:fastapi-rest-tpl": "conventional-changelog -p angular -i backend/ms-fastapi-rest-tpl/CHANGELOG.md -s --commit-path backend/ms-fastapi-rest-tpl --tag-prefix fastapi-rest-tpl-v",
+    "changelog:backend:nestjs-rest-tpl": "conventional-changelog -p angular -i backend/ms-nestjs-rest-tpl/CHANGELOG.md -s --commit-path backend/ms-nestjs-rest-tpl --tag-prefix nestjs-rest-tpl-v",
     "prepare": "husky",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -31,6 +31,8 @@
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
     "conventional-changelog-cli": "^5.0.0",
-    "husky": "^9.1.7"
+    "conventional-recommended-bump": "^11.2.0",
+    "husky": "^9.1.7",
+    "semver": "^7.7.2"
   }
 }
