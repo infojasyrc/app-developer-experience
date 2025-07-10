@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from core.settings import get_settings
+from infrastructure.settings import get_settings
 
 
 def get_application() -> FastAPI:
+    """Create and configure the FastAPI application."""
     settings = get_settings()
     app = FastAPI(**settings.fastapi_kwargs)
     return CORSMiddleware(

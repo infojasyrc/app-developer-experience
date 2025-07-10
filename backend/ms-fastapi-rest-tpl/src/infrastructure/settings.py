@@ -2,7 +2,7 @@ from functools import lru_cache
 from pydantic_settings import BaseSettings
 from starlette.middleware.cors import ALL_METHODS
 
-from core.environment import Environment
+from core.constants import Environment
 
 
 class Settings(BaseSettings):
