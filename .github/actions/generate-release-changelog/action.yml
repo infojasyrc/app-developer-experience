@@ -1,6 +1,6 @@
-name: Generate Project Changelog
+name: Generate project release and changelog
 
-description: Generate and commit changelog for a specific project
+description: Generate release and commit changelog for a specific project
 
 inputs:
   working-directory:

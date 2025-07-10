@@ -1,4 +1,4 @@
-name: Changelog pipeline
+name: Release & Changelog pipeline
 
 permissions:
   contents: write
@@ -26,8 +26,8 @@ jobs:
         run: |
           echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
 
-  changelog-fastapi-rest-tpl:
-    name: Run changelog for backend/ms-fastapi-rest-tpl
+  release-fastapi-rest-tpl:
+    name: Create a release and publish changelog for backend/ms-fastapi-rest-tpl
     needs: get-changed-packages
     if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-fastapi-rest-tpl') }}
     runs-on: ubuntu-22.04
@@ -37,22 +37,18 @@ jobs:
         with:
           persist-credentials: true
           fetch-depth: 2
-      - name: Get version from pyproject.toml
-        id: pkg
-        run: |
-          echo "version=$(grep -E '^version *= *' ./backend/ms-fastapi-rest-tpl/pyproject.toml | head -1 | sed -E 's/version *= *\"([^\"]+)\"/\1/')" >> $GITHUB_OUTPUT
-      - name: Generate changelog for backend/ms-fastapi-rest-tpl
-        uses: ./.github/actions/generate-changelog
+      
+      - name: Generate release and changelog for backend/ms-fastapi-rest-tpl
+        uses: ./.github/actions/generate-release-changelog
         with:
           working-directory: ./backend/ms-fastapi-rest-tpl
           npm-script: changelog:backend:fastapi-rest-tpl
           project-name: fastapi-rest-tpl
-          version: ${{ steps.pkg.outputs.version }}
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
 
-  changelog-nestjs-rest-tpl:
-    name: Run changelog for backend/ms-nestjs-rest-tpl
+  release-nestjs-rest-tpl:
+    name: Create a release and publish changelog for backend/ms-nestjs-rest-tpl
     needs: get-changed-packages
     if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-nestjs-rest-tpl') }}
     runs-on: ubuntu-22.04
@@ -62,17 +58,12 @@ jobs:
         with:
           persist-credentials: true
           fetch-depth: 2
-      - name: Get version from package.json
-        id: pkg
-        run: |
-          echo "version=$(jq -r .version ./backend/ms-nestjs-rest-tpl/package.json)" >> $GITHUB_OUTPUT
 
-      - name: Generate changelog for backend/ms-nestjs-rest-tpl
-        uses: ./.github/actions/generate-changelog
+      - name: Generate release and changelog for backend/ms-nestjs-rest-tpl
+        uses: ./.github/actions/generate-release-changelog
         with:
           working-directory: ./backend/ms-nestjs-rest-tpl
           npm-script: changelog:backend:nestjs-rest-tpl
           project-name: nestjs-rest-tpl
-          version: ${{ steps.pkg.outputs.version }}
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
