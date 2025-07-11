@@ -41,7 +41,7 @@ runs:
     - name: 🔍 Determine bump type
       id: bump
       run: |
-        BUMP=$(conventional-recommended-bump --commit-path ${{ inputs.working-directory }} | jq -r .releaseType)
+        BUMP=$(npx conventional-recommended-bump --preset angular --commit-path ${{ inputs.working-directory }} | jq -r .releaseType)
         echo "bump=$BUMP" >> $GITHUB_OUTPUT
       shell: bash
 
