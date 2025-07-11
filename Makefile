@@ -81,6 +81,18 @@ lint-commit: ## check if a commit message is valid
 setup-commit-validation: install-dependencies init-husky install-hooks ## setup commit validation
 	@echo "✅ Commit message validation is ready."
 
+.PHONY: validate-gh-actions-changed-packages
+validate-gh-actions-changed-packages: ## validate github actions for changed packages
+	@echo "Validating GitHub Actions workflow for changed folder..."
+	act -e devops/tests/events_simulate_changed_packages_conference_api.json -j get-changed-packages
+	@echo "✅ GitHub Actions workflow for changed folder is valid."
+
+.PHONY: validate-gh-actions-release-backend-fastapi
+validate-gh-actions-release-backend-fastapi: ## validate github actions for release backend fastapi
+	@echo "Validating GitHub Actions workflow for release backend fastapi..."
+	act -e devops/tests/events_simulate_release_fastapi_tpl.json -j release-fastapi-rest-tpl
+	@echo "✅ GitHub Actions workflow for release backend fastapi is valid."
+
 .PHONY: help
 help:  ## show all make commands
 ifeq ($(OS),Windows_NT)

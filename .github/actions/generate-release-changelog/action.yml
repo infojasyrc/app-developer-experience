@@ -1,0 +1,120 @@
+name: Generate project release and changelog
+
+description: Generate release and commit changelog for a specific project
+
+inputs:
+  working-directory:
+    description: Path to the project
+    required: true
+  npm-script:
+    description: The npm script to generate the changelog
+    required: true
+  project-name:
+    description: Name of the project
+    required: true
+
+outputs:
+  version:
+    description: New semantic version of the project
+    value: ${{ steps.version.outputs.version }}
+  bump:
+    description: Recommended bump type
+    value: ${{ steps.bump.outputs.bump }}
+
+runs:
+  using: composite
+  steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🛠 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: 📦 Install dependencies
+      run: npm install
+      shell: bash
+
+    - name: 🔍 Determine bump type
+      id: bump
+      run: |
+        BUMP=$(npx conventional-recommended-bump --preset angular --commit-path ${{ inputs.working-directory }} | jq -r .releaseType)
+        echo "bump=$BUMP" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: 🆙 Bump version
+      id: version
+      run: |
+        if [[ -f "${{ inputs.working-directory }}/pyproject.toml" ]]; then
+          CURRENT=$(grep -E '^version *= *' "${{ inputs.working-directory }}/pyproject.toml" | sed -E 's/version *= *\"([^\"]+)\"/\1/')
+          NEW=$(npx semver "$CURRENT" -i ${{ steps.bump.outputs.bump }})
+          sed -i.bak -E "s/^version *= *\"[^\"]+\"/version = \"$NEW\"/" "${{ inputs.working-directory }}/pyproject.toml"
+          echo "version=$NEW" >> $GITHUB_OUTPUT
+        elif [[ -f "${{ inputs.working-directory }}/package.json" ]]; then
+          CURRENT=$(jq -r .version "${{ inputs.working-directory }}/package.json")
+          NEW=$(npx semver "$CURRENT" -i ${{ steps.bump.outputs.bump }})
+          jq ".version = \"$NEW\"" "${{ inputs.working-directory }}/package.json" > tmp.json && mv tmp.json "${{ inputs.working-directory }}/package.json"
+          echo "version=$NEW" >> $GITHUB_OUTPUT
+        else
+          echo "No version file found" && exit 1
+        fi
+      shell: bash
+
+    - name: 📝 Generate changelog
+      run: |
+        npm run ${{ inputs.npm-script }} || echo "No changelog script for ${{ inputs.npm-script }}"
+      shell: bash
+
+    - name: 💾 Commit version + changelog
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions@users.noreply.github.com"
+        git remote set-url origin https://x-access-token:${{ env.GH_PAT }}@github.com/${{ github.repository }}.git
+        git add CHANGELOG.md
+        git add package.json || true
+        git add pyproject.toml || true
+        git commit -m "chore(${{ inputs.project-name }}): bump version to ${{ steps.version.outputs.version }}" || echo "No changes"
+        git push origin HEAD
+      shell: bash
+      env:
+        GH_PAT: ${{ env.GH_PAT }}
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: 🏷️ Create version tag
+      id: tag
+      run: |
+        TAG="${{ inputs.project-name }}-v${{ steps.version.outputs.version }}"
+        git tag "$TAG"
+        git push origin "$TAG"
+        echo "tag_name=$TAG" >> $GITHUB_OUTPUT
+      shell: bash
+      env:
+        GH_PAT: ${{ env.GH_PAT }}
+
+    - name: 📚 Package release assets (zip/tar.gz)
+      run: |
+        REPO_ROOT="$(git rev-parse --show-toplevel)"
+        # Create archives of just the working directory, saved at the repo root
+        zip -r "${REPO_ROOT}/${{ steps.tag.outputs.tag_name }}.zip" . > /dev/null
+        tar -czf "${REPO_ROOT}/${{ steps.tag.outputs.tag_name }}.tar.gz" . > /dev/null
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: 🚀 Publish GitHub release
+      run: |
+        REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+        # Create GitHub release and attach scoped archives only
+        gh release create "${{ steps.tag.outputs.tag_name }}" \
+          --title "${{ inputs.project-name }} v${{ steps.version.outputs.version }}" \
+          --notes-file CHANGELOG.md \
+          --verify-tag \
+          "${REPO_ROOT}/${{ steps.tag.outputs.tag_name }}.zip" \
+          "${REPO_ROOT}/${{ steps.tag.outputs.tag_name }}.tar.gz"
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      working-directory: ${{ inputs.working-directory }}

@@ -43,11 +43,11 @@ act -e devops/tests/events_simulate_changed_packages_conference_api.json -j get-
 ```
 
 ```bash
-# run to validate changelog for fastapi rest template
-act act -e devops/tests/events_simulate_changelog_fastapi_tpl.json -j changelog-fastapi-rest-tpl
+# run to validate release and changelog for fastapi rest template
+act act -e devops/tests/events_simulate_release_fastapi_tpl.json -j changelog-fastapi-rest-tpl
 ```
 
 ```bash
-# run to validate changelog for nestjs rest template
-act act -e devops/tests/events_simulate_changelog_nestjs_tpl.json -j changelog-nestjs-rest-tpl
+# run to validate release and changelog for nestjs rest template
+act act -e devops/tests/events_simulate_release_nestjs_tpl.json -j changelog-nestjs-rest-tpl
 ```
