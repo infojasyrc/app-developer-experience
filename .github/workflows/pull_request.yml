@@ -10,6 +10,7 @@ on:
       - conference-api/**
       - conference-webapp/**
       - conference-admin/**
+      - fastapi-rest-tpl/**
     paths:
       - conference-manager/**
       - backend/**
