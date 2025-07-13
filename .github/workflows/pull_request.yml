@@ -18,7 +18,7 @@ env:
   # common variables
   PLATFORM: linux/amd64
   # variables for fastapi rest template
-  FASTAPI_REST_TPL_IMAGE_NAME: kpis-monitoring-system
+  FASTAPI_REST_TPL_IMAGE_NAME: fastapi-rest-tpl
 
 jobs:
   get-changed-packages:
@@ -70,7 +70,6 @@ jobs:
 
       - name: Run tests
         run: |
-          cd kpis-monitoring-system
           docker run --rm --workdir=/app \
             --platform ${{ env.PLATFORM }} \
             -v $(pwd):/app \
