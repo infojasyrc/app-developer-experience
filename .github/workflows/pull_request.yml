@@ -57,7 +57,7 @@ jobs:
 
       - name: Build container image
         run: |
-          docker build --target base -t ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }} -f Dockerfile .
+          docker build --target dev -t ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }} -f Dockerfile .
 
       - name: Install dependencies
         run: |
