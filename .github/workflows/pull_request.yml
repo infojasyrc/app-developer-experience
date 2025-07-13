@@ -34,6 +34,36 @@ jobs:
         run: |
           echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
 
+  verify-fastapi-rest-tpl:
+    name: verify fastapi rest template
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-fastapi-rest-tpl') }}
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./backend/ms-fastapi-rest-tpl
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Linting
+        continue-on-error: true
+        run: |
+          flake8 .
+
+      - name: Run Unit Tests
+        run: |
+          pytest tests --cov=src --cov-report=xml --cov-report=html
+
   verify-conference-webapp:
     name: verify conference manager webapp
     needs: get-changed-packages
@@ -41,7 +71,7 @@ jobs:
     runs-on: ubuntu-24.04
     defaults:
       run:
-        working-directory: ./conference-magaer/ms-conference-webapp
+        working-directory: ./conference-manager/ms-conference-webapp
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -85,7 +115,7 @@ jobs:
     runs-on: ubuntu-24.04
     defaults:
       run:
-        working-directory: ./conference-magaer/ms-conference-api
+        working-directory: ./conference-manager/ms-conference-api
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
