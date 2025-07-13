@@ -12,6 +12,7 @@ on:
       - conference-admin/**
     paths:
       - conference-manager/**
+      - backend/**
 
 env:
   # common variables
@@ -22,7 +23,7 @@ env:
 jobs:
   get-changed-packages:
     name: Get list of changed packages
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     outputs:
       changed_packages: ${{ steps.changed-packages.outputs.changed_packages }}
     steps:
@@ -67,11 +68,6 @@ jobs:
             -v ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }}-packages:/app/.venv \
             ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }} bash -c "poetry lock && poetry install --with dev"
 
-      - name: Run Linting
-        continue-on-error: true
-        run: |
-          flake8 .
-
       - name: Run tests
         run: |
           cd kpis-monitoring-system
@@ -86,7 +82,7 @@ jobs:
     name: verify conference manager webapp
     needs: get-changed-packages
     if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp') }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: ./conference-manager/ms-conference-webapp
@@ -130,7 +126,7 @@ jobs:
     name: verify conference manager api
     needs: get-changed-packages
     if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api') }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: ./conference-manager/ms-conference-api
