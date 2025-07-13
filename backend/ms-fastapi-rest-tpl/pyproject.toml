@@ -1,6 +1,6 @@
 [project]
 name = "ms-fastapi-rest-tpl"
-version = "0.1.0"
+version = "0.1.1"
 description = "FastAPI Restful template with PostgreSQL, Alembic, and JWT authentication"
 authors = [
   { name = "Jose Sal y Rosas" }
