@@ -33,6 +33,8 @@
     "conventional-changelog-cli": "^5.0.0",
     "conventional-recommended-bump": "^6.1.0",
     "husky": "^9.1.7",
-    "semver": "^7.7.2"
-  }
+    "semver": "^7.7.2",
+    "nx": "21.3.2"
+  },
+  "nx": {}
 }
