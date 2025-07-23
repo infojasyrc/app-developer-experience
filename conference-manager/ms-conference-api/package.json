@@ -1,5 +1,5 @@
 {
-  "name": "@appdevexp/ms-conference-api",
+  "name": "@conference-manager/ms-conference-api",
   "version": "1.0.0",
   "description": "Conference Manager API",
   "scripts": {
