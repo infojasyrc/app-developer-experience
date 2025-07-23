@@ -1,5 +1,5 @@
 {
-  "name": "@appdevexp/msa-conference-api",
+  "name": "@appdevexp/ms-conference-api",
   "version": "1.0.0",
   "description": "Conference Manager API",
   "scripts": {
@@ -10,6 +10,7 @@
     "start:dev": "nest start --watch",
     "test:ci": "yarn test --coverage",
     "test:coverage": "yarn test --coverage",
+    "test:unit-tests": "yarn run test:unit-tests:v1 && yarn run test:unit-tests:v2",
     "test:unit-tests:v1": "nyc --reporter=lcov ava",
     "test:unit-tests:v2": "jest --runInBand --coverage --detectOpenHandles",
     "test:watch:v1": "ava --watch",

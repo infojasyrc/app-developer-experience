@@ -1,3 +1,7 @@
 {
-  "$schema": "./node_modules/nx/schemas/nx-schema.json"
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "workspaceLayout": {
+    "appsDir": "conference-manager",
+    "libsDir": "backend"
+  }
 }
