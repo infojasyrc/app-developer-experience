@@ -1,20 +1,21 @@
 {
-  "name": "nestjs-gql-tpl",
+  "name": "fastapi-rest-tpl",
+  "sourceRoot": "backend/ms-fastapi-rest-tpl",
   "targets": {
     "build": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/python:poetry-run",
       "options": {
         "command": "npm run build"
       }
     },
     "serve": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/python:poetry-run",
       "options": {
         "command": "npm start"
       }
     },
     "test": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/python:poetry-run",
       "options": {
         "command": "npm run test:unit:coverage"
       }
