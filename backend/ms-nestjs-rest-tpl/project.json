@@ -5,7 +5,8 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run build"
+        "command": "npm run build",
+        "outputs": ["{projectRoot}/dist"]
       }
     },
     "serve": {

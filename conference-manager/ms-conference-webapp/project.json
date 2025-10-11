@@ -4,19 +4,19 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm build"
+        "command": "npm run build"
       }
     },
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm start"
+        "command": "npm run start"
       }
     },
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm test"
+        "command": "npm run test"
       }
     }
   }
