@@ -1,7 +1,7 @@
 {
     "folders": [
         {
-            "name": "app-developer-experience",
+            "name": "app-dev-exp",
             "path": "."
         },
         {
@@ -51,17 +51,39 @@
     ],
     "settings": {
         "jest.disabledWorkspaceFolders": [
-            "app-developer-experience",
+            "app-dev-exp",
             "app-dev-exp-cli",
             "conference-manager",
+            "nestjs-gql-template",
+            "nestjs-rest-template",
+            "fastapi-rest-template",
+            "whitewalker",
+            "whitewolf-rn",
             "conference-manager-webapp",
             "conference-manager-admin",
-            "fastapi-rest-template",
+            "conference-manager-api",
             "terraform-aws"
         ],
         "editor.fontFamily": "Monaco, Menlo, Consolas, 'Courier New', monospace",
         "editor.fontSize": 12,
+        "files.watcherExclude": {
+            "**/node_modules": true,
+            "**/dist": true,
+            "**/.venv": true,
+            "**/.git": true,
+            "**/.gradle/**": true,
+            "**/build/**": true
+        },
         "terminal.integrated.fontFamily": "Monaco",
         "terminal.integrated.fontSize": 12,
+        "search.exclude": {
+            "**/node_modules": true,
+            "**/dist": true,
+            "**/.venv": true,
+            "**/__pycache__": true,
+            "**/ios": true,
+            "**/gradle": true,
+            "**/build": true
+        }
     }
 }
