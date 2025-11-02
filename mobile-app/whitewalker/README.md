@@ -11,11 +11,33 @@ This is a react native project
 
 >**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
 
+### Pre requisites
+
+- Install Ruby
+
+```bash
+# install ruby manager
+brew install rbenv && rbenv init -
+# install specific version of ruby in the project
+rbenv install
+```
+
 ### Dependencies
+
+Node modules
+
+```bash
+# select specific version of node
+nvm use
+# install node modules
+npm install
+```
 
 For iOS
 
 ```bash
+# install bundler
+gem install bundler
 # configure bundle
 bundle config set path 'vendor/bundle'
 # install gem dependencies
