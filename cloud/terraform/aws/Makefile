@@ -8,16 +8,12 @@ include $(ENV_FILE)
 AWS_REGION        := $(AWS_REGION)
 # Gets the AWS Account ID from your current credentials
 AWS_ACCOUNT_ID    := $(AWS_ACCOUNT_ID)
-
+# The name for the IAM user that Terraform will use
+IAM_USER_NAME     := $(IAM_USER_NAME)
 # A globally unique name for the S3 state bucket
 TF_STATE_BUCKET   := my-tf-state-bucket-2025-unique
-
 # A unique name for the DynamoDB lock table
 TF_LOCK_TABLE     := my-terraform-lock-table
-
-# The name for the IAM user that Terraform will use
-IAM_USER_NAME     := terraform-backend-user
-
 # The name of the IAM policy to create
 IAM_POLICY_NAME   := TerraformBackendPolicy
 

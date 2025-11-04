@@ -6,6 +6,7 @@ This is a demo for IaC with Terraform to show an [AWS Well-Architected Framework
 
 - [Infrastructure as Code for AWS](#infrastructure-as-code-for-aws)
 - [Contents](#contents)
+- [Admin setup](./docs/ADMIN_SETUP.md)
 - [Cloud Deployment](#cloud-deployment)
   - [Elements to Deploy](#elements-to-deploy)
   - [Basic Network Setups](#basic-network-setups)
