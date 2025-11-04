@@ -1,0 +1,4 @@
+bucket         = ""
+key            = "terraform.tfstate"
+region         = "us-west-1"
+dynamodb_table = "terraform-example-locks"
