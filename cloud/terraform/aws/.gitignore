@@ -12,3 +12,8 @@ plans/
 terraform.dev.tfvars
 terraform.qa.tfvars
 terraform.production.tfvars
+
+backend.conf
+
+# environment files
+.env
