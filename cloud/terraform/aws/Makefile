@@ -34,6 +34,10 @@ endif
 ## 1. ADMIN SETUP (Run as Admin)
 ## -----------------------------------------------------------------------------
 
+.PHONY: whoami
+whoami:
+	aws sts get-caller-identity --profile $(IAM_USER_NAME) --output table
+
 .PHONY: setup-backend
 setup-backend: create-bucket create-lock-table attach-policy ## 🚀 Run all one-time backend setup steps (as ADMIN)
 	@echo "✅ Backend resources created successfully."
