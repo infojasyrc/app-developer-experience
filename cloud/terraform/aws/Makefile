@@ -2,6 +2,15 @@ ENV_FILE = $(shell [ -e ".env" ] && echo ".env" || echo ".env.public")
 
 include $(ENV_FILE)
 
+SHELL := bash
+.ONESHELL:                         # run each recipe in a single shell
+.SHELLFLAGS := -eu -o pipefail -c  # safer shell defaults
+MAKEFLAGS += --output-sync=target  # keep per-target logs grouped
+
+LOG_FILE ?= $(CURDIR)/ade.make.$(shell date +%F).log
+# One-liner prelude to trace commands (+) and tee both stdout/stderr to the log
+LOG_PRELUDE = exec > >(tee -a '$(LOG_FILE)') 2>&1; PS4='+ [$@] '; set -x;
+
 # Default target (runs when you just type 'make')
 .DEFAULT_GOAL := help
 
@@ -11,13 +20,12 @@ AWS_ACCOUNT_ID    := $(AWS_ACCOUNT_ID)
 # The name for the IAM user that Terraform will use
 IAM_USER_NAME     := $(IAM_USER_NAME)
 # A globally unique name for the S3 state bucket
-TF_STATE_BUCKET   := my-tf-state-bucket-2025-unique
+TF_STATE_BUCKET   := $(TF_STATE_BUCKET)
 # A unique name for the DynamoDB lock table
-TF_LOCK_TABLE     := my-terraform-lock-table
+TF_LOCK_TABLE     := ade-terraform-lock-table
 # The name of the IAM policy to create
 IAM_POLICY_NAME   := TerraformBackendPolicy
-
-# The JSON file containing the policy document
+# The JSON file containing the policy document`
 IAM_POLICY_FILE   := terraform-backend-policy.json
 
 # The .conf file for backend initialization (add this to .gitignore!)
@@ -35,7 +43,7 @@ endif
 ## -----------------------------------------------------------------------------
 
 .PHONY: whoami
-whoami:
+whoami: ## 👤 Show the AWS identity for the current credentials
 	aws sts get-caller-identity --profile $(IAM_USER_NAME) --output table
 
 .PHONY: setup-backend
@@ -45,14 +53,17 @@ setup-backend: create-bucket create-lock-table attach-policy ## 🚀 Run all one
 
 .PHONY: create-bucket
 create-bucket: ## 🪣 Create and configure the S3 state bucket (as ADMIN)
+	$(LOG_PRELUDE)
 	@echo "Creating S3 bucket: $(TF_STATE_BUCKET)..."
-	aws s3api create-bucket \
-		--bucket $(TF_STATE_BUCKET) \
-		--region $(AWS_REGION)
+	@if [ "$(AWS_REGION)" = "us-east-1" ]; then \
+		aws s3api create-bucket --bucket $(TF_STATE_BUCKET) --region $(AWS_REGION); \
+	else \
+		aws s3api create-bucket --bucket $(TF_STATE_BUCKET) --region $(AWS_REGION) \
+			--create-bucket-configuration LocationConstraint=$(AWS_REGION); \
+	fi
 	
 	@echo "Enabling S3 versioning..."
-	aws s3api put-bucket-versioning \
-		--bucket $(TF_STATE_BUCKET) \
+	aws s3api put-bucket-versioning --bucket $(TF_STATE_BUCKET) \
 		--versioning-configuration Status=Enabled
 	
 	@echo "Blocking all S3 public access..."
