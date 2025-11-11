@@ -49,13 +49,15 @@ module "iam" {
 }
 
 # # ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
-# # Container Definitions
+# # Application on ECS
 # # # ## ## ## ## ## ## ## ## ## ## ## ## ## ##
 
-data "template_file" "container_definitions" {
-  template = file("./container_definitions.json.tpl")
-
-  vars = {
+module "application" {
+  source                  = "./module/application"
+  application_name        = "${var.application_name}-${local.environment}"
+  private_subnets         = module.network.private_subnets
+  public_subnets          = module.network.public_subnets
+  container_definitions   = templatefile("./container_definitions.json.tpl", {
     api_image                   = "${var.ecr_backend}:latest"
     ui_image                    = "${var.ecr_frontend}:latest"
     container_name              = var.container_name
@@ -66,19 +68,7 @@ data "template_file" "container_definitions" {
     flask_mode                  = var.flask_mode
     api_entrypoint_folder       = var.api_entrypoint_folder
     migration_entrypoint_folder = var.migration_entrypoint_folder
-  }
-}
-
-# # ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
-# # Application on ECS
-# # # ## ## ## ## ## ## ## ## ## ## ## ## ## ##
-
-module "application" {
-  source                  = "./module/application"
-  application_name        = "${var.application_name}-${local.environment}"
-  private_subnets         = module.network.private_subnets
-  public_subnets          = module.network.public_subnets
-  container_definitions   = data.template_file.container_definitions.rendered
+  })
   cluster_id              = module.cluster.cluster_id
   ecs_task_execution_role = module.iam.ecs_service_role.arn
   app_count               = var.app_count
