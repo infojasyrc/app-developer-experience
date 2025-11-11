@@ -61,11 +61,11 @@ create-policy: generate-policy-json ## 📜 Create the IAM least-privilege polic
 	aws iam create-policy \
 		--policy-name $(IAM_POLICY_NAME) \
 		--policy-document file://$(IAM_POLICY_FILE) \
-		--profile $(IAM_USER_NAME) || echo "Policy already exists."
+		--profile $(ADMIN_USER_NAME) || echo "Policy already exists."
 
 create-user: ## 👤 Create the limited IAM user (as ADMIN)
 	@echo "Creating IAM user: $(IAM_USER_NAME)..."
-	aws iam create-user --user-name $(IAM_USER_NAME) --profile $(IAM_USER_NAME) || echo "User already exists."
+	aws iam create-user --user-name $(IAM_USER_NAME) --profile $(ADMIN_USER_NAME) || echo "User already exists."
 
 attach-policy: create-user create-policy ## 📎 Attach the IAM policy to the user (as ADMIN)
 	@echo "Attaching policy to user..."
@@ -83,7 +83,7 @@ create-keys: ## 🔑 Generate access keys for the TF user (as ADMIN)
 	aws iam create-access-key --user-name $(IAM_USER_NAME)
 
 whoami: ## 👤 Show the AWS identity for the current credentials
-	aws sts get-caller-identity --profile $(IAM_USER_NAME) --output table
+	aws sts get-caller-identity --profile $(ADMIN_USER_NAME) --output table
 
 ## -----------------------------------------------------------------------------
 ## 3. CLEANUP

@@ -17,6 +17,8 @@ LOG_PRELUDE = exec > >(tee -a '$(LOG_FILE)') 2>&1; PS4='+ [$@] '; set -x;
 AWS_REGION        := $(AWS_REGION)
 # Gets the AWS Account ID from your current credentials
 AWS_ACCOUNT_ID    := $(AWS_ACCOUNT_ID)
+# The admin IAM user to run admin tasks
+ADMIN_USER_NAME   := $(ADMIN_USER_NAME)
 # The name for the IAM user that Terraform will use
 IAM_USER_NAME     := $(IAM_USER_NAME)
 # A globally unique name for the S3 state bucket
