@@ -60,11 +60,12 @@ create-policy: generate-policy-json ## 📜 Create the IAM least-privilege polic
 	@echo "Creating IAM policy: $(IAM_POLICY_NAME) from $(IAM_POLICY_FILE)..."
 	aws iam create-policy \
 		--policy-name $(IAM_POLICY_NAME) \
-		--policy-document file://$(IAM_POLICY_FILE)
+		--policy-document file://$(IAM_POLICY_FILE) \
+		--profile $(IAM_USER_NAME) || echo "Policy already exists."
 
 create-user: ## 👤 Create the limited IAM user (as ADMIN)
 	@echo "Creating IAM user: $(IAM_USER_NAME)..."
-	aws iam create-user --user-name $(IAM_USER_NAME) || echo "User already exists."
+	aws iam create-user --user-name $(IAM_USER_NAME) --profile $(IAM_USER_NAME) || echo "User already exists."
 
 attach-policy: create-user create-policy ## 📎 Attach the IAM policy to the user (as ADMIN)
 	@echo "Attaching policy to user..."
