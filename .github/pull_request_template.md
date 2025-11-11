@@ -3,10 +3,13 @@
 ## Project or Area
 
 - MonoRepo
-  - [ ] App Developer Experience (app-dev-exp)
+  - [ ] App Developer Experience (ade)
 - Mobile App
-  - [ ] React Native
-  - [ ] Expo
+  - [ ] React Native (whitewalker)
+  - [ ] Expo (whitewolf)
+- Cloud
+  - [ ] aws
+  - [ ] azure
 - Microservices Templates
   - [ ] FastApi template (fastapi-rest-tpl)
   - [ ] Nestjs REST template (nestjs-rest-tpl)
