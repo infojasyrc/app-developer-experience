@@ -14,6 +14,7 @@ terraform.qa.tfvars
 terraform.production.tfvars
 
 backend.conf
+terraform-backend-policy.json
 
 # environment files
 .env
