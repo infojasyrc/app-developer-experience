@@ -1,13 +1,14 @@
 locals {
-  region      = "us-east-1"
+  region      = var.aws_account_region
   environment = terraform.workspace
   common_tags = {
-    project = "app-dev-exp",
+    project = var.application_name,
   }
 }
 
 module "network" {
   source   = "./module/network"
+
   vpc_cidr = var.vpc_cidr
   az_count = var.az_count
   tags     = local.common_tags
@@ -15,12 +16,14 @@ module "network" {
 
 module "cluster" {
   source           = "./module/cluster"
+
   application_name = "${var.application_name}-${local.environment}"
   tags             = local.common_tags
 }
 
 module "logging" {
   source              = "./module/logging"
+
   application_name    = "${var.application_name}-${local.environment}"
   logs_retention_days = var.logs_retention_days
   tags                = local.common_tags
@@ -28,6 +31,7 @@ module "logging" {
 
 module "database" {
   source                  = "./module/database"
+
   application_name        = "${var.application_name}-${local.environment}"
   db_allocate_storage     = var.db_allocate_storage
   db_max_allocate_storage = var.db_max_allocate_storage
