@@ -6,15 +6,20 @@ This is a demo for IaC with Terraform to show an [AWS Well-Architected Framework
 
 - [Infrastructure as Code for AWS](#infrastructure-as-code-for-aws)
 - [Contents](#contents)
-- [Admin setup](./docs/ADMIN_SETUP.md)
+- [Prepare the infrastructure](#prepare-the-infrastructure)
 - [Cloud Deployment](#cloud-deployment)
-  - [Elements to Deploy](#elements-to-deploy)
+  - [Application elements to deploy](#application-elements-to-deploy)
   - [Basic Network Setups](#basic-network-setups)
 - [Project Dependencies](#project-dependencies)
 - [Using Terraform](#using-terraform)
 - [Project Requirements](#project-requirements-for-standalone-deployment)
 - [Links](#links)
 - [Troubleshooting](#troubleshooting)
+
+## Prepare the infrastructure
+
+- Create S3 bucket for AWS or Azure Storage to allocate terraform state, following [this document](./docs/ADMIN_SETUP.md).
+- Create a Container Registry to allocate container images, following [this document](./docs/BASIC_COMPONENTS.md)
 
 ## Cloud Deployment
 
@@ -24,7 +29,7 @@ We have developed this project as a multi container application so schedulers ar
 
 This example might give you some ideas of your own deployment process.
 
-### Elements to deploy
+### Application elements to deploy
 
 This is a project to show auto scale feature in AWS ECS, considering:
 
@@ -90,8 +95,9 @@ terraform apply "20210907_01_Update_core_infrastructure"
 
 1. Buy and register a domain in AWS Route53 or migrate from a domain service (example: GoDaddy)
 2. Use AWS ACM to generate a wildcard certificate
-3. Create a container registry (ECR) to deploy frontend container
-4. Create a container registry (ECR) to deploy backend container
+3. Create a container registry (ECR) to deploy frontend and backend container
+
+Terraform will reference these with `var.ecr_frontend` and `var.ecr_backend` (it appends `:latest` internally where needed).
 
 ## Links
 
