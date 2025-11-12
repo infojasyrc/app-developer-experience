@@ -1,0 +1,51 @@
+{
+  "name": "infra-aws-terraform",
+  "sourceRoot": "cloud/terraform/aws",
+  "projectType": "application",
+  "targets": {
+    "init": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "terraform init -backend-config=backend.conf",
+        "cwd": "cloud/terraform/aws"
+      }
+    },
+    "plan": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "terraform plan",
+        "cwd": "cloud/terraform/aws"
+      },
+      "dependsOn": ["init"]
+    },
+    "apply": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "terraform apply",
+        "cwd": "cloud/terraform/aws"
+      },
+      "dependsOn": ["plan"]
+    },
+    "destroy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "terraform destroy",
+        "cwd": "cloud/terraform/aws"
+      }
+    },
+    "validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "terraform validate",
+        "cwd": "cloud/terraform/aws"
+      }
+    },
+    "fmt": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "terraform fmt -check",
+        "cwd": "cloud/terraform/aws"
+      }
+    }
+  }
+}

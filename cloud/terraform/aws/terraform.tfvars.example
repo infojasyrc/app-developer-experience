@@ -1,4 +1,5 @@
 application_name        = "appdevexp"
+aws_account_region      = "us-west-1"
 aws_account_id          = ""
 az_count                = "2"
 vpc_cidr                = "172.17.0.0/16"
