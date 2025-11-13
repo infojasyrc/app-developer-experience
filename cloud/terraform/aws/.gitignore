@@ -19,3 +19,6 @@ terraform-backend-policy.json
 
 # environment files
 .env
+
+# specific information for aws
+aws-info.log

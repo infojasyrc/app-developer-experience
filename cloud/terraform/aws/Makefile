@@ -45,6 +45,8 @@ endif
 #
 # Import all admin setup tasks from this file
 include makefiles/aws-backend.mk
+## Import ECR tasks
+include makefiles/aws-ecr.mk
 
 # --- Phony Targets ---
 .PHONY: all help init plan apply destroy
