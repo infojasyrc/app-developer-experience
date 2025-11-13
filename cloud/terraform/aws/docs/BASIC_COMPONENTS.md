@@ -1,6 +1,6 @@
 # Basic Components
 
-### Creating the ECR repositories
+## Creating the ECR repositories
 
 You can automate ECR repository creation with the provided make targets (run as an AWS admin capable of creating ECR repositories):
 
