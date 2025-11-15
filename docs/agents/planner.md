@@ -12,7 +12,7 @@ Act as the lead architect and orchestrator. Interpret the user's request, define
    - `conference-manager/` → Production applications and services
    - `devops/` → CI/CD, automation, Makefiles, scripts
    - `cli/` → Internal tooling or developer automation
-3. Create a clear and modular execution plan.
+3. Create a clear and modular execution plan considering each plan has to follow conventional commits
 4. Define assumptions, constraints, risks, and dependencies.
 5. Generate acceptance criteria for QA.
 6. Request clarification from the Creative Agent when needed.
