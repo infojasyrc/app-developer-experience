@@ -9,6 +9,7 @@ This is a project to build an application using microservices considering a mono
 - [Conventional commits](#conventional-commits)
   - [Why use node tools for conventional commits](#why-use-node-tools-for-conventional-commits)
   - [Requirements](#requirements)
+- [GenAI](#genai)
 - [Relevant information](#relevant-information)
 
 ## Folder structure
@@ -84,6 +85,10 @@ make create-nodejs-gql
 # create fastapi-rest-template
 make create-py-rest
 ```
+
+## GenAI
+
+Based on the effiency of copilot and agents, there is a new configuration to handle custom agents.
 
 ## Relevant information
 

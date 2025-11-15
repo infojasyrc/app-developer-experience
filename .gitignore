@@ -9,14 +9,13 @@ node_modules/
 .vscode/
 
 # examples
-examples/
+/examples/
 
 # code formatting
 .trunk/
 
 # cli
 appdevexp
-
 
 .nx/cache
 .nx/workspace-data
