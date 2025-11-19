@@ -14,10 +14,9 @@ DB_URL                   = mongodb://$(DB_ROOT_USERNAME):$(DB_ROOT_PASSWORD)@loc
 DEFAULT_DB               = mongodb
 TOKEN_SCRIPT_FILE        = scripts/firebase-auth-test
 
+PROJECT_NAME             = conference-manager
 COMPOSE_PROJECT_NAME     := $(COMPOSE_PROJECT_NAME)
 DOCKER_COMPOSE           = docker compose
-
-# Available platforms: linux/amd64 | linux/arm64/v8 | linux/x86_64 | linux/arm/v7
 PLATFORM                 := $(PLATFORM)
 
 ifeq ($(OS),Windows_NT)
@@ -44,11 +43,11 @@ endif
 
 build-dev: ## 🛠️ Build development container image for API
 	docker build --platform $(PLATFORM) --target development \
-		-t $(COMPOSE_PROJECT_NAME)-api-dev .
+		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev .
 
 build-api: ## 🛠️ Build production container image for API
 	docker build --platform $(PLATFORM) \
-		-t $(COMPOSE_PROJECT_NAME)-api .
+		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api .
 
 get-token: ## 🔐 Retrieve Firebase auth token (ROLE=admin|user) Usage: make get-token ROLE=admin
 	node $(TOKEN_SCRIPT_FILE) $(ROLE)
@@ -57,26 +56,26 @@ interactive: ## 🚀 Run API standalone (healthcheck only, no DB)
 	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
-		-p "5002:5002" \
-		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash
+		-p "${MS_PORT}:${MS_PORT}" \
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash
 
 install-dependencies: ## 📦 Install node packages into dev volume
 	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
-		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn install"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn install"
 
 audit-fix-dependencies: ## 🔍 Audit & fix critical/high vulnerabilities
 	docker run -t --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
-		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -c "yarn run security:audit && yarn run security:fix"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -c "yarn run security:audit && yarn run security:fix"
 
 lint: ## 🧪 Run lint checks
 	docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
-		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run lint"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run lint"
 
 unit-tests: unit-tests-v1 unit-tests-v2 ## 🧪 Run all unit test suites (AVA + Jest)
 
@@ -84,13 +83,13 @@ unit-tests-v1: ## 🧪 Run AVA unit tests (v1 legacy)
 	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
-		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v1"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v1"
 
 unit-tests-v2: ## 🧪 Run Jest unit tests (v2 NestJS)
 	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
-		$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v2"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v2"
 
 launch-db: docker-clean ## 🗄️ Launch MongoDB container locally
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml up

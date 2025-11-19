@@ -3,7 +3,7 @@
 services:
   api:
     container_name: ${COMPOSE_PROJECT_NAME}-api
-    image: ${COMPOSE_PROJECT_NAME}-api-dev:latest
+    image: ${PROJECT_NAME}/${COMPOSE_PROJECT_NAME}-api-dev:latest
     ports:
       - ${MS_PORT}:${MS_PORT}
     working_dir: /usr/src/app
