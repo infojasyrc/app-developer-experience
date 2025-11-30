@@ -8,6 +8,7 @@ module.exports = {
   },
   moduleNameMapper: {
     '^firebase-admin$': '<rootDir>/__mocks__/firebase-admin.ts',
+    '^unleash-client$': '<rootDir>/__mocks__/unleash-client.ts',
   },
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
 }

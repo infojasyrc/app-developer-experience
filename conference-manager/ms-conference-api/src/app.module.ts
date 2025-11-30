@@ -9,6 +9,7 @@ import getEnvironmentVariables from './infrastructure/environment'
 // import { HeadquarterModule } from './modules/headquarter/headquarter.module'
 // import { UserModule } from './modules/users/user.module'
 import { FirebaseModule } from './modules/firebase-auth/firebase.module'
+import { UnleashProvider } from './infrastructure/unleash.provider'
 
 import { GetUsersUseCase } from './application/use-cases/user/get-users.usecase'
 import { HealthController } from './interfaces/health/health.controller'
@@ -34,6 +35,6 @@ import { HealthController } from './interfaces/health/health.controller'
       inject: [ConfigService],
     }),],
   controllers: [HealthController],
-  providers: [FirebaseAuthStrategy, GetUsersUseCase],
+  providers: [FirebaseAuthStrategy, GetUsersUseCase, UnleashProvider],
 })
 export class AppModule {}

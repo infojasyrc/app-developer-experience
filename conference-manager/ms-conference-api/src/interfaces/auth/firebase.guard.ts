@@ -4,6 +4,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Auth } from 'firebase-admin/auth';
+import { isAuthEnabled } from '../../infrastructure/unleash.provider';
 
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
@@ -12,6 +13,11 @@ export class FirebaseAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
     const authHeader = request.headers.authorization;
+
+    // Gate Firebase auth behind Unleash feature flag.
+    if (!isAuthEnabled()) {
+      return true;
+    }
 
     if (!authHeader?.startsWith('Bearer ')) throw new UnauthorizedException();
 

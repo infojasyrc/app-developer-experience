@@ -241,8 +241,19 @@ make launch-prod
 
 ### Authentication
 
-This project is using Firebase Authentication.
-All details [here](./docs/FIREBASE.md) in this section
+Authentication is controlled by an Unleash feature flag.
+
+- Set the following environment variables to configure Unleash:
+
+```
+UNLEASH_URL=http://localhost:4242/api
+UNLEASH_API_KEY=your-unleash-api-key
+UNLEASH_APP_NAME=ms-conference-api
+UNLEASH_TOGGLE_AUTH=auth.firebase.enabled
+```
+
+- When the toggle `UNLEASH_TOGGLE_AUTH` (default `auth.firebase.enabled`) is disabled in Unleash, Firebase authentication is bypassed and Firebase Admin SDK is not initialized.
+- When enabled, Firebase authentication remains active. See [docs/FIREBASE.md](./docs/FIREBASE.md) for setup.
 
 ## Features
 

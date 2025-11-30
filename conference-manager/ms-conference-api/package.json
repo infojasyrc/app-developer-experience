@@ -57,6 +57,7 @@
     "yarn-deduplicate": "^6.0.2"
   },
   "dependencies": {
+    "unleash-client": "^5.3.0",
     "@nestjs/cli": "^10.3.0",
     "@nestjs/common": "^10.3.0",
     "@nestjs/config": "^3.1.1",
