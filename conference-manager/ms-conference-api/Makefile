@@ -45,7 +45,7 @@ build-dev: ## 🛠️ Build development container image for API
 	docker build --platform $(PLATFORM) --target development \
 		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev .
 
-build-api: ## 🛠️ Build production container image for API
+build-prod: ## 🛠️ Build production container image for API
 	docker build --platform $(PLATFORM) \
 		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api .
 
