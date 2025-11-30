@@ -11,11 +11,14 @@ services:
     depends_on:
       mongodb:
         condition: service_started
+      unleash-app:
+        condition: service_started
     environment:
       - ../.env
     tty: true
     links:
       - mongodb
+      - unleash-app
 
 networks:
   default:

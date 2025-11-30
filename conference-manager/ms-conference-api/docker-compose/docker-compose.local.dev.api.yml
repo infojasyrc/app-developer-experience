@@ -12,12 +12,15 @@ services:
     depends_on:
       mongodb:
         condition: service_started
+      unleash-app:
+        condition: service_started
     # Load bulk vars from the .env file
     env_file:
       - ../.env
     tty: true
     links:
       - mongodb
+      - unleash-app
     volumes:
       - ../:/usr/src/app:rw
       - backend-packages:/usr/src/app/node_modules
