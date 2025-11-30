@@ -91,6 +91,14 @@ unit-tests-v2: ## 🧪 Run Jest unit tests (v2 NestJS)
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v2"
 
+.PHONY: launch-unleash
+launch-unleash: ## 🚀 Launch feature toggles with unleash
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml up
+
+.PHONY: stop-unleash
+stop-unleash: ## 🛑 Stop feature toggle service
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml down
+
 launch-db: docker-clean ## 🗄️ Launch MongoDB container locally
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml up
 
@@ -99,10 +107,12 @@ stop-db: ## 🛑 Stop local MongoDB container
 
 launch-local-dev: ## 🚀 Launch API + DB (development stack)
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml up
 
 stop-local-dev: ## 🛑 Stop development stack
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml down
 
 launch-local-prod: docker-clean ## 🚀 Launch production-like stack locally

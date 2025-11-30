@@ -14,7 +14,7 @@
 .env.test
 .env.production
 
-/services-config/app.prod.json
+src/services-config/app.prod.json
 /services-config/app.web.prod.json
 /services-config/app.web.json
 
