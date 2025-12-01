@@ -1,6 +1,11 @@
 const serviceContainer = require('../services/service.container')
 
+const { isAuthEnabled } = require('./feature-flags')
+
 async function checkTokenToListEvents(req, res, next) {
+  if (!isAuthEnabled()) {
+    return next()
+  }
   try {
     if (req.headers.authorization) {
       const authService = await serviceContainer('authentication')

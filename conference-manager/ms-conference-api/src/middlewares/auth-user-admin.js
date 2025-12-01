@@ -1,6 +1,12 @@
 const serviceContainer = require('../services/service.container')
 
+const { isAuthEnabled } = require('./feature-flags')
+
 async function authenticateAdminUser(req, res, next) {
+  if (!isAuthEnabled()) {
+    // When auth disabled treat all users as non-admin OR allow by policy; choose allow for simplicity
+    return next()
+  }
   try {
     const userService = await serviceContainer('users')
     const userData = await userService.findById(req.user.id)

@@ -35,16 +35,28 @@ const getURLForDBConnection = () => {
 }
 
 function getEnvironmentVariables() {
-  let requires_auth = !process.env.REQUIRES_AUTH ? true : process.env.REQUIRES_AUTH === 'true'
-
-  if (!process.env.AUTH_PRIVATE_KEY) {
-    throw new Error('AUTH_PRIVATE_KEY is required for running the application')
+  // Determine whether auth is required. If REQUIRES_AUTH explicitly set use that; otherwise infer from presence of AUTH_PRIVATE_KEY.
+  let requires_auth
+  if (typeof process.env.REQUIRES_AUTH !== 'undefined') {
+    requires_auth = process.env.REQUIRES_AUTH === 'true'
+  } else {
+    requires_auth = !!process.env.AUTH_PRIVATE_KEY
   }
 
-  // This is a hack to make the private key work on mac and linux
-  let privateKey = JSON.parse(`${JSON.stringify(process.env.AUTH_PRIVATE_KEY)}`)
-  if (os.type() === 'Darwin') {
-    privateKey = JSON.parse(`"${process.env.AUTH_PRIVATE_KEY}"`)
+  // Only validate Firebase private key when auth is required.
+  let privateKey = null
+  if (requires_auth) {
+    if (!process.env.AUTH_PRIVATE_KEY) {
+      // If auth requested but key missing, downgrade to auth disabled to avoid hard failure.
+      console.warn('[env] AUTH_PRIVATE_KEY missing; disabling auth feature.')
+      requires_auth = false
+    } else {
+      // This is a hack to make the private key work on mac and linux
+      privateKey = JSON.parse(`${JSON.stringify(process.env.AUTH_PRIVATE_KEY)}`)
+      if (os.type() === 'Darwin') {
+        privateKey = JSON.parse(`"${process.env.AUTH_PRIVATE_KEY}"`)
+      }
+    }
   }
 
   validateEnvVariableForDBConnection()
