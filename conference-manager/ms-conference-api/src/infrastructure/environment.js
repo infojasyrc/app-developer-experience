@@ -62,6 +62,7 @@ function getEnvironmentVariables() {
   validateEnvVariableForDBConnection()
 
   const all_variables = {
+    ENVIRONMENT: process.env.NODE_ENV || 'development',
     // This variable should be removed when legacy will be removed
     DEFAULT_DB: process.env.DEFAULT_DB,
     MONGODB_URI: getURLForDBConnection(),
@@ -76,6 +77,11 @@ function getEnvironmentVariables() {
     PRIVATE_KEY_V2: process.env.PRIVATE_KEY_V2,
     PRIVATE_KEY_ADMIN_V2: process.env.PRIVATE_KEY_ADMIN_V2,
     REQUIRES_AUTH: requires_auth,
+    // Unleash environment variables
+    UNLEASH_URL: process.env.UNLEASH_URL || 'http://localhost:4242/api',
+    UNLEASH_API_KEY: process.env.UNLEASH_API_KEY || '',
+    UNLEASH_APP_NAME: process.env.UNLEASH_APP_NAME || 'conference-manager',
+    UNLEASH_TOGGLE_AUTH: process.env.UNLEASH_TOGGLE_AUTH || 'auth.firebase.enabled',
   }
 
   return all_variables

@@ -1,6 +1,7 @@
 // feature-flags.js (legacy express middleware helper)
 // Provides a lightweight isAuthEnabled() aligned with Unleash flag.
 // Falls back to REQUIRES_AUTH env for tests or when Unleash not reachable.
+const getEnvironmentVariables = require('../infrastructure/environment')
 let unleashClient = null
 let unleashInitialized = false
 
@@ -8,10 +9,11 @@ function initUnleashOnce() {
   if (unleashClient || unleashInitialized) return
   try {
     const { initialize } = require('unleash-client')
+    const env = getEnvironmentVariables()
     unleashClient = initialize({
-      url: process.env.UNLEASH_URL || 'http://localhost:4242/api',
-      appName: process.env.UNLEASH_APP_NAME || 'ms-conference-api',
-      customHeaders: { Authorization: process.env.UNLEASH_API_KEY || '' },
+      url: env.UNLEASH_URL,
+      appName: env.UNLEASH_APP_NAME,
+      customHeaders: { Authorization: env.UNLEASH_API_KEY },
     })
     unleashInitialized = true
   } catch (e) {
@@ -20,17 +22,18 @@ function initUnleashOnce() {
 }
 
 function isAuthEnabled() {
+  const env = getEnvironmentVariables()
   // In test environments keep auth ON to satisfy existing assertions.
-  if (process.env.NODE_ENV === 'test') return true
+  if (env.ENVIRONMENT === 'test') return true
   initUnleashOnce()
-  const toggleName = process.env.UNLEASH_TOGGLE_AUTH || 'auth.firebase.enabled'
+  const toggleName = env.UNLEASH_TOGGLE_AUTH
   if (unleashClient) {
     try {
       return unleashClient.isEnabled(toggleName)
     } catch (_) {}
   }
   // Fallback to REQUIRES_AUTH env logic.
-  return process.env.REQUIRES_AUTH === 'true'
+  return env.REQUIRES_AUTH === true
 }
 
 module.exports = { isAuthEnabled }
