@@ -23,70 +23,70 @@ DEV_VOLUME = \
 	-v $(COMPOSE_PROJECT_NAME)-webapp-packages:$(CONTAINER_APP_FOLDER)/node_modules
 
 .PHONY: cm-webapp-docker-clean cm-webapp-build-dev cm-webapp-build-prod cm-webapp-interactive cm-webapp-run-storybook \
-	cm-webapp-install-dependencies cm-webapp-lint cm-webapp-unit-tests m-webapp-commit m-webapp-npm-audit \
+	cm-webapp-install-dependencies cm-webapp-lint cm-webapp-unit-tests cm-webapp-commit cm-webapp-npm-audit \
 	cm-webapp-help
 
-cm-webapp-docker-clean: ## stop+kill all running containers. prune stopped containers. remove all untagged images
+cm-webapp-docker-clean: ## 🧹 Stop+kill containers, prune stopped, remove untagged images
 ifeq ($(OS),Windows_NT)
 	powershell "docker ps -qa | foreach-object {docker kill $$_}; docker container prune --force; docker system prune --force;"
 else
 	docker ps -qa | xargs docker kill; docker container prune --force; docker system prune --force;
 endif
 
-cm-webapp-build-dev: ## build dev container image for webapp
+cm-webapp-build-dev: ## 🛠️ Build dev container image for webapp
 	docker build --platform $(PLATFORM) --target development \
 		-t $(COMPOSE_PROJECT_NAME)-webapp-dev .
 
-cm-webapp-build-prod: ## build container image for webapp
+cm-webapp-build-prod: ## 🛠️ Build production container image for webapp
 	docker build \
 		--build-arg REACT_APP_BASE_PATH=${REACT_APP_BASE_PATH} \
 		--platform $(PLATFORM) . \
 		-t $(COMPOSE_PROJECT_NAME)-webapp
 
-cm-webapp-interactive: ## get a bash shell in the container
+cm-webapp-interactive: ## 🧑‍💻 Open interactive shell in dev container
 	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash
 
-cm-webapp-run-storybook: ## run storybook
+cm-webapp-run-storybook: ## 📚 Run Storybook server (port 6006)
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		-p "6006:6006" \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run storybook -- --no-open --host 0.0.0.0"
 
-cm-webapp-install-dependencies: ## install node packages for webapp dev server into volume
+cm-webapp-install-dependencies: ## 📦 Install Node dependencies into volume for dev
 	docker run -t --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm install"
 
-cm-webapp-lint: ## run linter
+cm-webapp-lint: ## 🔍 Run linter
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run lint"
 
-cm-webapp-unit-tests: ## run all unit tests for webapp
+cm-webapp-unit-tests: ## 🧪 Run all unit tests (watch)
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run test:watch"
 
-cm-webapp-commit: ## use conventional commits to commit changes
+cm-webapp-commit: ## 📝 Conventional commit workflow
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run commit"
 
-cm-webapp-npm-audit: ## run npm audit
+cm-webapp-npm-audit: ## 🛡️ Run npm audit and attempt fixes
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm audit fix --force"
 
-cm-webapp-help:  ## show all make commands
+cm-webapp-help:  ## ❓ Show all make commands
 ifeq ($(OS),Windows_NT)
 	powershell "((type Makefile) -match '##') -notmatch 'grep'"
 else
