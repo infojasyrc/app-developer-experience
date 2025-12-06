@@ -1,11 +1,14 @@
 // infrastructure/firebase-auth.provider.ts
 import * as admin from 'firebase-admin';
+import { isAuthEnabled } from './unleash.provider';
 
-admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-});
+if (isAuthEnabled()) {
+  admin.initializeApp({
+    credential: admin.credential.applicationDefault(),
+  });
+}
 
 export const FirebaseAuthProvider = {
   provide: 'FIREBASE_AUTH',
-  useValue: admin.auth(),
+  useValue: isAuthEnabled() ? admin.auth() : ({} as any),
 };

@@ -1,6 +1,13 @@
 const serviceContainer = require('../services/service.container')
 
+const { isAuthEnabled } = require('./feature-flags')
+
 async function authenticateUserToken(req, res, next) {
+  if (!isAuthEnabled()) {
+    // Skip auth; attach anonymous user placeholder for downstream code expecting req.user
+    req.user = { id: 'anonymous' }
+    return next()
+  }
   try {
     if (!req.headers['authorization']) {
       return res.status(401).json({ status: '401', message: 'Missing authorization headers data' })

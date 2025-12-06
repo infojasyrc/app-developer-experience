@@ -35,21 +35,34 @@ const getURLForDBConnection = () => {
 }
 
 function getEnvironmentVariables() {
-  let requires_auth = !process.env.REQUIRES_AUTH ? true : process.env.REQUIRES_AUTH === 'true'
-
-  if (!process.env.AUTH_PRIVATE_KEY) {
-    throw new Error('AUTH_PRIVATE_KEY is required for running the application')
+  // Determine whether auth is required. If REQUIRES_AUTH explicitly set use that; otherwise infer from presence of AUTH_PRIVATE_KEY.
+  let requires_auth
+  if (typeof process.env.REQUIRES_AUTH !== 'undefined') {
+    requires_auth = process.env.REQUIRES_AUTH === 'true'
+  } else {
+    requires_auth = !!process.env.AUTH_PRIVATE_KEY
   }
 
-  // This is a hack to make the private key work on mac and linux
-  let privateKey = JSON.parse(`${JSON.stringify(process.env.AUTH_PRIVATE_KEY)}`)
-  if (os.type() === 'Darwin') {
-    privateKey = JSON.parse(`"${process.env.AUTH_PRIVATE_KEY}"`)
+  // Only validate Firebase private key when auth is required.
+  let privateKey = null
+  if (requires_auth) {
+    if (!process.env.AUTH_PRIVATE_KEY) {
+      // If auth requested but key missing, downgrade to auth disabled to avoid hard failure.
+      console.warn('[env] AUTH_PRIVATE_KEY missing; disabling auth feature.')
+      requires_auth = false
+    } else {
+      // This is a hack to make the private key work on mac and linux
+      privateKey = JSON.parse(`${JSON.stringify(process.env.AUTH_PRIVATE_KEY)}`)
+      if (os.type() === 'Darwin') {
+        privateKey = JSON.parse(`"${process.env.AUTH_PRIVATE_KEY}"`)
+      }
+    }
   }
 
   validateEnvVariableForDBConnection()
 
   const all_variables = {
+    ENVIRONMENT: process.env.NODE_ENV || 'development',
     // This variable should be removed when legacy will be removed
     DEFAULT_DB: process.env.DEFAULT_DB,
     MONGODB_URI: getURLForDBConnection(),
@@ -64,6 +77,11 @@ function getEnvironmentVariables() {
     PRIVATE_KEY_V2: process.env.PRIVATE_KEY_V2,
     PRIVATE_KEY_ADMIN_V2: process.env.PRIVATE_KEY_ADMIN_V2,
     REQUIRES_AUTH: requires_auth,
+    // Unleash environment variables
+    UNLEASH_URL: process.env.UNLEASH_URL || 'http://localhost:4242/api',
+    UNLEASH_API_KEY: process.env.UNLEASH_API_KEY || '',
+    UNLEASH_APP_NAME: process.env.UNLEASH_APP_NAME || 'conference-manager',
+    UNLEASH_TOGGLE_AUTH: process.env.UNLEASH_TOGGLE_AUTH || 'auth.firebase.enabled',
   }
 
   return all_variables
