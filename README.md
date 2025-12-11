@@ -90,6 +90,12 @@ make create-py-rest
 
 Based on the effiency of copilot and agents, there is a new configuration to handle custom agents.
 
+## Tools
+
+Software excellence means take advantage of tooling to automate and standarize the SDLC.
+
+[Review all tools](./docs/Tooling.md)
+
 ## Relevant information
 
 - [Testing](./docs/Testing.md) to understand how to test different parts of the SDLC.
