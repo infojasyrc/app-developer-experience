@@ -53,44 +53,44 @@ build-prod: ## 🛠️ Build production container image for webapp
 		-t $(COMPOSE_PROJECT_NAME)-webapp
 
 interactive: ## 🧑‍💻 Open interactive shell in dev container
-	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -it --rm --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash
 
 run-storybook: ## 📚 Run Storybook server (port 6006)
-	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		-p "6006:6006" \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run storybook -- --no-open --host 0.0.0.0"
 
 install-dependencies: ## 📦 Install Node dependencies into volume for dev
-	docker run -t --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm install"
 
 lint: ## 🔍 Run linter
-	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run lint"
 
 unit-tests: ## 🧪 Run all unit tests (watch)
-	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run test:watch"
 
 commit: ## 📝 Conventional commit workflow
-	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run commit"
 
 npm-audit: ## 🛡️ Run npm audit and attempt fixes
-	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm audit fix --force"
