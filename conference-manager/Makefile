@@ -5,20 +5,17 @@ include $(ENV_FILE)
 
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
-LOCAL_APP_FOLDER  = /usr/src/app
-CONTAINER_APP_FOLDER = /app
-
 DB_URL     = mongodb://$(DB_ROOT_USERNAME):$(DB_ROOT_PASSWORD)@localhost:$(DB_PORT)/?authSource=admin
 DEFAULT_DB = mongodb
-TOKEN_SCRIPT_FILE = scripts/firebase-auth-test
 
-COMPOSE_PROJECT_NAME = ms-conference
-MS_API_FOLDER = ms-conference-api
-MS_ADMIN_FOLDER = ms-conference-admin
-MS_WEBAPP_FOLDER = ms-conference-webapp
-
+PROJECT_NAME         := $(PROJECT_NAME)
+COMPOSE_PROJECT_NAME := $(COMPOSE_PROJECT_NAME)
 # Available platforms: linux/amd64 | linux/arm64/v8 | linux/x86_64 | linux/arm/v7
-PLATFORM = linux/arm64/v8
+PLATFORM := $(PLATFORM)
+
+MS_API_FOLDER        := ms-conference-api
+MS_ADMIN_FOLDER      := ms-conference-admin
+MS_WEBAPP_FOLDER     := ms-conference-webapp
 
 ifeq ($(OS),Windows_NT)
 	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
@@ -124,12 +121,14 @@ stop-admin-dev: ## stop application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.local.dev.admin.yml down
 
-launch-webapp-dev: docker-clean ## launch the multi-container on local machine
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
-		-f docker-compose/docker-compose.local.dev.api.yml \
-		-f docker-compose/docker-compose.local.dev.app.yml up
+launch-local-dev: docker-clean ## launch all components for local development
+	docker compose --env-file $(ENV_FILE) -f ms-conference-api/docker-compose/docker-compose.db.yml \
+		-f ms-conference-api/docker-compose/docker-compose.unleash.yml \
+		-f ms-conference-api/docker-compose/docker-compose.local.dev.api.yml \
+		-f docker-compose/docker-compose.local.dev.web.yml up
 
-stop-webapp-dev: ## stop application for local development
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
-		-f docker-compose/docker-compose.local.dev.api.yml \
-		-f docker-compose/docker-compose.local.dev.app.yml down
+stop-local-dev: ## stop application for local development
+	docker compose --env-file $(ENV_FILE) -f ms-conference-api/docker-compose/docker-compose.db.yml \
+		-f ms-conference-api/docker-compose/docker-compose.unleash.yml \
+		-f ms-conference-api/docker-compose/docker-compose.local.dev.api.yml \
+		-f docker-compose/docker-compose.local.dev.web.yml down

@@ -7,9 +7,10 @@ include $(ENV_FILE)
 
 CONTAINER_APP_FOLDER = /app
 
-COMPOSE_PROJECT_NAME = ms-conference
+PROJECT_NAME             := $(PROJECT_NAME)
+COMPOSE_PROJECT_NAME     := $(COMPOSE_PROJECT_NAME)
 # Available platforms: linux/amd64 | linux/arm64/v8 | linux/x86_64 | linux/arm/v7
-PLATFORM = linux/arm64/v8
+PLATFORM                 := $(PLATFORM)
 
 ifeq ($(OS),Windows_NT)
 	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
@@ -25,7 +26,7 @@ DEV_VOLUME = \
 .PHONY: docker-clean build-dev build-prod interactive run-storybook install-dependencies \
 	lint unit-tests commit npm-audit help
 
-cm-webapp-docker-clean: ## 🧹 Stop+kill containers, prune stopped, remove untagged images
+docker-clean: ## 🧹 Stop+kill containers, prune stopped, remove untagged images
 ifeq ($(OS),Windows_NT)
 	powershell "docker ps -qa | foreach-object {docker kill $$_}; docker container prune --force; docker system prune --force;"
 else
@@ -34,7 +35,7 @@ endif
 
 build-dev: ## 🛠️ Build dev container image for webapp
 	docker build --platform $(PLATFORM) --target development \
-		-t $(COMPOSE_PROJECT_NAME)-webapp-dev .
+		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev .
 
 build-prod: ## 🛠️ Build production container image for webapp
 	docker build \
@@ -55,44 +56,44 @@ interactive: ## 🧑‍💻 Open interactive shell in dev container
 	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash
 
 run-storybook: ## 📚 Run Storybook server (port 6006)
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		-p "6006:6006" \
-		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run storybook -- --no-open --host 0.0.0.0"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run storybook -- --no-open --host 0.0.0.0"
 
 install-dependencies: ## 📦 Install Node dependencies into volume for dev
 	docker run -t --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm install"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm install"
 
 lint: ## 🔍 Run linter
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run lint"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run lint"
 
 unit-tests: ## 🧪 Run all unit tests (watch)
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run test:watch"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run test:watch"
 
 commit: ## 📝 Conventional commit workflow
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run commit"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run commit"
 
 npm-audit: ## 🛡️ Run npm audit and attempt fixes
 	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm audit fix --force"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm audit fix --force"
 
 help:  ## ❓ Show all make commands
 ifeq ($(OS),Windows_NT)
