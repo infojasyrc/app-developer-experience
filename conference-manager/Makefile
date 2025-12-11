@@ -108,20 +108,6 @@ install-dependencies-admin: ## install packages from pipfile
 # 		--platform $(PLATFORM) \
 # 		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash -ci "pipenv run python -m pytest tests/"
 
-launch-db: docker-clean ## launch db container on local machine
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml up
-
-stop-db: ## locally stop all containers for local development
-	docker compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.db.yml down
-
-launch-api-local: docker-clean ## launch the multi-container on local machine
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
-		-f docker-compose/docker-compose.local.api.yml up
-
-stop-api-local: ## locally stop all containers for local development
-	docker compose --env-file=$(ENV_FILE) -f docker-compose/docker-compose.db.yml \
-		-f docker-compose/docker-compose.local.api.yml down
-
 launch-admin-local: ## launch application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.local.admin.yml up
@@ -129,15 +115,6 @@ launch-admin-local: ## launch application for local development
 stop-admin-local: ## stop application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.local.admin.yml down
-
-launch-api-dev: ## launch application for local development
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
-		-f docker-compose/docker-compose.local.dev.api.yml up
-
-stop-api-dev: ## stop application for local development
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
-		-f docker-compose/docker-compose.local.dev.api.yml down
-
 
 launch-admin-dev: ## launch application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
