@@ -16,12 +16,12 @@ services:
         condition: service_started
     # Load bulk vars from the .env file
     env_file:
-      - ../.env
+      - ../../ms-conference-webapp/.env
     tty: true
     links:
       - api
     volumes:
-      - ../:/app:rw
+      - ../../ms-conference-webapp/:/app:rw
       - frontend-packages:/app/node_modules
 
   storybook:
@@ -34,10 +34,10 @@ services:
     platform: ${PLATFORM}
     restart: unless-stopped
     env_file:
-      - ../.env
+      - ../../ms-conference-webapp/.env
     tty: true
     volumes:
-      - ../:/app:rw
+      - ../../ms-conference-webapp/:/app:rw
       - frontend-packages:/app/node_modules
 
 networks:
