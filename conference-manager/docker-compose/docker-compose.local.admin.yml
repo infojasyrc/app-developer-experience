@@ -45,4 +45,4 @@ services:
 
 networks:
   default:
-    name: ${COMPOSE_PROJECT_NAME}-admin-network
+    name: ${COMPOSE_PROJECT_NAME}-network

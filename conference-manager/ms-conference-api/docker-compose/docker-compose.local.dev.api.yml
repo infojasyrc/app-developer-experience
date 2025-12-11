@@ -28,7 +28,7 @@ services:
 
 networks:
   default:
-    name: ${COMPOSE_PROJECT_NAME}-api-network
+    name: ${COMPOSE_PROJECT_NAME}-network
 
 volumes:
   dev-db:
