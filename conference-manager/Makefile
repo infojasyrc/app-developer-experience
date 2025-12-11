@@ -3,7 +3,7 @@ ENV_FILE = $(shell [ -e ".env" ] && echo ".env" || echo ".env.public")
 
 include $(ENV_FILE)
 
-.DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
+.DEFAULT_GOAL := cm-help # when you run make, it defaults to printing available commands
 
 LOCAL_APP_FOLDER  = /usr/src/app
 CONTAINER_APP_FOLDER = /app
@@ -41,6 +41,121 @@ DEV_VOLUME_ADMIN = \
 	-v $(DIR):$(CONTAINER_APP_FOLDER) \
 	-v $(CONTAINER_APP_FOLDER)/.venv \
 	-v $(COMPOSE_PROJECT_NAME)-admin-packages:$(CONTAINER_APP_FOLDER)/.venv
+
+# Component Makefile paths
+WEBAPP_MAKEFILE := $(MS_WEBAPP_FOLDER)/Makefile
+API_MAKEFILE    := $(MS_API_FOLDER)/Makefile
+
+.PHONY: cm-webapp-help cm-api-help
+cm-webapp-help: ## 📚 Show Webapp component targets
+	@$(MAKE) -C $(MS_WEBAPP_FOLDER) cm-webapp-help
+
+cm-api-help: ## 📚 Show API component targets
+	@$(MAKE) -C $(MS_API_FOLDER) help
+
+.PHONY: cm-help
+cm-help: ## ❓ Show Conference Manager root + component targets
+ifeq ($(OS),Windows_NT)
+	powershell "((type Makefile) -match '##') -notmatch 'grep'"
+else
+	@echo "\nRoot Targets:" && \
+	grep -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' && \
+	echo "\nWebapp Targets:" && $(MAKE) -C $(MS_WEBAPP_FOLDER) cm-webapp-help && \
+	echo "\nAPI Targets:" && $(MAKE) -C $(MS_API_FOLDER) help
+endif
+
+# ===== Webapp proxies (namespaced) =====
+.PHONY: cm-webapp-build-dev cm-webapp-build-prod cm-webapp-install-dependencies cm-webapp-lint cm-webapp-unit-tests \
+        cm-webapp-run-storybook cm-webapp-interactive cm-webapp-npm-audit cm-webapp-docker-clean cm-webapp-commit
+
+cm-webapp-build-dev: ## 🛠️ Build Webapp dev image (proxy)
+	@$(MAKE) -C $(MS_WEBAPP_FOLDER) cm-webapp-build-dev
+
+cm-webapp-build-prod: ## 🛠️ Build Webapp prod image (proxy)
+	@$(MAKE) -C $(MS_WEBAPP_FOLDER) cm-webapp-build-prod
+
+cm-webapp-install-dependencies: ## 📦 Install Webapp dependencies (proxy)
+	@$(MAKE) -C $(MS_WEBAPP_FOLDER) cm-webapp-install-dependencies
+
+cm-webapp-lint: ## 🔍 Lint Webapp (proxy)
+	@$(MAKE) -C $(MS_WEBAPP_FOLDER) cm-webapp-lint
+
+cm-webapp-unit-tests: ## 🧪 Run Webapp unit tests (proxy)
+	@$(MAKE) -C $(MS_WEBAPP_FOLDER) cm-webapp-unit-tests
+
+cm-webapp-run-storybook: ## 📚 Run Storybook (proxy)
+	@$(MAKE) -C $(MS_WEBAPP_FOLDER) cm-webapp-run-storybook
+
+cm-webapp-interactive: ## 🧑‍💻 Interactive shell in Webapp container (proxy)
+	@$(MAKE) -C $(MS_WEBAPP_FOLDER) cm-webapp-interactive
+
+cm-webapp-npm-audit: ## 🛡️ Audit Webapp dependencies (proxy)
+	@$(MAKE) -C $(MS_WEBAPP_FOLDER) cm-webapp-npm-audit
+
+cm-webapp-docker-clean: ## 🧹 Clean Docker for Webapp (proxy)
+	@$(MAKE) -C $(MS_WEBAPP_FOLDER) cm-webapp-docker-clean
+
+cm-webapp-commit: ## 📝 Conventional commit in Webapp (proxy)
+	@$(MAKE) -C $(MS_WEBAPP_FOLDER) cm-webapp-commit
+
+# ===== API proxies (namespaced) =====
+.PHONY: cm-api-build-dev cm-api-build-prod cm-api-install-dependencies cm-api-lint cm-api-unit-tests cm-api-unit-tests-v1 cm-api-unit-tests-v2 \
+        cm-api-get-token cm-api-interactive cm-api-docker-clean cm-api-launch-local-dev cm-api-stop-local-dev cm-api-launch-local-prod cm-api-stop-local-prod \
+        cm-api-launch-db cm-api-stop-db cm-api-launch-unleash cm-api-stop-unleash
+
+cm-api-build-dev: ## 🛠️ Build API dev image (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) build-dev
+
+cm-api-build-prod: ## 🛠️ Build API prod image (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) build-prod
+
+cm-api-install-dependencies: ## 📦 Install API dependencies (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) install-dependencies
+
+cm-api-lint: ## 🔍 Lint API (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) lint
+
+cm-api-unit-tests: ## 🧪 Run all API unit tests (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) unit-tests
+
+cm-api-unit-tests-v1: ## 🧪 Run API AVA tests (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) unit-tests-v1
+
+cm-api-unit-tests-v2: ## 🧪 Run API Jest tests (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) unit-tests-v2
+
+cm-api-get-token: ## 🔐 Get Firebase token (proxy) Usage: make cm-api-get-token ROLE=admin|user
+	@$(MAKE) -C $(MS_API_FOLDER) get-token ROLE=$(ROLE)
+
+cm-api-interactive: ## 🧑‍💻 Interactive API container (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) interactive
+
+cm-api-docker-clean: ## 🧹 Clean Docker for API (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) docker-clean
+
+cm-api-launch-local-dev: ## 🚀 Launch API dev stack (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) launch-local-dev
+
+cm-api-stop-local-dev: ## 🛑 Stop API dev stack (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) stop-local-dev
+
+cm-api-launch-local-prod: ## 🚀 Launch API prod-like stack (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) launch-local-prod
+
+cm-api-stop-local-prod: ## 🛑 Stop API prod-like stack (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) stop-local-prod
+
+cm-api-launch-db: ## 🗄️ Launch DB (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) launch-db
+
+cm-api-stop-db: ## 🛑 Stop DB (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) stop-db
+
+cm-api-launch-unleash: ## 🚀 Launch Unleash (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) launch-unleash
+
+cm-api-stop-unleash: ## 🛑 Stop Unleash (proxy)
+	@$(MAKE) -C $(MS_API_FOLDER) stop-unleash
 
 .PHONY: docker-clean
 docker-clean: ## stop+kill all running containers. prune stopped containers. remove all untagged images
