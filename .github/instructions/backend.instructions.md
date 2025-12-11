@@ -10,3 +10,4 @@ applyTo: "**/*.ts, **/*.tsx, **/*.js, **/*.jsx"
 - Use Clean Architecture principles for project structure.
 - Ensure modules and services are reusable and maintainable.
 - Write unit tests for all critical functionalities.
+- Use the Makefile targets defined inside each project (e.g., `make unit-tests`, `make lint`, `make launch-local-dev`).

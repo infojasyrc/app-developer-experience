@@ -15,6 +15,7 @@
   - [ ] Nestjs REST template (nestjs-rest-tpl)
   - [ ] Nestjs BFF GQL (nestjs-gql-tpl)
 - Conference Manager
+  - [ ] conference-manager-tools (conference-manager)
   - [ ] ms-conference-webapp (conference-webapp)
   - [ ] ms-conference-admin (conference-admin)
   - [ ] ms-conference-api (conference-api)
