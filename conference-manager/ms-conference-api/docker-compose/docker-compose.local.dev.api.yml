@@ -9,6 +9,7 @@ services:
     working_dir: /usr/src/app
     command: /bin/ash -ci "yarn start:dev"
     platform: ${PLATFORM}
+    pull_policy: never
     depends_on:
       mongodb:
         condition: service_started
@@ -27,7 +28,7 @@ services:
 
 networks:
   default:
-    name: ${COMPOSE_PROJECT_NAME}-api-network
+    name: ${COMPOSE_PROJECT_NAME}-network
 
 volumes:
   dev-db:

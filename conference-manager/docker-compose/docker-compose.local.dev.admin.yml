@@ -51,8 +51,8 @@ services:
       - backend-packages:/app/.venv:rw
 
 networks:
-    default:
-        name: ${COMPOSE_PROJECT_NAME}-admin-network
+  default:
+    name: ${COMPOSE_PROJECT_NAME}-network
 
 volumes:
   backend-packages:

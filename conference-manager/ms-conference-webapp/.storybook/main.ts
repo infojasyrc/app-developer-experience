@@ -1,28 +1,23 @@
-import type { StorybookConfig } from "@storybook/experimental-nextjs-vite";
+import type { StorybookConfig } from "@storybook/nextjs-vite";
 
 const config: StorybookConfig = {
-  "stories": [
-    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+  stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  addons: [
+    "@storybook/addon-docs",
   ],
-  "addons": [
-    "@storybook/addon-essentials",
-    "@storybook/addon-onboarding",
-    "@chromatic-com/storybook",
-    // this addon is a replacement for @storybook/addon-interactions
-    "@storybook/experimental-addon-test"
-  ],
-  "framework": {
-    "name": "@storybook/experimental-nextjs-vite",
-    "options": {}
+  core: {
+    builder: "@storybook/builder-vite",
   },
-  "staticDirs": [
-    "../public"
-  ],
+  framework: {
+    name: "@storybook/nextjs-vite",
+    options: {},
+  },
+  staticDirs: ["../public"],
   features: {
     interactionsDebugger: true,
   },
-  core: {
-    builder: "@storybook/builder-vite",
+  docs: {
+    autodocs: true,
   },
   logLevel: "debug",
 };

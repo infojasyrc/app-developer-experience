@@ -1,5 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 
 import BasicCard from './BasicCard';
 
@@ -14,7 +13,7 @@ const meta = {
     title: 'Card Title',
     className: { control: 'text' },
   },
-  args: { onClick: fn() },
+  args: { onClick: () => {} },
 } satisfies Meta<typeof BasicCard>;
 
 export default meta;

@@ -14,7 +14,7 @@ DB_URL                   = mongodb://$(DB_ROOT_USERNAME):$(DB_ROOT_PASSWORD)@loc
 DEFAULT_DB               = mongodb
 TOKEN_SCRIPT_FILE        = scripts/firebase-auth-test
 
-PROJECT_NAME             = conference-manager
+PROJECT_NAME             := $(PROJECT_NAME)
 COMPOSE_PROJECT_NAME     := $(COMPOSE_PROJECT_NAME)
 DOCKER_COMPOSE           = docker compose
 PLATFORM                 := $(PLATFORM)
