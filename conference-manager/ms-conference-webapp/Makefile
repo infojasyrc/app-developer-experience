@@ -58,6 +58,13 @@ interactive: ## 🧑‍💻 Open interactive shell in dev container
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash
 
+launch: ## 🚀 Launch webapp in dev container (only nextjs)
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		-p "8080:3000" \
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run dev"
+
 run-storybook: ## 📚 Run Storybook server (port 6006)
 	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
