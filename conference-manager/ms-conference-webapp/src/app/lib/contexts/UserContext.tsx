@@ -1,6 +1,5 @@
 "use client";
 import React, { ReactNode, useState, useEffect } from 'react';
-import useLocalStorage from '../../hooks/useLocalStorage';
 import { UserCredentials, UserInApp, UserSession } from '../../shared/entities';
 
 interface ContextProps {
@@ -19,13 +18,24 @@ interface ContextProps {
 const UserContext = React.createContext<Partial<ContextProps>>({});
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useLocalStorage<UserSession | null>('userData', null);
-  const [isLoggedIn, setIsLoggedIn] = useState(!!user);
+  const [user, setUser] = useState<UserSession | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [defaultLocation, setDefaultLocation] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsLoggedIn(!!user);
-  }, [user]);
+    const loadSession = async () => {
+      try {
+        const res = await fetch('/api/session', { cache: 'no-store' });
+        const data = await res.json();
+        setUser(data.user ?? null);
+        setIsLoggedIn(!!data.user);
+      } catch {
+        setUser(null);
+        setIsLoggedIn(false);
+      }
+    };
+    loadSession();
+  }, []);
 
   const login = (
     userData: UserInApp,
@@ -37,7 +47,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       ...userCredentials,
       token,
     };
-    setUser(userSession);
+    // Persist on server via HttpOnly cookie
+    fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user: userData, credentials: userCredentials, token }),
+    })
+      .then(() => {
+        setUser(userSession);
+        setIsLoggedIn(true);
+      })
+      .catch(() => {
+        setUser(null);
+        setIsLoggedIn(false);
+      });
   };
 
   const setLocation = (location: string) => {
@@ -45,7 +68,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    setUser(null);
+    fetch('/api/login', { method: 'DELETE' }).finally(() => {
+      setUser(null);
+      setIsLoggedIn(false);
+    });
   };
 
   return (
