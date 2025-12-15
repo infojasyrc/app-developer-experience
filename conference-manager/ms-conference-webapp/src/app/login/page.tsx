@@ -2,11 +2,9 @@
 import { useState, useContext, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Login from '../../components/Login/Login'
-import { Authentication } from '../../lib/api/legacy' // I will create this file later
-import { EventsApi } from '../../lib/api/legacy' // I will create this file later
+import { Authentication } from '../../shared/api'
 import { AuthContext } from '../../lib/contexts/Auth/AuthContext'
 import { useAuth } from '../../lib/hooks/useAuth'
-import { UsersAPI } from '../../lib/api/legacy' // I will create this file later
 
 export default function LoginPage(): JSX.Element {
   const [loading, setLoading] = useState(false)
@@ -22,23 +20,22 @@ export default function LoginPage(): JSX.Element {
   const handleLoginClicked = async (userName: string, password: string) => {
     setLoading(true)
     try {
-      const result = await api.login({ email: userName, password })
-      const resultToken = await result.user.getIdToken()
-      const verifyUser = await UsersAPI().getVerifyUser(result.user.uid).then();
+      // TODO: replace with real auth provider; for now, set server cookie
+      await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user: { displayName: userName },
+          credentials: { email: userName, password },
+          token: 'placeholder-token',
+        }),
+      })
 
       setLoading(false)
-      window.localStorage.setItem('token', JSON.stringify(resultToken))
 
-      setLoginData({ ...verifyUser, id: verifyUser.uid, isAuth: true })
+      setLoginData({ isAuth: true, user: { id: userName, email: userName, firstName: '', lastName: '', isAdmin: undefined } })
 
-      if (eventId) {
-        const eventsApi = EventsApi()
-        await eventsApi.addAttendees(eventId, {
-          email: userName,
-          password,
-        })
-      }
-      handleRedirect(state)
+      handleRedirect({ ...state, email: userName, isAdmin: state?.user?.isAdmin })
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err)
@@ -62,9 +59,9 @@ export default function LoginPage(): JSX.Element {
   }
 
   const handleRedirect = useCallback((userState) => {
-
-    const { email, isAdmin } = userState
-    let shouldRedirectTo = '/login'
+    const email = userState?.email || userState?.user?.email
+    const isAdmin = userState?.isAdmin || userState?.user?.isAdmin
+    let shouldRedirectTo = '/'
 
     if (email) {
       shouldRedirectTo = isAdmin ? '/events/list' : '/'
