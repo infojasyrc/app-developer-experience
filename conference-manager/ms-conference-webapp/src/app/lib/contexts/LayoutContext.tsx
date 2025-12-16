@@ -16,7 +16,7 @@ interface ContextProps {
 
 const defaultState = {
   layout: LayoutTypes.FULL,
-  title: 'Special Spider App',
+  title: 'Conference Manager App',
   showLogo: false,
   changeLayout: () => {},
 }
