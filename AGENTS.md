@@ -21,7 +21,53 @@ This project called "App Developer Experience" contains:
 
 ## Tech Stack & Conventions
 
-### 1. Web Frontend (`conference-manager/ms-conference-webapp`)
+### Templates
+
+#### 1. Nodejs Rest API (`backend/ms-nestjs-rest-tpl/`)
+- **Framework:**
+    - **NestJS:** TypeScript, REST.
+- **Conventions (NestJS):**
+    - Follow strict Modular architecture (Controllers, Services, Modules).
+    - Use DTOs with strict typing for all requests/responses.
+    - Use standard NestJS decorators (`@Controller`, `@Get`, `@Post`).
+
+#### 2. Nodejs GraphQL API (`backend/ms-nestjs-gql-tpl/`)
+- **Framework:**
+    - **NestJS:** TypeScript, GraphQL.
+- **Conventions (NestJS):**
+    - Follow strict Modular architecture (Controllers, Services, Modules).
+    - Use DTOs with strict typing for all requests/responses.
+    - Use standard NestJS decorators (`@Controller`).
+
+#### 3. Python Rest API (`backend/ms-fastapi-rest-tpl/`)
+- **Framework:**
+    - **FastAPI:** Python.
+- **Conventions (FastAPI):**
+    - Use Pydantic models for data validation.
+    - Use Type hints strictly.
+    - Follow PEP 8 style guidelines.
+
+#### 4. Mobile App with React Native (`mobile-app/whitewalker`)
+- **Framework:** React Native.
+- **Language:** TypeScript.
+- **Navigation:** React Navigation.
+- **Conventions:**
+    - Use functional components.
+    - Keep screens in `app/screens` and reusable components in `app/components`.
+    - Use strict typing for navigation params.
+
+#### 5. Mobile App with Expo (`mobile-app/whitewolf-rn`)
+- **Framework:** React Native with Expo.
+- **Language:** TypeScript.
+- **Navigation:** React Navigation.
+- **Conventions:**
+    - Use functional components.
+    - Keep screens in `app/screens` and reusable components in `app/components`.
+    - Use strict typing for navigation params.
+
+### Use Case: Conference Manager
+
+#### 1. Web Frontend (`conference-manager/ms-conference-webapp`)
 - **Framework:** Next.js (App Router `src/app`).
 - **Language:** TypeScript.
 - **Styling:** Tailwind CSS (preferred), CSS Modules.
@@ -33,35 +79,21 @@ This project called "App Developer Experience" contains:
     - Place reusable UI components in `src/components`.
     - Use `src/app` for routing (Next.js 14+ standards).
 
-### 2. Backend API (`backend/`, `conference-manager/ms-conference-api`)
+#### 2. Backend API (`backend/`, `conference-manager/ms-conference-api`)
 - **Frameworks:**
-    - **NestJS:** TypeScript, REST, GraphQL.
-    - **FastAPI:** Python.
+    - **NestJS:** TypeScript, REST.
 - **Conventions (NestJS):**
     - Follow strict Modular architecture (Controllers, Services, Modules).
     - Use DTOs with strict typing for all requests/responses.
     - Use standard NestJS decorators (`@Controller`, `@Get`, `@Post`).
-- **Conventions (FastAPI):**
-    - Use Pydantic models for data validation.
-    - Use Type hints strictly.
-    - Follow PEP 8 style guidelines.
 
-### 3. Mobile App (`mobile-app/whitewolf-rn`)
-- **Framework:** React Native with Expo.
-- **Language:** TypeScript.
-- **Navigation:** React Navigation.
-- **Conventions:**
-    - Use functional components.
-    - Keep screens in `app/screens` and reusable components in `app/components`.
-    - Use strict typing for navigation params.
-
-### 4. Admin Panel (`conference-manager/ms-conference-admin`)
+#### 3. Admin Panel (`conference-manager/ms-conference-admin`)
 - **Framework:** Django (Python).
 - **Conventions:**
     - Standard Django MVT pattern.
     - Use `manage.py` for administrative tasks.
 
-### 5. Infrastructure (`cloud/`)
+#### 4. Infrastructure (`cloud/`)
 - **Tool:** Terraform.
 - **Cloud Provider:** AWS.
 - **Conventions:**
