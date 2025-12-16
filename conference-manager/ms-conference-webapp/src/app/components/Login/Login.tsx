@@ -55,7 +55,7 @@ export default function Login({
   return (
     <div className={loginStyle.loginBoxContainer}>
       <div className={loginStyle.logoContainer}>
-        <Image src="/chupito-logo.svg" alt="Chupito logo" width={180} height={52} />
+        <Image src="/app-logo.svg" alt="App logo" width={180} height={52} />
       </div>
       <div className={loginStyle.input}>
         <div className={loginStyle.formContainer}>
