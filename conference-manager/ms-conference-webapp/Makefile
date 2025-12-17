@@ -39,18 +39,18 @@ build-dev: ## 🛠️ Build dev container image for webapp
 
 build-prod: ## 🛠️ Build production container image for webapp
 	docker build \
-		--build-arg REACT_APP_BASE_PATH=${REACT_APP_BASE_PATH} \
-		--build-arg REACT_APP_VERSION=${REACT_APP_VERSION} \
-		--build-arg REACT_APP_API_KEY=${REACT_APP_API_KEY} \
-		--build-arg REACT_APP_AUTH_DOMAIN=${REACT_APP_AUTH_DOMAIN} \
-		--build-arg REACT_APP_DATABASE_URL=${REACT_APP_DATABASE_URL} \
-		--build-arg REACT_APP_PROJECT_ID=${REACT_APP_PROJECT_ID} \
-		--build-arg REACT_APP_STORAGE_BUCKET=${REACT_APP_STORAGE_BUCKET} \
-		--build-arg REACT_APP_MESSAGING_SENDER_ID=${REACT_APP_MESSAGING_SENDER_ID} \
-		--build-arg REACT_APP_FIREBASE_APP_ID=${REACT_APP_FIREBASE_APP_ID} \
-		--build-arg REACT_APP_MEASUREMENT_ID=${REACT_APP_MEASUREMENT_ID} \
+		--build-arg NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH} \
+		--build-arg NEXT_PUBLIC_VERSION=${NEXT_PUBLIC_VERSION} \
+		--build-arg NEXT_PUBLIC_API_KEY=${NEXT_PUBLIC_API_KEY} \
+		--build-arg NEXT_PUBLIC_AUTH_DOMAIN=${NEXT_PUBLIC_AUTH_DOMAIN} \
+		--build-arg NEXT_PUBLIC_DATABASE_URL=${NEXT_PUBLIC_DATABASE_URL} \
+		--build-arg NEXT_PUBLIC_PROJECT_ID=${NEXT_PUBLIC_PROJECT_ID} \
+		--build-arg NEXT_PUBLIC_STORAGE_BUCKET=${NEXT_PUBLIC_STORAGE_BUCKET} \
+		--build-arg NEXT_PUBLIC_MESSAGING_SENDER_ID=${NEXT_PUBLIC_MESSAGING_SENDER_ID} \
+		--build-arg NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID} \
+		--build-arg NEXT_PUBLIC_MEASUREMENT_ID=${NEXT_PUBLIC_MEASUREMENT_ID} \
 		--platform $(PLATFORM) . \
-		-t $(COMPOSE_PROJECT_NAME)-webapp
+		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp
 
 interactive: ## 🧑‍💻 Open interactive shell in dev container
 	docker run -it --rm --net=host --workdir="$(CONTAINER_APP_FOLDER)" \

@@ -13,9 +13,7 @@ COMPOSE_PROJECT_NAME := $(COMPOSE_PROJECT_NAME)
 # Available platforms: linux/amd64 | linux/arm64/v8 | linux/x86_64 | linux/arm/v7
 PLATFORM := $(PLATFORM)
 
-MS_API_FOLDER        := ms-conference-api
 MS_ADMIN_FOLDER      := ms-conference-admin
-MS_WEBAPP_FOLDER     := ms-conference-webapp
 
 ifeq ($(OS),Windows_NT)
 	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
@@ -51,7 +49,7 @@ endif
 .PHONY: docker-clean build-dev-admin build-admin interactive-admin install-dependencies-admin launch-db stop-db \
 	launch-api-local stop-api-local launch-admin-local stop-admin-local \
 	launch-api-dev stop-api-dev launch-admin-dev stop-admin-dev \
-	launch-webapp-dev stop-webapp-dev webapp-% api-%
+	launch-webapp-dev stop-webapp-dev webapp-% api-% build-all
 
 docker-clean: ## stop+kill all running containers. prune stopped containers. remove all untagged images
 ifeq ($(OS),Windows_NT)
@@ -69,6 +67,8 @@ webapp-%: ## Run webapp make target (e.g., webapp-build-dev)
 # Forward api targets safely without importing all symbols
 api-%: ## Run api make target (e.g., api-build-dev)
 	@make -C ms-conference-api $*
+
+build-all: webapp-build-prod api-build-prod ## build all component images for production
 
 build-dev-admin: ## build container image for admin local development
 	cd ./$(MS_ADMIN_FOLDER); docker build --platform $(PLATFORM) --target build \

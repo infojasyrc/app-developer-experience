@@ -1,70 +1,69 @@
+# syntax=docker/dockerfile:1.4
 FROM node:20-alpine AS development
 
 WORKDIR /app
 
 FROM development AS build
 
-ARG REACT_APP_BASE_PATH
-ENV REACT_APP_BASE_PATH=$REACT_APP_BASE_PATH
-
-ARG REACT_APP_VERSION
-ENV REACT_APP_VERSION=$REACT_APP_VERSION
-
-ARG REACT_APP_API_KEY
-ENV REACT_APP_API_KEY=$REACT_APP_API_KEY
-
-ARG REACT_APP_AUTH_DOMAIN
-ENV REACT_APP_AUTH_DOMAIN=$REACT_APP_AUTH_DOMAIN
-
-ARG REACT_APP_DATABASE_URL
-ENV REACT_APP_DATABASE_URL=$REACT_APP_DATABASE_URL
-
-ARG REACT_APP_PROJECT_ID
-ENV REACT_APP_PROJECT_ID=$REACT_APP_PROJECT_ID
-
-ARG REACT_APP_STORAGE_BUCKET
-ENV REACT_APP_STORAGE_BUCKET=$REACT_APP_STORAGE_BUCKET
-
-ARG REACT_APP_MESSAGING_SENDER_ID
-ENV REACT_APP_MESSAGING_SENDER_ID=$REACT_APP_MESSAGING_SENDER_ID
-
-ARG REACT_APP_FIREBASE_APP_ID
-ENV REACT_APP_FIREBASE_APP_ID=$REACT_APP_FIREBASE_APP_ID
-
-ARG REACT_APP_MEASUREMENT_ID
-ENV REACT_APP_MEASUREMENT_ID=$REACT_APP_MEASUREMENT_ID
-
-RUN apk add --no-cache python3=3.9.5-r1 make=4.3-r0 g++=10.2.1_pre1-r3
-RUN ln -sf python3 /usr/bin/python || true
-
-# RUN apk add --no-cache python3 make g++
-#RUN ln -sf python3 /usr/bin/python || true
-
-# Set environment variable to specify the Python interpreter location
-ENV PYTHON=/usr/bin/python3
-
 WORKDIR /app
 
-COPY package*.json ./
+# Build-time public env vars (baked into client bundles)
+ARG NEXT_PUBLIC_BASE_PATH
+ENV NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH
 
+ARG NEXT_PUBLIC_VERSION
+ENV NEXT_PUBLIC_VERSION=$NEXT_PUBLIC_VERSION
+
+ARG NEXT_PUBLIC_API_KEY
+ENV NEXT_PUBLIC_API_KEY=$NEXT_PUBLIC_API_KEY
+ARG NEXT_PUBLIC_AUTH_DOMAIN
+ENV NEXT_PUBLIC_AUTH_DOMAIN=$NEXT_PUBLIC_AUTH_DOMAIN
+ARG NEXT_PUBLIC_DATABASE_URL
+ENV NEXT_PUBLIC_DATABASE_URL=$NEXT_PUBLIC_DATABASE_URL
+ARG NEXT_PUBLIC_PROJECT_ID
+ENV NEXT_PUBLIC_PROJECT_ID=$NEXT_PUBLIC_PROJECT_ID
+ARG NEXT_PUBLIC_STORAGE_BUCKET
+ENV NEXT_PUBLIC_STORAGE_BUCKET=$NEXT_PUBLIC_STORAGE_BUCKET
+ARG NEXT_PUBLIC_MESSAGING_SENDER_ID
+ENV NEXT_PUBLIC_MESSAGING_SENDER_ID=$NEXT_PUBLIC_MESSAGING_SENDER_ID
+ARG NEXT_PUBLIC_FIREBASE_APP_ID
+ENV NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID
+ARG NEXT_PUBLIC_MEASUREMENT_ID
+ENV NEXT_PUBLIC_MEASUREMENT_ID=$NEXT_PUBLIC_MEASUREMENT_ID
+
+COPY package*.json ./
 RUN npm ci
 
 COPY . .
+RUN npm run build
 
-RUN npm run build:ci
+# Runtime for SSR
+FROM node:20-alpine
 
-FROM nginx:alpine
+WORKDIR /app
+ENV NODE_ENV=production
 
-COPY --from=build /app/build /usr/share/nginx/html
+# Install only production deps
+COPY --from=build /app/package*.json ./
+RUN npm ci --omit=dev
 
-# Create a non-root user and switch to it
+# Create non-root user early and set ownership
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Copy only runtime artifacts and ensure ownership
+# - .next (compiled build)
+# - public static assets
+# - next config if needed at runtime
+COPY --from=build --chown=appuser:appgroup /app/.next ./.next
+COPY --from=build --chown=appuser:appgroup /app/public ./public
+COPY --from=build --chown=appuser:appgroup /app/next.config.* ./
 
 USER appuser
 
-EXPOSE 80
+EXPOSE 3000
 
-# Add a healthcheck
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD curl -f http://localhost/ || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+	CMD wget -qO- http://localhost:3000/ || exit 1
 
-CMD ["nginx", "-g", "daemon off;"]
+# Start Next.js (expects a build already done)
+CMD ["npm", "run", "start"]
