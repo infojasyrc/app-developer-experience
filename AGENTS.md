@@ -1,133 +1,56 @@
 # AGENTS.md
 
-## Project Context
-This is a **monorepo** designed to consolidate best practices for Software Development Life Cycle.
-This project called "App Developer Experience" contains:
-1.  **Templates:** Reusable code starters for Microservices (FastAPI, NestJS Rest and GraphQL) and Mobile Apps (React Native and Expo).
-2.  **Use Case (Conference Manager):** A platform to handle conferences/events information.
-3.  **Infrastructure:** Terraform code for managing cloud resources (AWS).
-4.  **CLI:** A Python-based CLI tool for project management.
+## Overview
+- Monorepo for templates (FastAPI, NestJS REST/GraphQL, Mobile) and the "Conference Manager" use case.
+- Key folders: `backend/`, `conference-manager/`, `mobile-app/`, `cloud/`, `cli/`, `devops/`, `docs/`.
+- Goal: fast, consistent agent contributions with minimal context switching.
 
-## Monorepo Structure
-- `backend/` - Microservice templates (NestJS Rest & NestJS GraphQL & FastAPI).
-- `mobile-app/` - Mobile application templates (React Native/Expo).
-- `conference-manager/` - The main reference project (Microservices + Webapp + Admin).
-- `cloud/` - Infrastructure as Code (Terraform).
-- `cli/` - Python CLI tool.
-- `devops/` - CI/CD pipelines.
-- `docs/` - Documentation.
+## Conventions
+- Commits: Conventional Commits (feat, fix, docs, etc.).
+- Linting: JS/TS via ESLint+Prettier; Python via Black+Isort+Flake8.
+- Secrets: never commit `.env`; use `.env.public` for examples.
+- Docs: update component `README.md` when adding/changing features.
 
----
+## Components
+- Backend templates: NestJS REST (`backend/ms-nestjs-rest-tpl/`), NestJS GraphQL (`backend/ms-nestjs-gql-tpl/`), FastAPI (`backend/ms-fastapi-rest-tpl/`).
+- Mobile templates: React Native (`mobile-app/whitewalker`), Expo RN (`mobile-app/whitewolf-rn`).
+- Conference Manager: API (`conference-manager/ms-conference-api`), Webapp (`conference-manager/ms-conference-webapp`), Admin (`conference-manager/ms-conference-admin`).
+- Infra: Terraform modules in `cloud/terraform` (AWS focused).
 
-## Tech Stack & Conventions
+## Coding Standards
+- NestJS: modular architecture; DTOs; standard decorators.
+- FastAPI: Pydantic models; strict type hints; PEP8.
+- Next.js: App Router in `src/app`; functional components; Tailwind preferred.
+- Django Admin: standard MVT; manage via `manage.py`.
 
-### Templates
+## Makefile Workflow
+- Common:
+  - `make build-dev` – build dev containers.
+  - `make install-dependencies` – install deps.
+  - `make unit-tests` – run unit tests (component-specific).
+- API specifics:
+  - `make launch-db` / `make stop-db` – MongoDB.
+  - `make launch-unleash` / `make stop-unleash` – Feature flags.
+  - `make launch-local-dev` / `make stop-local-dev` – All services.
+- Webapp:
+  - `make launch` – run in container.
+- Root shortcuts:
+  - `make` – list commands.
+  - `make launch-local-dev` / `make stop-local-dev` – run/stop whole stack.
+  - `make webapp-*`, `make api-*` – component command groups.
 
-#### 1. Nodejs Rest API (`backend/ms-nestjs-rest-tpl/`)
-- **Framework:**
-    - **NestJS:** TypeScript, REST.
-- **Conventions (NestJS):**
-    - Follow strict Modular architecture (Controllers, Services, Modules).
-    - Use DTOs with strict typing for all requests/responses.
-    - Use standard NestJS decorators (`@Controller`, `@Get`, `@Post`).
+## Quick Tips for Agents
+- Use local `.nvmrc` inside services; root commit tooling needs Node 22.15.0.
+- Respect template layering; don't cross-import product code.
+- For new features in Conference Manager API, prefer NestJS controllers/services over legacy Express.
+- Preserve env dual-mode behavior (containers vs local) when touching `.env` usage.
 
-#### 2. Nodejs GraphQL API (`backend/ms-nestjs-gql-tpl/`)
-- **Framework:**
-    - **NestJS:** TypeScript, GraphQL.
-- **Conventions (NestJS):**
-    - Follow strict Modular architecture (Controllers, Services, Modules).
-    - Use DTOs with strict typing for all requests/responses.
-    - Use standard NestJS decorators (`@Controller`).
+## When Adding Features
+- Backend: create module + service + controller; add tests.
+- FastAPI: schema → use-case → API route; add tests.
+- Webapp: add components under `src/components`; route under `src/app`.
+- Infra: only modify Terraform with explicit requests.
 
-#### 3. Python Rest API (`backend/ms-fastapi-rest-tpl/`)
-- **Framework:**
-    - **FastAPI:** Python.
-- **Conventions (FastAPI):**
-    - Use Pydantic models for data validation.
-    - Use Type hints strictly.
-    - Follow PEP 8 style guidelines.
-
-#### 4. Mobile App with React Native (`mobile-app/whitewalker`)
-- **Framework:** React Native.
-- **Language:** TypeScript.
-- **Navigation:** React Navigation.
-- **Conventions:**
-    - Use functional components.
-    - Keep screens in `app/screens` and reusable components in `app/components`.
-    - Use strict typing for navigation params.
-
-#### 5. Mobile App with Expo (`mobile-app/whitewolf-rn`)
-- **Framework:** React Native with Expo.
-- **Language:** TypeScript.
-- **Navigation:** React Navigation.
-- **Conventions:**
-    - Use functional components.
-    - Keep screens in `app/screens` and reusable components in `app/components`.
-    - Use strict typing for navigation params.
-
-### Use Case: Conference Manager
-
-#### 1. Web Frontend (`conference-manager/ms-conference-webapp`)
-- **Framework:** Next.js (App Router `src/app`).
-- **Language:** TypeScript.
-- **Styling:** Tailwind CSS (preferred), CSS Modules.
-- **State Management:** React Context / Hooks.
-- **Testing:** Vitest / Jest.
-- **Conventions:**
-    - Use Functional Components.
-    - Use Atomic Design principles.
-    - Place reusable UI components in `src/components`.
-    - Use `src/app` for routing (Next.js 14+ standards).
-
-#### 2. Backend API (`backend/`, `conference-manager/ms-conference-api`)
-- **Frameworks:**
-    - **NestJS:** TypeScript, REST.
-- **Conventions (NestJS):**
-    - Follow strict Modular architecture (Controllers, Services, Modules).
-    - Use DTOs with strict typing for all requests/responses.
-    - Use standard NestJS decorators (`@Controller`, `@Get`, `@Post`).
-
-#### 3. Admin Panel (`conference-manager/ms-conference-admin`)
-- **Framework:** Django (Python).
-- **Conventions:**
-    - Standard Django MVT pattern.
-    - Use `manage.py` for administrative tasks.
-
-#### 4. Infrastructure (`cloud/`)
-- **Tool:** Terraform.
-- **Cloud Provider:** AWS.
-- **Conventions:**
-    - Keep state management configuration isolated.
-    - Use modules for reusable infrastructure components (Network, Compute, DB).
-
----
-
-## Code Quality & Rules
-- **Commits:** Follow **Conventional Commits** (e.g., `feat: add new login screen`, `fix: update user schema`).
-- **Linting:**
-    - **JS/TS:** ESLint + Prettier.
-    - **Python:** Black + Isort + Flake8.
-- **Secrets:** NEVER commit `.env` files. Use `.env.public` for defaults/examples.
-- **Documentation:** Update `README.md` in the specific sub-folder when adding new features or changing architecture.
-
-## Common Commands
-
-### Root
-- **Install All Dependencies:** (Check `Makefile` or root `package.json` if available, otherwise install per folder).
-
-### Web App (`conference-manager/ms-conference-webapp`)
-- `npm run dev`: Start development server.
-- `npm run build`: Build for production.
-- `npm run test`: Run tests.
-
-### Backend (NestJS)
-- `npm run start:dev`: Start in watch mode.
-- `npm run test`: Run unit tests.
-
-### Backend (FastAPI / Python)
-- `pipenv install`: Install dependencies.
-- `uvicorn src.main:app --reload`: Run dev server (verify entry point).
-
-### Mobile
-- `npm start`: Start Expo bundler.
-- `npm run android` / `npm run ios`: Launch on simulator.
+## CI/CD & Docs
+- Devops YAML files are examples; activate only with concrete requirements.
+- Generate changelogs with root `package.json` scripts after merges.
