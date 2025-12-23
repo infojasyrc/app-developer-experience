@@ -14,7 +14,7 @@ interface FeatureCardProps {
   title: string;
   content: string;
   badge?: {
-    color: string;
+    color?: 'blue' | 'green' | 'red' | 'yellow' | 'gray';
     text: string;
   };
   actions?: {
@@ -38,7 +38,7 @@ const FeatureCard = ({
         <CardIcon icon={icon} className="text-2xl mr-3" />
         <div>
           <div className="flex items-center">
-            <CardTitle className="mb-0 mr-2">{title}</CardTitle>
+            <CardTitle className="mb-0 mr-2" title={title} />
             {badge && <CardBadge color={badge.color}>{badge.text}</CardBadge>}
           </div>
           <CardText>{content}</CardText>

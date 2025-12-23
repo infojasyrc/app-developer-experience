@@ -44,7 +44,7 @@ const ProfileCard = ({
       <div className="flex items-center mb-4">
         <CardAvatar src={avatar.src} alt={avatar.alt} />
         <div className="ml-3">
-          <CardTitle className="mb-0">{name}</CardTitle>
+          <CardTitle className="mb-0" title={name} />
           <CardSubtitle className="mb-0">{role}</CardSubtitle>
         </div>
       </div>

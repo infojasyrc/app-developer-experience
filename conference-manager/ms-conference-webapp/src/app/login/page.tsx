@@ -1,12 +1,13 @@
 "use client";
 import { useState, useContext, useEffect, useCallback } from 'react'
+import type { ReactElement } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Login from '../../components/Login/Login'
-import { Authentication } from '../../shared/api'
-import { AuthContext } from '../../lib/contexts/Auth/AuthContext'
-import { useAuth } from '../../lib/hooks/useAuth'
+import Login from '../components/Login/Login'
+import { Authentication } from '../shared/api'
+import { AuthContext } from '../lib/contexts/Auth/AuthContext'
+import { useAuth } from '../lib/hooks/useAuth'
 
-export default function LoginPage(): JSX.Element {
+export default function LoginPage(): ReactElement {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState(false);
   const router = useRouter()

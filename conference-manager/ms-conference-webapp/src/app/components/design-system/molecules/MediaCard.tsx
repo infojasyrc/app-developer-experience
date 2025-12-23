@@ -35,7 +35,7 @@ const MediaCard = ({
   <CardContainer className={className}>
     <CardMedia src={media.src} alt={media.alt} />
     <CardContent>
-      <CardTitle>{title}</CardTitle>
+      <CardTitle title={title} />
       {subtitle && <CardSubtitle>{subtitle}</CardSubtitle>}
       <CardText>{content}</CardText>
       {actions.length > 0 && (
