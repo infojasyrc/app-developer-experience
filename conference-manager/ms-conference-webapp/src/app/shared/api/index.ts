@@ -1,8 +1,4 @@
-export type VerifyApiResponse = {
-  isAuth: boolean;
-  userUid?: string;
-  displayName?: string;
-};
+import { VerifyApiResponse } from '@/app/shared/api/types/authentication';
 
 export function Authentication() {
   return {
