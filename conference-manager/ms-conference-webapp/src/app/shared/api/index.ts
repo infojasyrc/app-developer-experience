@@ -1,8 +1,8 @@
-import { VerifyApiResponse } from '@/app/shared/api/types/authentication';
+import { AuthSession } from '../entities/auth';
 
 export function Authentication() {
   return {
-    async verifyAuth(): Promise<VerifyApiResponse> {
+    async verifyAuth(): Promise<AuthSession> {
       try {
         const res = await fetch('/api/session', { cache: 'no-store' });
         const data = await res.json();
@@ -13,7 +13,7 @@ export function Authentication() {
           displayName: user?.displayName,
         };
       } catch {
-        return { isAuth: false };
+        return { isAuth: false, userUid: '', displayName: null };
       }
     },
     async login(payload: { email: string; password: string }) {
