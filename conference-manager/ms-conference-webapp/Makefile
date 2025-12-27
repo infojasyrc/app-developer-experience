@@ -84,11 +84,17 @@ lint: ## 🔍 Run linter
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run lint"
 
-unit-tests: ## 🧪 Run all unit tests (watch)
+unit-tests-watch: ## 🧪 Run all unit tests in watch mode
 	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run test:watch"
+
+unit-tests: ## 🧪 Run all unit tests
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run test:ci"
 
 commit: ## 📝 Conventional commit workflow
 	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
