@@ -18,8 +18,7 @@
     "version:patch": "npm version patch --no-git-tag-version",
     "version:minor": "npm version minor --no-git-tag-version",
     "version:major": "npm version major --no-git-tag-version",
-    "version:auto": "node scripts/auto-version.js",
-    "prepare": "husky"
+    "version:auto": "node scripts/auto-version.js"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.69.0",

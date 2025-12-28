@@ -4,7 +4,7 @@ import { AuthContext } from './AuthContext'
 import { Authentication } from '../../../shared/api'
 import { reducer, State } from './AuthReducer'
 
-import { VerifyApiResponse } from '../../../shared/entities/auth'
+import { AuthSession } from '../../../shared/entities/auth'
 
 type Props = {
   children: ReactNode
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }: Props) => {
 
   const verifyUser = async () => {
     try {
-      const payload : VerifyApiResponse = await api.verifyAuth()
+      const payload : AuthSession = await api.verifyAuth()
       dispatch({
         type: 'UPDATE_USER',
         payload

@@ -3,7 +3,8 @@ import { useState, useContext, useEffect, useCallback } from "react";
 import type { ReactElement } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Login from "../components/Login/Login";
-import { Authentication } from "../shared/api";
+// Enable when authentication API is ready
+// import { Authentication } from "../shared/api";
 import { AuthContext } from "../lib/contexts/Auth/AuthContext";
 import { useAuth } from "../lib/hooks/useAuth";
 
@@ -11,12 +12,12 @@ export default function LoginPage(): ReactElement {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const eventId = searchParams.get("eventId");
+
   const { setLoginData } = useContext(AuthContext);
   const state = useAuth();
 
-  const api = Authentication();
+  // Enable when authentication API is ready
+  // const api = Authentication();
 
   const handleLoginClicked = async (userName: string, password: string) => {
     setLoading(true);
@@ -85,12 +86,10 @@ export default function LoginPage(): ReactElement {
 
       if (email) {
         shouldRedirectTo = isAdmin ? "/events/list" : "/";
-      } else if (eventId) {
-        shouldRedirectTo = `/event-info/${eventId}`;
       }
       router.push(shouldRedirectTo);
     },
-    [eventId, router],
+    [router],
   );
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 export interface AuthSession {
   isAuth: boolean;
-  userUid?: string;
+  userUid: string;
   displayName?: string | null;
 }
 
