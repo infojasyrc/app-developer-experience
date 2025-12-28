@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import type { ReactElement } from 'react';
 import {
   MdMailOutline,
   MdLock,
@@ -7,7 +8,7 @@ import {
   MdVisibilityOff,
 } from 'react-icons/md';
 import GoogleButton from 'react-google-button';
-import { loginStyle, customButton } from '../../shared/styles/login';
+import { loginStyle } from '../../shared/styles/login';
 import Image from 'next/image';
 
 export interface LoginProps {
@@ -21,7 +22,7 @@ export default function Login({
   onLogin,
   googleOnLogin,
   errorMessage,
-}: LoginProps): JSX.Element {
+}: LoginProps): ReactElement {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [disableLogin, setDisableLogin] = useState(true);
@@ -114,7 +115,7 @@ export default function Login({
             Login
           </button>
           <div className={loginStyle.googleButtonContainer}>
-            <GoogleButton onClick={googleOnLogin} style={{...customButton}} label="Sign in with Google" />
+            <GoogleButton onClick={googleOnLogin} label="Sign in with Google" />
           </div>
         </div>
       </div>

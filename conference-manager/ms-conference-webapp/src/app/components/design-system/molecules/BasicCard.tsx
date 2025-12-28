@@ -22,7 +22,7 @@ const BasicCard = ({
 }: BasicCardProps) => (
   <CardContainer className={className}>
     <CardContent>
-      <CardTitle>{title}</CardTitle>
+      <CardTitle title={title} />
       <CardText>{content}</CardText>
       {actions.length > 0 && (
         <CardActions>
