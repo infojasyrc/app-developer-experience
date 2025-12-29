@@ -7,12 +7,9 @@ on:
   workflow_dispatch: {}
   pull_request:
     branches:
-      - conference-api/**
-      - conference-webapp/**
-      - conference-admin/**
+      - main
     paths:
       - conference-manager/**
-      - backend/**
 
 env:
   # common variables
@@ -91,25 +88,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          check-latest: true
-          cache: yarn
+      - name: Build container for development
+        if: startsWith(github.head_ref, 'conference-api/feat/') || startsWith(github.head_ref, 'conference-api/fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'conference-api/refactor/')
+        run: |
+          make build-dev
 
       - name: Install dependencies
-        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
+        if: startsWith(github.head_ref, 'conference-api/feat/') || startsWith(github.head_ref, 'conference-api/fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'conference-api/refactor/')
         run: |
-          yarn install
+          make install-dependencies
 
       - name: Run Linting
-        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
+        if: startsWith(github.head_ref, 'conference-api/feat/') || startsWith(github.head_ref, 'conference-api/fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'conference-api/refactor/')
         continue-on-error: true
         run: |
-          yarn lint
+          make lint
 
       - name: Run Unit Tests
-        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
+        if: startsWith(github.head_ref, 'conference-api/feat/') || startsWith(github.head_ref, 'conference-api/fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'conference-api/refactor/')
         run: |
-          yarn run test:unit-tests:v2
+          make unit-tests

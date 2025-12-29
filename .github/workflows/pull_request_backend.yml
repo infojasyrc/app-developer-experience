@@ -6,11 +6,8 @@ permissions:
 on:
   pull_request:
     branches:
-      - feat/**
-      - fix/**
-      - hotfix/**
-      - refactor/**
       - fastapi-rest-tpl/**
+      - nestjs-rest-tpl/**
     paths:
       - backend/ms-nestjs-rest-tpl/**
       - backend/ms-fastapi-rest-tpl/**
