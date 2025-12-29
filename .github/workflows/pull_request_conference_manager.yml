@@ -87,24 +87,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # Fetch 0 to ensure we have history for the git diff logic if needed later
+          fetch-depth: 0
 
       - name: Build container for development
         if: startsWith(github.head_ref, 'conference-api/feat/') || startsWith(github.head_ref, 'conference-api/fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'conference-api/refactor/')
-        run: |
-          make build-dev
+        run: make build-dev
 
       - name: Install dependencies
         if: startsWith(github.head_ref, 'conference-api/feat/') || startsWith(github.head_ref, 'conference-api/fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'conference-api/refactor/')
-        run: |
-          make install-dependencies
+        run: make install-dependencies
 
       - name: Run Linting
         if: startsWith(github.head_ref, 'conference-api/feat/') || startsWith(github.head_ref, 'conference-api/fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'conference-api/refactor/')
         continue-on-error: true
-        run: |
-          make lint
+        run: make lint
 
       - name: Run Unit Tests
         if: startsWith(github.head_ref, 'conference-api/feat/') || startsWith(github.head_ref, 'conference-api/fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'conference-api/refactor/')
-        run: |
-          make unit-tests
+        run: make unit-tests

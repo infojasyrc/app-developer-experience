@@ -1,10 +1,9 @@
 name: Get changed packages in repo
-
-description: Gets list of all changed packages in repo
+description: Gets list of all changed packages in repo relative to main
 
 outputs:
   changed_packages: 
-    description: List of all changed packages in repo
+    description: List of all changed packages
     value: ${{ steps.changed-packages.outputs.changed_packages }}
   
 runs:
@@ -14,4 +13,29 @@ runs:
       id: changed-packages
       shell: bash
       run: |
-        echo "changed_packages=$(git diff --name-only HEAD^ HEAD | grep -E '^(conference-manager|backend)' | cut -d'/' -f1-3 | sort | uniq | paste -sd " " -)" >> $GITHUB_OUTPUT
+        # 0. Fix 'Dubious Ownership' error common in act/containers
+        git config --global --add safe.directory '*'
+
+        # 1. Determine the Base Branch
+        TARGET_BRANCH="${GITHUB_BASE_REF:-main}"
+        
+        # 2. Fetch target branch history 
+        # (silenced to prevent failure if offline or no auth in act)
+        git fetch origin "$TARGET_BRANCH" --depth=1 2>/dev/null || true
+        
+        echo "Detecting changes against base: $TARGET_BRANCH"
+        
+        # 3. Get Changed Files
+        # A. COMMITTED: Diff against the divergence point
+        COMMITTED=$(git diff --name-only "origin/$TARGET_BRANCH...HEAD" 2>/dev/null || true)
+        
+        # B. UNCOMMITTED: Check for local dirty files (Crucial for act)
+        UNCOMMITTED=$(git status --porcelain 2>/dev/null | awk '{print $2}')
+        
+        # 4. Combine, Filter, and Output
+        # ADDED '|| true' HERE -> If grep finds nothing, it won't crash the build
+        CHANGED=$(echo "$COMMITTED
+        $UNCOMMITTED" | grep -E '^(conference-manager|backend)' | cut -d'/' -f1-3 | sort | uniq | paste -sd " " - || true)
+        
+        echo "Detected changes in: $CHANGED"
+        echo "changed_packages=$CHANGED" >> $GITHUB_OUTPUT
