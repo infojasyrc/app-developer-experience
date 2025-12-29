@@ -33,54 +33,49 @@ jobs:
           echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
   
   conference-webapp-verify:
-    name: running conference manager webapp lint and unit tests
+    name: running lint and unit tests for conference manager webapp 
     needs: get-changed-packages
-    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp') }}
     runs-on: ubuntu-22.04
+    # Use a gatekeeper logic to only run this job if webapp package is changed for feat/fix/hotfix/refactor branches
+    if: >-
+      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp') &&
+      (
+        startsWith(github.head_ref, 'conference-webapp/feat/') ||
+        startsWith(github.head_ref, 'conference-webapp/fix/') ||
+        startsWith(github.head_ref, 'conference-webapp/hotfix/') ||
+        startsWith(github.head_ref, 'conference-webapp/refactor/')
+      )
     defaults:
       run:
         working-directory: ./conference-manager/ms-conference-webapp
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
         with:
-          check-latest: true
-        id: nvm
+          # Fetch 0 to ensure we have history for the git diff logic if needed later
+          fetch-depth: 0
 
-      - name: Set up Node.js using .nvmrc
-        run: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-          node_version=$(cat .nvmrc)
-          nvm install $node_version
-          nvm use $node_version
-        shell: bash
+      - name: Build container for development
+        run: make build-dev
 
       - name: Install dependencies
-        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
-        run: |
-          npm install
+        run: make install-dependencies
 
       - name: Run Linting
-        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
         continue-on-error: true
-        run: |
-          npm run lint
+        run: make lint
 
       - name: Run Unit Tests
-        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
-        run: |
-          npm run test:ci
+        run: make unit-tests
+
+      - name: Build container for production
+        run: make build-prod
 
   conference-api-verify:
-    name: verify conference manager api
+    name: running lint and unit tests for conference manager api
     needs: get-changed-packages
     runs-on: ubuntu-22.04
-    # Use a gatekeeper logic to only run this job if the api package is changed for feat/fix/hotfix/refactor branches
+    # Use a gatekeeper logic to only run this job if api package is changed for feat/fix/hotfix/refactor branches
     if: >-
       contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api') &&
       (
@@ -111,3 +106,6 @@ jobs:
 
       - name: Run Unit Tests
         run: make unit-tests
+
+      - name: Build container for production
+        run: make build-prod
