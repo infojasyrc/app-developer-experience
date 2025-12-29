@@ -21,7 +21,7 @@ endif
 	install-dependencies init-husky install-hooks lint-commit \
 	setup-commit-validation validate-gh-actions-conference-manager-changed-packages \
 	validate-gh-actions-release-backend-fastapi devops-gh-actions-conference-manager-api-verify \
-	validate-gh-actions-conference-manager-api-verify help
+	run-all-devops-tests help
 
 create-nodejs-gql: clean-examples ## create a microservice with nodejs and graphql
 	@if [ -z "$(NODEJS_NEW_GQL_SERVICE)" ]; then \
@@ -78,6 +78,9 @@ lint-commit: ## check if a commit message is valid
 setup-commit-validation: install-dependencies init-husky install-hooks ## setup commit validation
 	@echo "✅ Commit message validation is ready."
 
+run-all-devops-tests: validate-gh-actions-conference-manager-changed-packages validate-gh-actions-release-backend-fastapi devops-gh-actions-conference-manager-api-verify ## run all devops tests
+	@echo "✅ All devops tests passed successfully."
+
 validate-gh-actions-conference-manager-changed-packages: ## validate github actions for changed packages
 	@echo "Validating GitHub Actions workflow for changed folder..."
 	act -e devops/tests/events_simulate_changed_packages_conference_api.json -j get-changed-packages
@@ -88,16 +91,24 @@ validate-gh-actions-release-backend-fastapi: ## validate github actions for rele
 	act -e devops/tests/events_simulate_release_fastapi_tpl.json -j release-fastapi-rest-tpl
 	@echo "✅ GitHub Actions workflow for release backend fastapi is valid."
 
-# runs as 'push'
-validate-gh-actions-conference-manager-api-verify: ## deprecated validate github actions for conferenceapi-verify
-	@echo "Validating GitHub Actions workflow for conference api verify..."
-	act -e devops/tests/events_simulate_pull_request_conference_api.json -j conference-api-verify
-	@echo "✅ GitHub Actions workflow for conference api verify is valid."
+# Define the path to avoid repetition
+TRIGGER_FILE = conference-manager/ms-conference-api/.act-trigger
 
-# runs as 'pull_request'
-devops-gh-actions-conference-manager-api-verify: ## validate github actions for conferenceapi-verify
+# Runs as 'pull_request'
+devops-gh-actions-conference-manager-api-verify: ## validate github actions for conference-api-verify
 	@echo "Validating GitHub Actions workflow for conference api verify..."
-	act pull_request -e devops/tests/events_simulate_pull_request_conference_api.json -j conference-api-verify
+
+	@# 1. Create the dirty file to trigger the change detection
+	@touch $(TRIGGER_FILE)
+
+	@# 2. Run act. 
+	@#    If it FAILS (||), remove the file and then exit with error code 1.
+	@act pull_request -e devops/tests/events_simulate_pull_request_conference_api.json -j conference-api-verify \
+		|| (rm -f $(TRIGGER_FILE) && exit 1)
+	
+	@# 3. Clean up the file on SUCCESS
+	@rm -f $(TRIGGER_FILE)
+	
 	@echo "✅ GitHub Actions workflow for conference api verify is valid."
 
 help:  ## show all make commands
