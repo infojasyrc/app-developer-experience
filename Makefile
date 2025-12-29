@@ -17,7 +17,12 @@ else
 	DIR := "$$(pwd)"
 endif
 
-.PHONY: create-nodejs-gql
+.PHONY: create-nodejs-gql create-nodejs-rest create-py-rest clean-examples \
+	install-dependencies init-husky install-hooks lint-commit \
+	setup-commit-validation validate-gh-actions-conference-manager-changed-packages \
+	validate-gh-actions-release-backend-fastapi devops-gh-actions-conference-manager-api-verify \
+	run-all-devops-tests help
+
 create-nodejs-gql: clean-examples ## create a microservice with nodejs and graphql
 	@if [ -z "$(NODEJS_NEW_GQL_SERVICE)" ]; then \
 		echo "Error: NODEJS_NEW_GQL_SERVICE variable is not set"; \
@@ -30,7 +35,6 @@ create-nodejs-gql: clean-examples ## create a microservice with nodejs and graph
 		rm package.json.bak package-lock.json.bak
 	@echo "microservice created sucessfully at $(NODEJS_NEW_GQL_SERVICE)."
 
-.PHONY: create-nodejs-rest
 create-nodejs-rest: clean-examples ## create a microservice with nodejs and nestjs
 	@if [ -z "$(NODEJS_NEW_REST_SERVICE)" ]; then \
 		echo "Error: NODEJS_NEW_REST_SERVICE variable is not set"; \
@@ -40,7 +44,6 @@ create-nodejs-rest: clean-examples ## create a microservice with nodejs and nest
 	@cp -r backend/$(NODEJS_REST_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(NODEJS_NEW_REST_SERVICE)"
 	@echo "microservice created sucessfully at $(NODEJS_NEW_REST_SERVICE)."
 
-.PHONY: create-py-rest
 create-py-rest: clean-examples ## create a microservice with fastapi
 	@if [ -z "$(PY_NEW_FASTAPI_SERVICE)" ]; then \
 		echo "Error: PY_NEW_FASTAPI_SERVICE variable is not set"; \
@@ -50,7 +53,6 @@ create-py-rest: clean-examples ## create a microservice with fastapi
 	@cp -r backend/$(PY_FASTAPI_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(PY_NEW_FASTAPI_SERVICE)"
 	@echo "microservice created sucessfully at $(PY_NEW_FASTAPI_SERVICE)."
 
-.PHONY: clean-examples
 clean-examples: ## clean previous examples
 	@echo "cleanning previous examples"
 	@find ./$(OUT_FOLDER) -type d -name "$(NODEJS_NEW_GQL_SERVICE)" -exec rm -rf {} +
@@ -58,42 +60,57 @@ clean-examples: ## clean previous examples
 	@find ./$(OUT_FOLDER) -type d -name "$(PY_NEW_FASTAPI_SERVICE)" -exec rm -rf {} +
 	@echo "removed previous examples"
 
-.PHONY: install-dependencies
 install-dependencies: ## install node dependencies
 	npm install
 
-.PHONY: init-husky
 init-husky: ## init husky if not already initialized
 	npx husky init
 
-.PHONY: install-hooks
 install-hooks: ## add commit-msg hook
 	echo "npx --no -- commitlint --edit \\$$1" > .husky/commit-msg
 	chmod +x .husky/commit-msg
 	@echo "✅ commit-msg hook has been created and made executable."
 
-.PHONY: lint-commit
 lint-commit: ## check if a commit message is valid
 	@echo "Checking last commit message..."
 	@commitlint --from=HEAD~1 --to=HEAD
 
-.PHONY: setup-commit-validation
 setup-commit-validation: install-dependencies init-husky install-hooks ## setup commit validation
 	@echo "✅ Commit message validation is ready."
 
-.PHONY: validate-gh-actions-changed-packages
-validate-gh-actions-changed-packages: ## validate github actions for changed packages
+run-all-devops-tests: validate-gh-actions-conference-manager-changed-packages validate-gh-actions-release-backend-fastapi devops-gh-actions-conference-manager-api-verify ## run all devops tests
+	@echo "✅ All devops tests passed successfully."
+
+validate-gh-actions-conference-manager-changed-packages: ## validate github actions for changed packages
 	@echo "Validating GitHub Actions workflow for changed folder..."
 	act -e devops/tests/events_simulate_changed_packages_conference_api.json -j get-changed-packages
 	@echo "✅ GitHub Actions workflow for changed folder is valid."
 
-.PHONY: validate-gh-actions-release-backend-fastapi
 validate-gh-actions-release-backend-fastapi: ## validate github actions for release backend fastapi
 	@echo "Validating GitHub Actions workflow for release backend fastapi..."
 	act -e devops/tests/events_simulate_release_fastapi_tpl.json -j release-fastapi-rest-tpl
 	@echo "✅ GitHub Actions workflow for release backend fastapi is valid."
 
-.PHONY: help
+# Define the path to avoid repetition
+TRIGGER_FILE = conference-manager/ms-conference-api/.act-trigger
+
+# Runs as 'pull_request'
+devops-gh-actions-conference-manager-api-verify: ## validate github actions for conference-api-verify
+	@echo "Validating GitHub Actions workflow for conference api verify..."
+
+	@# 1. Create the dirty file to trigger the change detection
+	@touch $(TRIGGER_FILE)
+
+	@# 2. Run act. 
+	@#    If it FAILS (||), remove the file and then exit with error code 1.
+	@act pull_request -e devops/tests/events_simulate_pull_request_conference_api.json -j conference-api-verify \
+		|| (rm -f $(TRIGGER_FILE) && exit 1)
+	
+	@# 3. Clean up the file on SUCCESS
+	@rm -f $(TRIGGER_FILE)
+	
+	@echo "✅ GitHub Actions workflow for conference api verify is valid."
+
 help:  ## show all make commands
 ifeq ($(OS),Windows_NT)
 	powershell "((type Makefile) -match '##') -notmatch 'grep'"

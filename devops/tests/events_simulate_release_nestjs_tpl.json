@@ -7,7 +7,7 @@
   },
   "head_commit": {
     "id": "1111111111111111111111111111111111111111",
-    "message": "feat(ms-nestjs-rest-tpl): initial commit",
+    "message": "feat(nestjs-rest-tpl): initial commit",
     "modified": [
       "backend/ms-nestjs-rest-tpl/src/main.py"
     ]

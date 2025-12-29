@@ -1,0 +1,111 @@
+name: Pull Request Verification Workflow for Conference Manager
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    branches:
+      - main
+    paths:
+      - conference-manager/**
+
+env:
+  # common variables
+  PLATFORM: linux/amd64
+
+jobs:
+  get-changed-packages:
+    name: Get list of changed packages
+    runs-on: ubuntu-22.04
+    outputs:
+      changed_packages: ${{ steps.changed-packages.outputs.changed_packages }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - id: changed-packages
+        uses: ./.github/actions/get-changed-packages
+      - name: Output changed packages
+        run: |
+          echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
+  
+  conference-webapp-verify:
+    name: running lint and unit tests for conference manager webapp 
+    needs: get-changed-packages
+    runs-on: ubuntu-22.04
+    # Use a gatekeeper logic to only run this job if webapp package is changed for feat/fix/hotfix/refactor branches
+    if: >-
+      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp') &&
+      (
+        startsWith(github.head_ref, 'conference-webapp/feat/') ||
+        startsWith(github.head_ref, 'conference-webapp/fix/') ||
+        startsWith(github.head_ref, 'conference-webapp/hotfix/') ||
+        startsWith(github.head_ref, 'conference-webapp/refactor/')
+      )
+    defaults:
+      run:
+        working-directory: ./conference-manager/ms-conference-webapp
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Fetch 0 to ensure we have history for the git diff logic if needed later
+          fetch-depth: 0
+
+      - name: Build container for development
+        run: make build-dev
+
+      - name: Install dependencies
+        run: make install-dependencies
+
+      - name: Run Linting
+        continue-on-error: true
+        run: make lint
+
+      - name: Run Unit Tests
+        run: make unit-tests
+
+      - name: Build container for production
+        run: make build-prod
+
+  conference-api-verify:
+    name: running lint and unit tests for conference manager api
+    needs: get-changed-packages
+    runs-on: ubuntu-22.04
+    # Use a gatekeeper logic to only run this job if api package is changed for feat/fix/hotfix/refactor branches
+    if: >-
+      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api') &&
+      (
+        startsWith(github.head_ref, 'conference-api/feat/') ||
+        startsWith(github.head_ref, 'conference-api/fix/') ||
+        startsWith(github.head_ref, 'conference-api/hotfix/') ||
+        startsWith(github.head_ref, 'conference-api/refactor/')
+      )
+    defaults:
+      run:
+        working-directory: ./conference-manager/ms-conference-api
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Fetch 0 to ensure we have history for the git diff logic if needed later
+          fetch-depth: 0
+
+      - name: Build container for development
+        run: make build-dev
+
+      - name: Install dependencies
+        run: make install-dependencies
+
+      - name: Run Linting
+        continue-on-error: true
+        run: make lint
+
+      - name: Run Unit Tests
+        run: make unit-tests
+
+      - name: Build container for production
+        run: make build-prod

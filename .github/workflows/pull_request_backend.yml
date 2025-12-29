@@ -6,18 +6,40 @@ permissions:
 on:
   pull_request:
     branches:
-      - feat/**
-      - fix/**
-      - hotfix/**
-      - refactor/**
+      - fastapi-rest-tpl/**
+      - nestjs-rest-tpl/**
     paths:
       - backend/ms-nestjs-rest-tpl/**
+      - backend/ms-fastapi-rest-tpl/**
+
+env:
+  # common variables
+  PLATFORM: linux/amd64
+  # variables for fastapi rest template
+  FASTAPI_REST_TPL_IMAGE_NAME: fastapi-rest-tpl
 
 jobs:
-  test:
-    name: run unit tests
+  get-changed-packages:
+    name: Get list of changed packages
     runs-on: ubuntu-22.04
+    outputs:
+      changed_packages: ${{ steps.changed-packages.outputs.changed_packages }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - id: changed-packages
+        uses: ./.github/actions/get-changed-packages
+      - name: Output changed packages
+        run: |
+          echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
 
+  nestjs-rest-tpl-unit-tests:
+    name: run unit tests
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-nestjs-rest-tpl') }}
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -51,3 +73,43 @@ jobs:
         run: |
           cd backend/ms-nestjs-rest-tpl
           npm run test:unit-tests
+  
+  fastapi-rest-tpl-unit-tests:
+    name: running fastapi rest template lint and unit tests
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-fastapi-rest-tpl') }}
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./backend/ms-fastapi-rest-tpl
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker registry
+        uses: docker/login-action@v3
+
+      - name: Build container image
+        run: |
+          docker build --target dev -t ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }} -f Dockerfile .
+
+      - name: Install dependencies
+        run: |
+          docker run --rm --workdir=/app \
+            --platform ${{ env.PLATFORM }} \
+            -v $(pwd):/app \
+            -v /app/.venv \
+            -v ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }}-packages:/app/.venv \
+            ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }} bash -c "poetry lock && poetry install --with dev"
+
+      - name: Run tests
+        run: |
+          docker run --rm --workdir=/app \
+            --platform ${{ env.PLATFORM }} \
+            -v $(pwd):/app \
+            -v /app/.venv \
+            -v ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }}-packages:/app/.venv \
+            ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }} bash -c "poetry run pytest"
