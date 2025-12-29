@@ -20,7 +20,7 @@ endif
 .PHONY: create-nodejs-gql create-nodejs-rest create-py-rest clean-examples \
 	install-dependencies init-husky install-hooks lint-commit \
 	setup-commit-validation validate-gh-actions-conference-manager-changed-packages \
-	validate-gh-actions-release-backend-fastapi \
+	validate-gh-actions-release-backend-fastapi devops-gh-actions-conference-manager-api-verify \
 	validate-gh-actions-conference-manager-api-verify help
 
 create-nodejs-gql: clean-examples ## create a microservice with nodejs and graphql
@@ -88,9 +88,16 @@ validate-gh-actions-release-backend-fastapi: ## validate github actions for rele
 	act -e devops/tests/events_simulate_release_fastapi_tpl.json -j release-fastapi-rest-tpl
 	@echo "✅ GitHub Actions workflow for release backend fastapi is valid."
 
-validate-gh-actions-conference-manager-api-verify: ## validate github actions for conferenceapi-verify
+# runs as 'push'
+validate-gh-actions-conference-manager-api-verify: ## deprecated validate github actions for conferenceapi-verify
 	@echo "Validating GitHub Actions workflow for conference api verify..."
 	act -e devops/tests/events_simulate_pull_request_conference_api.json -j conference-api-verify
+	@echo "✅ GitHub Actions workflow for conference api verify is valid."
+
+# runs as 'pull_request'
+devops-gh-actions-conference-manager-api-verify: ## validate github actions for conferenceapi-verify
+	@echo "Validating GitHub Actions workflow for conference api verify..."
+	act pull_request -e devops/tests/events_simulate_pull_request_conference_api.json -j conference-api-verify
 	@echo "✅ GitHub Actions workflow for conference api verify is valid."
 
 help:  ## show all make commands

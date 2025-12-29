@@ -79,8 +79,16 @@ jobs:
   conference-api-verify:
     name: verify conference manager api
     needs: get-changed-packages
-    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api') }}
     runs-on: ubuntu-22.04
+    # Use a gatekeeper logic to only run this job if the api package is changed for feat/fix/hotfix/refactor branches
+    if: >-
+      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api') &&
+      (
+        startsWith(github.head_ref, 'conference-api/feat/') ||
+        startsWith(github.head_ref, 'conference-api/fix/') ||
+        startsWith(github.head_ref, 'conference-api/hotfix/') ||
+        startsWith(github.head_ref, 'conference-api/refactor/')
+      )
     defaults:
       run:
         working-directory: ./conference-manager/ms-conference-api
@@ -92,18 +100,14 @@ jobs:
           fetch-depth: 0
 
       - name: Build container for development
-        if: startsWith(github.head_ref, 'conference-api/feat/') || startsWith(github.head_ref, 'conference-api/fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'conference-api/refactor/')
         run: make build-dev
 
       - name: Install dependencies
-        if: startsWith(github.head_ref, 'conference-api/feat/') || startsWith(github.head_ref, 'conference-api/fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'conference-api/refactor/')
         run: make install-dependencies
 
       - name: Run Linting
-        if: startsWith(github.head_ref, 'conference-api/feat/') || startsWith(github.head_ref, 'conference-api/fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'conference-api/refactor/')
         continue-on-error: true
         run: make lint
 
       - name: Run Unit Tests
-        if: startsWith(github.head_ref, 'conference-api/feat/') || startsWith(github.head_ref, 'conference-api/fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'conference-api/refactor/')
         run: make unit-tests
