@@ -1,0 +1,142 @@
+name: Build and Deploy Conference Manager to AWS
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - conference-manager/**
+
+permissions:
+  contents: read
+
+env:
+  # common variables
+  PLATFORM: linux/amd64
+  ECS_SERVICE: frontend-service
+  ECS_CLUSTER: cluster-app
+  ECS_TASK_DEFINITION: frontend-image
+  CONTAINER_NAME: frontend-image
+  # REACT_APP_BASE_PATH: ${{ secrets.REACT_APP_BASE_PATH}}
+  # REACT_APP_VERSION: ${{ secrets.REACT_APP_VERSION }}
+  # REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
+  # REACT_APP_AUTH_DOMAIN: ${{ secrets.REACT_APP_AUTH_DOMAIN }}
+  # REACT_APP_DATABASE_URL: ${{ secrets.REACT_APP_DATABASE_URL }}
+  # REACT_APP_PROJECT_ID: ${{ secrets.REACT_APP_PROJECT_ID }}
+  # REACT_APP_STORAGE_BUCKET: ${{ secrets.REACT_APP_STORAGE_BUCKET }}
+  # REACT_APP_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_MESSAGING_SENDER_ID }}
+  # REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
+  # REACT_APP_MEASUREMENT_ID: ${{ secrets.REACT_APP_MEASUREMENT_ID }}
+
+jobs:
+  get-changed-packages:
+    name: Get list of changed packages
+    runs-on: ubuntu-22.04
+    outputs:
+      changed_packages: ${{ steps.changed-packages.outputs.changed_packages }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - id: changed-packages
+        uses: ./.github/actions/get-changed-packages
+      - name: Output changed packages
+        run: |
+          echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
+  
+  build-and-deploy-webapp:
+    name: Build, push, and deploy conference webapp
+    needs: get-changed-packages
+    runs-on: ubuntu-latest
+    if: >-
+      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp')
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set image coordinates
+        id: image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          set -euo pipefail
+          echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
+          echo "repository=${{ env.CONTAINER_NAME }}" >> $GITHUB_OUTPUT
+          echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+          echo "image=$REGISTRY/${{ env.CONTAINER_NAME }}:${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Build container image (composite)
+        uses: ./.github/actions/container-build
+        with:
+          working-directory: ./conference-manager/ms-conference-webapp
+          target: build:prod
+        env:
+          # Provide coordinates via env so each component Makefile can consume/override its defaults
+          IMAGE: ${{ steps.image.outputs.image }}
+          PLATFORM: ${{ env.PLATFORM }}
+
+      - name: Push image to ECR and collect metadata (composite)
+        id: push-meta
+        uses: ./.github/actions/container-regisry-push-and-metadata
+        with:
+          image: ${{ steps.image.outputs.image }}
+          repository: ${{ steps.image.outputs.repository }}
+          image-tag: ${{ steps.image.outputs.tag }}
+          aws-region: us-east-1
+
+      - name: Write & upload image size report
+        uses: ./.github/actions/image-size-report
+        with:
+          package: conference-manager/ms-conference-webapp
+          image: ${{ steps.image.outputs.image }}
+          digest: ${{ steps.push-meta.outputs.digest }}
+          compressed-size-bytes: ${{ steps.push-meta.outputs.compressed_size_bytes }}
+          working-directory: ./conference-manager/ms-conference-webapp
+          artifact-name: image-size-ms-conference-webapp
+
+      - name: Download task definition
+        working-directory: ./conference-manager/ms-conference-webapp
+        run: |
+          set -euo pipefail
+          aws ecs describe-task-definition \
+            --task-definition ${{ env.ECS_TASK_DEFINITION }} \
+            --query taskDefinition > task-definition.json
+          echo $(cat task-definition.json | jq 'del(
+                    .taskDefinitionArn,
+                    .requiresAttributes,
+                    .compatibilities,
+                    .revision,
+                    .status,
+                    .registeredAt,
+                    .registeredBy
+                )') > task-definition.json
+          cat task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ./conference-manager/ms-conference-webapp/task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true

@@ -1,0 +1,111 @@
+name: Image size report (write + upload)
+description: Writes an image size report JSON file and uploads it as a GitHub Actions artifact
+
+inputs:
+  package:
+    description: Monorepo package identifier (e.g. conference-manager/ms-conference-webapp)
+    required: true
+
+  image:
+    description: Full image reference (registry/repo:tag)
+    required: true
+
+  digest:
+    description: Image digest (sha256:...)
+    required: true
+
+  compressed-size-bytes:
+    description: Compressed image size in bytes (from registry)
+    required: true
+
+
+  compute-unpacked-size:
+    description: If true, computes unpacked/local image size using docker image inspect
+    required: false
+    default: "true"
+
+  unpacked-size-bytes-override:
+    description: Optional override for unpacked/local image size in bytes (if set, no computation is performed)
+    required: false
+    default: ""
+
+  working-directory:
+    description: Directory where the report file will be written
+    required: false
+    default: .
+
+  report-filename:
+    description: Report filename to write
+    required: false
+    default: image-size.json
+
+  artifact-name:
+    description: Artifact name to upload
+    required: true
+
+outputs:
+  report-path:
+    description: Full path to the report file written by this action
+    value: ${{ steps.write.outputs.report_path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Write image size report JSON
+      id: write
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        REPORT_PATH="${{ inputs.working-directory }}/${{ inputs.report-filename }}"
+
+        # Normalize path when working-directory is '.' to avoid '././file' cosmetic issues
+        if [ "${{ inputs.working-directory }}" = "." ]; then
+          REPORT_PATH="${{ inputs.report-filename }}"
+        fi
+
+        TS="$(date -u +%FT%TZ)"
+
+        # Unpacked size strategy:
+        # 1) If unpacked-size-bytes-override is provided, use it.
+        # 2) Else if compute-unpacked-size is true, compute via docker inspect (best-effort).
+        # 3) Else write null.
+        UNPACKED_JSON="null"
+
+        if [ -n "${{ inputs.unpacked-size-bytes-override }}" ]; then
+          UNPACKED_JSON="${{ inputs.unpacked-size-bytes-override }}"
+        else
+          COMPUTE_FLAG="${{ inputs.compute-unpacked-size }}"
+          if [ "$COMPUTE_FLAG" = "true" ] || [ "$COMPUTE_FLAG" = "True" ] || [ "$COMPUTE_FLAG" = "TRUE" ]; then
+            UNPACKED_BYTES=$(docker image inspect "${{ inputs.image }}" --format='{{.Size}}' 2>/dev/null || true)
+            if [ -n "$UNPACKED_BYTES" ] && [ "$UNPACKED_BYTES" != "<no value>" ]; then
+              UNPACKED_JSON="$UNPACKED_BYTES"
+            fi
+          fi
+        fi
+
+        cat > "${{ inputs.report-filename }}" <<EOF
+        {
+          "package": "${{ inputs.package }}",
+          "image": "${{ inputs.image }}",
+          "digest": "${{ inputs.digest }}",
+          "compressed_size_bytes": "${{ inputs.compressed-size-bytes }}",
+          "unpacked_size_bytes": ${UNPACKED_JSON},
+          "git_sha": "${GITHUB_SHA}",
+          "run_id": "${GITHUB_RUN_ID}",
+          "timestamp": "${TS}"
+        }
+        EOF
+
+        echo "Report written to: ${REPORT_PATH}"
+        echo "report_path=${REPORT_PATH}" >> "$GITHUB_OUTPUT"
+
+        # Optional: print for debugging
+        cat "${{ inputs.report-filename }}"
+
+    - name: Upload image size report artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ steps.write.outputs.report_path }}

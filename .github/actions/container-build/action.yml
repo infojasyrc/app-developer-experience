@@ -1,0 +1,27 @@
+name: Container Build (make build:prod)
+description: Build a container image using the standard make build:prod command
+
+inputs:
+  working-directory:
+    description: Working directory of the package inside the monorepo
+    required: false
+    default: .
+
+  target:
+    description: Make target to execute
+    required: false
+    default: build:prod
+
+runs:
+  using: composite
+  steps:
+    - name: Set up container builder (Buildx)
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build container image
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+        echo "Running make ${{ inputs.target }} in ${{ inputs.working-directory }}"
+        make "${{ inputs.target }}"
