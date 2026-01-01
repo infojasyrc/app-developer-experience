@@ -12,10 +12,13 @@ permissions:
 env:
   # common variables
   PLATFORM: linux/amd64
-  ECS_SERVICE: frontend-service
+  ECS_WEB_SERVICE: conference-webapp
+  ECS_API_SERVICE: conference-api
   ECS_CLUSTER: cluster-app
   ECS_TASK_DEFINITION: frontend-image
-  CONTAINER_NAME: frontend-image
+  WEB_CONTAINER_NAME: ms-conference-webapp
+  API_CONTAINER_NAME: ms-conference-api
+  AWS_REGION: us-west-1
   # REACT_APP_BASE_PATH: ${{ secrets.REACT_APP_BASE_PATH}}
   # REACT_APP_VERSION: ${{ secrets.REACT_APP_VERSION }}
   # REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
@@ -44,7 +47,7 @@ jobs:
         run: |
           echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
   
-  build-and-deploy-webapp:
+  conference-webapp-build-and-deploy:
     name: Build, push, and deploy conference webapp
     needs: get-changed-packages
     runs-on: ubuntu-latest
@@ -74,9 +77,9 @@ jobs:
         run: |
           set -euo pipefail
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
-          echo "repository=${{ env.CONTAINER_NAME }}" >> $GITHUB_OUTPUT
+          echo "repository=${{ env.WEB_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
           echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
-          echo "image=$REGISTRY/${{ env.CONTAINER_NAME }}:${GITHUB_SHA}" >> $GITHUB_OUTPUT
+          echo "image=$REGISTRY/${{ env.WEB_CONTAINER_NAME }}:${GITHUB_SHA}" >> $GITHUB_OUTPUT
 
       - name: Build container image (composite)
         uses: ./.github/actions/container-build
@@ -95,9 +98,9 @@ jobs:
           image: ${{ steps.image.outputs.image }}
           repository: ${{ steps.image.outputs.repository }}
           image-tag: ${{ steps.image.outputs.tag }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Write & upload image size report
+      - name: Write & upload image size report (composite)
         uses: ./.github/actions/image-size-report
         with:
           package: conference-manager/ms-conference-webapp
@@ -107,36 +110,27 @@ jobs:
           working-directory: ./conference-manager/ms-conference-webapp
           artifact-name: image-size-ms-conference-webapp
 
-      - name: Download task definition
-        working-directory: ./conference-manager/ms-conference-webapp
-        run: |
-          set -euo pipefail
-          aws ecs describe-task-definition \
-            --task-definition ${{ env.ECS_TASK_DEFINITION }} \
-            --query taskDefinition > task-definition.json
-          echo $(cat task-definition.json | jq 'del(
-                    .taskDefinitionArn,
-                    .requiresAttributes,
-                    .compatibilities,
-                    .revision,
-                    .status,
-                    .registeredAt,
-                    .registeredBy
-                )') > task-definition.json
-          cat task-definition.json
-
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
+      - name: Deploy to ECS (composite)
+        uses: ./.github/actions/ecs-deploy
         with:
-          task-definition: ./conference-manager/ms-conference-webapp/task-definition.json
-          container-name: ${{ env.CONTAINER_NAME }}
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.WEB_CONTAINER_NAME }}
           image: ${{ steps.image.outputs.image }}
+          ecs-service: ${{ env.ECS_WEB_SERVICE }}
+          ecs-cluster: ${{ env.ECS_CLUSTER }}
+          aws-region: ${{ env.AWS_REGION }}
+          working-directory: ./conference-manager/ms-conference-webapp
+          wait-for-service-stability: "true"
 
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+  conference-api-build-and-deploy:
+    name: Build, push, and deploy conference api
+    needs: get-changed-packages
+    runs-on: ubuntu-latest
+    if: >-
+      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api')
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
