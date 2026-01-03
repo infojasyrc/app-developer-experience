@@ -36,15 +36,9 @@ jobs:
     name: running lint and unit tests for conference manager webapp 
     needs: get-changed-packages
     runs-on: ubuntu-22.04
-    # Use a gatekeeper logic to only run this job if webapp package is changed for feat/fix/hotfix/refactor branches
+    # Use a gatekeeper logic to only run this job if webapp package is changed
     if: >-
-      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp') &&
-      (
-        startsWith(github.head_ref, 'conference-webapp/feat/') ||
-        startsWith(github.head_ref, 'conference-webapp/fix/') ||
-        startsWith(github.head_ref, 'conference-webapp/hotfix/') ||
-        startsWith(github.head_ref, 'conference-webapp/refactor/')
-      )
+      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp')
     defaults:
       run:
         working-directory: ./conference-manager/ms-conference-webapp
@@ -52,8 +46,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # Fetch 0 to ensure we have history for the git diff logic if needed later
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: Build container for development
         run: make build-dev
@@ -75,15 +68,9 @@ jobs:
     name: running lint and unit tests for conference manager api
     needs: get-changed-packages
     runs-on: ubuntu-22.04
-    # Use a gatekeeper logic to only run this job if api package is changed for feat/fix/hotfix/refactor branches
+    # Use a gatekeeper logic to only run this job if api package is changed
     if: >-
-      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api') &&
-      (
-        startsWith(github.head_ref, 'conference-api/feat/') ||
-        startsWith(github.head_ref, 'conference-api/fix/') ||
-        startsWith(github.head_ref, 'conference-api/hotfix/') ||
-        startsWith(github.head_ref, 'conference-api/refactor/')
-      )
+      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api')
     defaults:
       run:
         working-directory: ./conference-manager/ms-conference-api
@@ -91,8 +78,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # Fetch 0 to ensure we have history for the git diff logic if needed later
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: Build container for development
         run: make build-dev
