@@ -19,16 +19,9 @@ env:
   WEB_CONTAINER_NAME: ms-conference-webapp
   API_CONTAINER_NAME: ms-conference-api
   AWS_REGION: us-west-1
-  # REACT_APP_BASE_PATH: ${{ secrets.REACT_APP_BASE_PATH}}
-  # REACT_APP_VERSION: ${{ secrets.REACT_APP_VERSION }}
-  # REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
-  # REACT_APP_AUTH_DOMAIN: ${{ secrets.REACT_APP_AUTH_DOMAIN }}
-  # REACT_APP_DATABASE_URL: ${{ secrets.REACT_APP_DATABASE_URL }}
-  # REACT_APP_PROJECT_ID: ${{ secrets.REACT_APP_PROJECT_ID }}
-  # REACT_APP_STORAGE_BUCKET: ${{ secrets.REACT_APP_STORAGE_BUCKET }}
-  # REACT_APP_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_MESSAGING_SENDER_ID }}
-  # REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
-  # REACT_APP_MEASUREMENT_ID: ${{ secrets.REACT_APP_MEASUREMENT_ID }}
+  # Flags to control deployment steps
+  ENABLE_WEBAPP_DEPLOY: "false"
+  ENABLE_API_DEPLOY: "false"
 
 jobs:
   get-changed-packages:
@@ -50,8 +43,10 @@ jobs:
   conference-webapp-build-and-deploy:
     name: Build, push, and deploy conference webapp
     needs: get-changed-packages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    if: false # Temporarily disabled
     if: >-
+      env.ENABLE_WEBAPP_DEPLOY == 'true' &&
       contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp')
     permissions:
       id-token: write
@@ -126,8 +121,9 @@ jobs:
   conference-api-build-and-deploy:
     name: Build, push, and deploy conference api
     needs: get-changed-packages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: >-
+      env.ENABLE_API_DEPLOY == 'true' &&
       contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api')
     permissions:
       id-token: write
