@@ -45,12 +45,12 @@ ecr-login: ## 🔐 Docker login to ECR (any user with permissions)
 ## CREATE / DELETE REPOSITORIES (ADMIN)
 ## ---------------------------------------------------------------------------
 
-ecr-create: ## 🐳 Create a ECR repository (ADMIN). Usage: make ecr-create-custom [NAME=my-repo]
+ecr-create: ## 🐳 Create a ECR repository (ADMIN). Usage: make ecr-create [NAME=my-repo]
 	@bash -c 'NAME="$(NAME)"; \
 	if [ -z "$$NAME" ]; then NAME="$(CUSTOM_REPO_NAME)"; fi; \
 	if [ -z "$$NAME" ]; then read -p "Enter ECR repository name: " NAME; fi; \
 	echo "Ensuring ECR repository exists: $$NAME"; \
-	if aws ecr describe-repositories --repository-names $$PREFIX_REPO_NAME/$$NAME >/dev/null 2>&1; then \
+	if aws ecr describe-repositories --repository-names $(PREFIX_REPO_NAME)/$$NAME >/dev/null 2>&1; then \
 		echo "Repository $$NAME already exists."; \
 	else \
 		echo "Creating repository $$NAME..."; \
@@ -61,14 +61,14 @@ ecr-create: ## 🐳 Create a ECR repository (ADMIN). Usage: make ecr-create-cust
 			--tags $(ECR_TAGS) \
 			--region $(AWS_REGION); \
 	fi; \
-	echo "✅ Repo URI: $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$$PREFIX_REPO_NAME/$$NAME"'
+	echo "✅ Repo URI: $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(PREFIX_REPO_NAME)/$$NAME"'
 
-ecr-delete: ## ❌ Delete a ECR repository (DANGEROUS). Usage: make ecr-delete-custom NAME=my-repo
+ecr-delete: ## ❌ Delete a ECR repository (DANGEROUS). Usage: make ecr-delete NAME=my-repo
 	@bash -c 'NAME=$${NAME}; \
 	if [ -z "$$NAME" ]; then read -p "Enter ECR repository name to DELETE: " NAME; fi; \
 	echo "Deleting repository $$NAME (images will be lost)..."; \
-	aws ecr delete-repository --repository-name $$PREFIX_REPO_NAME/$$NAME --force --region $(AWS_REGION); \
-	echo "✅ Deleted $$PREFIX_REPO_NAME/$$NAME"'
+	aws ecr delete-repository --repository-name $(PREFIX_REPO_NAME)/$$NAME --force --region $(AWS_REGION); \
+	echo "✅ Deleted $(PREFIX_REPO_NAME)/$$NAME"'
 
 # NOTE: Build & push targets are intentionally omitted here because the repo has
 # multiple services. Consider creating per-service Makefiles that tag & push
