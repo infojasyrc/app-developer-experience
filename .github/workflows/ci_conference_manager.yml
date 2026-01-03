@@ -1,0 +1,154 @@
+name: Build and Deploy Conference Manager to AWS
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - conference-manager/**
+
+permissions:
+  contents: read
+
+env:
+  # common variables
+  PLATFORM: linux/amd64
+  ECS_WEB_SERVICE: conference-webapp
+  ECS_API_SERVICE: conference-api
+  ECS_CLUSTER: cluster-app
+  ECS_TASK_DEFINITION: frontend-image
+  WEB_CONTAINER_NAME: ms-conference-webapp
+  API_CONTAINER_NAME: ms-conference-api
+  AWS_REGION: us-west-1
+  # Flags to control deployment steps
+  ENABLE_WEBAPP_DEPLOY: "false"
+  ENABLE_API_DEPLOY: "false"
+
+jobs:
+  get-changed-packages:
+    name: Get list of changed packages
+    runs-on: ubuntu-22.04
+    outputs:
+      changed_packages: ${{ steps.changed-packages.outputs.changed_packages }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - id: changed-packages
+        uses: ./.github/actions/get-changed-packages
+      - name: Output changed packages
+        run: |
+          echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
+  
+  conference-webapp-build-and-deploy:
+    name: Build, push, and deploy conference webapp
+    needs: get-changed-packages
+    runs-on: ubuntu-22.04
+    if: false # Temporarily disabled
+    if: >-
+      env.ENABLE_WEBAPP_DEPLOY == 'true' &&
+      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp')
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set image coordinates
+        id: image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          set -euo pipefail
+          echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
+          echo "repository=${{ env.WEB_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
+          echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+          echo "image=$REGISTRY/${{ env.WEB_CONTAINER_NAME }}:${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Build container image (composite)
+        uses: ./.github/actions/container-build
+        with:
+          working-directory: ./conference-manager/ms-conference-webapp
+          target: build:prod
+        env:
+          # Provide coordinates via env so each component Makefile can consume/override its defaults
+          IMAGE: ${{ steps.image.outputs.image }}
+          PLATFORM: ${{ env.PLATFORM }}
+
+      - name: Push image to ECR and collect metadata (composite)
+        id: push-meta
+        uses: ./.github/actions/container-regisry-push-and-metadata
+        with:
+          image: ${{ steps.image.outputs.image }}
+          repository: ${{ steps.image.outputs.repository }}
+          image-tag: ${{ steps.image.outputs.tag }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Write & upload image size report (composite)
+        uses: ./.github/actions/image-size-report
+        with:
+          package: conference-manager/ms-conference-webapp
+          image: ${{ steps.image.outputs.image }}
+          digest: ${{ steps.push-meta.outputs.digest }}
+          compressed-size-bytes: ${{ steps.push-meta.outputs.compressed_size_bytes }}
+          working-directory: ./conference-manager/ms-conference-webapp
+          artifact-name: image-size-ms-conference-webapp
+
+      - name: Deploy to ECS (composite)
+        if: github.ref == 'refs/heads/main' && env.ACT != 'true'
+        uses: ./.github/actions/ecs-deploy
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.WEB_CONTAINER_NAME }}
+          image: ${{ steps.image.outputs.image }}
+          ecs-service: ${{ env.ECS_WEB_SERVICE }}
+          ecs-cluster: ${{ env.ECS_CLUSTER }}
+          aws-region: ${{ env.AWS_REGION }}
+          working-directory: ./conference-manager/ms-conference-webapp
+          wait-for-service-stability: "true"
+
+  conference-api-build-and-deploy:
+    name: Build, push, and deploy conference api
+    needs: get-changed-packages
+    runs-on: ubuntu-22.04
+    if: >-
+      env.ENABLE_API_DEPLOY == 'true' &&
+      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api')
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set image coordinates
+        id: image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          set -euo pipefail
+          echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
+          echo "repository=${{ env.API_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
+          echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+          echo "image=$REGISTRY/${{ env.API_CONTAINER_NAME }}:${GITHUB_SHA}" >> $GITHUB_OUTPUT

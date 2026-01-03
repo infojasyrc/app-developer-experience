@@ -1,0 +1,91 @@
+name: ECS Deploy (update image)
+description: Downloads an ECS task definition, injects a new container image, and deploys to an ECS service.
+
+inputs:
+  task-definition:
+    description: ECS task definition name or ARN to fetch (e.g., frontend-image)
+    required: true
+
+  container-name:
+    description: Container name inside the task definition to update
+    required: true
+
+  image:
+    description: Full image reference to deploy (e.g., <acct>.dkr.ecr.<region>.amazonaws.com/repo:tag)
+    required: true
+
+  ecs-service:
+    description: ECS service name
+    required: true
+
+  ecs-cluster:
+    description: ECS cluster name
+    required: true
+
+  aws-region:
+    description: AWS region
+    required: false
+    default: us-east-1
+
+  working-directory:
+    description: Directory where task-definition.json will be written
+    required: false
+    default: .
+
+  wait-for-service-stability:
+    description: Whether to wait for ECS service stability
+    required: false
+    default: "true"
+
+  output-task-definition-file:
+    description: Filename for the sanitized task definition JSON
+    required: false
+    default: task-definition.json
+
+outputs:
+  rendered-task-definition:
+    description: Path to the rendered task definition file produced by amazon-ecs-render-task-definition
+    value: ${{ steps.render.outputs.task-definition }}
+
+runs:
+  using: composite
+  steps:
+    - name: Download task definition
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        aws ecs describe-task-definition \
+          --task-definition "${{ inputs.task-definition }}" \
+          --query taskDefinition \
+          --region "${{ inputs.aws-region }}" > raw-task-definition.json
+
+        # Remove fields that cannot be included when re-registering a task definition
+        jq 'del(
+              .taskDefinitionArn,
+              .requiresAttributes,
+              .compatibilities,
+              .revision,
+              .status,
+              .registeredAt,
+              .registeredBy
+            )' raw-task-definition.json > "${{ inputs.output-task-definition-file }}"
+
+        rm -f raw-task-definition.json
+
+    - name: Render task definition with new image
+      id: render
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ inputs.working-directory }}/${{ inputs.output-task-definition-file }}
+        container-name: ${{ inputs.container-name }}
+        image: ${{ inputs.image }}
+
+    - name: Deploy task definition to ECS service
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.render.outputs.task-definition }}
+        service: ${{ inputs.ecs-service }}
+        cluster: ${{ inputs.ecs-cluster }}
+        wait-for-service-stability: ${{ inputs.wait-for-service-stability }}

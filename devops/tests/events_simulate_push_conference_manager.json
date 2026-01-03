@@ -1,0 +1,28 @@
+{
+  "ref": "refs/heads/main",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "1111111111111111111111111111111111111111",
+  "repository": {
+    "full_name": "app-developer-experience"
+  },
+  "head_commit": {
+    "id": "1111111111111111111111111111111111111111",
+    "message": "chore(conference-webapp): simulate conference manager push",
+    "added": [
+      "conference-manager/ms-conference-webapp/README.md"
+    ],
+    "modified": [],
+    "removed": []
+  },
+  "commits": [
+    {
+      "id": "1111111111111111111111111111111111111111",
+      "message": "chore(conference-webapp): simulate conference manager push",
+      "added": [
+        "conference-manager/ms-conference-webapp/README.md"
+      ],
+      "modified": [],
+      "removed": []
+    }
+  ]
+}

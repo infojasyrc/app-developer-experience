@@ -20,8 +20,8 @@ endif
 .PHONY: create-nodejs-gql create-nodejs-rest create-py-rest clean-examples \
 	install-dependencies init-husky install-hooks lint-commit \
 	setup-commit-validation validate-gh-actions-conference-manager-changed-packages \
-	validate-gh-actions-release-backend-fastapi devops-gh-actions-conference-manager-api-verify \
-	run-all-devops-tests help
+	devops-pr-conference-manager-api-verify devops-ci-conference-manager-build-and-deploy \
+	validate-gh-actions-release-backend-fastapi run-all-devops-tests help
 
 create-nodejs-gql: clean-examples ## create a microservice with nodejs and graphql
 	@if [ -z "$(NODEJS_NEW_GQL_SERVICE)" ]; then \
@@ -78,7 +78,7 @@ lint-commit: ## check if a commit message is valid
 setup-commit-validation: install-dependencies init-husky install-hooks ## setup commit validation
 	@echo "✅ Commit message validation is ready."
 
-run-all-devops-tests: validate-gh-actions-conference-manager-changed-packages validate-gh-actions-release-backend-fastapi devops-gh-actions-conference-manager-api-verify ## run all devops tests
+run-all-devops-tests: validate-gh-actions-conference-manager-changed-packages validate-gh-actions-release-backend-fastapi devops-pr-conference-manager-api-verify ## run all devops tests
 	@echo "✅ All devops tests passed successfully."
 
 validate-gh-actions-conference-manager-changed-packages: ## validate github actions for changed packages
@@ -86,28 +86,46 @@ validate-gh-actions-conference-manager-changed-packages: ## validate github acti
 	act -e devops/tests/events_simulate_changed_packages_conference_api.json -j get-changed-packages
 	@echo "✅ GitHub Actions workflow for changed folder is valid."
 
+devops-ci-conference-manager-build-and-deploy: ## validate github actions for ci_conference_manager workflow
+	@echo "Validating GitHub Actions workflow for ci_conference_manager..."
+
+	@# 1. Create the dirty file to trigger the change detection
+	@touch $(TRIGGER_FILE_WEBAPP)
+
+	@# 2. Run act.
+	@#    If it FAILS (||), remove the file and then exit with error code 1.
+	@act push -W .github/workflows/ci_conference_manager.yml \
+		-e devops/tests/events_simulate_push_conference_manager.json -j conference-webapp-build-and-deploy \
+		|| (rm -f $(TRIGGER_FILE_WEBAPP) && exit 1)
+
+	@# 3. Clean up the file on SUCCESS
+	@rm -f $(TRIGGER_FILE_WEBAPP)
+
+	@echo "✅ GitHub Actions workflow for ci_conference_manager is valid."
+
 validate-gh-actions-release-backend-fastapi: ## validate github actions for release backend fastapi
 	@echo "Validating GitHub Actions workflow for release backend fastapi..."
 	act -e devops/tests/events_simulate_release_fastapi_tpl.json -j release-fastapi-rest-tpl
 	@echo "✅ GitHub Actions workflow for release backend fastapi is valid."
 
 # Define the path to avoid repetition
-TRIGGER_FILE = conference-manager/ms-conference-api/.act-trigger
+TRIGGER_FILE_API = conference-manager/ms-conference-api/.act-trigger
+TRIGGER_FILE_WEBAPP = conference-manager/ms-conference-webapp/.act-trigger
 
 # Runs as 'pull_request'
-devops-gh-actions-conference-manager-api-verify: ## validate github actions for conference-api-verify
+devops-pr-conference-manager-api-verify: ## validate github actions for conference-api-verify pull request workflow
 	@echo "Validating GitHub Actions workflow for conference api verify..."
 
 	@# 1. Create the dirty file to trigger the change detection
-	@touch $(TRIGGER_FILE)
+	@touch $(TRIGGER_FILE_API)
 
 	@# 2. Run act. 
 	@#    If it FAILS (||), remove the file and then exit with error code 1.
 	@act pull_request -e devops/tests/events_simulate_pull_request_conference_api.json -j conference-api-verify \
-		|| (rm -f $(TRIGGER_FILE) && exit 1)
+		|| (rm -f $(TRIGGER_FILE_API) && exit 1)
 	
 	@# 3. Clean up the file on SUCCESS
-	@rm -f $(TRIGGER_FILE)
+	@rm -f $(TRIGGER_FILE_API)
 	
 	@echo "✅ GitHub Actions workflow for conference api verify is valid."
 

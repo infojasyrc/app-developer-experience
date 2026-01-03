@@ -1,0 +1,91 @@
+name: Push to Container Registry and collect metadata
+description: Push Docker image to Amazon ECR and return digest and compressed size
+
+inputs:
+  image:
+    description: Full image name (registry/repo:tag)
+    required: true
+  repository:
+    description: Container Registry repository name (no registry)
+    required: true
+  image-tag:
+    description: Image tag pushed to CR
+    required: true
+  aws-region:
+    description: AWS region
+    required: false
+    default: us-east-1
+
+outputs:
+  digest:
+    description: Image digest (sha256)
+    value: ${{ steps.metadata.outputs.digest }}
+  compressed_size_bytes:
+    description: Compressed image size in bytes
+    value: ${{ steps.metadata.outputs.compressed_size_bytes }}
+
+runs:
+  using: composite
+  steps:
+    - name: Login to Amazon ECR
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Push image to ECR
+      id: push
+      shell: bash
+      run: |
+        set -euo pipefail
+        docker push "${{ inputs.image }}"
+
+        # Capture immutable digest from the pushed image reference (best-effort)
+        # This avoids tag ambiguity when looking up metadata in ECR.
+        DIGEST_LOCAL=$(docker image inspect "${{ inputs.image }}" --format='{{index .RepoDigests 0}}' 2>/dev/null || true)
+        if [ -n "$DIGEST_LOCAL" ] && echo "$DIGEST_LOCAL" | grep -q '@sha256:'; then
+          # Extract sha256:... portion
+          DIGEST_ONLY="${DIGEST_LOCAL#*@}"
+          echo "digest_local=$DIGEST_ONLY" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Fetch image digest and compressed size
+      id: metadata
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        # Prefer immutable digest if captured during push; fall back to tag lookup.
+        if [ -n "${{ steps.push.outputs.digest_local || '' }}" ]; then
+          DIGEST="${{ steps.push.outputs.digest_local }}"
+          SIZE_BYTES=$(aws ecr describe-images \
+            --repository-name "${{ inputs.repository }}" \
+            --image-ids imageDigest="$DIGEST" \
+            --query 'imageDetails[0].imageSizeInBytes' \
+            --output text \
+            --region "${{ inputs.aws-region }}")
+        else
+          DIGEST=$(aws ecr describe-images \
+            --repository-name "${{ inputs.repository }}" \
+            --image-ids imageTag="${{ inputs.image-tag }}" \
+            --query 'imageDetails[0].imageDigest' \
+            --output text \
+            --region "${{ inputs.aws-region }}")
+
+          SIZE_BYTES=$(aws ecr describe-images \
+            --repository-name "${{ inputs.repository }}" \
+            --image-ids imageTag="${{ inputs.image-tag }}" \
+            --query 'imageDetails[0].imageSizeInBytes' \
+            --output text \
+            --region "${{ inputs.aws-region }}")
+        fi
+
+        # Fail fast if ECR did not return expected values
+        if [ -z "${DIGEST:-}" ] || [ "$DIGEST" = "None" ]; then
+          echo "ERROR: Could not resolve image digest from ECR (repository=${{ inputs.repository }}, tag=${{ inputs.image-tag }})" >&2
+          exit 1
+        fi
+        if [ -z "${SIZE_BYTES:-}" ] || [ "$SIZE_BYTES" = "None" ]; then
+          echo "ERROR: Could not resolve image size from ECR (repository=${{ inputs.repository }}, digest=$DIGEST)" >&2
+          exit 1
+        fi
+
+        echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+        echo "compressed_size_bytes=$SIZE_BYTES" >> $GITHUB_OUTPUT
