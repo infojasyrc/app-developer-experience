@@ -30,6 +30,7 @@ const authenticateAdminUser = function (testCase) {
           findById: sinon.stub().returns(stub),
         })
       : sinon.stub().throws(),
+    './../../src/middlewares/feature-flags': { isAuthEnabled: () => true },
   })
 }
 

@@ -3,7 +3,7 @@
 services:
   mongodb:
     container_name: ${COMPOSE_PROJECT_NAME}-db
-    image: mongo:6.0.6
+    image: mongo:8.0-noble
     ports:
       - 27017:27017
     environment:
