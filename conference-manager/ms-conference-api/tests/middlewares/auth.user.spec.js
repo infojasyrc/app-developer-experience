@@ -33,6 +33,7 @@ const authenticateUserToken = function (testCase) {
           verifyToken: sinon.stub().returns(stub),
         })
       : sinon.stub().throws(),
+    '../../src/middlewares/feature-flags': { isAuthEnabled: () => true },
   })
 }
 test.beforeEach(t => {

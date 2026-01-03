@@ -36,6 +36,7 @@ const checkTokenListEvents = function (testCase) {
       findById: sinon.stub().returns(findByIdStub),
       verifyToken: sinon.stub().returns(verifyTokenStub),
     }),
+    '../../src/middlewares/feature-flags': { isAuthEnabled: () => true },
   })
 }
 
