@@ -178,7 +178,7 @@ git commit -m "fix(conference-webapp): resolve layout issue"
 - `conference-webapp/fix/resolve-layout-issue` → changes only `conference-manager/ms-conference-webapp`
 
 ## Related Files
-- Workflow definition: [.github/workflows/pull_request_conference_manager.yml](.github/workflows/pull_request_conference_manager.yml)
-- Changed packages action: [.github/actions/get-changed-packages/action.yml](.github/actions/get-changed-packages/action.yml)
-- Event simulation: [devops/tests/events_simulate_pull_request_conference_api.json](devops/tests/events_simulate_pull_request_conference_api.json)
-- Makefile targets: [Makefile](Makefile) (search for `devops-*` targets)
+- Workflow definition: [.github/workflows/pull_request_conference_manager.yml](../workflows/pull_request_conference_manager.yml)
+- Changed packages action: [.github/actions/get-changed-packages/action.yml](../actions/get-changed-packages/action.yml)
+- Event simulation: [devops/tests/events_simulate_pull_request_conference_api.json](../../devops/tests/events_simulate_pull_request_conference_api.json)
+- Makefile targets: [Makefile](../../Makefile) (search for `devops-*` targets)
