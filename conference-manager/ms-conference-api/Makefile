@@ -72,7 +72,7 @@ audit-fix-dependencies: ## 🔍 Audit & fix critical/high vulnerabilities
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -c "yarn run security:audit && yarn run security:fix"
 
 lint: ## 🧪 Run lint checks
-	docker run -it --workdir="$(LOCAL_APP_FOLDER)" \
+	docker run -t --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run lint"
@@ -80,13 +80,13 @@ lint: ## 🧪 Run lint checks
 unit-tests: unit-tests-v1 unit-tests-v2 ## 🧪 Run all unit test suites (AVA + Jest)
 
 unit-tests-v1: ## 🧪 Run AVA unit tests (v1 legacy)
-	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
+	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v1"
 
 unit-tests-v2: ## 🧪 Run Jest unit tests (v2 NestJS)
-	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
+	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v2"
