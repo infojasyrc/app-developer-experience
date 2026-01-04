@@ -21,7 +21,7 @@ env:
   AWS_REGION: us-west-1
   # Flags to control deployment steps
   ENABLE_WEBAPP_DEPLOY: "false"
-  ENABLE_API_DEPLOY: "false"
+  ENABLE_API_DEPLOY: "true"
 
 jobs:
   get-changed-packages:
@@ -44,10 +44,7 @@ jobs:
     name: Build, push, and deploy conference webapp
     needs: get-changed-packages
     runs-on: ubuntu-22.04
-    if: false # Temporarily disabled
-    if: >-
-      env.ENABLE_WEBAPP_DEPLOY == 'true' &&
-      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp')
+    if: ${{ env.ENABLE_WEBAPP_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp') }}
     permissions:
       id-token: write
       contents: read
@@ -106,7 +103,7 @@ jobs:
           artifact-name: image-size-ms-conference-webapp
 
       - name: Deploy to ECS (composite)
-        if: github.ref == 'refs/heads/main' && env.ACT != 'true'
+        if: ${{ github.ref == 'refs/heads/main' && env.ACT != 'true' }}
         uses: ./.github/actions/ecs-deploy
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
@@ -122,9 +119,7 @@ jobs:
     name: Build, push, and deploy conference api
     needs: get-changed-packages
     runs-on: ubuntu-22.04
-    if: >-
-      env.ENABLE_API_DEPLOY == 'true' &&
-      contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api')
+    if: ${{ env.ENABLE_API_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api') }}
     permissions:
       id-token: write
       contents: read
@@ -152,3 +147,44 @@ jobs:
           echo "repository=${{ env.API_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
           echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
           echo "image=$REGISTRY/${{ env.API_CONTAINER_NAME }}:${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Build container image (composite)
+        uses: ./.github/actions/container-build
+        with:
+          working-directory: ./conference-manager/ms-conference-api
+          target: build:prod
+        env:
+          IMAGE: ${{ steps.image.outputs.image }}
+          PLATFORM: ${{ env.PLATFORM }}
+
+      - name: Push image to ECR and collect metadata (composite)
+        id: push-meta
+        uses: ./.github/actions/container-regisry-push-and-metadata
+        with:
+          image: ${{ steps.image.outputs.image }}
+          repository: ${{ steps.image.outputs.repository }}
+          image-tag: ${{ steps.image.outputs.tag }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Write & upload image size report (composite)
+        uses: ./.github/actions/image-size-report
+        with:
+          package: conference-manager/ms-conference-api
+          image: ${{ steps.image.outputs.image }}
+          digest: ${{ steps.push-meta.outputs.digest }}
+          compressed-size-bytes: ${{ steps.push-meta.outputs.compressed_size_bytes }}
+          working-directory: ./conference-manager/ms-conference-api
+          artifact-name: image-size-ms-conference-api
+
+      - name: Deploy to ECS (composite)
+        if: ${{ github.ref == 'refs/heads/main' && env.ACT != 'true' }}
+        uses: ./.github/actions/ecs-deploy
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.API_CONTAINER_NAME }}
+          image: ${{ steps.image.outputs.image }}
+          ecs-service: ${{ env.ECS_API_SERVICE }}
+          ecs-cluster: ${{ env.ECS_CLUSTER }}
+          aws-region: ${{ env.AWS_REGION }}
+          working-directory: ./conference-manager/ms-conference-api
+          wait-for-service-stability: "true"
