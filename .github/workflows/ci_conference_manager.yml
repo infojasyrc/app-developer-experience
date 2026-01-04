@@ -21,7 +21,7 @@ env:
   AWS_REGION: us-west-1
   # Flags to control deployment steps
   ENABLE_WEBAPP_DEPLOY: "false"
-  ENABLE_API_DEPLOY: "true"
+  ENABLE_API_DEPLOY: "false"
 
 jobs:
   get-changed-packages:
