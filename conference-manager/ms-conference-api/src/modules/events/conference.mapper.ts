@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { ConferenceStatus } from './conference-status'
+import { ConferenceStatus } from './conference.enum'
 
 @Injectable()
 export default class ConferenceMapper {

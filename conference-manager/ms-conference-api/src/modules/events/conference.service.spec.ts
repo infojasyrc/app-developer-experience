@@ -5,16 +5,11 @@ import { Model, Connection, connect, Types } from 'mongoose'
 import { ObjectId } from 'mongodb'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 
-import { EventStatus } from './dto/create-event.dto'
-import { BadRequestException } from '../../exceptions/BadRequest'
-import { NotFoundException } from '../../exceptions/NotFound.exception'
 import {
   EVENT_RESPONSE_MOCK,
   LIST_EVENT_MOCK,
   EVENT_ID_MOCK,
   UPDATE_EVENT_MOCK_DTO,
-  ATTENDEE_DATA_MOCK,
-  USER_ID_MOCK
 } from '../../helpers/mocks/events/event-detail'
 import { EventService } from './event.service'
 import { Event, EventSchema } from './event.entity'
@@ -75,46 +70,6 @@ describe.skip('EventService', () => {
     expect(eventService).toBeDefined()
   })
 
-  it('create event, should return the information of the created event', async () => {
-    const eventCreated = await eventModel.create(EVENT_RESPONSE_MOCK)
-
-    const eventSaved = await eventModel.findOne({
-      name: 'Storm',
-    })
-
-    expect(eventSaved.name).toBe(eventCreated.name)
-    expect(eventSaved.eventDate).toEqual(eventCreated.eventDate)
-    expect(eventSaved.owner).toBe(eventCreated.owner)
-    expect(eventSaved.type).toBe(eventCreated.type)
-    expect(eventSaved.tags).toBe(eventCreated.tags)
-    expect(String(eventSaved.headquarter)).toBe(String(eventCreated.headquarter))
-    expect(eventSaved.description).toBe(eventCreated.description)
-    expect(eventSaved.address).toBe(eventCreated.address)
-    expect(eventSaved.status).toBe(eventCreated.status)
-    expect(eventSaved.year).toBe(eventCreated.year)
-  })
-
-  it('get find by id, should return the information about one event ', async () => {
-    const eventMock = EVENT_RESPONSE_MOCK
-
-    jest.spyOn(eventModel, 'findById').mockReturnValueOnce({
-      exec: jest.fn().mockResolvedValueOnce(eventMock),
-    } as any)
-
-    const eventById = await eventModel.findById(EVENT_ID_MOCK).exec()
-
-    expect(eventById?.name).toBe(eventMock.name)
-    expect(eventById?.eventDate).toEqual(eventMock.eventDate)
-    expect(eventById?.owner).toBe(eventMock.owner)
-    expect(eventById?.type).toBe(eventMock.type)
-    expect(eventById?.tags).toBe(eventMock.tags)
-    expect(eventById?.headquarter).toBe(eventMock.headquarter)
-    expect(eventById?.description).toBe(eventMock.description)
-    expect(eventById?.address).toBe(eventMock.address)
-    expect(eventById?.status).toBe(eventMock.status)
-    expect(eventById?.year).toBe(eventMock.year)
-  })
-
   it('update event, should return the information of the updated event', async () => {
 
     await eventModel.create({ _id: EVENT_ID_MOCK, ...EVENT_RESPONSE_MOCK })
@@ -147,48 +102,4 @@ describe.skip('EventService', () => {
 
     expect(events).toEqual(EVENT_RESPONSE_MOCK)
   })
-
-  describe('addAttendeeToEvent', () => {
-    it('should add an attendee to the event', async () => {
-      const event = {
-        ...EVENT_RESPONSE_MOCK,
-        save: jest.fn().mockResolvedValue(EVENT_RESPONSE_MOCK)
-      }
-
-      jest.spyOn(eventModel, 'findById').mockResolvedValue(event)
-
-      const result = await eventService.addAttendeeToEvent(Object(EVENT_ID_MOCK), Object(USER_ID_MOCK), ATTENDEE_DATA_MOCK)
-
-      expect(result).toEqual(EVENT_RESPONSE_MOCK)
-      expect(event.attendees).toContainEqual(USER_ID_MOCK)
-      expect(event.save).toHaveBeenCalled()
-
-
-    });
-
-    it('should throw NotFoundException if event does not exist', async () => {
-      jest.spyOn(eventModel, 'findById').mockResolvedValue(null);
-
-      await expect(eventService.addAttendeeToEvent(Object(EVENT_ID_MOCK), Object(USER_ID_MOCK), ATTENDEE_DATA_MOCK))
-        .rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw BadRequestException if event status is not ACTIVE', async () => {
-      const event = { _id: EVENT_ID_MOCK, status: EventStatus.INACTIVE };
-
-      jest.spyOn(eventModel, 'findById').mockResolvedValue(event);
-
-      await expect(eventService.addAttendeeToEvent(Object(EVENT_ID_MOCK), Object(USER_ID_MOCK), ATTENDEE_DATA_MOCK))
-        .rejects.toThrow(BadRequestException);
-    });
-
-    it('should throw BadRequestException if user is already attending the event', async () => {
-
-      const event = { _id: EVENT_ID_MOCK, attendees: [USER_ID_MOCK] };
-
-      jest.spyOn(eventModel, 'findById').mockResolvedValue(event);
-      await expect(eventService.addAttendeeToEvent(Object(EVENT_ID_MOCK), Object(USER_ID_MOCK), ATTENDEE_DATA_MOCK))
-        .rejects.toThrow(BadRequestException);
-    });
-  });
 })

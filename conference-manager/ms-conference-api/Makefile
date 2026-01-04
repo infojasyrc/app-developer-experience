@@ -32,7 +32,9 @@ DEV_VOLUME_API = \
 	-v $(COMPOSE_PROJECT_NAME)-api-packages:$(LOCAL_APP_FOLDER)/node_modules
 
 # Centralized phony target list (discovery + reduces duplication)
-.PHONY: help docker-clean build-dev build-api get-token interactive install-dependencies audit-fix-dependencies lint unit-tests unit-tests-v1 unit-tests-v2 launch-db stop-db launch-local-dev stop-local-dev launch-local-prod stop-local-prod
+.PHONY: help docker-clean build-dev build-api get-token interactive install-dependencies \
+	audit-fix-dependencies lint unit-tests unit-tests-v1 unit-tests-v2 \
+	launch-db stop-db launch-local-dev stop-local-dev launch-local-prod stop-local-prod
 
 docker-clean: ## ❌ Stop & prune all containers/images (DANGEROUS)
 ifeq ($(OS),Windows_NT)
@@ -90,6 +92,12 @@ unit-tests-v2: ## 🧪 Run Jest unit tests (v2 NestJS)
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v2"
+
+watch-unit-tests-v2: ## 🧪 Run Jest unit tests (v2 NestJS)
+	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME_API) \
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:watch:v2"
 
 .PHONY: launch-unleash
 launch-unleash: ## 🚀 Launch feature toggles with unleash
