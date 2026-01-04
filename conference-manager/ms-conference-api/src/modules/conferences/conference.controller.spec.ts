@@ -28,7 +28,7 @@ describe('ConferenceController', () => {
         FirebaseAdminService,
         FirebaseUploadService,
         {
-          provide: getModelToken('Event'),
+          provide: getModelToken('Conference'),
           useValue: {},
         },
       ],
@@ -44,27 +44,27 @@ describe('ConferenceController', () => {
 
   describe('get all', () => {
     it.skip('should return all conferences for admin', async () => {
-      const mocksEvents = getMockList(undefined)
-      jest.spyOn(service, 'getAll').mockResolvedValue(mocksEvents)
+      const mockConferenceList = getMockList(undefined)
+      jest.spyOn(service, 'getAll').mockResolvedValue(mockConferenceList)
       const dtoRequest: RequestGetAllConferencesDto = {
         isAdmin: true,
       }
       // for admin, all status events are returned
       const result = await controller.getAll(dtoRequest)
 
-      expect(result).toEqual(mocksEvents)
+      expect(result).toEqual(mockConferenceList)
     })
 
     it('should return all conferences for No admin', async () => {
-      const mocksEvents = getMockList(ConferenceStatus.ACTIVE)
-      jest.spyOn(service, 'getAll').mockResolvedValue(mocksEvents)
+      const mockConferenceList = getMockList(ConferenceStatus.ACTIVE)
+      jest.spyOn(service, 'getAll').mockResolvedValue(mockConferenceList)
       const dtoRequest: RequestGetAllConferencesDto = {
         isAdmin: false,
       }
       // for no admin, all status events are ACTIVE
       const result = await controller.getAll(dtoRequest)
 
-      expect(result).toEqual(mocksEvents)
+      expect(result).toEqual(mockConferenceList)
       // validate that all events are ACTIVE
       expect(result.every(event => event.status === ConferenceStatus.ACTIVE)).toBeTruthy()
     })

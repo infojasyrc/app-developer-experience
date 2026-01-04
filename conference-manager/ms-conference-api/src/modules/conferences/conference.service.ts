@@ -8,7 +8,7 @@ import ConferenceMapper from './conference.mapper'
 @Injectable()
 export class ConferenceService {
   constructor(
-    @InjectModel(Event.name)
+    @InjectModel(Conference.name)
     private readonly conferenceModel: Model<Conference>,
     private logger: Logger,
   ) {}

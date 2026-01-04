@@ -19,10 +19,12 @@ export class RequestGetAllConferencesDto {
   @IsOptional()
   headquarter?: string
 
-  @ApiHideProperty()
-  @IsNotEmpty()
+  @ApiProperty({
+    description: 'Conference headquarter',
+    required: false,
+  })
   @IsBoolean()
-  isAdmin: boolean
+  isAdmin: boolean = false
 
   @ApiHideProperty()
   @IsOptional()
