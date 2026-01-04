@@ -14,7 +14,7 @@
     "test:unit-tests:v1": "nyc --reporter=lcov ava",
     "test:unit-tests:v2": "jest --runInBand --coverage --detectOpenHandles",
     "test:watch:v1": "ava --watch",
-    "test:watch:v2": "jest --watch",
+    "test:watch:v2": "jest --watchAll",
     "dedupe": "yarn-deduplicate yarn.lock",
     "security:audit": "audit-ci --high --critical --report-type summary --config audit-ci.json",
     "security:fix": "yarn upgrade && yarn install || true"

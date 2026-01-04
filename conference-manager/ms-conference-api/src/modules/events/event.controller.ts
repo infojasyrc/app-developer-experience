@@ -33,7 +33,7 @@ import { ListEventsSwaggerDecorator } from '../../infrastructure/swagger/v2/list
 import { GetEventByIdSwaggerDecorator } from '../../infrastructure/swagger/v2/get-event-by-id.decorator'
 import { AddAttendeeToEventSwaggerDecorator } from '../../infrastructure/swagger/v2/add-attendee-to-event.decorator'
 
-@ApiTags('EventController')
+@ApiTags('events')
 @Controller('v2/events')
 export class EventController {
   constructor(private readonly eventService: EventService, private logger: Logger) {}
@@ -63,7 +63,6 @@ export class EventController {
   }
 
   @Get()
-  @ListEventsSwaggerDecorator()
   @UseInterceptors(TokenInterceptor)
   @HttpCode(200)
   async getAll(@Query() params: RequestGetAllEventsDto): Promise<EventResponse[]> {
