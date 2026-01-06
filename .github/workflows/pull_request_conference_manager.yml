@@ -1,4 +1,4 @@
-name: Pull Request Verification Workflow for Conference Manager
+name: Pull Request Verification Workflow for Conference Manager Components
 
 permissions:
   contents: read
