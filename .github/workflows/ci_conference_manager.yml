@@ -19,9 +19,6 @@ env:
   WEB_CONTAINER_NAME: ms-conference-webapp
   API_CONTAINER_NAME: ms-conference-api
   AWS_REGION: us-west-1
-  # Flags to control deployment steps
-  ENABLE_WEBAPP_DEPLOY: "false"
-  ENABLE_API_DEPLOY: "false"
 
 jobs:
   get-changed-packages:
@@ -44,7 +41,7 @@ jobs:
     name: Build, push, and deploy conference webapp
     needs: get-changed-packages
     runs-on: ubuntu-22.04
-    if: ${{ env.ENABLE_WEBAPP_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp') }}
+    if: ${{ vars.ENABLE_WEBAPP_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp') }}
     permissions:
       id-token: write
       contents: read
@@ -119,7 +116,7 @@ jobs:
     name: Build, push, and deploy conference api
     needs: get-changed-packages
     runs-on: ubuntu-22.04
-    if: ${{ env.ENABLE_API_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api') }}
+    if: ${{ vars.ENABLE_API_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api') }}
     permissions:
       id-token: write
       contents: read

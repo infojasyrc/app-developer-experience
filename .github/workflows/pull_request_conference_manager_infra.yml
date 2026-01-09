@@ -17,8 +17,8 @@ env:
   AWS_REGION: us-west-1
 
 jobs:
-  plan:
-    name: Validate and Plan
+  conference-infra-verify:
+    name: running terraform validate and tfsec for conference manager infrastructure
     runs-on: ubuntu-22.04
     defaults:
       run:

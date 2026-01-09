@@ -21,6 +21,7 @@ endif
 	install-dependencies init-husky install-hooks lint-commit \
 	setup-commit-validation validate-gh-actions-conference-manager-changed-packages \
 	devops-pr-conference-manager-api-verify devops-ci-conference-manager-build-and-deploy \
+	devops-pr-conference-manager-infra-verify \
 	validate-gh-actions-release-backend-fastapi run-all-devops-tests help
 
 create-nodejs-gql: clean-examples ## create a microservice with nodejs and graphql
@@ -112,7 +113,7 @@ validate-gh-actions-release-backend-fastapi: ## validate github actions for rele
 TRIGGER_FILE_API = conference-manager/ms-conference-api/.act-trigger
 TRIGGER_FILE_WEBAPP = conference-manager/ms-conference-webapp/.act-trigger
 
-# Runs as 'pull_request'
+# Runs as 'pull_request' for conference manager components: webapp, api
 devops-pr-conference-manager-api-verify: ## validate github actions for conference-api-verify pull request workflow
 	@echo "Validating GitHub Actions workflow for conference api verify..."
 
@@ -128,6 +129,12 @@ devops-pr-conference-manager-api-verify: ## validate github actions for conferen
 	@rm -f $(TRIGGER_FILE_API)
 	
 	@echo "✅ GitHub Actions workflow for conference api verify is valid."
+
+# Runs as 'pull_request' for all conference manager infrastructure
+devops-pr-conference-manager-infra-verify: ## validate github actions for conference-infra-verify pull request workflow
+	@echo "Validating GitHub Actions workflow for conference infra verify..."
+	act pull_request -e devops/tests/events_simulate_pull_request_conference_infra.json -j conference-infra-verify
+	@echo "✅ GitHub Actions workflow for conference infra verify is valid."
 
 help:  ## show all make commands
 ifeq ($(OS),Windows_NT)
