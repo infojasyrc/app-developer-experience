@@ -18,11 +18,9 @@ else
 endif
 
 .PHONY: create-nodejs-gql create-nodejs-rest create-py-rest clean-examples \
-	install-dependencies init-husky install-hooks lint-commit \
-	setup-commit-validation validate-gh-actions-conference-manager-changed-packages \
-	devops-pr-conference-manager-api-verify devops-ci-conference-manager-build-and-deploy \
-	devops-pr-conference-manager-infra-verify \
-	validate-gh-actions-release-backend-fastapi run-all-devops-tests help
+	install-dependencies init-husky install-hooks lint-commit setup-commit-validation \
+	devops-pr-cm-api-verify devops-pr-cm-infra-verify devops-ci-cm-build-and-deploy \
+	devops-pr-cm-changed-packages devops-release-backend-fastapi devops-all-tests help
 
 create-nodejs-gql: clean-examples ## create a microservice with nodejs and graphql
 	@if [ -z "$(NODEJS_NEW_GQL_SERVICE)" ]; then \
@@ -79,15 +77,15 @@ lint-commit: ## check if a commit message is valid
 setup-commit-validation: install-dependencies init-husky install-hooks ## setup commit validation
 	@echo "✅ Commit message validation is ready."
 
-run-all-devops-tests: validate-gh-actions-conference-manager-changed-packages validate-gh-actions-release-backend-fastapi devops-pr-conference-manager-api-verify ## run all devops tests
+devops-all-tests: validate-gh-actions-conference-manager-changed-packages validate-gh-actions-release-backend-fastapi devops-pr-conference-manager-api-verify ## run all devops tests
 	@echo "✅ All devops tests passed successfully."
 
-validate-gh-actions-conference-manager-changed-packages: ## validate github actions for changed packages
+devops-pr-cm-changed-packages: ## validate github actions for changed packages
 	@echo "Validating GitHub Actions workflow for changed folder..."
 	act -e devops/tests/events_simulate_changed_packages_conference_api.json -j get-changed-packages
 	@echo "✅ GitHub Actions workflow for changed folder is valid."
 
-devops-ci-conference-manager-build-and-deploy: ## validate github actions for ci_conference_manager workflow
+devops-ci-cm-build-and-deploy: ## validate github actions for ci_conference_manager workflow
 	@echo "Validating GitHub Actions workflow for ci_conference_manager..."
 
 	@# 1. Create the dirty file to trigger the change detection
@@ -104,7 +102,7 @@ devops-ci-conference-manager-build-and-deploy: ## validate github actions for ci
 
 	@echo "✅ GitHub Actions workflow for ci_conference_manager is valid."
 
-validate-gh-actions-release-backend-fastapi: ## validate github actions for release backend fastapi
+devops-release-backend-fastapi: ## validate github actions for release backend fastapi
 	@echo "Validating GitHub Actions workflow for release backend fastapi..."
 	act -e devops/tests/events_simulate_release_fastapi_tpl.json -j release-fastapi-rest-tpl
 	@echo "✅ GitHub Actions workflow for release backend fastapi is valid."
@@ -114,7 +112,7 @@ TRIGGER_FILE_API = conference-manager/ms-conference-api/.act-trigger
 TRIGGER_FILE_WEBAPP = conference-manager/ms-conference-webapp/.act-trigger
 
 # Runs as 'pull_request' for conference manager components: webapp, api
-devops-pr-conference-manager-api-verify: ## validate github actions for conference-api-verify pull request workflow
+devops-pr-cm-api-verify: ## validate github actions for conference-api-verify pull request workflow
 	@echo "Validating GitHub Actions workflow for conference api verify..."
 
 	@# 1. Create the dirty file to trigger the change detection
@@ -131,7 +129,7 @@ devops-pr-conference-manager-api-verify: ## validate github actions for conferen
 	@echo "✅ GitHub Actions workflow for conference api verify is valid."
 
 # Runs as 'pull_request' for all conference manager infrastructure
-devops-pr-conference-manager-infra-verify: ## validate github actions for conference-infra-verify pull request workflow
+devops-pr-cm-infra-verify: ## validate github actions for conference-infra-verify pull request workflow
 	@echo "Validating GitHub Actions workflow for conference infra verify..."
 	@touch cloud/terraform/aws/.act-trigger
 	act pull_request -e devops/tests/events_simulate_pull_request_conference_infra.json -j conference-infra-verify \
@@ -143,5 +141,5 @@ help:  ## show all make commands
 ifeq ($(OS),Windows_NT)
 	powershell "((type Makefile) -match '##') -notmatch 'grep'"
 else
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-35s\033[0m %s\n", $$1, $$2}'
 endif
