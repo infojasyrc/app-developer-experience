@@ -1,0 +1,16 @@
+{
+  "action": "opened",
+  "number": 1,
+  "pull_request": {
+    "head": {
+      "ref": "infra/feat/new-infra-changes",
+      "sha": "1111111111111111111111111111111111111111"
+    },
+    "base": {
+      "ref": "main"
+    }
+  },
+  "repository": {
+    "full_name": "app-developer-experience"
+  }
+}

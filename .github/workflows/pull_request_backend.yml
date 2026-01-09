@@ -1,4 +1,4 @@
-name: Run nestjs rest template unit tests
+name: Pull Request Verification Workflow for backend templates
 
 permissions:
   contents: read
@@ -6,8 +6,7 @@ permissions:
 on:
   pull_request:
     branches:
-      - fastapi-rest-tpl/**
-      - nestjs-rest-tpl/**
+      - main
     paths:
       - backend/ms-nestjs-rest-tpl/**
       - backend/ms-fastapi-rest-tpl/**

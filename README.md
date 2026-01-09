@@ -98,5 +98,6 @@ Software excellence means take advantage of tooling to automate and standarize t
 
 ## Relevant information
 
+- [DevOps](./docs/DevOps.md) to understand all pipelines for this project.
 - [Testing](./docs/Testing.md) to understand how to test different parts of the SDLC.
 - [Security](./docs/Security.md) to understand security considerations to implement a secure application.

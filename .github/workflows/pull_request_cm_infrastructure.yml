@@ -1,0 +1,58 @@
+name: Pull Request Verification Workflow for Conference Manager Infrastructure
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - cloud/terraform/aws/**
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+env:
+  # common variables
+  AWS_REGION: us-west-1
+
+jobs:
+  conference-infra-verify:
+    name: running terraform validate and tfsec for conference manager infrastructure
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: cloud/terraform/aws
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3.0.0
+
+      - name: Terraform Format
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init
+        run: terraform init -backend-config="bucket=${{secrets.BACKEND_AWS_S3_BUCKET}}"
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: tfsec
+        uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
+        with:
+          tfsec_args: --soft-fail
+          github_token: ${{ github.token }}
+          working_directory: cloud/terraform/aws
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -input=false
