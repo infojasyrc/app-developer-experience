@@ -133,7 +133,10 @@ devops-pr-conference-manager-api-verify: ## validate github actions for conferen
 # Runs as 'pull_request' for all conference manager infrastructure
 devops-pr-conference-manager-infra-verify: ## validate github actions for conference-infra-verify pull request workflow
 	@echo "Validating GitHub Actions workflow for conference infra verify..."
-	act pull_request -e devops/tests/events_simulate_pull_request_conference_infra.json -j conference-infra-verify
+	@touch cloud/terraform/aws/.act-trigger
+	act pull_request -e devops/tests/events_simulate_pull_request_conference_infra.json -j conference-infra-verify \
+		|| (rm -f cloud/terraform/aws/.act-trigger && exit 1)
+	@rm -f cloud/terraform/aws/.act-trigger
 	@echo "✅ GitHub Actions workflow for conference infra verify is valid."
 
 help:  ## show all make commands

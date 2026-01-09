@@ -3,7 +3,7 @@
   "number": 1,
   "pull_request": {
     "head": {
-      "ref": "conference-api/feat/added-new-endpoint",
+      "ref": "infra/feat/new-infra-changes",
       "sha": "1111111111111111111111111111111111111111"
     },
     "base": {
