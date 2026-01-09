@@ -70,3 +70,7 @@ Please check the type of change your PR introduces:
 
 - [ ] Yes
 - [ ] No
+
+## Screenshots
+
+<!-- Please add images to show the progress. -->
