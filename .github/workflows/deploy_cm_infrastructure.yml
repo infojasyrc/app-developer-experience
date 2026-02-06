@@ -49,35 +49,6 @@ jobs:
         env:
           # Pass secrets as environment variables
           TF_VAR_aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+          TF_VAR_db_name: ${{ vars.DB_NAME }}
           TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
-          # Pass other variables (could be secrets or vars context, using secrets for safety)
-          TF_VAR_application_name: ${{ vars.APPLICATION_NAME || 'appdevexp' }}
-          TF_VAR_vpc_cidr: ${{ vars.VPC_CIDR || '172.17.0.0/16' }}
-          TF_VAR_az_count: ${{ vars.AZ_COUNT || '2' }}
-          TF_VAR_logs_retention_days: ${{ vars.LOGS_RETENTION_DAYS || 3 }}
-          TF_VAR_db_allocate_storage: ${{ vars.DB_ALLOCATE_STORAGE || 20 }}
-          TF_VAR_db_max_allocate_storage: ${{ vars.DB_MAX_ALLOCATE_STORAGE || 50 }}
-          TF_VAR_db_name: ${{ vars.DB_NAME || 'conference' }}
-          TF_VAR_db_multi_zone: ${{ vars.DB_MULTI_ZONE || 'true' }}
-          TF_VAR_db_deletion_protection: ${{ vars.DB_DELETION_PROTECTION || 'true' }}
-          TF_VAR_db_instance_class: ${{ vars.DB_INSTANCE_CLASS || 'db.t3.medium' }}
-          TF_VAR_db_instance_accessible: ${{ vars.DB_INSTANCE_ACCESSIBLE || 'false' }} 
-          TF_VAR_app_count: ${{ vars.APP_COUNT || 1 }}
-          TF_VAR_cpu_for_tasks: ${{ vars.CPU_FOR_TASKS || '1024' }} 
-          TF_VAR_memory_for_tasks: ${{ vars.MEMORY_FOR_TASKS || '2048' }}
-          TF_VAR_ecr_frontend: ${{ vars.ECR_FRONTEND || '' }} 
-          TF_VAR_ecr_backend: ${{ vars.ECR_BACKEND || '' }}
-          TF_VAR_container_name: ${{ vars.CONTAINER_NAME || 'conference-app' }}
-          TF_VAR_assign_public_ip: ${{ vars.ASSIGN_PUBLIC_IP || 'false' }}
-          TF_VAR_flask_mode: ${{ vars.FLASK_MODE || 'production' }}
-          TF_VAR_health_check_path: ${{ vars.HEALTH_CHECK_PATH || '/' }}
-          TF_VAR_domain: ${{ vars.DOMAIN || 'example.com' }} 
-          TF_VAR_ui_domain: ${{ vars.UI_DOMAIN || 'app.example.com' }}
-          TF_VAR_api_domain: ${{ vars.API_DOMAIN || 'api.example.com' }}
-          TF_VAR_min_capacity: ${{ vars.MIN_CAPACITY || 1 }}
-          TF_VAR_max_capacity: ${{ vars.MAX_CAPACITY || 5 }}
-          TF_VAR_target_for_cpu: ${{ vars.TARGET_FOR_CPU || 60 }}
-          TF_VAR_target_for_memory: ${{ vars.TARGET_FOR_MEMORY || 80 }}
-          TF_VAR_api_entrypoint_folder: ${{ vars.API_ENTRYPOINT_FOLDER || 'api' }}
-          TF_VAR_migration_entrypoint_folder: ${{ vars.MIGRATION_ENTRYPOINT_FOLDER || 'migrations' }}
