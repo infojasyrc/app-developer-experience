@@ -9,7 +9,7 @@ plans/
 
 .idea/
 
-terraform.tfvars
+terraform.local.tfvars
 terraform.dev.tfvars
 terraform.qa.tfvars
 terraform.production.tfvars
