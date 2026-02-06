@@ -1,7 +1,7 @@
-name: Pull Request Verification Workflow for Conference Manager Infrastructure
+name: Deploy Conference Manager Infrastructure
 
 on:
-  pull_request:
+  push:
     branches:
       - main
     paths:
@@ -10,20 +10,20 @@ on:
 permissions:
   id-token: write
   contents: read
-  pull-requests: write
 
 env:
-  # common variables
+  # Common variables
   AWS_REGION: us-west-1
+  TF_WORKSPACE: dev
 
 jobs:
-  conference-infra-verify:
-    name: running terraform validate and tfsec for conference manager infrastructure
+  deploy-infra:
+    name: Terraform Apply
     runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: cloud/terraform/aws
-
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -37,29 +37,21 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3.0.0
 
-      - name: Terraform Format
-        run: terraform fmt -check -recursive
-
       - name: Terraform Init
-        run: terraform init -backend-config="bucket=${{secrets.BACKEND_AWS_S3_BUCKET}}"
+        run: terraform init -backend-config="bucket=${{ secrets.BACKEND_AWS_S3_BUCKET }}"
 
-      - name: Terraform Validate
-        run: terraform validate
+      - name: Select/Create Workspace
+        run: |
+          terraform workspace select ${{ env.TF_WORKSPACE }} || terraform workspace new ${{ env.TF_WORKSPACE }}
 
-      - name: tfsec
-        uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
-        with:
-          tfsec_args: --soft-fail
-          github_token: ${{ github.token }}
-          working_directory: cloud/terraform/aws
-
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan -input=false
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
         env:
+          # Pass secrets as environment variables
           TF_VAR_aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
           TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+          # Pass other variables (could be secrets or vars context, using secrets for safety)
           TF_VAR_application_name: ${{ vars.APPLICATION_NAME || 'appdevexp' }}
           TF_VAR_vpc_cidr: ${{ vars.VPC_CIDR || '172.17.0.0/16' }}
           TF_VAR_az_count: ${{ vars.AZ_COUNT || '2' }}
