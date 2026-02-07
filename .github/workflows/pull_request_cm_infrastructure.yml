@@ -41,7 +41,12 @@ jobs:
         run: terraform fmt -check -recursive
 
       - name: Terraform Init
-        run: terraform init -backend-config="bucket=${{secrets.BACKEND_AWS_S3_BUCKET}}"
+        run: |
+          terraform init \
+            -backend-config="bucket=${{secrets.BACKEND_AWS_S3_BUCKET}}" \
+            -backend-config="key=${{secrets.BACKEND_AWS_S3_KEY}}" \
+            -backend-config="region=${{env.AWS_REGION}}" \
+            -backend-config="dynamodb_table=${{vars.BACKEND_AWS_DYNAMODB_TABLE}}"
 
       - name: Terraform Validate
         run: terraform validate
