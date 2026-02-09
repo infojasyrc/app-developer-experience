@@ -7,7 +7,7 @@ locals {
 }
 
 module "kms" {
-  source = "./modules/kms"
+  source = "./module/kms"
 
   application_name = "${var.application_name}-${local.environment}"
   aws_region       = var.aws_account_region
