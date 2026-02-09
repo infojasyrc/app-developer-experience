@@ -75,7 +75,7 @@ module "security" {
   source = "./module/security"
 
   application_name  = "${var.application_name}-${local.environment}"
-  waf_log_group_arn = module.logging.waf_log_group_name
+  waf_log_group_arn = module.logging.waf_log_group_arn
 
   tags = local.common_tags
 }
