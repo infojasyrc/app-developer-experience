@@ -78,3 +78,19 @@ variable "api_domain" {
 variable "tags" {
   description = "all common tags"
 }
+
+variable "access_logs_bucket" {
+  description = "S3 bucket name for ALB access logs"
+  type        = string
+}
+
+variable "access_logs_prefix" {
+  description = "S3 prefix for ALB access logs"
+  type        = string
+  default     = "alb-logs"
+}
+
+variable "waf_acl_arn" {
+  description = "ARN of the WAFv2 Web ACL to associate with ALB"
+  type        = string
+}

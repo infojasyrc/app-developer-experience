@@ -2,7 +2,16 @@
 # Cloudwatch Log Groups
 # # ## ## ## ## ## ## ## ## ## ## ## ## ## ##
 
-# Log Group
+# VPC Flow Logs Group
+resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
+  name              = "/aws/vpc/flowlogs/${var.application_name}"
+  retention_in_days = var.logs_retention_days
+  kms_key_id        = var.kms_key_id
+
+  tags = var.tags
+}
+
+# Application Log Group
 resource "aws_cloudwatch_log_group" "application" {
   name              = var.application_name
   retention_in_days = var.logs_retention_days

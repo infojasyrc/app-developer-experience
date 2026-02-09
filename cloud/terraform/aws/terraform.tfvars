@@ -35,3 +35,8 @@ target_for_cpu    = 60
 # application information
 api_entrypoint_folder       = ""
 migration_entrypoint_folder = ""
+# enable modules
+enable_database     = false
+enable_iam          = false
+enable_application  = false
+enable_auto_scaling = false

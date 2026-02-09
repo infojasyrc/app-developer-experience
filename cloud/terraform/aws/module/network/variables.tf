@@ -8,4 +8,12 @@ variable "az_count" {
   type        = string
 }
 
-variable "tags" {}
+variable "vpc_flow_logs_group_arn" {
+  description = "CloudWatch Logs group ARN for VPC Flow Logs"
+  type        = string
+}
+
+variable "tags" {
+  description = "Tags to be applied to all resources"
+  type        = map(string)
+}
