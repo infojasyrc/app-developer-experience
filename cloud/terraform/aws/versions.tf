@@ -11,8 +11,7 @@ terraform {
   }
 }
 
-# Configure the AWS Provider and Profiles in aws credentials
+# Configure the AWS Provider
 provider "aws" {
-  region  = "us-west-1"
-  profile = "terraform-dev"
+  region = var.aws_account_region
 }
