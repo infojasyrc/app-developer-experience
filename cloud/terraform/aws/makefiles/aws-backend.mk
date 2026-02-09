@@ -5,18 +5,20 @@
 # the Terraform remote state backend.
 # ==============================================================================
 
+GITHUB_ROLE_NAME = GitHubActionsTerraformRole
+
 # --- Phony Targets ---
 # We declare these here as well for clarity
 .PHONY: setup-backend create-bucket create-lock-table \
 generate-policy-json create-policy create-user attach-policy \
-create-keys clean whoami
+create-keys clean whoami create-oidc-provider
 
 ## -----------------------------------------------------------------------------
 ## 1. ADMIN SETUP (Run as Admin)
 ## -----------------------------------------------------------------------------
 
-setup-backend: create-bucket create-lock-table attach-policy ## 🚀 Run all one-time backend setup steps (as ADMIN)
-	@echo "✅ Backend resources created successfully."
+setup-backend: create-bucket create-lock-table create-oidc-provider attach-policy-to-role ## 🚀 Run all one-time backend setup steps (as ADMIN)
+	@echo "✅ Backend resources and OIDC Role created successfully."
 	@echo "Run 'make create-keys' next to generate credentials."
 
 create-bucket: ## 🪣 Create and configure the S3 state bucket (as ADMIN)
@@ -81,6 +83,28 @@ create-keys: ## 🔑 Generate access keys for the TF user (as ADMIN)
 	@echo "This is the ONLY time the SecretAccessKey will be shown."
 	@echo "-------------------------------------------------------------------------"
 	aws iam create-access-key --user-name $(IAM_USER_NAME)
+
+create-oidc-provider: ## 🛡️ Register GitHub as an OIDC Provider (Run ONCE per account)
+	@echo "Creating OIDC Provider for GitHub..."
+	aws iam create-open-id-connect-provider \
+		--url https://token.actions.githubusercontent.com \
+		--client-id-list sts.amazonaws.com \
+		--thumbprint-list 6938fd4d98bab03faadb97b34396831e3780aea1 || echo "Provider already exists."
+
+create-oidc-role: ## 🎭 Create the IAM Role for GitHub OIDC
+	@echo "Generating trust-policy.json..."
+	@sed -e 's|$(AWS_ACCOUNT_ID)|$(AWS_ACCOUNT_ID)|g' $(IAM_TRUST_POLICY_TEMPLATE) > $(IAM_TRUST_POLICY_FILE)
+
+	@echo "Creating IAM Role: $(GITHUB_ROLE_NAME)..."
+	aws iam create-role \
+		--role-name $(GITHUB_ROLE_NAME) \
+		--assume-role-policy-document file://$(IAM_TRUST_POLICY_FILE) || echo "Role already exists."
+
+attach-policy-to-role: create-policy ## 📎 Attach the permission policy to the OIDC Role
+	@echo "Attaching policy to OIDC Role..."
+	aws iam attach-role-policy \
+		--role-name $(GITHUB_ROLE_NAME) \
+		--policy-arn arn:aws:iam::$(AWS_ACCOUNT_ID):policy/$(IAM_POLICY_NAME)
 
 whoami: ## 👤 Show the AWS identity for the current credentials
 	aws sts get-caller-identity --profile $(ADMIN_USER_NAME) --output table
