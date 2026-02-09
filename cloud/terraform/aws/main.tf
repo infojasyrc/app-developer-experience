@@ -7,7 +7,7 @@ locals {
 }
 
 module "network" {
-  source   = "./module/network"
+  source = "./module/network"
 
   vpc_cidr = var.vpc_cidr
   az_count = var.az_count
@@ -15,14 +15,14 @@ module "network" {
 }
 
 module "cluster" {
-  source           = "./module/cluster"
+  source = "./module/cluster"
 
   application_name = "${var.application_name}-${local.environment}"
   tags             = local.common_tags
 }
 
 module "logging" {
-  source              = "./module/logging"
+  source = "./module/logging"
 
   application_name    = "${var.application_name}-${local.environment}"
   logs_retention_days = var.logs_retention_days
@@ -30,7 +30,7 @@ module "logging" {
 }
 
 module "database" {
-  source                  = "./module/database"
+  source = "./module/database"
 
   application_name        = "${var.application_name}-${local.environment}"
   db_allocate_storage     = var.db_allocate_storage
@@ -57,11 +57,11 @@ module "iam" {
 # # # ## ## ## ## ## ## ## ## ## ## ## ## ## ##
 
 module "application" {
-  source                  = "./module/application"
-  application_name        = "${var.application_name}-${local.environment}"
-  private_subnets         = module.network.private_subnets
-  public_subnets          = module.network.public_subnets
-  container_definitions   = templatefile("./container_definitions.json.tpl", {
+  source           = "./module/application"
+  application_name = "${var.application_name}-${local.environment}"
+  private_subnets  = module.network.private_subnets
+  public_subnets   = module.network.public_subnets
+  container_definitions = templatefile("./container_definitions.json.tpl", {
     api_image                   = "${var.ecr_backend}:latest"
     ui_image                    = "${var.ecr_frontend}:latest"
     container_name              = var.container_name

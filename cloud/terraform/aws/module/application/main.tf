@@ -91,9 +91,9 @@ resource "aws_security_group" "ecs_tasks" {
 # # ## ## ## ## ## ## ## ## ## ## ## ## ## ##
 
 resource "aws_alb" "webapp" {
-  name            = var.application_name
-  subnets         = var.public_subnets
-  security_groups = [aws_security_group.lb-sg.id]
+  name                       = var.application_name
+  subnets                    = var.public_subnets
+  security_groups            = [aws_security_group.lb-sg.id]
   enable_deletion_protection = true
   drop_invalid_header_fields = true
 
