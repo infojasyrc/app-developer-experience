@@ -13,4 +13,9 @@ variable "kms_key_id" {
   default     = null
 }
 
+variable "aws_region" {
+  description = "AWS region"
+  type        = string
+}
+
 variable "tags" {}

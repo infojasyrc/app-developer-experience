@@ -22,6 +22,8 @@ module "logging" {
   application_name    = "${var.application_name}-${local.environment}"
   logs_retention_days = var.logs_retention_days
   kms_key_id          = module.kms.key_id
+  aws_region          = var.aws_account_region
+
   tags                = local.common_tags
 }
 
@@ -30,6 +32,7 @@ module "network" {
 
   vpc_cidr = var.vpc_cidr
   az_count = var.az_count
+
   tags     = local.common_tags
 
   vpc_flow_logs_group_arn = module.logging.vpc_flow_logs_group_arn
@@ -68,6 +71,15 @@ module "iam" {
   application_name = "${var.application_name}-${local.environment}"
 }
 
+module "security" {
+  source           = "./module/security"
+
+  application_name = "${var.application_name}-${local.environment}"
+  waf_log_group_arn = module.logging.waf_log_group_name
+
+  tags             = local.common_tags
+}
+
 # # ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
 # # Application on ECS
 # # # ## ## ## ## ## ## ## ## ## ## ## ## ## ##
@@ -83,7 +95,7 @@ module "application" {
     ui_image                    = "${var.ecr_frontend}:latest"
     container_name              = var.container_name
     aws_region                  = var.aws_account_region
-    log_group                   = module.logging.app_log_group
+    log_group                   = module.logging.app_log_group_name
     db_url                      = var.enable_database ? "postgresql://${var.db_username}:${var.db_password}@${module.database[0].db_endpoint}" : ""
     db_name                     = var.db_name
     flask_mode                  = var.flask_mode
@@ -103,9 +115,8 @@ module "application" {
   container_name          = var.container_name
   assign_public_ip        = var.assign_public_ip
   tags                    = local.common_tags
-  access_logs_bucket      = module.logging.access_logs_bucket
-  access_logs_prefix      = module.logging.access_logs_prefix
-  waf_acl_arn             = module.network.waf_acl_arn
+  access_logs_bucket      = module.logging.alb_access_logs_bucket
+  waf_acl_arn             = module.security.waf_acl_arn
 }
 
 # # ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
