@@ -24,7 +24,7 @@ module "logging" {
   kms_key_id          = module.kms.key_id
   aws_region          = var.aws_account_region
 
-  tags                = local.common_tags
+  tags = local.common_tags
 }
 
 module "network" {
@@ -33,7 +33,7 @@ module "network" {
   vpc_cidr = var.vpc_cidr
   az_count = var.az_count
 
-  tags     = local.common_tags
+  tags = local.common_tags
 
   vpc_flow_logs_group_arn = module.logging.vpc_flow_logs_group_arn
 }
@@ -72,12 +72,12 @@ module "iam" {
 }
 
 module "security" {
-  source           = "./module/security"
+  source = "./module/security"
 
-  application_name = "${var.application_name}-${local.environment}"
+  application_name  = "${var.application_name}-${local.environment}"
   waf_log_group_arn = module.logging.waf_log_group_name
 
-  tags             = local.common_tags
+  tags = local.common_tags
 }
 
 # # ## ## ## ## ## ## ## ## ## ## ## ## ## ## #

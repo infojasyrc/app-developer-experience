@@ -67,7 +67,7 @@ resource "aws_wafv2_web_acl_logging_configuration" "alb" {
     default_behavior = "KEEP"
 
     filter {
-      behavior   = "KEEP"
+      behavior = "KEEP"
       condition {
         action_condition {
           action = "BLOCK"
