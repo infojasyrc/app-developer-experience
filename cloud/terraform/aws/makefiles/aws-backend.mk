@@ -93,12 +93,19 @@ create-oidc-provider: ## 🛡️ Register GitHub as an OIDC Provider (Run ONCE p
 
 create-oidc-role: ## 🎭 Create the IAM Role for GitHub OIDC
 	@echo "Generating trust-policy.json..."
-	@sed -e 's|$(AWS_ACCOUNT_ID)|$(AWS_ACCOUNT_ID)|g' $(IAM_TRUST_POLICY_TEMPLATE) > $(IAM_TRUST_POLICY_FILE)
+	@sed -e 's|__AWS_ACCOUNT_ID__|$(AWS_ACCOUNT_ID)|g' \
+		-e 's|__GITHUB_USER__|$(GITHUB_ORG)|g' \
+		-e 's|__REPO_NAME__|$(REPO_NAME)|g' \
+		$(IAM_TRUST_POLICY_TEMPLATE) > $(IAM_TRUST_POLICY_FILE)
 
-	@echo "Creating IAM Role: $(GITHUB_ROLE_NAME)..."
-	aws iam create-role \
-		--role-name $(GITHUB_ROLE_NAME) \
-		--assume-role-policy-document file://$(IAM_TRUST_POLICY_FILE) || echo "Role already exists."
+	@echo "Updating/Creating IAM Role: $(GITHUB_ROLE_NAME)..."
+	@if aws iam get-role --role-name $(GITHUB_ROLE_NAME) > /dev/null 2>&1; then \
+		aws iam update-assume-role-policy --role-name $(GITHUB_ROLE_NAME) --policy-document file://$(IAM_TRUST_POLICY_FILE); \
+		echo "✅ Trust policy updated."; \
+	else \
+		aws iam create-role --role-name $(GITHUB_ROLE_NAME) --assume-role-policy-document file://$(IAM_TRUST_POLICY_FILE); \
+		echo "✅ Role created."; \
+	fi
 
 attach-policy-to-role: create-policy ## 📎 Attach the permission policy to the OIDC Role
 	@echo "Attaching policy to OIDC Role..."
