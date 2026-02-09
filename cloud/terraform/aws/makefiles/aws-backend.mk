@@ -10,7 +10,7 @@ GITHUB_ROLE_NAME = GitHubActionsTerraformRole
 # --- Phony Targets ---
 # We declare these here as well for clarity
 .PHONY: setup-backend create-bucket create-lock-table \
-generate-policy-json create-policy create-user attach-policy \
+generate-policy-json create-policy update-policy create-user attach-policy \
 create-keys clean whoami create-oidc-provider
 
 ## -----------------------------------------------------------------------------
@@ -64,6 +64,23 @@ create-policy: generate-policy-json ## 📜 Create the IAM least-privilege polic
 		--policy-name $(IAM_POLICY_NAME) \
 		--policy-document file://$(IAM_POLICY_FILE) \
 		--profile $(ADMIN_USER_NAME) || echo "Policy already exists."
+
+update-policy: generate-policy-json ## 🆙 Update IAM policy with a new version
+	@echo "Updating IAM policy: $(IAM_POLICY_NAME)..."
+	@# Cleanup: Delete the oldest version if we hit the limit of 5
+	@VERSIONS=$$(aws iam list-policy-versions --policy-arn $(POLICY_ARN) --query 'Versions[?IsDefaultVersion==`false`].VersionId' --output text); \
+	COUNT=$$(echo $$VERSIONS | wc -w); \
+	if [ $$COUNT -ge 4 ]; then \
+		OLDEST=$$(echo $$VERSIONS | awk '{print $$NF}'); \
+		echo "Reaching version limit. Deleting oldest version: $$OLDEST"; \
+		aws iam delete-policy-version --policy-arn $(POLICY_ARN) --version-id $$OLDEST; \
+	fi
+	@# Create the new version
+	aws iam create-policy-version \
+		--policy-arn $(POLICY_ARN) \
+		--policy-document file://$(IAM_POLICY_FILE) \
+		--set-as-default
+	@echo "✅ Policy updated to new version and set as default."
 
 create-user: ## 👤 Create the limited IAM user (as ADMIN)
 	@echo "Creating IAM user: $(IAM_USER_NAME)..."

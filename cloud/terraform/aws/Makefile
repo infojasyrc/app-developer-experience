@@ -36,6 +36,8 @@ IAM_TRUST_POLICY_FILE     := terraform-trust-policy.json
 # The .conf file for backend initialization (add this to .gitignore!)
 BACKEND_CONFIG := backend.conf
 
+POLICY_ARN = arn:aws:iam::$(AWS_ACCOUNT_ID):policy/$(IAM_POLICY_NAME)
+
 # discover the absolute path to the project repo on the host machine
 ifeq ($(OS),Windows_NT)
 	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
