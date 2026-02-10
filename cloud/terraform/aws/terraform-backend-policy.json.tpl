@@ -47,7 +47,10 @@
         "kms:PutKeyPolicy",
         "kms:ScheduleKeyDeletion",
         "kms:ListAliases",
-        "kms:ListKeys"
+        "kms:ListKeys",
+        "kms:EnableKeyRotation",
+        "kms:DisableKeyRotation",
+        "kms:GetKeyRotationStatus"
       ],
       "Resource": "*"
     },
@@ -73,7 +76,10 @@
         "s3:GetObject",
         "s3:PutObject",
         "s3:DeleteObject",
-        "s3:ListBucketVersions"
+        "s3:ListBucketVersions",
+        "s3:GetBucketTagging",
+        "s3:PutBucketTagging",
+        "s3:DeleteBucketTagging"
       ],
       "Resource": [
         "arn:aws:s3:::appdevexp-*",
