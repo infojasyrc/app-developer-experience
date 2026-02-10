@@ -14,7 +14,6 @@ permissions:
 env:
   # Common variables
   AWS_REGION: us-west-1
-  TF_WORKSPACE: dev
 
 jobs:
   deploy-infra:
