@@ -59,9 +59,6 @@ jobs:
           github_token: ${{ github.token }}
           working_directory: cloud/terraform/aws
 
-      - name: Select Workspace
-        run: terraform workspace select ${{ env.TF_WORKSPACE }}
-
       - name: Terraform Plan
         id: plan
         run: terraform plan -input=false
