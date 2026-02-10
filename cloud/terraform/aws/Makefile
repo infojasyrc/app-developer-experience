@@ -28,11 +28,15 @@ TF_LOCK_TABLE     := ade-terraform-lock-table
 # The name of the IAM policy to create
 IAM_POLICY_NAME   := TerraformBackendPolicy
 # The JSON file containing the policy document
-IAM_POLICY_TEMPLATE := terraform-backend-policy.json.template
+IAM_POLICY_TEMPLATE := terraform-backend-policy.json.tpl
 IAM_POLICY_FILE     := terraform-backend-policy.json
+IAM_TRUST_POLICY_TEMPLATE := terraform-trust-policy.json.tpl
+IAM_TRUST_POLICY_FILE     := terraform-trust-policy.json
 
 # The .conf file for backend initialization (add this to .gitignore!)
 BACKEND_CONFIG := backend.conf
+
+POLICY_ARN = arn:aws:iam::$(AWS_ACCOUNT_ID):policy/$(IAM_POLICY_NAME)
 
 # discover the absolute path to the project repo on the host machine
 ifeq ($(OS),Windows_NT)

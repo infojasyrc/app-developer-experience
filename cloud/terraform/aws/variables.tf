@@ -192,3 +192,31 @@ variable "migration_entrypoint_folder" {
   description = "main folder where migration entrypoint file is located"
   type        = string
 }
+
+##########################################
+### Feature Flags
+##########################################
+
+variable "enable_database" {
+  description = "Enable database module"
+  type        = bool
+  default     = false
+}
+
+variable "enable_iam" {
+  description = "Enable IAM module"
+  type        = bool
+  default     = false
+}
+
+variable "enable_application" {
+  description = "Enable application module"
+  type        = bool
+  default     = false
+}
+
+variable "enable_auto_scaling" {
+  description = "Enable auto scaling module"
+  type        = bool
+  default     = false
+}

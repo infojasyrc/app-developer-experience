@@ -12,31 +12,21 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_flow_log" "vpc_flow_log" {
-  log_destination      = var.log_destination
+  log_destination      = var.vpc_flow_logs_group_arn
   log_destination_type = "cloud-watch-logs"
   traffic_type         = "ALL"
   vpc_id               = aws_vpc.main.id
-
-  depends_on = [aws_vpc.main]
 }
 
-resource "aws_security_group_rule" "default_deny_all" {
-  description       = "Deny all ingress traffic"
-  type              = "ingress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_vpc.main.default_security_group_id
-}
-resource "aws_security_group_rule" "default_deny_all_egress" {
-  description       = "Deny all egress traffic"
-  type              = "egress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_vpc.main.default_security_group_id
+# Restrict all traffic on the default security group (no ingress or egress rules)
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.main.id
+
+  tags = merge(var.tags, tomap({ "name" : "default_security_group" }))
+
+  lifecycle {
+    ignore_changes = [ingress, egress]
+  }
 }
 
 resource "aws_subnet" "private" {

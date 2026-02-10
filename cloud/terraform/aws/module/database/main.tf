@@ -29,15 +29,15 @@ resource "aws_security_group" "application_db_sg" {
 }
 
 resource "aws_instance" "db_instance" {
-  ami           = "ami-0c55b159cbfafe1f0"
-  instance_type = "t2.micro"
+  ami                    = "ami-0c55b159cbfafe1f0"
+  instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.application_db_sg.id]
-  subnet_id     = element(var.private_subnets, 0)
-  iam_instance_profile = var.iam_instance_profile
-  monitoring = true
-  ebs_optimized = true
+  subnet_id              = element(var.private_subnets, 0)
+  iam_instance_profile   = var.iam_instance_profile
+  monitoring             = true
+  ebs_optimized          = true
   metadata_options {
-    http_tokens = "required"
+    http_tokens   = "required"
     http_endpoint = "enabled"
   }
   root_block_device {
