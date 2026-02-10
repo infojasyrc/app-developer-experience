@@ -18,7 +18,7 @@ env:
 
 jobs:
   conference-infra-verify:
-    name: running terraform validate and tfsec for conference manager infrastructure
+    name: validate conference manager infrastructure
     runs-on: ubuntu-22.04
     environment: DEV
     defaults:
