@@ -58,7 +58,7 @@ include makefiles/aws-ecr.mk
 init: ## 🏁 Initialize Terraform with the backend (as TF USER)
 	@echo "Initializing Terraform..."
 	@echo "NOTE: This requires AWS credentials for '$(IAM_USER_NAME)'."
-	terraform init -backend-config=$(BACKEND_CONFIG)
+	terraform init -backend-config=$(BACKEND_CONFIG) -input=false
 
 plan: ## 📋 Generate a Terraform execution plan (as TF USER)
 	terraform plan
