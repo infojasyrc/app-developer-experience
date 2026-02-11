@@ -1,11 +1,13 @@
 name: Deploy Conference Manager Infrastructure
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - cloud/terraform/aws/**
+  # Disabled - uncomment to re-enable
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - cloud/terraform/aws/**
+  workflow_dispatch: # Allow manual trigger only
 
 permissions:
   id-token: write
