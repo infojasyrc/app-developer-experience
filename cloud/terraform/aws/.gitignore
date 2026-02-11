@@ -3,7 +3,6 @@
 .terraform/
 terraform-log*
 *.tfplan
-.terraform.lock*
 terraform.tfstate.d/
 plans/
 
