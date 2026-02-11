@@ -21,7 +21,7 @@ module "logging" {
 
   application_name    = "${var.application_name}-${local.environment}"
   logs_retention_days = var.logs_retention_days
-  kms_key_id          = module.kms.key_id
+  kms_key_id          = module.kms.key_arn
   aws_region          = var.aws_account_region
 
   tags = local.common_tags

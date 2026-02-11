@@ -1,5 +1,13 @@
 data "aws_caller_identity" "current" {}
 
+resource "aws_kms_key" "logs" {
+  description             = "KMS key for CloudWatch Logs encryption - ${var.application_name}"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+
+  tags = var.tags
+}
+
 resource "aws_kms_key_policy" "logs" {
   key_id = aws_kms_key.logs.id
 
@@ -19,7 +27,7 @@ resource "aws_kms_key_policy" "logs" {
         Sid    = "Allow CloudWatch Logs"
         Effect = "Allow"
         Principal = {
-          Service = "logs.amazonaws.com"
+          Service = "logs.${var.aws_region}.amazonaws.com"
         }
         Action = [
           "kms:Encrypt",
@@ -31,21 +39,19 @@ resource "aws_kms_key_policy" "logs" {
         ]
         Resource = "*"
         Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
           ArnLike = {
-            "kms:EncryptionContext:aws:logs:arn" = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"
+            "aws:SourceArn" = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:*"
+          }
+          Bool = {
+            "kms:GrantIsForAWSResource" = "true"
           }
         }
       }
     ]
   })
-}
-
-resource "aws_kms_key" "logs" {
-  description             = "KMS key for CloudWatch Logs encryption - ${var.application_name}"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
-
-  tags = var.tags
 }
 
 resource "aws_kms_alias" "logs" {
