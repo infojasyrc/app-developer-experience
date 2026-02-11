@@ -37,6 +37,8 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3.0.0
+        with:
+          terraform_version: 1.14.4
 
       - name: Assert provider lockfile is present
         run: test -f .terraform.lock.hcl
@@ -52,6 +54,7 @@ jobs:
             -backend-config="key=${{secrets.BACKEND_AWS_S3_KEY}}" \
             -backend-config="region=${{env.AWS_REGION}}" \
             -backend-config="dynamodb_table=${{vars.BACKEND_AWS_DYNAMODB_TABLE}}"
+          terraform providers
 
       - name: Terraform Validate
         run: terraform validate
