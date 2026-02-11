@@ -2,11 +2,10 @@
 
 > This document explains the one-time administrative setup required to provision and secure the shared Terraform backend (S3 + DynamoDB + IAM) and how to hand off credentials to regular Terraform users. It is based on the Makefile targets in this directory.
 
----
 ## 0. Purpose
+
 We use an S3 bucket for remote Terraform state storage and a DynamoDB table for state locking to prevent concurrent mutations. A dedicated least‑privilege IAM user is created for Terraform operations (init/plan/apply/destroy). Admins perform bootstrap once; thereafter regular users only need the generated credentials.
 
----
 ## 1. Prerequisites (Admin Workstation / CI Runner)
 Ensure the following are installed and configured with admin‑level AWS credentials (an IAM principal allowed to create IAM users, policies, S3 buckets, DynamoDB tables):
 
@@ -19,12 +18,13 @@ Network / permissions required:
 - s3:CreateBucket, s3:PutBucketVersioning, s3:PutBucketTagging, s3:PutPublicAccessBlock
 - dynamodb:CreateTable
 
----
 ## 2. Environment Configuration
+
 The Makefile auto‑loads either `.env` (private) or falls back to `.env.public`. Create a private `.env` file before running admin tasks.
 
 Example `.env` (do NOT commit):
-```
+
+```md
 AWS_REGION=us-east-1
 AWS_ACCOUNT_ID=123456789012
 IAM_USER_NAME=terraform-ci
@@ -44,7 +44,6 @@ Variables used:
 - `IAM_POLICY_FILE`: JSON policy document file (default: `terraform-backend-policy.json`)
 - `BACKEND_CONFIG`: Local backend config file consumed by `terraform init` (`backend.conf` – keep out of version control)
 
----
 ## 3. Prepare IAM Policy Document
 Create `terraform-backend-policy.json` in this directory (not provided by default). Replace placeholders with your real bucket and table names plus account ID.
 
@@ -84,34 +83,35 @@ Example policy (least privilege for state + locking):
 
 > Keep this file under version control only if acceptable for your governance; otherwise store it centrally and reference locally.
 
----
 ## 4. Backend Config File (`backend.conf`)
+
 Create a local (ignored) file named `backend.conf` used by `terraform init -backend-config=backend.conf`.
 
 Example:
-```
+
+```md
 bucket         = "my-tf-state-bucket-2025-unique"
 region         = "us-east-1"
 dynamodb_table = "my-terraform-lock-table"
 key            = "global/terraform.tfstate"
 encrypt        = true
 ```
+
 Add `backend.conf` to `.gitignore` (already noted in Makefile comment). Keep the state key structure consistent (e.g., `env/app/terraform.tfstate`) if you later use multiple environments.
 
----
 ## 5. One-Time Admin Bootstrap Sequence
+
 Run the following Make targets from this directory:
 
 ### Option A (Recommended): Single aggregated target
+
 ```bash
+# creates s3 bucket (versioning, public access block, tagging), dynamo db lock for state locking, and iam user + policy
 make setup-backend
 ```
-This performs:
-1. `create-bucket` – Creates + secures S3 bucket (versioning, public access block, tagging)
-2. `create-lock-table` – Creates DynamoDB table for state locking
-3. `attach-policy` – Creates IAM policy + user, attaches policy
 
 ### Option B: Manual step-by-step
+
 ```bash
 make create-bucket
 make create-lock-table
@@ -121,6 +121,7 @@ make attach-policy
 ```
 
 ### Generate Access Keys (final admin step)
+
 ```bash
 make create-keys
 ```
@@ -133,6 +134,7 @@ After this, you can hand off credentials to Terraform users (or inject into CI).
 
 ---
 ## 6. Hand-Off to Terraform User / Developer
+
 Terraform users require:
 - `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` from the created access key
 - `AWS_REGION` (same region as backend resources)
@@ -145,28 +147,24 @@ export AWS_REGION=us-east-1
 ```
 
 Initialize Terraform:
-```
+
+```bash
 make init
-```
-Then normal workflow:
-```
 make plan
 make apply
-```
-Destroy (careful):
-```
+# destroy (careful):
 make destroy
 ```
 
----
 ## 7. Help / Discoverability
+
 List available targets:
-```
+
+```bash
 make help
 ```
 (The Makefile prints descriptive names with emojis for quick scanning.)
 
----
 ## 8. Security & Compliance Notes
 - S3 bucket public access is blocked; versioning enabled for state recovery.
 - DynamoDB provisioned throughput is minimal (1/1); adjust if high concurrency.
@@ -175,8 +173,8 @@ make help
 - Tagging: Extend bucket tags for cost allocation (`Environment`, `Owner`, `CostCenter`).
 - Policy scope: If multiple state buckets/tables emerge, consider grouping via specific ARNs or using condition keys.
 
----
 ## 9. Troubleshooting
+
 | Symptom | Likely Cause | Fix |
 |---------|--------------|-----|
 | `AccessDenied` during `terraform init` | Missing/incorrect IAM policy or wrong keys | Re-check policy JSON and attached user; verify exported credentials. |
@@ -184,7 +182,6 @@ make help
 | `ConditionalCheckFailedException` in DynamoDB | Concurrent Terraform applies | Let previous apply finish; locking works as designed. |
 | State not updating | Wrong backend config or local state | Re-run `make init` after fixing `backend.conf`. |
 
----
 ## 10. Cleanup (If Decommissioning Backend)
 Order matters to avoid orphaned locks:
 1. Ensure no active Terraform operations.
@@ -197,15 +194,15 @@ Order matters to avoid orphaned locks:
 
 > Always confirm with stakeholders and backups before destroying shared state infrastructure.
 
----
 ## 11. Next Improvements (Optional)
+
 - Introduce environment-specific buckets (`tf-state-prod`, `tf-state-dev`) and table partitioning.
 - Add CI automation: run `make plan` on PR, `make apply` on main merges.
 - Replace static keys with AWS IAM Role via GitHub OIDC provider.
 - Add encryption-by-default enforcement or bucket policy requiring TLS.
 
----
 ## 12. Quick Reference (Targets)
+
 | Target | Role | Description |
 |--------|------|-------------|
 | `setup-backend` | Admin | Orchestrates bucket, lock table, user + policy attach |
@@ -221,7 +218,6 @@ Order matters to avoid orphaned locks:
 | `destroy` | TF User | Destroys managed resources |
 | `help` | Any | Lists available targets |
 
----
 ## 13. Verification Checklist (Post-Setup)
 - [ ] S3 bucket exists with versioning and tags
 - [ ] DynamoDB table exists with correct primary key (LockID)
@@ -231,8 +227,9 @@ Order matters to avoid orphaned locks:
 - [ ] `backend.conf` present locally (ignored)
 - [ ] `make init` succeeds with remote state configuration
 
----
+
 ## 14. FAQs
+
 **Q: Can multiple teams share this backend?** Yes, but segregate state keys (e.g., `teamA/app1/terraform.tfstate`). Consider separate buckets for stricter isolation.
 
 **Q: What if someone loses the SecretAccessKey?** Create a new access key and disable/delete the old one; you cannot recover a lost secret.
@@ -241,5 +238,4 @@ Order matters to avoid orphaned locks:
 
 **Q: Should we enable bucket lifecycle policies?** Yes, optionally to prune old object versions after retention window.
 
----
-**End of Admin Setup Guide**
+**Q: What is the specific command to update policies?** Run `make update-policy`.
