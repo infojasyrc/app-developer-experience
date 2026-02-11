@@ -37,8 +37,6 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3.0.0
-        with:
-          terraform_version: 1.7.5
 
       - name: Assert provider lockfile is present
         run: test -f .terraform.lock.hcl
@@ -49,7 +47,7 @@ jobs:
       - name: Terraform Init
         run: |
           rm -rf .terraform
-          terraform init -input=false -upgrade \
+          terraform init -input=false -lockfile=readonly \
             -backend-config="bucket=${{secrets.BACKEND_AWS_S3_BUCKET}}" \
             -backend-config="key=${{secrets.BACKEND_AWS_S3_KEY}}" \
             -backend-config="region=${{env.AWS_REGION}}" \
