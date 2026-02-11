@@ -56,6 +56,7 @@ generate-policy-json: ## 📄 Generate the IAM policy JSON from the template
 	@sed -e 's|__AWS_ACCOUNT_ID__|$(AWS_ACCOUNT_ID)|g' \
 		-e 's|__TF_STATE_BUCKET__|$(TF_STATE_BUCKET)|g' \
 		-e 's|__TF_LOCK_TABLE__|$(TF_LOCK_TABLE)|g' \
+		-e 's|__AWS_REGION__|$(AWS_REGION)|g' \
 		$(IAM_POLICY_TEMPLATE) > $(IAM_POLICY_FILE)
 
 create-policy: generate-policy-json ## 📜 Create the IAM least-privilege policy (as ADMIN)

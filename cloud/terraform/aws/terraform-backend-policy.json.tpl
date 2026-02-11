@@ -35,10 +35,19 @@
       "Resource": "*"
     },
     {
-      "Sid": "KMSKeyManagement",
+      "Sid": "KMSGlobal",
       "Effect": "Allow",
       "Action": [
         "kms:CreateKey",
+        "kms:ListKeys",
+        "kms:ListAliases"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "KMSKeyManagement",
+      "Effect": "Allow",
+      "Action": [
         "kms:TagResource",
         "kms:CreateAlias",
         "kms:DeleteAlias",
@@ -47,16 +56,14 @@
         "kms:GetKeyPolicy",
         "kms:PutKeyPolicy",
         "kms:ScheduleKeyDeletion",
-        "kms:ListAliases",
-        "kms:ListKeys",
         "kms:EnableKeyRotation",
         "kms:DisableKeyRotation",
         "kms:GetKeyRotationStatus"
       ],
-      "Resource": "*"
+      "Resource": "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:key/*"
     },
     {
-      "Sid": "S3BucketManagement",
+      "Sid": "S3BucketManagementBucketLevel",
       "Effect": "Allow",
       "Action": [
         "s3:CreateBucket",
@@ -69,7 +76,6 @@
         "s3:GetBucketRequestPayment",
         "s3:GetBucketWebsite",
         "s3:GetBucketVersioning",
-        "s3:GetEncryptionConfiguration",
         "s3:GetLifecycleConfiguration",
         "s3:GetReplicationConfiguration",
         "s3:PutBucketVersioning",
@@ -77,30 +83,38 @@
         "s3:PutBucketPublicAccessBlock",
         "s3:GetBucketAcl",
         "s3:PutBucketAcl",
-        "s3:PutBucketLogging",
+        "s3:GetEncryptionConfiguration",
+        "s3:PutEncryptionConfiguration",
         "s3:GetBucketLogging",
+        "s3:PutBucketLogging",
         "s3:PutBucketPolicy",
         "s3:GetBucketPolicy",
         "s3:DeleteBucketPolicy",
-        "s3:PutObjectAcl",
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:DeleteObject",
         "s3:ListBucketVersions",
         "s3:GetBucketTagging",
         "s3:PutBucketTagging"
       ],
-      "Resource": [
-        "arn:aws:s3:::appdevexp-*",
-        "arn:aws:s3:::appdevexp-*/*"
-      ]
+      "Resource": "arn:aws:s3:::appdevexp-*"
+    },
+    {
+      "Sid": "S3BucketManagementObjectLevel",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": "arn:aws:s3:::appdevexp-*/*"
     },
     {
       "Sid": "VPCManagement",
       "Effect": "Allow",
       "Action": [
+        "ec2:CreateTags",
         "ec2:CreateVpc",
         "ec2:DeleteVpc",
+        "ec2:DescribeVpcAttribute",
         "ec2:DescribeVpcs",
         "ec2:CreateSubnet",
         "ec2:DeleteSubnet",
@@ -123,9 +137,11 @@
         "ec2:AllocateAddress",
         "ec2:ReleaseAddress",
         "ec2:DescribeAddresses",
+        "ec2:DescribeAddressesAttribute",
         "ec2:CreateFlowLogs",
         "ec2:DescribeFlowLogs",
-        "ec2:DeleteFlowLogs"
+        "ec2:DeleteFlowLogs",
+        "ec2:ModifyVpcAttribute"
       ],
       "Resource": "*"
     },
@@ -136,6 +152,7 @@
         "ec2:CreateSecurityGroup",
         "ec2:DeleteSecurityGroup",
         "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSecurityGroupRules",
         "ec2:AuthorizeSecurityGroupIngress",
         "ec2:RevokeSecurityGroupIngress",
         "ec2:AuthorizeSecurityGroupEgress",
@@ -160,13 +177,19 @@
       "Sid": "CloudWatchLogsManagement",
       "Effect": "Allow",
       "Action": [
+        "logs:AssociateKmsKey",
         "logs:CreateLogGroup",
         "logs:DeleteLogGroup",
         "logs:DescribeLogGroups",
         "logs:PutRetentionPolicy",
-        "logs:TagLogGroup"
+        "logs:TagLogGroup",
+        "logs:TagResource"
       ],
-      "Resource": "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:/aws/*"
+      "Resource": [
+        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:appdevexp-default*",
+        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:/aws/*",
+        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:/aws/vpc/*"
+      ]
     },
     {
       "Sid": "WAFv2Management",
