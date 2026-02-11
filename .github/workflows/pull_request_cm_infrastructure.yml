@@ -29,6 +29,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Assert lockfile exists (and show pinned aws provider)
+        run: |
+          ls -la
+          test -f .terraform.lock.hcl || (echo "Missing .terraform.lock.hcl in $(pwd)" && exit 1)
+          sed -n '/registry\.terraform\.io\/hashicorp\/aws/,+8p' .terraform.lock.hcl
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -43,7 +49,8 @@ jobs:
 
       - name: Terraform Init
         run: |
-          terraform init \
+          rm -rf .terraform/
+          terraform init -upgrade \
             -backend-config="bucket=${{secrets.BACKEND_AWS_S3_BUCKET}}" \
             -backend-config="key=${{secrets.BACKEND_AWS_S3_KEY}}" \
             -backend-config="region=${{env.AWS_REGION}}" \
