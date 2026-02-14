@@ -206,12 +206,16 @@
         "logs:DescribeLogGroups",
         "logs:PutRetentionPolicy",
         "logs:TagLogGroup",
-        "logs:TagResource"
+        "logs:TagResource",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:FilterLogEvents"
       ],
       "Resource": [
-        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:appdevexp-default*",
+        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:appdevexp-*",
+        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:appdevexp-*:*",
         "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:/aws/*",
-        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:/aws/vpc/*"
+        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:/aws/*:*"
       ]
     },
     {
