@@ -228,7 +228,20 @@
         "wafv2:TagResource",
         "wafv2:UntagResource",
         "wafv2:GetWebACL",
-        "wafv2:UpdateWebACL"
+        "wafv2:UpdateWebACL",
+        "wafv2:PutLoggingConfiguration",
+        "wafv2:DeleteLoggingConfiguration",
+        "wafv2:GetLoggingConfiguration"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CloudWatchLogResourcePolicy",
+      "Effect": "Allow",
+      "Action": [
+        "logs:PutResourcePolicy",
+        "logs:DeleteResourcePolicy",
+        "logs:DescribeResourcePolicies"
       ],
       "Resource": "*"
     },

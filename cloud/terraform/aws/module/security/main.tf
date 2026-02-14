@@ -1,3 +1,41 @@
+data "aws_caller_identity" "current" {}
+
+resource "aws_cloudwatch_log_resource_policy" "waf_logging" {
+  policy_name = "waf-logging-policy"
+
+  policy_text = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "wafv2.amazonaws.com"
+        }
+        Action   = "logs:PutLogEvents"
+        Resource = "${var.waf_log_group_arn}:*"
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
+      },
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "wafv2.amazonaws.com"
+        }
+        Action   = "logs:CreateLogStream"
+        Resource = "${var.waf_log_group_arn}:*"
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
+      }
+    ]
+  })
+}
+
 resource "aws_wafv2_web_acl" "alb" {
   name  = "${var.application_name}-alb-waf"
   scope = "REGIONAL"
@@ -10,8 +48,8 @@ resource "aws_wafv2_web_acl" "alb" {
     name     = "AWSManagedRulesCommonRuleSet"
     priority = 0
 
-    action {
-      block {}
+    override_action {
+      none {}
     }
 
     statement {
@@ -32,8 +70,8 @@ resource "aws_wafv2_web_acl" "alb" {
     name     = "AWSManagedRulesKnownBadInputsRuleSet"
     priority = 1
 
-    action {
-      block {}
+    override_action {
+      none {}
     }
 
     statement {
@@ -45,7 +83,7 @@ resource "aws_wafv2_web_acl" "alb" {
 
     visibility_config {
       cloudwatch_metrics_enabled = true
-      metric_name                = "AWSManagedRulesKnownBadInputsRuleSet"
+      metric_name                = "AWSManagedRulesKnownBadInputsRuleSetMetric"
       sampled_requests_enabled   = true
     }
   }
@@ -76,4 +114,6 @@ resource "aws_wafv2_web_acl_logging_configuration" "alb" {
       requirement = "MEETS_ANY"
     }
   }
+
+  depends_on = [aws_cloudwatch_log_resource_policy.waf_logging]
 }
