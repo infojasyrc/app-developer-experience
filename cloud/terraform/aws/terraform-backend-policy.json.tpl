@@ -63,6 +63,17 @@
       "Resource": "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:key/*"
     },
     {
+      "Sid": "KMSAliasManagement",
+      "Effect": "Allow",
+      "Action": [
+        "kms:CreateAlias",
+        "kms:DeleteAlias",
+        "kms:UpdateAlias",
+        "kms:ListAliases"
+      ],
+      "Resource": "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:alias/*"
+    },
+    {
       "Sid": "KMSBackendEncryption",
       "Effect": "Allow",
       "Action": [
