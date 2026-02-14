@@ -63,6 +63,29 @@
       "Resource": "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:key/*"
     },
     {
+      "Sid": "KMSAliasManagement",
+      "Effect": "Allow",
+      "Action": [
+        "kms:CreateAlias",
+        "kms:DeleteAlias",
+        "kms:UpdateAlias",
+        "kms:ListAliases"
+      ],
+      "Resource": "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:alias/*"
+    },
+    {
+      "Sid": "KMSBackendEncryption",
+      "Effect": "Allow",
+      "Action": [
+        "kms:Decrypt",
+        "kms:EncryptDecrypt",
+        "kms:GenerateDataKey",
+        "kms:GenerateDataKeyPair",
+        "kms:GenerateDataKeyWithoutPlaintext"
+      ],
+      "Resource": "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:key/*"
+    },
+    {
       "Sid": "S3BucketManagementBucketLevel",
       "Effect": "Allow",
       "Action": [
@@ -183,12 +206,16 @@
         "logs:DescribeLogGroups",
         "logs:PutRetentionPolicy",
         "logs:TagLogGroup",
-        "logs:TagResource"
+        "logs:TagResource",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:FilterLogEvents"
       ],
       "Resource": [
-        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:appdevexp-default*",
+        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:appdevexp-*",
+        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:appdevexp-*:*",
         "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:/aws/*",
-        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:/aws/vpc/*"
+        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:/aws/*:*"
       ]
     },
     {
@@ -201,7 +228,20 @@
         "wafv2:TagResource",
         "wafv2:UntagResource",
         "wafv2:GetWebACL",
-        "wafv2:UpdateWebACL"
+        "wafv2:UpdateWebACL",
+        "wafv2:PutLoggingConfiguration",
+        "wafv2:DeleteLoggingConfiguration",
+        "wafv2:GetLoggingConfiguration"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CloudWatchLogResourcePolicy",
+      "Effect": "Allow",
+      "Action": [
+        "logs:PutResourcePolicy",
+        "logs:DeleteResourcePolicy",
+        "logs:DescribeResourcePolicies"
       ],
       "Resource": "*"
     },

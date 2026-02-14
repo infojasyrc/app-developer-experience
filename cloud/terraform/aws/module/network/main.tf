@@ -1,6 +1,50 @@
 # Fetch availability zones in the current region
 data "aws_availability_zones" "available" {}
 
+# IAM role for VPC Flow Logs to write to CloudWatch
+resource "aws_iam_role" "vpc_flow_logs_role" {
+  name = "vpc-flow-logs-role-${data.aws_caller_identity.current.account_id}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "vpc-flow-logs.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  tags = var.tags
+}
+
+# IAM policy for VPC Flow Logs to write to CloudWatch Logs
+resource "aws_iam_role_policy" "vpc_flow_logs_policy" {
+  name = "vpc-flow-logs-policy"
+  role = aws_iam_role.vpc_flow_logs_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+data "aws_caller_identity" "current" {}
+
 resource "aws_vpc" "main" {
   cidr_block       = var.vpc_cidr
   instance_tenancy = "default"
@@ -16,6 +60,7 @@ resource "aws_flow_log" "vpc_flow_log" {
   log_destination_type = "cloud-watch-logs"
   traffic_type         = "ALL"
   vpc_id               = aws_vpc.main.id
+  iam_role_arn         = aws_iam_role.vpc_flow_logs_role.arn
 }
 
 # Restrict all traffic on the default security group (no ingress or egress rules)

@@ -24,6 +24,23 @@ resource "aws_kms_key_policy" "logs" {
         Resource = "*"
       },
       {
+        Sid    = "Allow Terraform Backend State Encryption"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.terraform_role_name}"
+        }
+        Action = [
+          "kms:Decrypt",
+          "kms:Encrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey",
+          "kms:CreateGrant",
+          "kms:ListAliases"
+        ]
+        Resource = "*"
+      },
+      {
         Sid    = "Allow CloudWatch Logs"
         Effect = "Allow"
         Principal = {
@@ -38,14 +55,17 @@ resource "aws_kms_key_policy" "logs" {
           "kms:DescribeKey"
         ]
         Resource = "*"
+      },
+      {
+        Sid    = "Allow CloudWatch Logs CreateGrant"
+        Effect = "Allow"
+        Principal = {
+          Service = "logs.${var.aws_region}.amazonaws.com"
+        }
+        Action   = "kms:CreateGrant"
+        Resource = "*"
         Condition = {
           StringEquals = {
-            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
-          }
-          ArnLike = {
-            "aws:SourceArn" = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:*"
-          }
-          Bool = {
             "kms:GrantIsForAWSResource" = "true"
           }
         }

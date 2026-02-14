@@ -25,6 +25,9 @@ module "logging" {
   aws_region          = var.aws_account_region
 
   tags = local.common_tags
+
+  # Ensure KMS key policy is created before CloudWatch uses it
+  depends_on = [module.kms]
 }
 
 module "network" {
