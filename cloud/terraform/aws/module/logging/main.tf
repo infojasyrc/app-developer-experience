@@ -9,6 +9,10 @@ resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   kms_key_id        = var.kms_key_id
 
   tags = var.tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Application Log Group
@@ -18,6 +22,10 @@ resource "aws_cloudwatch_log_group" "application" {
   kms_key_id        = var.kms_key_id
 
   tags = var.tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_cloudwatch_log_stream" "app_log_stream" {
@@ -108,4 +116,8 @@ resource "aws_cloudwatch_log_group" "waf" {
   kms_key_id        = var.kms_key_id
 
   tags = var.tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
