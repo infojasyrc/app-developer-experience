@@ -61,13 +61,13 @@ init: ## 🏁 Initialize Terraform with the backend (as TF USER)
 	terraform init -backend-config=$(BACKEND_CONFIG) -input=false
 
 plan: ## 📋 Generate a Terraform execution plan (as TF USER)
-	terraform plan
+	terraform plan -input=false -out=plans/plan.tfplan
 
 apply: ## 🚀 Create or update infrastructure (as TF USER)
-	terraform apply
+	terraform apply plans/plan.tfplan
 
 destroy: ## 💥 Destroy all infrastructure in this state (as TF USER)
-	terraform destroy
+	terraform destroy --auto-approve
 
 .PHONY: help
 help:  ## ✨ show all make commands

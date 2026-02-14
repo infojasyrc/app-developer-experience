@@ -4,7 +4,8 @@
 terraform-log*
 *.tfplan
 terraform.tfstate.d/
-plans/
+
+plans/*.tfplan
 
 .idea/
 
