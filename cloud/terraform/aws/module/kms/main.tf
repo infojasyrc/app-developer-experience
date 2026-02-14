@@ -24,6 +24,23 @@ resource "aws_kms_key_policy" "logs" {
         Resource = "*"
       },
       {
+        Sid    = "Allow Terraform Backend State Encryption"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.terraform_role_name}"
+        }
+        Action = [
+          "kms:Decrypt",
+          "kms:Encrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey",
+          "kms:CreateGrant",
+          "kms:ListAliases"
+        ]
+        Resource = "*"
+      },
+      {
         Sid    = "Allow CloudWatch Logs"
         Effect = "Allow"
         Principal = {
