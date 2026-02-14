@@ -62,7 +62,7 @@ resource "aws_kms_key_policy" "logs" {
         Principal = {
           Service = "logs.${var.aws_region}.amazonaws.com"
         }
-        Action = "kms:CreateGrant"
+        Action   = "kms:CreateGrant"
         Resource = "*"
         Condition = {
           StringEquals = {
