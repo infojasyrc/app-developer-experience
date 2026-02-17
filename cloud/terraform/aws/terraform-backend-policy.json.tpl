@@ -215,7 +215,9 @@
         "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:appdevexp-*",
         "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:appdevexp-*:*",
         "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:/aws/*",
-        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:/aws/*:*"
+        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:/aws/*:*",
+        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:aws-waf-logs-*",
+        "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:aws-waf-logs-*:*"
       ]
     },
     {

@@ -111,7 +111,7 @@ data "aws_elb_service_account" "main" {}
 # # ## ## ## ## ## ## ## ## ## ## ## ## ## #
 
 resource "aws_cloudwatch_log_group" "waf" {
-  name              = "/aws/waf/${var.application_name}"
+  name              = "aws-waf-logs-${var.application_name}"
   retention_in_days = var.logs_retention_days
   kms_key_id        = var.kms_key_id
 
