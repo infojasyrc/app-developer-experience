@@ -203,13 +203,14 @@
         "logs:AssociateKmsKey",
         "logs:CreateLogGroup",
         "logs:DeleteLogGroup",
-        "logs:DescribeLogGroups",
         "logs:PutRetentionPolicy",
         "logs:TagLogGroup",
         "logs:TagResource",
         "logs:CreateLogStream",
         "logs:PutLogEvents",
-        "logs:FilterLogEvents"
+        "logs:FilterLogEvents",
+        "logs:ListTagsForResource",
+        "logs:DescribeLogStreams"
       ],
       "Resource": [
         "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:appdevexp-*",
@@ -233,7 +234,8 @@
         "wafv2:UpdateWebACL",
         "wafv2:PutLoggingConfiguration",
         "wafv2:DeleteLoggingConfiguration",
-        "wafv2:GetLoggingConfiguration"
+        "wafv2:GetLoggingConfiguration",
+        "wafv2:ListTagsForResource"
       ],
       "Resource": "*"
     },
@@ -243,7 +245,8 @@
       "Action": [
         "logs:PutResourcePolicy",
         "logs:DeleteResourcePolicy",
-        "logs:DescribeResourcePolicies"
+        "logs:DescribeResourcePolicies",
+        "logs:DescribeLogGroups"
       ],
       "Resource": "*"
     },
