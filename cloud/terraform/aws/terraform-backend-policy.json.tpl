@@ -26,26 +26,111 @@
       "Resource": "arn:aws:dynamodb:*:__AWS_ACCOUNT_ID__:table/__TF_LOCK_TABLE__"
     },
     {
-      "Sid": "EC2NetworkDiscovery",
+      "Sid": "GeneralPermissions",
       "Effect": "Allow",
       "Action": [
         "ec2:DescribeAvailabilityZones",
-        "ec2:DescribeRegions"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "KMSGlobal",
-      "Effect": "Allow",
-      "Action": [
+        "ec2:DescribeRegions",
         "kms:CreateKey",
         "kms:ListKeys",
-        "kms:ListAliases"
+        "kms:ListAliases",
+        "ec2:CreateTags",
+        "ec2:CreateVpc",
+        "ec2:DeleteVpc",
+        "ec2:DescribeVpcAttribute",
+        "ec2:DescribeVpcs",
+        "ec2:CreateSubnet",
+        "ec2:DeleteSubnet",
+        "ec2:DescribeSubnets",
+        "ec2:CreateRouteTable",
+        "ec2:DeleteRouteTable",
+        "ec2:DescribeRouteTables",
+        "ec2:CreateRoute",
+        "ec2:DeleteRoute",
+        "ec2:CreateInternetGateway",
+        "ec2:DeleteInternetGateway",
+        "ec2:DescribeInternetGateways",
+        "ec2:AttachInternetGateway",
+        "ec2:DetachInternetGateway",
+        "ec2:AssociateRouteTable",
+        "ec2:DisassociateRouteTable",
+        "ec2:CreateNatGateway",
+        "ec2:DeleteNatGateway",
+        "ec2:DescribeNatGateways",
+        "ec2:AllocateAddress",
+        "ec2:ReleaseAddress",
+        "ec2:DescribeAddresses",
+        "ec2:DescribeAddressesAttribute",
+        "ec2:CreateFlowLogs",
+        "ec2:DescribeFlowLogs",
+        "ec2:DeleteFlowLogs",
+        "ec2:ModifyVpcAttribute",
+        "ec2:CreateSecurityGroup",
+        "ec2:DeleteSecurityGroup",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSecurityGroupRules",
+        "ec2:AuthorizeSecurityGroupIngress",
+        "ec2:RevokeSecurityGroupIngress",
+        "ec2:AuthorizeSecurityGroupEgress",
+        "ec2:RevokeSecurityGroupEgress",
+        "ecs:CreateCluster",
+        "ecs:DeleteCluster",
+        "ecs:DescribeClusters",
+        "ecs:ListClusters",
+        "ecs:TagResource",
+        "ecs:UntagResource",
+        "wafv2:CreateWebACL",
+        "wafv2:DeleteWebACL",
+        "wafv2:ListWebACLs",
+        "wafv2:TagResource",
+        "wafv2:UntagResource",
+        "wafv2:GetWebACL",
+        "wafv2:UpdateWebACL",
+        "wafv2:PutLoggingConfiguration",
+        "wafv2:DeleteLoggingConfiguration",
+        "wafv2:GetLoggingConfiguration",
+        "wafv2:ListTagsForResource",
+        "logs:PutResourcePolicy",
+        "logs:DeleteResourcePolicy",
+        "logs:DescribeResourcePolicies",
+        "logs:DescribeLogGroups",
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:GetRolePolicy",
+        "iam:CreatePolicy",
+        "iam:DeletePolicy",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies",
+        "iam:CreateInstanceProfile",
+        "iam:DeleteInstanceProfile",
+        "iam:AddRoleToInstanceProfile",
+        "iam:RemoveRoleFromInstanceProfile",
+        "iam:TagRole",
+        "elasticloadbalancing:CreateLoadBalancer",
+        "elasticloadbalancing:DeleteLoadBalancer",
+        "elasticloadbalancing:DescribeLoadBalancers",
+        "elasticloadbalancing:DescribeTargetGroups",
+        "elasticloadbalancing:CreateTargetGroup",
+        "elasticloadbalancing:DeleteTargetGroup",
+        "elasticloadbalancing:CreateListener",
+        "elasticloadbalancing:DeleteListener",
+        "elasticloadbalancing:DescribeListeners",
+        "elasticloadbalancing:DescribeLoadBalancerAttributes",
+        "elasticloadbalancing:ModifyLoadBalancerAttributes",
+        "elasticloadbalancing:DescribeTargetGroupAttributes",
+        "elasticloadbalancing:ModifyTargetGroupAttributes",
+        "elasticloadbalancing:AddTags",
+        "elasticloadbalancing:RemoveTags"
       ],
       "Resource": "*"
     },
     {
-      "Sid": "KMSKeyManagement",
+      "Sid": "KMSKeyAccess",
       "Effect": "Allow",
       "Action": [
         "kms:TagResource",
@@ -59,7 +144,13 @@
         "kms:EnableKeyRotation",
         "kms:DisableKeyRotation",
         "kms:GetKeyRotationStatus",
-        "kms:UpdateKeyDescription"
+        "kms:UpdateKeyDescription",
+        "kms:Decrypt",
+        "kms:EncryptDecrypt",
+        "kms:GenerateDataKey",
+        "kms:GenerateDataKeyPair",
+        "kms:GenerateDataKeyWithoutPlaintext",
+        "kms:CreateGrant"
       ],
       "Resource": "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:key/*"
     },
@@ -73,18 +164,6 @@
         "kms:ListAliases"
       ],
       "Resource": "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:alias/*"
-    },
-    {
-      "Sid": "KMSBackendEncryption",
-      "Effect": "Allow",
-      "Action": [
-        "kms:Decrypt",
-        "kms:EncryptDecrypt",
-        "kms:GenerateDataKey",
-        "kms:GenerateDataKeyPair",
-        "kms:GenerateDataKeyWithoutPlaintext"
-      ],
-      "Resource": "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:key/*"
     },
     {
       "Sid": "S3BucketManagementBucketLevel",
@@ -132,72 +211,6 @@
       "Resource": "arn:aws:s3:::appdevexp-*/*"
     },
     {
-      "Sid": "VPCManagement",
-      "Effect": "Allow",
-      "Action": [
-        "ec2:CreateTags",
-        "ec2:CreateVpc",
-        "ec2:DeleteVpc",
-        "ec2:DescribeVpcAttribute",
-        "ec2:DescribeVpcs",
-        "ec2:CreateSubnet",
-        "ec2:DeleteSubnet",
-        "ec2:DescribeSubnets",
-        "ec2:CreateRouteTable",
-        "ec2:DeleteRouteTable",
-        "ec2:DescribeRouteTables",
-        "ec2:CreateRoute",
-        "ec2:DeleteRoute",
-        "ec2:CreateInternetGateway",
-        "ec2:DeleteInternetGateway",
-        "ec2:DescribeInternetGateways",
-        "ec2:AttachInternetGateway",
-        "ec2:DetachInternetGateway",
-        "ec2:AssociateRouteTable",
-        "ec2:DisassociateRouteTable",
-        "ec2:CreateNatGateway",
-        "ec2:DeleteNatGateway",
-        "ec2:DescribeNatGateways",
-        "ec2:AllocateAddress",
-        "ec2:ReleaseAddress",
-        "ec2:DescribeAddresses",
-        "ec2:DescribeAddressesAttribute",
-        "ec2:CreateFlowLogs",
-        "ec2:DescribeFlowLogs",
-        "ec2:DeleteFlowLogs",
-        "ec2:ModifyVpcAttribute"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "SecurityGroupManagement",
-      "Effect": "Allow",
-      "Action": [
-        "ec2:CreateSecurityGroup",
-        "ec2:DeleteSecurityGroup",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSecurityGroupRules",
-        "ec2:AuthorizeSecurityGroupIngress",
-        "ec2:RevokeSecurityGroupIngress",
-        "ec2:AuthorizeSecurityGroupEgress",
-        "ec2:RevokeSecurityGroupEgress"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "ECSClusterManagement",
-      "Effect": "Allow",
-      "Action": [
-        "ecs:CreateCluster",
-        "ecs:DeleteCluster",
-        "ecs:DescribeClusters",
-        "ecs:ListClusters",
-        "ecs:TagResource",
-        "ecs:UntagResource"
-      ],
-      "Resource": "*"
-    },
-    {
       "Sid": "CloudWatchLogsManagement",
       "Effect": "Allow",
       "Action": [
@@ -224,78 +237,15 @@
       ]
     },
     {
-      "Sid": "WAFv2Management",
+      "Sid": "IAMPassRole",
       "Effect": "Allow",
-      "Action": [
-        "wafv2:CreateWebACL",
-        "wafv2:DeleteWebACL",
-        "wafv2:ListWebACLs",
-        "wafv2:TagResource",
-        "wafv2:UntagResource",
-        "wafv2:GetWebACL",
-        "wafv2:UpdateWebACL",
-        "wafv2:PutLoggingConfiguration",
-        "wafv2:DeleteLoggingConfiguration",
-        "wafv2:GetLoggingConfiguration",
-        "wafv2:ListTagsForResource"
-      ],
-      "Resource": "*"
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::__AWS_ACCOUNT_ID__:role/vpc-flow-logs-role-__AWS_ACCOUNT_ID__"
     },
     {
-      "Sid": "CloudWatchLogResourcePolicy",
+      "Sid": "WAFServiceLinkedRole",
       "Effect": "Allow",
-      "Action": [
-        "logs:PutResourcePolicy",
-        "logs:DeleteResourcePolicy",
-        "logs:DescribeResourcePolicies",
-        "logs:DescribeLogGroups"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "IAMRoleManagement",
-      "Effect": "Allow",
-      "Action": [
-        "iam:CreateRole",
-        "iam:DeleteRole",
-        "iam:GetRole",
-        "iam:PutRolePolicy",
-        "iam:DeleteRolePolicy",
-        "iam:GetRolePolicy",
-        "iam:CreatePolicy",
-        "iam:DeletePolicy",
-        "iam:AttachRolePolicy",
-        "iam:DetachRolePolicy",
-        "iam:ListRolePolicies",
-        "iam:ListAttachedRolePolicies",
-        "iam:CreateInstanceProfile",
-        "iam:DeleteInstanceProfile",
-        "iam:AddRoleToInstanceProfile",
-        "iam:RemoveRoleFromInstanceProfile",
-        "iam:TagRole"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "ALBManagement",
-      "Effect": "Allow",
-      "Action": [
-        "elasticloadbalancing:CreateLoadBalancer",
-        "elasticloadbalancing:DeleteLoadBalancer",
-        "elasticloadbalancing:DescribeLoadBalancers",
-        "elasticloadbalancing:DescribeTargetGroups",
-        "elasticloadbalancing:CreateTargetGroup",
-        "elasticloadbalancing:DeleteTargetGroup",
-        "elasticloadbalancing:CreateListener",
-        "elasticloadbalancing:DeleteListener",
-        "elasticloadbalancing:DescribeListeners",
-        "elasticloadbalancing:DescribeLoadBalancerAttributes",
-        "elasticloadbalancing:ModifyLoadBalancerAttributes",
-        "elasticloadbalancing:DescribeTargetGroupAttributes",
-        "elasticloadbalancing:ModifyTargetGroupAttributes",
-        "elasticloadbalancing:AddTags",
-        "elasticloadbalancing:RemoveTags"
-      ],
+      "Action": "iam:CreateServiceLinkedRole",
       "Resource": "*"
     }
   ]

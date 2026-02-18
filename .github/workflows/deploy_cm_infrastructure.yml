@@ -63,7 +63,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -input=false
+        run: terraform plan -input=false -out=plans/plan.tfplan
         env:
           TF_VAR_aws_account_region: ${{ env.AWS_REGION }}
           TF_VAR_aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
@@ -71,9 +71,24 @@ jobs:
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        shell: bash
         env:
+          TF_IN_AUTOMATION: "true"
+          TF_LOG: ERROR
+          TF_LOG_PATH: terraform.log
           TF_VAR_aws_account_region: ${{ env.AWS_REGION }}
           TF_VAR_aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
           TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+        run: |
+          set -o pipefail
+          terraform apply plans/plan.tfplan 2>&1 | tee terraform-apply.out
+
+      - name: Upload terraform logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-debug-logs
+          path: |
+            cloud/terraform/aws/terraform.log
+            cloud/terraform/aws/terraform-apply.out
