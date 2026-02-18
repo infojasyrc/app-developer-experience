@@ -58,7 +58,8 @@
         "kms:ScheduleKeyDeletion",
         "kms:EnableKeyRotation",
         "kms:DisableKeyRotation",
-        "kms:GetKeyRotationStatus"
+        "kms:GetKeyRotationStatus",
+        "kms:UpdateKeyDescription"
       ],
       "Resource": "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:key/*"
     },
@@ -210,7 +211,8 @@
         "logs:PutLogEvents",
         "logs:FilterLogEvents",
         "logs:ListTagsForResource",
-        "logs:DescribeLogStreams"
+        "logs:DescribeLogStreams",
+        "logs:DeleteLogStream"
       ],
       "Resource": [
         "arn:aws:logs:*:__AWS_ACCOUNT_ID__:log-group:appdevexp-*",
