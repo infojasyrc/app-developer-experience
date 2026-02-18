@@ -1,4 +1,5 @@
 application_name    = "appdevexp"
+application_env     = "dev"
 aws_account_region  = "us-west-1"
 aws_account_id      = ""
 az_count            = "2"

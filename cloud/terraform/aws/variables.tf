@@ -7,6 +7,11 @@ variable "application_name" {
   type        = string
 }
 
+variable "application_env" {
+  description = "application environment"
+  type        = string
+}
+
 variable "aws_account_region" {
   type    = string
   default = "us-east-1"

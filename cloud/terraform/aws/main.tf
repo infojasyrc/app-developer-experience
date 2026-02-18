@@ -1,6 +1,6 @@
 locals {
   region      = var.aws_account_region
-  environment = terraform.workspace
+  environment = var.application_env
   common_tags = {
     project = var.application_name,
   }
