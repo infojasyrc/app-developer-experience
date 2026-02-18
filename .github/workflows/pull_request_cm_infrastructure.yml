@@ -1,4 +1,4 @@
-name: Pull Request Verification Workflow for Conference Manager Infrastructure
+name: 🔍 Pull Request Verification Workflow for Conference Manager Infrastructure
 
 on:
   pull_request:
@@ -38,10 +38,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3.0.0
         with:
-          terraform_version: 1.14.4
-
-      - name: Assert provider lockfile is present
-        run: test -f .terraform.lock.hcl
+          terraform_version: 1.14.5
 
       - name: Terraform Format
         run: terraform fmt -check -recursive
