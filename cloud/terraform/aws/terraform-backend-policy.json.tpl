@@ -149,7 +149,8 @@
         "kms:EncryptDecrypt",
         "kms:GenerateDataKey",
         "kms:GenerateDataKeyPair",
-        "kms:GenerateDataKeyWithoutPlaintext"
+        "kms:GenerateDataKeyWithoutPlaintext",
+        "kms:CreateGrant"
       ],
       "Resource": "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:key/*"
     },
