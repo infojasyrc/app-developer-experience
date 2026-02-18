@@ -90,5 +90,5 @@ jobs:
         with:
           name: terraform-debug-logs
           path: |
-            terraform.log
-            terraform-apply.out
+            cloud/terraform/aws/terraform.log
+            cloud/terraform/aws/terraform-apply.out

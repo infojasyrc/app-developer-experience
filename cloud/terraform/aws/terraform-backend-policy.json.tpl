@@ -246,7 +246,7 @@
       "Sid": "WAFServiceLinkedRole",
       "Effect": "Allow",
       "Action": "iam:CreateServiceLinkedRole",
-      "Resource": "arn:aws:iam::*:role/aws-service-role/wafv2.amazonaws.com/AWSServiceRoleForWAFV2Logging"
+      "Resource": "*"
     }
   ]
 }

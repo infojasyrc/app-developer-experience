@@ -9,7 +9,10 @@ resource "aws_cloudwatch_log_resource_policy" "waf_logging" {
       {
         Effect = "Allow"
         Principal = {
-          Service = "delivery.logs.amazonaws.com"
+          Service = [
+            "delivery.logs.amazonaws.com",
+            "wafv2.amazonaws.com"
+          ]
         }
         Action   = "logs:PutLogEvents"
         Resource = "${trimsuffix(var.waf_log_group_arn, ":*")}:*"
@@ -17,7 +20,10 @@ resource "aws_cloudwatch_log_resource_policy" "waf_logging" {
       {
         Effect = "Allow"
         Principal = {
-          Service = "delivery.logs.amazonaws.com"
+          Service = [
+            "delivery.logs.amazonaws.com",
+            "wafv2.amazonaws.com"
+          ]
         }
         Action   = "logs:CreateLogStream"
         Resource = "${trimsuffix(var.waf_log_group_arn, ":*")}:*"
