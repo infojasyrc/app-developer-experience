@@ -13,12 +13,6 @@ resource "aws_cloudwatch_log_resource_policy" "waf_logging" {
         }
         Action   = "logs:PutLogEvents"
         Resource = "${trimsuffix(var.waf_log_group_arn, ":*")}:*"
-        Condition = {
-          StringEquals = {
-            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
-            "aws:SourceArn"     = aws_wafv2_web_acl.alb.arn
-          }
-        }
       },
       {
         Effect = "Allow"
@@ -27,12 +21,6 @@ resource "aws_cloudwatch_log_resource_policy" "waf_logging" {
         }
         Action   = "logs:CreateLogStream"
         Resource = "${trimsuffix(var.waf_log_group_arn, ":*")}:*"
-        Condition = {
-          StringEquals = {
-            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
-            "aws:SourceArn"     = aws_wafv2_web_acl.alb.arn
-          }
-        }
       }
     ]
   })
