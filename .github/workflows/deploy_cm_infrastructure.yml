@@ -1,13 +1,12 @@
 name: 🚀 Deploy Conference Manager Infrastructure
 
 on:
-  # Disabled - uncomment to re-enable
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - cloud/terraform/aws/**
   workflow_dispatch: # Allow manual trigger only
+  push:
+    branches:
+      - main
+    paths:
+      - cloud/terraform/aws/**
 
 permissions:
   id-token: write
@@ -38,13 +37,15 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3.0.0
+        with:
+          terraform_version: 1.14.5
 
       - name: Terraform Format
         run: terraform fmt -check -recursive
 
       - name: Terraform Init
         run: |
-          terraform init \
+          terraform init -input=false -lockfile=readonly \
             -backend-config="bucket=${{secrets.BACKEND_AWS_S3_BUCKET}}" \
             -backend-config="key=${{secrets.BACKEND_AWS_S3_KEY}}" \
             -backend-config="region=${{env.AWS_REGION}}" \
