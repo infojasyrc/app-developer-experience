@@ -11,7 +11,7 @@ GITHUB_ROLE_NAME = GitHubActionsTerraformRole
 # We declare these here as well for clarity
 .PHONY: setup-backend create-bucket create-lock-table \
 generate-policy-json create-policy update-policy create-user attach-policy \
-create-keys clean whoami create-oidc-provider
+create-keys clean whoami create-oidc-provider list-resources
 
 ## -----------------------------------------------------------------------------
 ## 1. ADMIN SETUP (Run as Admin)
@@ -141,3 +141,14 @@ whoami: ## 👤 Show the AWS identity for the current credentials
 clean: ## 🧹 Remove generated files
 	@echo "Cleaning up generated files..."
 	@rm -f $(IAM_POLICY_FILE)
+
+
+## -----------------------------------------------------------------------------
+## 4. Management
+## -----------------------------------------------------------------------------
+
+list-resources: ## 📋 List AWS resources with specific tags (as ADMIN)
+	aws resourcegroupstaggingapi get-resources \
+		--tag-filters Key=project,Values=appdevexp \
+		--region $(AWS_REGION) \
+		--profile $(ADMIN_USER_NAME)
