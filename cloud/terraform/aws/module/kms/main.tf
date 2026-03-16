@@ -44,7 +44,10 @@ resource "aws_kms_key_policy" "logs" {
         Sid    = "Allow CloudWatch Logs"
         Effect = "Allow"
         Principal = {
-          Service = "logs.${var.aws_region}.amazonaws.com"
+          Service = [
+            "logs.${var.aws_region}.amazonaws.com",
+            "delivery.logs.amazonaws.com"
+          ]
         }
         Action = [
           "kms:Encrypt",
@@ -60,7 +63,10 @@ resource "aws_kms_key_policy" "logs" {
         Sid    = "Allow CloudWatch Logs CreateGrant"
         Effect = "Allow"
         Principal = {
-          Service = "logs.${var.aws_region}.amazonaws.com"
+          Service = [
+            "logs.${var.aws_region}.amazonaws.com",
+            "delivery.logs.amazonaws.com"
+          ]
         }
         Action   = "kms:CreateGrant"
         Resource = "*"

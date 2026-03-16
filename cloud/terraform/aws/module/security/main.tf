@@ -9,28 +9,24 @@ resource "aws_cloudwatch_log_resource_policy" "waf_logging" {
       {
         Effect = "Allow"
         Principal = {
-          Service = "wafv2.amazonaws.com"
+          Service = [
+            "delivery.logs.amazonaws.com",
+            "wafv2.amazonaws.com"
+          ]
         }
         Action   = "logs:PutLogEvents"
-        Resource = "${var.waf_log_group_arn}:*"
-        Condition = {
-          StringEquals = {
-            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
-          }
-        }
+        Resource = "${trimsuffix(var.waf_log_group_arn, ":*")}:*"
       },
       {
         Effect = "Allow"
         Principal = {
-          Service = "wafv2.amazonaws.com"
+          Service = [
+            "delivery.logs.amazonaws.com",
+            "wafv2.amazonaws.com"
+          ]
         }
         Action   = "logs:CreateLogStream"
-        Resource = "${var.waf_log_group_arn}:*"
-        Condition = {
-          StringEquals = {
-            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
-          }
-        }
+        Resource = "${trimsuffix(var.waf_log_group_arn, ":*")}:*"
       }
     ]
   })
@@ -99,7 +95,7 @@ resource "aws_wafv2_web_acl" "alb" {
 
 resource "aws_wafv2_web_acl_logging_configuration" "alb" {
   resource_arn            = aws_wafv2_web_acl.alb.arn
-  log_destination_configs = [var.waf_log_group_arn]
+  log_destination_configs = [trimsuffix(var.waf_log_group_arn, ":*")]
 
   logging_filter {
     default_behavior = "KEEP"

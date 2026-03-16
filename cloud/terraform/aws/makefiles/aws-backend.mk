@@ -11,7 +11,7 @@ GITHUB_ROLE_NAME = GitHubActionsTerraformRole
 # We declare these here as well for clarity
 .PHONY: setup-backend create-bucket create-lock-table \
 generate-policy-json create-policy update-policy create-user attach-policy \
-create-keys clean whoami create-oidc-provider
+create-keys clean whoami create-oidc-provider list-resources
 
 ## -----------------------------------------------------------------------------
 ## 1. ADMIN SETUP (Run as Admin)
@@ -57,7 +57,7 @@ generate-policy-json: ## 📄 Generate the IAM policy JSON from the template
 		-e 's|__TF_STATE_BUCKET__|$(TF_STATE_BUCKET)|g' \
 		-e 's|__TF_LOCK_TABLE__|$(TF_LOCK_TABLE)|g' \
 		-e 's|__AWS_REGION__|$(AWS_REGION)|g' \
-		$(IAM_POLICY_TEMPLATE) > $(IAM_POLICY_FILE)
+		$(IAM_POLICY_TEMPLATE) | python3 -c 'import sys, json; print(json.dumps(json.load(sys.stdin), separators=(",", ":")))' > $(IAM_POLICY_FILE)
 
 create-policy: generate-policy-json ## 📜 Create the IAM least-privilege policy (as ADMIN)
 	@echo "Creating IAM policy: $(IAM_POLICY_NAME) from $(IAM_POLICY_FILE)..."
@@ -141,3 +141,14 @@ whoami: ## 👤 Show the AWS identity for the current credentials
 clean: ## 🧹 Remove generated files
 	@echo "Cleaning up generated files..."
 	@rm -f $(IAM_POLICY_FILE)
+
+
+## -----------------------------------------------------------------------------
+## 4. Management
+## -----------------------------------------------------------------------------
+
+list-resources: ## 📋 List AWS resources with specific tags (as ADMIN)
+	aws resourcegroupstaggingapi get-resources \
+		--tag-filters Key=project,Values=appdevexp \
+		--region $(AWS_REGION) \
+		--profile $(ADMIN_USER_NAME)
