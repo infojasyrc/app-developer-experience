@@ -99,6 +99,10 @@ terraform apply "20210907_01_Update_core_infrastructure"
 
 Terraform will reference these with `var.ecr_frontend` and `var.ecr_backend` (it appends `:latest` internally where needed).
 
+## Understanding Role and Permissions
+
+![Roles and Permissions](./docs/media/roles_permissions.png)
+
 ## Links
 
 - https://eazytutorial.com/index.php/2021/10/23/aws-certificate-manager-create-a-ssl-certificate-for-a-godaddy-domain/
