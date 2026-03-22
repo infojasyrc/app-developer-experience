@@ -47,6 +47,8 @@ endif
 
 # --- Include Modules ---
 #
+## Import Roles
+include makefiles/aws-roles.mk
 # Import all admin setup tasks from this file
 include makefiles/aws-backend.mk
 ## Import ECR tasks
