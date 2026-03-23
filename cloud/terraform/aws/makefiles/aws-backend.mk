@@ -62,8 +62,34 @@ create-oidc-provider: ## 🛡️ Register GitHub as an OIDC Provider (Run ONCE p
 whoami: ## 👤 Show the AWS identity for the current credentials
 	aws sts get-caller-identity --profile $(ADMIN_USER_NAME) --output table
 
-list-resources: ## 📋 List AWS resources with specific tags (as ADMIN)
-	aws resourcegroupstaggingapi get-resources \
+list-resources: ## 📋 List AWS resources with state/status by tag project=appdevexp (as ADMIN)
+	@arns=$$(aws resourcegroupstaggingapi get-resources \
 		--tag-filters Key=project,Values=appdevexp \
 		--region $(AWS_REGION) \
-		--profile $(ADMIN_USER_NAME)
+		--profile $(ADMIN_USER_NAME) \
+		--query 'ResourceTagMappingList[].ResourceARN' \
+		--output text); \
+	if [ -z "$$arns" ]; then \
+		echo "No tagged resources found."; \
+	else \
+		echo "=== Tagged resources (project=appdevexp) ==="; \
+		for arn in $$arns; do \
+			service=$$(echo $$arn | cut -d: -f3); \
+			case $$service in \
+			ecs) \
+				name=$$(echo $$arn | sed 's|.*/||'); \
+				status=$$(aws ecs describe-clusters --clusters $$name \
+					--region $(AWS_REGION) --profile $(ADMIN_USER_NAME) \
+					--query 'clusters[0].status' --output text 2>/dev/null); \
+				printf "  %-80s [%s]\n" "$$arn" "$$status" ;; \
+			kms) \
+				key_id=$$(echo $$arn | cut -d/ -f2); \
+				state=$$(aws kms describe-key --key-id $$key_id \
+					--region $(AWS_REGION) --profile $(ADMIN_USER_NAME) \
+					--query 'KeyMetadata.KeyState' --output text 2>/dev/null); \
+				printf "  %-80s [%s]\n" "$$arn" "$$state" ;; \
+			*) \
+				printf "  %-80s [unknown service]\n" "$$arn" ;; \
+			esac; \
+		done; \
+	fi
