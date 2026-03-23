@@ -34,7 +34,7 @@ _check-env:
 	render-task-role-policy render-permissions-boundary render-all-policies
 
 render-trust-policy: _mkdir-tmp ## Render OIDC trust policy JSON from template
-	@cat iam/terraform-trust-policy.tpl.json \
+	@cat iam/terraform-trust-policy.json.tpl \
 		| sed 's/__AWS_ACCOUNT_ID__/$(AWS_ACCOUNT_ID)/g' \
 		| sed 's/__GITHUB_USER__/$(GITHUB_USER)/g' \
 		| sed 's/__REPO_NAME__/$(REPO_NAME)/g' \
@@ -51,7 +51,7 @@ render-backend-policy: _mkdir-tmp ## Render Terraform backend policy JSON from t
 	@echo "Rendered: $(TMP)/terraform-backend-policy.json"
 
 render-service-trust: _mkdir-tmp ## Render service trust policy JSON from template
-	@cat iam/service-trust-policy.tpl.json \
+	@cat iam/service-trust-policy.json.tpl \
 		| sed 's/__AWS_ACCOUNT_ID__/$(AWS_ACCOUNT_ID)/g' \
 		| sed 's/__AWS_REGION__/$(AWS_REGION)/g' \
 		> $(TMP)/service-trust-policy.json
@@ -72,14 +72,14 @@ render-kms-policy: _mkdir-tmp ## Render KMS manage policy JSON from template
 	@echo "Rendered: $(TMP)/kms-manage-policy.json"
 
 render-waf-policy: _mkdir-tmp ## Render WAF policy JSON from template
-	@cat iam/waf-policy.json.tpl \
+	@cat iam/waf-manage-policy.json.tpl \
 		| sed 's/__AWS_ACCOUNT_ID__/$(AWS_ACCOUNT_ID)/g' \
 		| sed 's/__AWS_REGION__/$(AWS_REGION)/g' \
 		> $(TMP)/waf-policy.json
 	@echo "Rendered: $(TMP)/waf-policy.json"
 
 render-logs-policy: _mkdir-tmp ## Render CloudWatch logs policy JSON from template
-	@cat iam/logs-policy.json.tpl \
+	@cat iam/logs-manage-policy.json.tpl \
 		| sed 's/__AWS_ACCOUNT_ID__/$(AWS_ACCOUNT_ID)/g' \
 		| sed 's/__AWS_REGION__/$(AWS_REGION)/g' \
 		> $(TMP)/logs-policy.json

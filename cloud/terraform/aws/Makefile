@@ -19,24 +19,13 @@ AWS_REGION        := $(AWS_REGION)
 AWS_ACCOUNT_ID    := $(AWS_ACCOUNT_ID)
 # The admin IAM user to run admin tasks
 ADMIN_USER_NAME   := $(ADMIN_USER_NAME)
-# The name for the IAM user that Terraform will use
-IAM_USER_NAME     := $(IAM_USER_NAME)
 # A globally unique name for the S3 state bucket
 TF_STATE_BUCKET   := $(TF_STATE_BUCKET)
 # A unique name for the DynamoDB lock table
 TF_LOCK_TABLE     := ade-terraform-lock-table
-# The name of the IAM policy to create
-IAM_POLICY_NAME   := TerraformBackendPolicy
-# The JSON file containing the policy document
-IAM_POLICY_TEMPLATE := terraform-backend-policy.json.tpl
-IAM_POLICY_FILE     := terraform-backend-policy.json
-IAM_TRUST_POLICY_TEMPLATE := terraform-trust-policy.json.tpl
-IAM_TRUST_POLICY_FILE     := terraform-trust-policy.json
 
 # The .conf file for backend initialization (add this to .gitignore!)
 BACKEND_CONFIG := backend.conf
-
-POLICY_ARN = arn:aws:iam::$(AWS_ACCOUNT_ID):policy/$(IAM_POLICY_NAME)
 
 # discover the absolute path to the project repo on the host machine
 ifeq ($(OS),Windows_NT)
@@ -57,9 +46,8 @@ include makefiles/aws-ecr.mk
 # --- Phony Targets ---
 .PHONY: all help init plan apply destroy
 
-init: ## 🏁 Initialize Terraform with the backend (as TF USER)
+init: ## 🏁 Initialize Terraform with the backend
 	@echo "Initializing Terraform..."
-	@echo "NOTE: This requires AWS credentials for '$(IAM_USER_NAME)'."
 	terraform init -backend-config=$(BACKEND_CONFIG) -input=false
 
 plan: ## 📋 Generate a Terraform execution plan (as TF USER)
