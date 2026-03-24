@@ -4,12 +4,12 @@
     {
       "Effect": "Allow",
       "Principal": {
-        "AWS": "arn:aws:iam::__AWS_ACCOUNT_ID__:role/appdevexp-deployer"
+        "AWS": "arn:aws:iam::__AWS_ACCOUNT_ID__:root"
       },
       "Action": "sts:AssumeRole",
       "Condition": {
-        "StringEquals": {
-          "sts:ExternalId": "appdevexp-__AWS_REGION__"
+        "ArnLike": {
+          "aws:PrincipalArn": "arn:aws:iam::__AWS_ACCOUNT_ID__:role/appdevexp-deployer"
         }
       }
     }
