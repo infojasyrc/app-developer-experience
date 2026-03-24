@@ -133,11 +133,11 @@ bootstrap-boundary: render-permissions-boundary ## Create permissions boundary p
 	@echo "Done: appdevexp-permissions-boundary"
 
 bootstrap-deployer: render-trust-policy render-backend-policy ## Create OIDC deployer role and attach backend policy
-	@echo "reating OIDC deployer role..."
+	@echo "Creating OIDC deployer role..."
 	aws iam create-role \
 		--role-name $(DEPLOYER_ROLE) \
 		--assume-role-policy-document file://$(TMP)/terraform-trust-policy.json \
-		--description "GitHub Actions OIDC deployer — assume-only entry point"
+		--description "GitHub Actions OIDC deployer - assume-only entry point"
 	aws iam put-role-policy \
 		--role-name $(DEPLOYER_ROLE) \
 		--policy-name terraform-backend \
@@ -149,7 +149,7 @@ bootstrap-service-roles: render-service-trust render-ecs-policy render-kms-polic
 	aws iam create-role \
 		--role-name appdevexp-ecs-deploy-role \
 		--assume-role-policy-document file://$(TMP)/service-trust-policy.json \
-		--description "ECS/EC2/ALB/ECR management — assumed by deployer"
+		--description "ECS/EC2/ALB/ECR management - assumed by deployer"
 	aws iam put-role-policy \
 		--role-name appdevexp-ecs-deploy-role \
 		--policy-name ecs-deploy \
@@ -159,7 +159,7 @@ bootstrap-service-roles: render-service-trust render-ecs-policy render-kms-polic
 	aws iam create-role \
 		--role-name appdevexp-kms-manage-role \
 		--assume-role-policy-document file://$(TMP)/service-trust-policy.json \
-		--description "KMS key lifecycle management — assumed by deployer"
+		--description "KMS key lifecycle management - assumed by deployer"
 	aws iam put-role-policy \
 		--role-name appdevexp-kms-manage-role \
 		--policy-name kms-manage \
@@ -169,7 +169,7 @@ bootstrap-service-roles: render-service-trust render-ecs-policy render-kms-polic
 	aws iam create-role \
 		--role-name appdevexp-waf-role \
 		--assume-role-policy-document file://$(TMP)/service-trust-policy.json \
-		--description "WAF WebACL and rule management — assumed by deployer"
+		--description "WAF WebACL and rule management - assumed by deployer"
 	aws iam put-role-policy \
 		--role-name appdevexp-waf-role \
 		--policy-name waf-manage \
@@ -179,7 +179,7 @@ bootstrap-service-roles: render-service-trust render-ecs-policy render-kms-polic
 	aws iam create-role \
 		--role-name appdevexp-logs-role \
 		--assume-role-policy-document file://$(TMP)/service-trust-policy.json \
-		--description "CloudWatch log group management — assumed by deployer"
+		--description "CloudWatch log group management - assumed by deployer"
 	aws iam put-role-policy \
 		--role-name appdevexp-logs-role \
 		--policy-name logs-manage \
@@ -189,7 +189,7 @@ bootstrap-service-roles: render-service-trust render-ecs-policy render-kms-polic
 	aws iam create-role \
 		--role-name appdevexp-s3-manage-role \
 		--assume-role-policy-document file://$(TMP)/service-trust-policy.json \
-		--description "S3 bucket management — assumed by deployer"
+		--description "S3 bucket management - assumed by deployer"
 	aws iam put-role-policy \
 		--role-name appdevexp-s3-manage-role \
 		--policy-name s3-manage \
@@ -202,7 +202,7 @@ bootstrap-runtime-roles: render-task-execution-policy render-task-role-policy ##
 	aws iam create-role \
 		--role-name appdevexp-task-execution-role \
 		--assume-role-policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"ecs-tasks.amazonaws.com"},"Action":"sts:AssumeRole"}]}' \
-		--description "ECS agent runtime — pull image, fetch secrets, write logs"
+		--description "ECS agent runtime - pull image, fetch secrets, write logs"
 	aws iam attach-role-policy \
 		--role-name appdevexp-task-execution-role \
 		--policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
