@@ -26,19 +26,7 @@ and which agent is appropriate for the task.
 | `frontend-planner` | Analyzes frontend codebases, produces migration and audit plans | ✅ Active | you need a plan before touching frontend code |
 | `frontend-developer` | Implements frontend plans, writes production code | ✅ Active | you have a ready and approved `MIGRATION_PLAN.md` |
 
-### Backend
 
-| Agent | Role | Status | Trigger when... |
-|---|---|---|---|
-| `backend-planner` | Analyzes backend services, produces refactor/migration plans | 🔜 Planned | — |
-| `backend-developer` | Implements backend plans | 🔜 Planned | — |
-
-### Shared
-
-| Skill | Role | Status |
-|---|---|---|
-| `code-reviewer` | Cross-domain code review | 🔜 Planned |
-| `changelog-generator` | Generates CHANGELOG.md from conventional commits | 🔜 Planned |
 
 ---
 
@@ -46,13 +34,9 @@ and which agent is appropriate for the task.
 
 ```
 agents/
-├── frontend/
-│   ├── frontend-planner/     → AGENT.md + skills/
-│   └── frontend-developer/   → AGENT.md + skills/  (planned)
-├── backend/
-│   ├── backend-planner/      → (planned)
-│   └── backend-developer/    → (planned)
-└── shared/                   → (planned)
+└── frontend/
+    ├── frontend-planner/     → AGENT.md + skills/
+    └── frontend-developer/   → AGENT.md + skills/
 ```
 
 ---
