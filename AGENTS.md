@@ -24,7 +24,7 @@ and which agent is appropriate for the task.
 | Agent | Role | Status | Trigger when... |
 |---|---|---|---|
 | `frontend-planner` | Analyzes frontend codebases, produces migration and audit plans | ✅ Active | you need a plan before touching frontend code |
-| `frontend-developer` | Implements frontend plans, writes production code | 🔜 Planned | you have a ready `MIGRATION_PLAN.md` |
+| `frontend-developer` | Implements frontend plans, writes production code | ✅ Active | you have a ready and approved `MIGRATION_PLAN.md` |
 
 ### Backend
 
