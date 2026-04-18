@@ -1,56 +1,68 @@
-# AGENTS.md
+# Agents Index — ADE Monorepo
 
 ## Overview
-- Monorepo for templates (FastAPI, NestJS REST/GraphQL, Mobile) and the "Conference Manager" use case.
-- Key folders: `backend/`, `conference-manager/`, `mobile-app/`, `cloud/`, `cli/`, `devops/`, `docs/`.
-- Goal: fast, consistent agent contributions with minimal context switching.
 
-## Conventions
-- Commits: Conventional Commits (feat, fix, docs, etc.).
-- Linting: JS/TS via ESLint+Prettier; Python via Black+Isort+Flake8.
-- Secrets: never commit `.env`; use `.env.public` for examples.
-- Docs: update component `README.md` when adding/changing features.
+This file is the global index of all AI agents available in this monorepo.
+Before invoking any agent, read this file to understand the orchestration rules
+and which agent is appropriate for the task.
 
-## Components
-- Backend templates: NestJS REST (`backend/ms-nestjs-rest-tpl/`), NestJS GraphQL (`backend/ms-nestjs-gql-tpl/`), FastAPI (`backend/ms-fastapi-rest-tpl/`).
-- Mobile templates: React Native (`mobile-app/whitewalker`), Expo RN (`mobile-app/whitewolf-rn`).
-- Conference Manager: API (`conference-manager/ms-conference-api`), Webapp (`conference-manager/ms-conference-webapp`), Admin (`conference-manager/ms-conference-admin`).
-- Infra: Terraform modules in `cloud/terraform` (AWS focused).
+---
 
-## Coding Standards
-- NestJS: modular architecture; DTOs; standard decorators.
-- FastAPI: Pydantic models; strict type hints; PEP8.
-- Next.js: App Router in `src/app`; functional components; Tailwind preferred.
-- Django Admin: standard MVT; manage via `manage.py`.
+## Orchestration Rules
 
-## Makefile Workflow
-- Common:
-  - `make build-dev` – build dev containers.
-  - `make install-dependencies` – install deps.
-  - `make unit-tests` – run unit tests (component-specific).
-- API specifics:
-  - `make launch-db` / `make stop-db` – MongoDB.
-  - `make launch-unleash` / `make stop-unleash` – Feature flags.
-  - `make launch-local-dev` / `make stop-local-dev` – All services.
-- Webapp:
-  - `make launch` – run in container.
-- Root shortcuts:
-  - `make` – list commands.
-  - `make launch-local-dev` / `make stop-local-dev` – run/stop whole stack.
-  - `make webapp-*`, `make api-*` – component command groups.
+- **Always run a planner before a developer** — never implement without a plan artifact
+- Plans are stored in the target app root as `MIGRATION_PLAN.md`
+- Each agent documents its expected inputs and outputs in its own `AGENT.md`
+- Skills live inside the agent that owns them — never share skills between agents directly; use `agents/shared/` for that
 
-## Quick Tips for Agents
-- Use local `.nvmrc` inside services; root commit tooling needs Node 22.15.0.
-- Respect template layering; don't cross-import product code.
-- For new features in Conference Manager API, prefer NestJS controllers/services over legacy Express.
-- Preserve env dual-mode behavior (containers vs local) when touching `.env` usage.
+---
 
-## When Adding Features
-- Backend: create module + service + controller; add tests.
-- FastAPI: schema → use-case → API route; add tests.
-- Webapp: add components under `src/components`; route under `src/app`.
-- Infra: only modify Terraform with explicit requests.
+## Available Agents
 
-## CI/CD & Docs
-- Devops YAML files are examples; activate only with concrete requirements.
-- Generate changelogs with root `package.json` scripts after merges.
+### Frontend
+
+| Agent | Role | Status | Trigger when... |
+|---|---|---|---|
+| `frontend-planner` | Analyzes frontend codebases, produces migration and audit plans | ✅ Active | you need a plan before touching frontend code |
+| `frontend-developer` | Implements frontend plans, writes production code | 🔜 Planned | you have a ready `MIGRATION_PLAN.md` |
+
+### Backend
+
+| Agent | Role | Status | Trigger when... |
+|---|---|---|---|
+| `backend-planner` | Analyzes backend services, produces refactor/migration plans | 🔜 Planned | — |
+| `backend-developer` | Implements backend plans | 🔜 Planned | — |
+
+### Shared
+
+| Skill | Role | Status |
+|---|---|---|
+| `code-reviewer` | Cross-domain code review | 🔜 Planned |
+| `changelog-generator` | Generates CHANGELOG.md from conventional commits | 🔜 Planned |
+
+---
+
+## Agent Locations
+
+```
+agents/
+├── frontend/
+│   ├── frontend-planner/     → AGENT.md + skills/
+│   └── frontend-developer/   → AGENT.md + skills/  (planned)
+├── backend/
+│   ├── backend-planner/      → (planned)
+│   └── backend-developer/    → (planned)
+└── shared/                   → (planned)
+```
+
+---
+
+## Handoff Protocol
+
+```
+1. Planner reads source codebase
+2. Planner produces MIGRATION_PLAN.md at target app root
+3. Human reviews and approves the plan
+4. Developer reads MIGRATION_PLAN.md and implements phase by phase
+5. Developer never deviates from the plan without flagging it
+```
