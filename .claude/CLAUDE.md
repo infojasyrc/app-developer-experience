@@ -1,55 +1,59 @@
 # CLAUDE.md
 
-This is a mono repo to handle multiple packages such as microservices to build restful api and graphql inside backend, 
-apps templates inside mobile-app, pipeline templates inside devops, terraform and bicep infrastructure as code inside cloud 
-and a solution to handle conferences inside conference manager.
+This is a monorepo that handles multiple packages: microservices for RESTful
+and GraphQL APIs, mobile app templates, DevOps pipeline templates, Terraform
+infrastructure as code, and a conference management solution.
 
-1. **Microservices** - Restful and GraphQL microservice templates to build services using fastapi and nestjs
+> **For exact filesystem paths** see `agents/shared/context/monorepo-paths.md`.
+> That file is the single source of truth for all directory locations.
 
-2. **Mobile App Templates** - React Native and Expo templates using typescript
+---
 
-3. **DevOps Pipelines** - Pipeline templates to deploy containers and insfrastructure as code using terraform and bicep
+## Solutions
 
-4. **Infrastructure as Code (IaC)** - Complete web application infrastructure to deploy on AWS or Azure.
+1. **Conference Manager** — Full solution: Django admin, RESTful API, Next.js webapp
+2. **Microservices** — RESTful (FastAPI, NestJS) and GraphQL (NestJS) templates
+3. **Mobile App Templates** — React Native and Expo templates using TypeScript
+4. **DevOps Pipelines** — CI/CD pipelines for containers and IaC (Terraform, Bicep)
+5. **Infrastructure as Code** — AWS (Terraform) and Azure (Bicep) deployments
 
-## Common Tasks
+---
 
 ## Key Project Locations
 
-### Conference Manager
+See `agents/shared/context/monorepo-paths.md` for canonical paths.
 
-- **`conference-manager/ms-conference-admin`** - handle and manage all data using django
-- **`conference-manager/ms-conference-api`** - handle all restful oeprations for the solution
-- **`conference-manager/ms-conference-webapp`** - show all conference information using nextjs
-- **`conference-manager/docker-compose`** - orchestrate all containers for local execution
+| Area | Root Path |
+|---|---|
+| Conference Manager | `conference-manager/` |
+| Backend microservices | `backend/` |
+| Mobile templates | `mobile-app/` |
+| DevOps pipeline templates | `devops/` |
+| Infrastructure (AWS) | `cloud/terraform/aws` |
+| Infrastructure (Azure) | `cloud/terraform/azure` |
+| GitHub Actions | `.github/workflows/` |
+| AI Agents | `agents/` |
 
-### Microservices
-
-- **`backend/ms-fast-api-rest-tpl`** - restful api using fastapi
-- **`backend/ms-nestjs-gql-tpl`** - graphql api using nestjs
-- **`backend/ms-nestjs-rest-tpl`** - graphql api using nestjs
-- **`backend/ms-nestjs-rest-tpl`** - restful api using nestjs
-
-### Mobile App Templates
-
-- mobile-app/whitewalker: react native template
-- mobile-app/whitewolf: expo template
-
-### DevOps Pipelines
-
-- devops/ci-aws-backend: to publish microservices in aws container registry
-- devops/ci-aws-webapp: to publish mobile app in aws container registry
-- devops/deploy_infrastrucure: pipelines to check, plan, apply and destroy infrastructure using terraform
-
-### Infrastructure as Code (IaC)
-
-- cloud/terraform
+---
 
 ## Key Architectural Concepts
 
-- **Domain Driven Development** All microservices, restful api and graphql services should use DDD to manage all features
+- **DDD** — All microservices use Domain Driven Design to organize features
+- **Clean Architecture** — Separation of domain, application, and infrastructure layers
+- **Container-first** — Every service ships as an optimized Docker image (source only)
+
+---
 
 ## Metrics
 
-- Coverage: Each component should handle 80% code coverage
-- Container Image Size: Each container should be optimize in size keeping ONLY source code
+- **Coverage:** 80% minimum per component
+- **Container image size:** Optimized — only source code, no dev dependencies
+
+---
+
+## Common Tasks
+
+Before running any agent task, read:
+```bash
+cat agents/shared/context/monorepo-paths.md
+```
