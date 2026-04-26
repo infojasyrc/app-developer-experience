@@ -26,17 +26,41 @@ and which agent is appropriate for the task.
 | `frontend-planner` | Analyzes frontend codebases, produces migration and audit plans | ✅ Active | you need a plan before touching frontend code |
 | `frontend-developer` | Implements frontend plans, writes production code | ✅ Active | you have a ready and approved `MIGRATION_PLAN.md` |
 
+### Infrastructure
 
+| Agent | Role | Status | Trigger when... |
+|---|---|---|---|
+| `infra-planner` | Audits Terraform modules and IAM config, produces remediation plan | ✅ Active | you need to diagnose infra or IAM issues before making changes |
+| `infra-developer` | Implements Terraform and IAM fixes from the plan | ✅ Active | you have a ready and approved `INFRA_PLAN.md` |
+| `pipeline-debugger` | Diagnoses GitHub Actions failures, proposes fixes as diffs | ✅ Active | a CI/CD workflow is failing and you need root cause analysis |
 
 ---
+
+## Shared Context
+
+Before starting any task, all agents MUST read:
+
+```bash
+cat agents/shared/context/monorepo-paths.md
+```
+
+This file is the **single source of truth** for all monorepo paths.
+Never hardcode paths from memory — always derive from `monorepo-paths.md`.
 
 ## Agent Locations
 
 ```
 agents/
-└── frontend/
-    ├── frontend-planner/     → AGENT.md + skills/
-    └── frontend-developer/   → AGENT.md + skills/
+├── shared/
+│   └── context/
+│       └── monorepo-paths.md   ← read this first, always
+├── frontend/
+│   ├── frontend-planner/       → AGENT.md + skills/
+│   └── frontend-developer/     → AGENT.md + skills/
+└── infrastructure/
+    ├── infra-planner/          → AGENT.md + skills/
+    ├── infra-developer/        → AGENT.md + skills/
+    └── pipeline-debugger/      → AGENT.md + skills/
 ```
 
 ---
