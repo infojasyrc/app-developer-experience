@@ -7,6 +7,9 @@ description: >
   asks to audit Terraform, diagnose infra issues, or before any Terraform
   implementation task. Always produces findings as input to INFRA_PLAN.md —
   never modifies .tf files.
+metadata:
+  author: app-dev-exp
+  version: "1.0"
 ---
 
 # terraform-auditor
@@ -16,21 +19,26 @@ feeds into `INFRA_PLAN.md`.
 
 ---
 
-## Phase 1 — Module discovery
+## Phase 1 — Load paths and discover modules
 
 ```bash
+# Always read paths first
+cat agents/shared/context/monorepo-paths.md
+
+# Set local alias (use TERRAFORM_ROOT from the file)
+TERRAFORM_ROOT="cloud/terraform/aws"
+
 # Map existing module structure
-find cloud/terraform -name "*.tf" | sort
-find cloud/terraform -name "*.tfvars" | sort
-find cloud/terraform -name "backend.tf" -o -name "versions.tf" | sort
+find $TERRAFORM_ROOT -name "*.tf" | sort
+find $TERRAFORM_ROOT -name "*.tfvars" | sort
+find $TERRAFORM_ROOT -name "backend.tf" -o -name "versions.tf" | sort
 
 # Check state backend config
-cat cloud/terraform/backend.tf 2>/dev/null || \
-  cat cloud/backend.tf 2>/dev/null
+cat $TERRAFORM_ROOT/backend.tf 2>/dev/null
 
 # Check provider versions
 grep -rn "required_providers\|version\s*=" \
-  cloud/terraform --include="*.tf" | head -30
+  $TERRAFORM_ROOT --include="*.tf" | head -30
 ```
 
 ## Phase 2 — ECS Fargate module validation
@@ -38,14 +46,14 @@ grep -rn "required_providers\|version\s*=" \
 ```bash
 # Find ECS-related resources
 grep -rn "aws_ecs_cluster\|aws_ecs_service\|aws_ecs_task_definition" \
-  cloud/terraform --include="*.tf" -l
+  $TERRAFORM_ROOT --include="*.tf" -l
 
 # Find ECR repos
-grep -rn "aws_ecr_repository" cloud/terraform --include="*.tf"
+grep -rn "aws_ecr_repository" $TERRAFORM_ROOT --include="*.tf"
 
 # Find task definition — check cpu/memory, network_mode, launch_type
 grep -rn "launch_type\|network_mode\|cpu\|memory\|requires_compatibilities" \
-  cloud/terraform --include="*.tf"
+  $TERRAFORM_ROOT --include="*.tf"
 ```
 
 **Validate these are present and correct:**
@@ -71,14 +79,14 @@ Valid Fargate CPU/memory combinations:
 ```bash
 # Find VPC, subnets, security groups
 grep -rn "aws_vpc\|aws_subnet\|aws_security_group\|aws_security_group_rule" \
-  cloud/terraform --include="*.tf" -l
+  $TERRAFORM_ROOT --include="*.tf" -l
 
 # Check if ECS service is in private subnets
-grep -rn "subnets\|subnet_ids" cloud/terraform --include="*.tf"
+grep -rn "subnets\|subnet_ids" $TERRAFORM_ROOT --include="*.tf"
 
 # Check security group rules for ECS → RDS port
 grep -rn "from_port\|to_port\|cidr_blocks\|source_security_group_id" \
-  cloud/terraform --include="*.tf"
+  $TERRAFORM_ROOT --include="*.tf"
 ```
 
 **Validate:**
@@ -90,9 +98,9 @@ grep -rn "from_port\|to_port\|cidr_blocks\|source_security_group_id" \
 ## Phase 4 — RDS module validation
 
 ```bash
-grep -rn "aws_db_instance\|aws_rds_cluster" cloud/terraform --include="*.tf"
-grep -rn "db_subnet_group\|aws_db_subnet_group" cloud/terraform --include="*.tf"
-grep -rn "publicly_accessible" cloud/terraform --include="*.tf"
+grep -rn "aws_db_instance\|aws_rds_cluster" $TERRAFORM_ROOT --include="*.tf"
+grep -rn "db_subnet_group\|aws_db_subnet_group" $TERRAFORM_ROOT --include="*.tf"
+grep -rn "publicly_accessible" $TERRAFORM_ROOT --include="*.tf"
 ```
 
 **Validate:**
@@ -105,7 +113,7 @@ grep -rn "publicly_accessible" cloud/terraform --include="*.tf"
 ```bash
 # Verify ECS cluster exists and is active
 aws ecs describe-clusters --clusters $(grep -r "cluster_name\|name.*cluster" \
-  cloud/terraform --include="*.tf" | grep -oP '"[^"]+"' | head -1) \
+  $TERRAFORM_AWS --include="*.tf" | grep -oP '"[^"]+"' | head -1) \
   --query 'clusters[0].status' --output text
 
 # Check for failed tasks

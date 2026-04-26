@@ -7,20 +7,28 @@ description: >
   and GitHub Actions OIDC role for CI/CD deployments. Use when the plan
   identifies IAM permission gaps. Always uses least-privilege — never
   AdministratorAccess or wildcard resources. Requires Phase A complete.
+metadata:
+  author: app-dev-exp
+  version: "1.0"
 ---
 
 # iam-roles-ecs
 
 Implements Phase B of `INFRA_PLAN.md`: IAM roles and policies for ECS Fargate.
-Writes directly into `infrastructure/terraform/modules/iam/`.
+Paths resolved from `agents/shared/context/monorepo-paths.md`.
 
 ---
 
 ## Before writing any file
 
 ```bash
-cat infrastructure/INFRA_PLAN.md  # read Phase B section
-grep -rn "execution_role_arn\|task_role_arn" infrastructure/ --include="*.tf"
+# Always read paths first
+cat agents/shared/context/monorepo-paths.md
+TERRAFORM_AWS="cloud/terraform/aws"
+INFRA_PLANS="agents/infrastructure/plans"
+
+cat $INFRA_PLANS/INFRA_PLAN.md  # read Phase B section
+grep -rn "execution_role_arn\|task_role_arn" $TERRAFORM_AWS --include="*.tf"
 terraform validate
 ```
 
@@ -294,7 +302,7 @@ output "github_actions_role_arn" {
 ## Verification
 
 ```bash
-cd infrastructure/terraform
+cd $TERRAFORM_AWS
 terraform validate
 terraform plan -var-file="environments/${var.environment}.tfvars" 2>&1 | \
   grep -E "will be created|will be updated|will be destroyed|Error"

@@ -11,7 +11,7 @@ Its sole output is an `INFRA_PLAN.md` artifact consumed by `infra-developer`.
 
 ## Preconditions
 
-- Access to the monorepo Terraform modules
+- Read `agents/shared/context/monorepo-paths.md` — use `TERRAFORM_ROOT` and `INFRA_PLANS` aliases for all paths
 - AWS CLI configured with read-only access (for live diagnosis)
 - Target environment known (dev / test / prod)
 
@@ -21,7 +21,7 @@ Its sole output is an `INFRA_PLAN.md` artifact consumed by `infra-developer`.
 
 | Input | Description | Required |
 |---|---|---|
-| Terraform modules path | e.g. `infrastructure/terraform/` | ✅ |
+| Terraform modules path | Resolved from `TERRAFORM_ROOT` in monorepo-paths.md | ✅ |
 | Target environment | dev / test / prod | ✅ |
 | Problem description | Known errors or symptoms | Optional |
 
@@ -31,7 +31,7 @@ Its sole output is an `INFRA_PLAN.md` artifact consumed by `infra-developer`.
 
 | Output | Location | Description |
 |---|---|---|
-| `INFRA_PLAN.md` | `infrastructure/` root | Audit findings + prioritized remediation plan |
+| `INFRA_PLAN.md` | `INFRA_PLANS` alias (see monorepo-paths.md) | Audit findings + prioritized remediation plan |
 
 ---
 

@@ -9,7 +9,11 @@ directly — all fixes are proposed as diffs for human review and PR submission.
 
 ---
 
-## Inputs
+## Preconditions
+
+- Read `agents/shared/context/monorepo-paths.md` — use `GHA_WORKFLOWS` and `PIPELINE_REPORTS` aliases
+- `gh` CLI authenticated (`gh auth status`)
+- Access to the failing workflow file
 
 | Input | Description | Required |
 |---|---|---|
@@ -23,7 +27,7 @@ directly — all fixes are proposed as diffs for human review and PR submission.
 
 | Output | Location | Description |
 |---|---|---|
-| `PIPELINE_DEBUG_REPORT.md` | `.github/` | Root cause + proposed fixes as diffs |
+| `PIPELINE_DEBUG_REPORT.md` | `PIPELINE_REPORTS` alias (see monorepo-paths.md) | Root cause + proposed fixes as diffs |
 
 ---
 

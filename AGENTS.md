@@ -36,17 +36,31 @@ and which agent is appropriate for the task.
 
 ---
 
+## Shared Context
+
+Before starting any task, all agents MUST read:
+
+```bash
+cat agents/shared/context/monorepo-paths.md
+```
+
+This file is the **single source of truth** for all monorepo paths.
+Never hardcode paths from memory — always derive from `monorepo-paths.md`.
+
 ## Agent Locations
 
 ```
 agents/
+├── shared/
+│   └── context/
+│       └── monorepo-paths.md   ← read this first, always
 ├── frontend/
-│   ├── frontend-planner/     → AGENT.md + skills/
-│   └── frontend-developer/   → AGENT.md + skills/
+│   ├── frontend-planner/       → AGENT.md + skills/
+│   └── frontend-developer/     → AGENT.md + skills/
 └── infrastructure/
-    ├── infra-planner/        → AGENT.md + skills/
-    ├── infra-developer/      → AGENT.md + skills/
-    └── pipeline-debugger/    → AGENT.md + skills/
+    ├── infra-planner/          → AGENT.md + skills/
+    ├── infra-developer/        → AGENT.md + skills/
+    └── pipeline-debugger/      → AGENT.md + skills/
 ```
 
 ---

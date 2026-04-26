@@ -4,28 +4,36 @@ description: >
   Implements Terraform fixes and new modules for ECS Fargate + ECR + RDS
   deployments on AWS. Use when the plan requires creating or fixing ECS task
   definitions, ECS services, ECR repositories, security groups, or networking
-  resources. Always reads INFRA_PLAN.md Phase A before writing any .tf file.
-  Runs terraform validate after each change — never terraform apply.
+  resources. Always reads monorepo-paths.md then INFRA_PLAN.md Phase A before
+  writing any .tf file. Runs terraform validate after each change — never apply.
+metadata:
+  author: app-dev-exp
+  version: "1.0"
 ---
 
 # terraform-ecs-fargate
 
 Implements Phase A of `INFRA_PLAN.md`: Terraform module fixes for ECS Fargate
-+ ECR + RDS. Writes directly into `infrastructure/terraform/`.
++ ECR + RDS. Paths resolved from `agents/shared/context/monorepo-paths.md`.
 
 ---
 
 ## Before writing any file
 
 ```bash
+# Always read paths first
+cat agents/shared/context/monorepo-paths.md
+TERRAFORM_AWS="cloud/terraform/aws"
+INFRA_PLANS="agents/infrastructure/plans"
+
 # Read the plan
-cat infrastructure/INFRA_PLAN.md
+cat $INFRA_PLANS/INFRA_PLAN.md
 
 # Understand existing module structure
-find infrastructure/terraform/ -name "*.tf" | sort
+find $TERRAFORM_AWS -name "*.tf" | sort
 
 # Validate current state
-cd infrastructure/terraform && terraform validate
+cd $TERRAFORM_AWS && terraform validate
 terraform plan -out=plan.tfplan 2>&1 | tail -30
 ```
 
@@ -220,7 +228,7 @@ resource "aws_cloudwatch_log_group" "ecs" {
 ## Verification after changes
 
 ```bash
-cd infrastructure/terraform
+cd $TERRAFORM_AWS
 
 # Validate syntax
 terraform validate

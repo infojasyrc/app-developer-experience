@@ -1,13 +1,27 @@
-CLAUDE.md
-│  "qué es el proyecto, qué soluciones tiene, convenciones"
-│  → referencia a monorepo-paths.md para rutas exactas
+# Understanding Agentic strategy
+
+## Contents
+
+- [Contents](#contents)
+- [Project Structure](#project-structure)
+- [Skill Specification](#skill-specification)
+
+## Project Structure
+
+.claude/CLAUDE.md
+│  "what is the project, what solutions it has, conventions"
+│  → reference to monorepo-paths.md for exact paths
 │
 agents/shared/context/monorepo-paths.md
-│  "dónde está exactamente cada cosa — paths resolvibles"
-│  → leído por todos los agentes al inicio de cada tarea
+│  "where exactly each thing is — resolvable paths"
+│  → read by all agents at the start of each task
 │
 AGENTS.md
-   "qué agentes existen, cómo orquestarlos"
-   → leído por Claude Code cuando necesita delegar una tarea
+   "what agents exist, how to orchestrate them"
+   → read by Claude Code when it needs to delegate a task
 
-Regla de mantenimiento: si mueves un directorio en el repo, solo tocas monorepo-paths.md y añades una línea en CLAUDE.md si el cambio es estructural. Nunca tocas los SKILL.md individuales.
+Maintenance rule: if you move a directory in the repo, only touch monorepo-paths.md and add a line in CLAUDE.md if the change is structural. Never touch the individual SKILL.md files.
+
+## Skill Specification
+
+https://agentskills.io/specification

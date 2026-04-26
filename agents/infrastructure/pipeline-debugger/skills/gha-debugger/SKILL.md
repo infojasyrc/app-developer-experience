@@ -7,18 +7,27 @@ description: >
   failures, Docker build errors, and missing secrets. Use when the user reports
   a failing CI/CD pipeline, workflow errors, or asks to debug GitHub Actions.
   Produces PIPELINE_DEBUG_REPORT.md with diffs — never modifies workflow files.
+metadata:
+  author: app-dev-exp
+  version: "1.0"
 ---
 
 # gha-debugger
 
 Diagnoses GitHub Actions failures for ECS Fargate CI/CD pipelines. Output
 is `PIPELINE_DEBUG_REPORT.md` with root cause + proposed fixes as diffs.
+Paths resolved from `agents/shared/context/monorepo-paths.md`.
 
 ---
 
-## Phase 1 — Fetch live run data
+## Phase 1 — Load paths and fetch live run data
 
 ```bash
+# Always read paths first
+cat agents/shared/context/monorepo-paths.md
+GHA_WORKFLOWS=".github/workflows"
+PIPELINE_REPORTS=".github"
+
 # List recent failed runs
 gh run list --status failure --limit 10 \
   --json databaseId,name,headBranch,createdAt,conclusion \
@@ -39,10 +48,10 @@ gh secret list
 
 ```bash
 # Find all workflow files
-find .github/workflows/ -name "*.yml" -o -name "*.yaml" | sort
+find $GHA_WORKFLOWS -name "*.yml" -o -name "*.yaml" | sort
 
 # Read the failing workflow
-cat .github/workflows/<failing-workflow>.yml
+cat $GHA_WORKFLOWS/<failing-workflow>.yml
 ```
 
 ## Phase 3 — Common failure patterns and diagnosis
@@ -73,7 +82,7 @@ gh secret list | grep AWS_ROLE_ARN
 gh secret list | grep AWS_REGION
 
 # Verify workflow has correct permissions block
-grep -A5 "permissions:" .github/workflows/<workflow>.yml
+grep -A5 "permissions:" $GHA_WORKFLOWS/<workflow>.yml
 ```
 
 Required permissions block:
@@ -102,10 +111,10 @@ Error response from daemon: Head ... no basic auth credentials
 **Diagnosis:**
 ```bash
 # Check ECR login step exists before docker push
-grep -n "amazon-ecr-login\|ecr get-login" .github/workflows/<workflow>.yml
+grep -n "amazon-ecr-login\|ecr get-login" $GHA_WORKFLOWS/<workflow>.yml
 
 # Check ECR repo name matches
-grep -n "ECR_REPOSITORY\|ecr_repository" .github/workflows/<workflow>.yml
+grep -n "ECR_REPOSITORY\|ecr_repository" $GHA_WORKFLOWS/<workflow>.yml
 ```
 
 Correct ECR login sequence:
@@ -145,7 +154,7 @@ Error: ResourceNotFoundException: TaskDefinition not found
 ```bash
 # Check task definition step
 grep -A20 "amazon-ecs-render-task-definition\|task-definition" \
-  .github/workflows/<workflow>.yml
+  $GHA_WORKFLOWS/<workflow>.yml
 ```
 
 Correct ECS deploy sequence:
@@ -179,15 +188,15 @@ Correct ECS deploy sequence:
 
 ```bash
 # Find all secrets/vars referenced in workflow
-grep -oP '\$\{\{ secrets\.\K[^}]+' .github/workflows/<workflow>.yml | sort -u
-grep -oP '\$\{\{ vars\.\K[^}]+' .github/workflows/<workflow>.yml | sort -u
+grep -oP '\$\{\{ secrets\.\K[^}]+' $GHA_WORKFLOWS/<workflow>.yml | sort -u
+grep -oP '\$\{\{ vars\.\K[^}]+' $GHA_WORKFLOWS/<workflow>.yml | sort -u
 
 # Compare against what's configured
 echo "=== Configured secrets ==="
 gh secret list --json name --jq '.[].name' | sort
 
 echo "=== Referenced in workflow ==="
-grep -oP '\$\{\{ secrets\.\K[^}]+' .github/workflows/*.yml | \
+grep -oP '\$\{\{ secrets\.\K[^}]+' $GHA_WORKFLOWS/*.yml | \
   awk -F: '{print $2}' | sort -u
 ```
 
@@ -255,4 +264,4 @@ Branch: {branch}
 
 ## Output
 
-Save report to `.github/PIPELINE_DEBUG_REPORT.md`. Never apply diffs directly.
+Save report to `$PIPELINE_REPORTS/PIPELINE_DEBUG_REPORT.md`. Never apply diffs directly.
