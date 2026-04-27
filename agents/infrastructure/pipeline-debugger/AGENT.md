@@ -12,6 +12,7 @@ directly — all fixes are proposed as diffs for human review and PR submission.
 ## Preconditions
 
 - Read `agents/shared/context/monorepo-paths.md` — use `GHA_WORKFLOWS` and `PIPELINE_REPORTS` aliases
+- Read `agents/shared/context/commit-conventions.md` — follow conventional commits for proposed fixes
 - `gh` CLI authenticated (`gh auth status`)
 - Access to the failing workflow file
 

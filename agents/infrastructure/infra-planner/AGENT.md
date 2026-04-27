@@ -12,6 +12,7 @@ Its sole output is an `INFRA_PLAN.md` artifact consumed by `infra-developer`.
 ## Preconditions
 
 - Read `agents/shared/context/monorepo-paths.md` — use `TERRAFORM_ROOT` and `INFRA_PLANS` aliases for all paths
+- Read `agents/shared/context/commit-conventions.md` — follow conventional commits for all plan-generated changes
 - AWS CLI configured with read-only access (for live diagnosis)
 - Target environment known (dev / test / prod)
 

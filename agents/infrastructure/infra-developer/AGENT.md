@@ -10,7 +10,9 @@ Never audits, never diagnoses — only implements what `INFRA_PLAN.md` specifies
 
 ## Preconditions
 
-- [ ] `INFRA_PLAN.md` exists at `infrastructure/` root
+- [ ] Read `agents/shared/context/monorepo-paths.md` — use `TERRAFORM_ROOT` and `INFRA_PLANS` for all paths
+- [ ] Read `agents/shared/context/commit-conventions.md` — follow conventional commits in completion report
+- [ ] `INFRA_PLAN.md` exists at `INFRA_PLANS` location
 - [ ] Plan has been reviewed and approved by a human
 - [ ] AWS credentials available (for `terraform plan` validation)
 - [ ] Terraform state backend is accessible
@@ -31,7 +33,7 @@ If `INFRA_PLAN.md` is missing → stop and invoke `infra-planner` first.
 
 ## Outputs
 
-All files written directly into `infrastructure/terraform/`. After each phase:
+All files written directly into `TERRAFORM_ROOT` (see monorepo-paths.md). After each phase:
 - Run `terraform validate` and `terraform plan` (never `apply`)
 - Update `INFRA_PLAN.md` marking completed items with ✅
 - Report summary of files created/modified

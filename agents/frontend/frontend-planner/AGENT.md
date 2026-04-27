@@ -8,6 +8,11 @@ artifact that the `frontend-developer` agent will consume.
 
 ---
 
+## Preconditions
+
+- Read `agents/shared/context/monorepo-paths.md` — use `WEBAPP_LEGACY`, `WEBAPP_APP`, `FRONTEND_PLANS` aliases
+- Read `agents/shared/context/commit-conventions.md` — include suggested commits in completion report
+
 ## Inputs
 
 | Input | Description | Required |
