@@ -7,8 +7,14 @@
   },
   "targetDefaults": {
     "build": {
-      "outputs": ["{projectRoot}/dist"],
-      "inputs": ["default", "^default"]
+      "outputs": [
+        "{projectRoot}/dist"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ]
     }
-  }
+  },
+  "nxCloudId": "69e6c310df509183ea064bb3"
 }
