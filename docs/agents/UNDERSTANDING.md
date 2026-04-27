@@ -45,6 +45,7 @@ app-developer-experience/
     ├── shared/
     │   └── context/
     │       └── monorepo-paths.md
+    │       └── commit-conventions.md
     ├── frontend/
     │   ├── frontend-planner/
     │   └── frontend-developer/
