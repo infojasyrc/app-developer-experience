@@ -7,9 +7,6 @@ description: >
   failures, Docker build errors, and missing secrets. Use when the user reports
   a failing CI/CD pipeline, workflow errors, or asks to debug GitHub Actions.
   Produces PIPELINE_DEBUG_REPORT.md with diffs — never modifies workflow files.
-metadata:
-  author: app-dev-exp
-  version: "1.0"
 ---
 
 # gha-debugger
@@ -26,7 +23,7 @@ Paths resolved from `agents/shared/context/monorepo-paths.md`.
 # Always read paths first
 cat agents/shared/context/monorepo-paths.md
 GHA_WORKFLOWS=".github/workflows"
-PIPELINE_REPORTS=".github"
+PIPELINE_REPORTS=".github/debug-reports"
 
 # List recent failed runs
 gh run list --status failure --limit 10 \

@@ -8,24 +8,34 @@ description: >
   routing migration, create the app/ directory structure, convert routes to
   Next.js pages, or execute Phase A of a MIGRATION_PLAN.md. Always reads
   MIGRATION_PLAN.md first — never implements without a plan.
+metadata:
+  author: app-dev-exp
+  version: "1.0"
 ---
 
 # react-to-nextjs-router
 
 Implements **Phase A** of the migration plan: App Router structure + route
-migration. Writes files directly into `ms-conference-webapp/`.
+migration. Paths resolved from `agents/shared/context/monorepo-paths.md`.
 
 ---
 
 ## Preconditions
 
 ```bash
+# Always read paths first
+cat agents/shared/context/monorepo-paths.md
+WEBAPP_ROOT="conference-manager/ms-conference-webapp"
+WEBAPP_LEGACY="conference-manager/ms-conference-webapp/legacy"
+WEBAPP_APP="conference-manager/ms-conference-webapp/src/app"
+FRONTEND_PLANS="conference-manager/ms-conference-webapp/plans"
+
 # Verify plan exists
-cat conference-manager/ms-conference-webapp/MIGRATION_PLAN.md
+cat $FRONTEND_PLANS/MIGRATION_PLAN.md
 
 # Verify Next.js project is initialized
-ls conference-manager/ms-conference-webapp/app/
-ls conference-manager/ms-conference-webapp/next.config.*
+ls $WEBAPP_ROOT/src/app/
+ls $WEBAPP_ROOT/next.config.*
 ```
 
 If either is missing → stop and report.
@@ -112,7 +122,7 @@ Scan all files in `src/` and `app/` for React Router imports and replace:
 ```bash
 # Find all files with React Router imports
 grep -rn "from 'react-router-dom'\|from 'react-router'" \
-  conference-manager/ms-conference-webapp/src/ --include="*.tsx" --include="*.ts"
+  / --include="*.tsx" --include="*.ts"
 ```
 
 Apply these replacements in each file found:
@@ -159,10 +169,10 @@ export const config = {
 ### A6 — Move legacy router config to _legacy/
 
 ```bash
-mkdir -p conference-manager/ms-conference-webapp/src/_legacy
+mkdir -p /_legacy
 # Move (don't delete) the original router config
-mv conference-manager/ms-conference-webapp/src/router.tsx \
-   conference-manager/ms-conference-webapp/src/_legacy/router.tsx.bak
+mv /router.tsx \
+   /_legacy/router.tsx.bak
 ```
 
 ### A7 — Verify
@@ -175,7 +185,7 @@ npx tsc --noEmit
 
 # Check for remaining React Router imports
 grep -rn "from 'react-router-dom'\|from 'react-router'" \
-  src/ app/ --include="*.tsx" --include="*.ts" \
+  $WEBAPP_LEGACY/ $WEBAPP_APP/ --include="*.tsx" --include="*.ts" \
   | grep -v "_legacy"
 ```
 
