@@ -7,6 +7,9 @@ description: >
   directives where required. Use this skill whenever the user asks to migrate
   components, convert JSX to RSC, add use client directives, or execute Phase B
   of a MIGRATION_PLAN.md. Requires Phase A (routing) to be complete first.
+metadata:
+  author: app-dev-exp
+  version: "1.0"
 ---
 
 # react-to-nextjs-components
@@ -19,11 +22,18 @@ migration to RSC/RCC. Writes files directly into `ms-conference-webapp/`.
 ## Preconditions
 
 ```bash
+# Always read paths first
+cat agents/shared/context/monorepo-paths.md
+WEBAPP_ROOT="conference-manager/ms-conference-webapp"
+WEBAPP_LEGACY="conference-manager/ms-conference-webapp/legacy"
+WEBAPP_APP="conference-manager/ms-conference-webapp/src/app"
+FRONTEND_PLANS="conference-manager/ms-conference-webapp/plans"
+
 # Phase A must be complete
-grep "Phase A" conference-manager/ms-conference-webapp/MIGRATION_PLAN.md | grep "✅"
+grep "Phase A" $FRONTEND_PLANS/MIGRATION_PLAN.md | grep "✅"
 
 # No TypeScript errors from Phase A
-cd conference-manager/ms-conference-webapp && npx tsc --noEmit
+cd $WEBAPP_ROOT && npx tsc --noEmit
 ```
 
 If Phase A is not marked ✅ → stop and report.

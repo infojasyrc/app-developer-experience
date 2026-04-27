@@ -9,13 +9,16 @@ description: >
   "what do I need to migrate" or "analyze my webapp for Next.js". Always
   produces a migration plan artifact — never generates implementation code
   directly. A separate skill handles implementation.
+metadata:
+  author: app-dev-exp
+  version: "1.0"
 ---
 
 # React → Next.js Migration Analyzer
 
 Produces a structured, actionable migration plan from a React 19 (client-side,
 React Router) app to Next.js 16 App Router. Designed for the ADE monorepo
-pattern where the webapp lives at `conference-manager/ms-conference-webapp/`.
+pattern where the webapp lives at `WEBAPP_ROOT` (see monorepo-paths.md).
 
 ---
 
@@ -31,48 +34,51 @@ the plan that a separate implementation agent (or developer) will execute.
 
 Before producing any plan, read and map the codebase. Run these scans:
 
+```bash
+# Always read paths first
+cat agents/shared/context/monorepo-paths.md
+WEBAPP_LEGACY="conference-manager/ms-conference-webapp/legacy"
+WEBAPP_APP="conference-manager/ms-conference-webapp/src/app"
+FRONTEND_PLANS="conference-manager/ms-conference-webapp/plans"
+```
+
 ### 1.1 Route inventory
 ```bash
-# Find all React Router route definitions
 grep -rn "Route\|createBrowserRouter\|useNavigate\|useParams\|Link\|NavLink" \
-  src/ --include="*.tsx" --include="*.jsx" --include="*.ts" -l
+  $WEBAPP_LEGACY --include="*.tsx" --include="*.jsx" --include="*.ts" -l
 
-# Find route config files
-find src/ -name "*router*" -o -name "*routes*" -o -name "*Router*"
+find $WEBAPP_LEGACY -name "*router*" -o -name "*routes*" -o -name "*Router*"
 ```
 
 ### 1.2 Component classification (RSC vs RCC candidates)
 ```bash
 # Components using browser-only APIs → must be 'use client'
 grep -rn "useState\|useEffect\|useRef\|useContext\|useCallback\|useMemo\|window\.\|document\.\|localStorage\|sessionStorage\|onClick\|onChange\|onSubmit" \
-  src/components/ --include="*.tsx" --include="*.jsx" -l
+  $WEBAPP_LEGACY --include="*.tsx" --include="*.jsx" -l
 
 # Components that are purely presentational (RSC candidates)
 grep -rL "useState\|useEffect\|useRef\|onClick\|onChange\|window\.\|document\." \
-  src/components/ --include="*.tsx" --include="*.jsx" 2>/dev/null | head -30
+  $WEBAPP_LEGACY --include="*.tsx" --include="*.jsx" 2>/dev/null | head -30
 ```
 
 ### 1.3 Data fetching patterns
 ```bash
-# Find all data fetching — useEffect+fetch, React Query, SWR, Axios
 grep -rn "useQuery\|useSWR\|useEffect.*fetch\|axios\.\|\.get(\|\.post(" \
-  src/ --include="*.tsx" --include="*.jsx" --include="*.ts" -l
+  $WEBAPP_LEGACY --include="*.tsx" --include="*.jsx" --include="*.ts" -l
 
-# Find API base URLs and env vars
 grep -rn "REACT_APP_\|process\.env\|import\.meta\.env" \
-  src/ --include="*.tsx" --include="*.jsx" --include="*.ts"
+  $WEBAPP_LEGACY --include="*.tsx" --include="*.jsx" --include="*.ts"
 ```
 
 ### 1.4 Global state & context
 ```bash
-# Context providers that wrap the app
 grep -rn "createContext\|Provider\|useContext\|Redux\|Zustand\|Jotai" \
-  src/ --include="*.tsx" --include="*.jsx" --include="*.ts" -l
+  $WEBAPP_LEGACY --include="*.tsx" --include="*.jsx" --include="*.ts" -l
 ```
 
 ### 1.5 Dependencies audit
 ```bash
-cat package.json | grep -A 100 '"dependencies"'
+cat conference-manager/ms-conference-webapp/package.json | grep -A 100 '"dependencies"'
 ```
 
 ---
@@ -215,7 +221,7 @@ Target: Next.js 16 / App Router / RSC-first
 
 ## Phase 4 — Output
 
-- Save the plan as `MIGRATION_PLAN.md` at the root of `ms-conference-webapp/`
+- Save the plan as `MIGRATION_PLAN.md` at `$FRONTEND_PLANS` (see monorepo-paths.md)
 - Summarize findings inline: total routes, total components classified, top 3 risks
 - Do NOT generate any implementation code
 - If a pattern is ambiguous, mark it `⚠️ NEEDS HUMAN REVIEW` in the plan

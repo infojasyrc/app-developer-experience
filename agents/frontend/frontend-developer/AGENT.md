@@ -13,7 +13,9 @@ interprets business requirements — only executes what is documented in
 
 Before starting any implementation, verify:
 
-- [ ] `MIGRATION_PLAN.md` exists at the root of the target app
+- [ ] Read `agents/shared/context/monorepo-paths.md` — use `WEBAPP_LEGACY`, `WEBAPP_APP`, `FRONTEND_PLANS` for all paths
+- [ ] Read `agents/shared/context/commit-conventions.md` — include suggested commits in completion report
+- [ ] `MIGRATION_PLAN.md` exists at `FRONTEND_PLANS` location
 - [ ] The plan has been reviewed and approved by a human
 - [ ] The target Next.js project is already initialized
 - [ ] You know which phase to implement (A, B, C, or D)

@@ -42,10 +42,11 @@ Before starting any task, all agents MUST read:
 
 ```bash
 cat agents/shared/context/monorepo-paths.md
+cat agents/shared/context/commit-conventions.md
 ```
 
-This file is the **single source of truth** for all monorepo paths.
-Never hardcode paths from memory — always derive from `monorepo-paths.md`.
+- `monorepo-paths.md` — single source of truth for all filesystem paths
+- `commit-conventions.md` — conventional commits rules for all agent-generated changes
 
 ## Agent Locations
 
@@ -53,14 +54,15 @@ Never hardcode paths from memory — always derive from `monorepo-paths.md`.
 agents/
 ├── shared/
 │   └── context/
-│       └── monorepo-paths.md   ← read this first, always
+│       ├── monorepo-paths.md      ← filesystem paths — read first, always
+│       └── commit-conventions.md  ← conventional commits rules — read always
 ├── frontend/
-│   ├── frontend-planner/       → AGENT.md + skills/
-│   └── frontend-developer/     → AGENT.md + skills/
+│   ├── frontend-planner/          → AGENT.md + skills/
+│   └── frontend-developer/        → AGENT.md + skills/
 └── infrastructure/
-    ├── infra-planner/          → AGENT.md + skills/
-    ├── infra-developer/        → AGENT.md + skills/
-    └── pipeline-debugger/      → AGENT.md + skills/
+    ├── infra-planner/             → AGENT.md + skills/
+    ├── infra-developer/           → AGENT.md + skills/
+    └── pipeline-debugger/         → AGENT.md + skills/
 ```
 
 ---

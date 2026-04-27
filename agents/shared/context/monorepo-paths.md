@@ -1,6 +1,6 @@
 # Monorepo Paths — Source of Truth
 
-Canonical paths for the ADE (App-Developer-Experience) monorepo. Derived from `CLAUDE.md`.
+Canonical paths for the ADE monorepo. Derived from `CLAUDE.md`.
 All agents and skills MUST read this file before referencing any directory.
 Never hardcode paths in AGENT.md or SKILL.md — always derive from here.
 
@@ -21,13 +21,14 @@ Never hardcode paths in AGENT.md or SKILL.md — always derive from here.
 |---|---|---|
 | `CONF_ROOT` | `conference-manager/` | Conference Manager solution root |
 | `WEBAPP_ROOT` | `conference-manager/ms-conference-webapp/` | Next.js webapp (migration target) |
-| `WEBAPP_SRC` | `conference-manager/ms-conference-webapp/legacy/` | Legacy React source |
-| `WEBAPP_APP` | `conference-manager/ms-conference-webapp/src/app/` | Next.js App Router target |
+| `WEBAPP_LEGACY` | `conference-manager/ms-conference-webapp/legacy/` | Legacy React source |
+| `WEBAPP_SRC` | `conference-manager/ms-conference-webapp/src/` | Next.js webapp source code |
+| `WEBAPP_APP` | `conference-manager/ms-conference-webapp/src/app/` | Next.js App Router routes |
 | `CONF_API` | `conference-manager/ms-conference-api/` | RESTful API service |
 | `CONF_ADMIN` | `conference-manager/ms-conference-admin/` | Django admin service |
-| `FRONTEND_PLANS` | `agents/frontend/plans` | MIGRATION_PLAN.md lives here |
+| `FRONTEND_PLANS` | `conference-manager/ms-conference-webapp/plans/` | MIGRATION_PLAN.md lives here |
 
-## Backend Microservices
+## Backend Microservice Templates
 
 | Alias | Resolved Path | Description |
 |---|---|---|
@@ -45,7 +46,7 @@ Never hardcode paths in AGENT.md or SKILL.md — always derive from here.
 | `CI_AWS_WEBAPP` | `devops/ci-aws-webapp/` | CI for webapp → AWS ECR |
 | `DEPLOY_INFRA` | `devops/deploy_infrastructure/` | Terraform plan/apply/destroy pipelines |
 | `GHA_WORKFLOWS` | `.github/workflows/` | GitHub Actions workflow files |
-| `PIPELINE_REPORTS` | `agents/infrastructure/reports` | Agent-produced debug reports |
+| `PIPELINE_REPORTS` | `.github/debug-reports/` | Agent-produced debug reports |
 
 ## Mobile App Templates
 
@@ -55,12 +56,15 @@ Never hardcode paths in AGENT.md or SKILL.md — always derive from here.
 | `MOBILE_RN` | `mobile-app/whitewalker/` | React Native template |
 | `MOBILE_EXPO` | `mobile-app/whitewolf/` | Expo template |
 
-## Agents
+## Agent Outputs
 
 | Alias | Resolved Path | Description |
 |---|---|---|
 | `AGENTS_ROOT` | `agents/` | All agent definitions |
 | `SHARED_CONTEXT` | `agents/shared/context/` | This directory |
+| `FRONTEND_OUTPUT` | `agents/frontend/frontend-planner/output/` | Migration plans |
+| `INFRA_OUTPUT` | `agents/infrastructure/infra-planner/output/` | Infra plans |
+| `PIPELINE_OUTPUT` | `agents/infrastructure/pipeline-debugger/output/` | Debug reports |
 
 ---
 
