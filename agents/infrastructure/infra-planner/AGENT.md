@@ -38,13 +38,32 @@ Its sole output is an `INFRA_PLAN.md` artifact consumed by `infra-developer`.
 
 ## Available Skills
 
-| Skill | When to use |
-|---|---|
-| `terraform-auditor` | Audit existing modules, find misconfigs, missing resources |
-| `iam-analyzer` | Diagnose IAM roles, policies, trust relationships for ECS → RDS/SSM/Secrets Manager |
+Read each skill's `SKILL.md` before invoking it.
 
-**Always run `terraform-auditor` before `iam-analyzer`** — the audit provides
-the resource context the IAM analysis needs.
+| Skill | Output section | Run order |
+|---|---|---|
+| `terraform-module-auditor` | Phase A — Terraform module findings | 1st |
+| `makefile-iam-auditor` | Phase B — Makefile + template findings | 2nd |
+| `aws-live-auditor` | Phase C — Live AWS state findings | 3rd |
+| `iam-template-validator` | Phase D — IAM drift findings | 4th |
+| `iam-permission-simulator` | Phase E — Permission simulation results | 5th |
+
+**Skills location:** `agents/infrastructure/infra-planner/skills/`
+
+> `terraform-auditor` and `iam-analyzer` are superseded — do not use.
+
+### Execution order rationale
+
+```
+1. terraform-module-auditor  → static, no AWS access needed
+2. makefile-iam-auditor      → static, no AWS access needed
+3. aws-live-auditor          → uses cluster name from step 1
+4. iam-template-validator    → uses role names from step 3
+5. iam-permission-simulator  → uses role ARNs from step 4 → final DENY list
+```
+
+Each skill produces one section (A–E) of `INFRA_PLAN.md`.
+`infra-developer` reads Phase E as the authoritative fix list.
 
 ---
 
