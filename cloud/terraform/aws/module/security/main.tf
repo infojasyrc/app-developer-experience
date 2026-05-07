@@ -1,6 +1,7 @@
 data "aws_caller_identity" "current" {}
 
 resource "aws_cloudwatch_log_resource_policy" "waf_logging" {
+  provider    = aws.logs
   policy_name = "waf-logging-policy"
 
   policy_document = jsonencode({

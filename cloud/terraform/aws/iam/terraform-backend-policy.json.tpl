@@ -33,7 +33,8 @@
         "arn:aws:iam::__AWS_ACCOUNT_ID__:role/appdevexp-ecs-deploy-role",
         "arn:aws:iam::__AWS_ACCOUNT_ID__:role/appdevexp-kms-manage-role",
         "arn:aws:iam::__AWS_ACCOUNT_ID__:role/appdevexp-waf-role",
-        "arn:aws:iam::__AWS_ACCOUNT_ID__:role/appdevexp-logs-role"
+        "arn:aws:iam::__AWS_ACCOUNT_ID__:role/appdevexp-logs-role",
+        "arn:aws:iam::__AWS_ACCOUNT_ID__:role/appdevexp-s3-manage-role"
       ]
     }
   ]
