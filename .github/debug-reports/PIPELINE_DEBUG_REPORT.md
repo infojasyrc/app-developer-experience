@@ -1,221 +1,222 @@
 # Pipeline Debug Report
 
-Date: 2026-05-05
-Workflow: `.github/workflows/deploy_cm_infrastructure.yml`
-Run ID: 24938618406
-Branch: main
+Date: 2026-05-12
+Workflow: `.github/workflows/pull_request_cm_infrastructure.yml`
+Run ID: 25714513898
+Branch: `cloud-aws/fix/deployment-issues-base-elements`
+PR: #140
 
 ---
 
 ## Root Cause
 
-The `appdevexp-deployer` OIDC role has no direct AWS service permissions — it can only manage Terraform state (S3/DynamoDB) and assume sub-roles — but the Terraform AWS provider in `versions.tf` has no `assume_role` configuration, so Terraform operates with the deployer's minimal credentials and receives `implicitDeny` for every resource operation.
+`GitHubActionsTerraformRole` (the OIDC identity used by the workflow) cannot
+chain-assume the five provider-alias service roles defined in `versions.tf`
+because the live `TerraformBackendPolicy` has no `sts:AssumeRole` statement and
+all five service role trust policies restrict assumption to `appdevexp-deployer`
+only — leaving both sides of the AWS role-chaining handshake broken.
 
 ---
 
 ## Evidence
 
 ```
-# From run 24938618406 — Terraform Apply step
+Error: Cannot assume IAM Role
 
-2026-04-25T19:21:13.6741690Z Error: creating CloudWatch Logs Log Group
-  (/aws/vpc/flowlogs/appdevexp-dev): ResourceAlreadyExistsException:
-  The specified log group already exists
+  with provider["registry.terraform.io/hashicorp/aws"].ecs,
+  on versions.tf line 19, in provider "aws":
 
-2026-04-25T19:21:13.6747312Z Error: putting WAFv2 WebACL Logging Configuration
-  (arn:aws:wafv2:us-west-1:580976914278:regional/webacl/appdevexp-dev-alb-waf/...):
-  AccessDeniedException: You don't have the permissions that are required
-  to perform this operation.
+IAM Role (arn:aws:iam::***:role/appdevexp-ecs-deploy-role) cannot be assumed.
 
-2026-04-25T19:21:13.6767559Z ##[error]Terraform exited with code 1.
-
-# IAM simulation confirms — deployer role:
-  wafv2:PutLoggingConfiguration  → implicitDeny
-  logs:CreateLogGroup            → implicitDeny
-  ec2:CreateVpc                  → implicitDeny
-  ecs:CreateCluster              → implicitDeny
-  kms:CreateKey                  → implicitDeny
-  s3:CreateBucket                → implicitDeny
-
-# Only allowed:
-  s3:GetObject / PutObject / ListBucket (TF state bucket only)
-  dynamodb:GetItem / PutItem / DeleteItem (lock table only)
-  sts:AssumeRole (sub-roles only — never triggered by Terraform)
+AccessDenied: User:
+arn:aws:sts::***:assumed-role/GitHubActionsTerraformRole/GitHubActions
+is not authorized to perform: sts:AssumeRole on resource:
+arn:aws:iam:::role/appdevexp-ecs-deploy-role
 ```
+
+Same `AccessDenied` / HTTP 403 repeated for all five aliases:
+`ecs` → `appdevexp-ecs-deploy-role`
+`kms` → `appdevexp-kms-manage-role`
+`logs` → `appdevexp-logs-role`
+`waf`  → `appdevexp-waf-role`
+`s3`   → `appdevexp-s3-manage-role`
+
+`aws iam simulate-principal-policy` confirms `implicitDeny` for all five
+`sts:AssumeRole` calls — no explicit deny, simply no allow on either side.
 
 ---
 
 ## Contributing Factors
 
-1. **Architecture never wired to Terraform** — The role-chaining design (deployer → waf-role, ecs-deploy-role, etc.) was built but the Terraform AWS provider was never given `assume_role` blocks to use those sub-roles. All six sub-roles exist and have correct policies, but Terraform never calls `sts:AssumeRole` to use them.
+1. **OIDC auth succeeded** — `GitHubActionsTerraformRole` was correctly assumed
+   via `aws-actions/configure-aws-credentials@v4`. Failure is entirely inside
+   `terraform plan` provider initialization, not in the GHA YAML itself.
 
-2. **CloudWatch log group out-of-state** — `/aws/vpc/flowlogs/appdevexp-dev` was created during a partial March 2026 apply (confirmed: exists in AWS, creation timestamp ~March 2026) but `create_before_destroy = true` on the resource triggers a replace cycle that tries to create before destroying, hitting the `ResourceAlreadyExistsException`.
+2. **PR #140 is architecturally correct** — Adding `assume_role` blocks to
+   `versions.tf` is the intended fix from INFRA_PLAN.md Phase A finding #1.
+   The PR uncovered that the IAM layer was never updated to support the new
+   identity (`GitHubActionsTerraformRole`) doing the assuming.
 
-3. **`AWS_ACCOUNT_ID` secret/variable mismatch** — `AWS_ACCOUNT_ID` is stored as a repository **secret** (`gh secret list` confirms) but the workflow reads it as `vars.AWS_ACCOUNT_ID` (a repository variable). The two namespaces are distinct in GitHub Actions; when `vars.AWS_ACCOUNT_ID` is unset, the TF_VAR resolves to an empty string.
+3. **Live `TerraformBackendPolicy` missing `AssumeServiceRoles` SID** — The
+   template `terraform-backend-policy.json.tpl` contains the correct
+   `AssumeServiceRoles` statement granting `sts:AssumeRole` on all five roles.
+   However the live managed policy (`arn:aws:iam::580976914278:policy/TerraformBackendPolicy`)
+   was never updated with this SID. `GitHubActionsTerraformRole` therefore has
+   no identity-policy permission to call `sts:AssumeRole`.
 
-4. **Missing secrets** — `BACKEND_AWS_S3_KEY`, `DB_USERNAME`, `DB_PASSWORD` are referenced by the workflow but absent from `gh secret list`. `DB_USERNAME`/`DB_PASSWORD` are blocked by the commented-out database module but `BACKEND_AWS_S3_KEY` is used in `terraform init`.
+4. **Service role trust policies scoped to `appdevexp-deployer` only** — All
+   five roles were bootstrapped with `service-trust-policy.json.tpl` which
+   trusts only `arn:aws:iam::580976914278:role/appdevexp-deployer`. The workflow
+   uses `GitHubActionsTerraformRole` (a separate, separately-created role), so
+   none of the five trust policies allow it to be the calling principal.
 
-5. **`dynamodb_table` backend parameter deprecated** — Terraform 1.14+ treats `dynamodb_table` as deprecated; log shows warning. Replacement is `use_lockfile = true`.
-
-6. **OIDC trust scope too broad** — Live trust policy uses `StringLike` with `repo:infojasyrc/app-developer-experience:*`, allowing any ref (branch, tag, PR). Production deployments should be scoped to `ref:refs/heads/main`.
-
-7. **Node.js 20 deprecation** — All four actions (`checkout@v4`, `upload-artifact@v4`, `configure-aws-credentials@v4`, `setup-terraform@v3.0.0`) run on Node.js 20, which becomes unsupported on June 2, 2026.
+5. **No Makefile target covers `GitHubActionsTerraformRole`** — `aws-roles.mk`
+   `update-*` targets only manage `appdevexp-deployer`. There is no target to
+   update `TerraformBackendPolicy` or the service role trust policies for
+   `GitHubActionsTerraformRole`.
 
 ---
 
-## Proposed Fixes
+## Failure location
 
-### Fix 1 (CRITICAL): Wire Terraform provider to assume sub-roles — `cloud/terraform/aws/versions.tf`
+**Inside `terraform plan`** — provider initialization phase (before any resource
+is evaluated). The GHA OIDC step and `terraform init` complete successfully;
+the plan fails at provider `assume_role` resolution.
 
-The `appdevexp-deployer` role can already assume the sub-roles (sts:AssumeRole is ALLOW). The Terraform provider just needs to be told to use them.
+---
 
-```diff
- provider "aws" {
-   region = var.aws_account_region
-+
-+  assume_role {
-+    role_arn = "arn:aws:iam::${var.aws_account_id}:role/appdevexp-ecs-deploy-role"
-+  }
- }
-+
-+provider "aws" {
-+  alias  = "waf"
-+  region = var.aws_account_region
-+
-+  assume_role {
-+    role_arn = "arn:aws:iam::${var.aws_account_id}:role/appdevexp-waf-role"
-+  }
-+}
-+
-+provider "aws" {
-+  alias  = "logs"
-+  region = var.aws_account_region
-+
-+  assume_role {
-+    role_arn = "arn:aws:iam::${var.aws_account_id}:role/appdevexp-logs-role"
-+  }
-+}
-+
-+provider "aws" {
-+  alias  = "kms"
-+  region = var.aws_account_region
-+
-+  assume_role {
-+    role_arn = "arn:aws:iam::${var.aws_account_id}:role/appdevexp-kms-manage-role"
-+  }
-+}
-```
+## Proposed Fix
 
-Then assign `providers = { aws = aws.logs }` in `module "logging"`, `providers = { aws = aws.waf }` in `module "security"`, `providers = { aws = aws.kms }` in `module "kms"`, etc. in `main.tf`.
+### Fix 1 (CRITICAL): Add `AssumeServiceRoles` to `TerraformBackendPolicy`
 
-**Alternative (simpler, less least-privilege):** Add all required permissions as inline policies directly to the `appdevexp-deployer` role, referencing the existing templates for the permission sets. This does not require Terraform refactoring but collapses the least-privilege design.
+The template already has the correct statement. The live managed policy must be
+updated to a new version that includes it.
 
-### Fix 2 (CRITICAL): Import the orphaned CloudWatch log group
-
-Run this manually before the next apply to sync state:
+Admin action (run from `cloud/terraform/aws/` — do NOT run via Claude):
 
 ```bash
-cd cloud/terraform/aws
-terraform init \
-  -backend-config="bucket=<BACKEND_AWS_S3_BUCKET>" \
-  -backend-config="key=<BACKEND_AWS_S3_KEY>" \
-  -backend-config="region=us-west-1" \
-  -backend-config="use_lockfile=true"
+# 1. Render the updated backend policy from the existing template
+make render-backend-policy   # outputs /tmp/appdevexp/terraform-backend-policy.json
 
-terraform import module.logging.aws_cloudwatch_log_group.vpc_flow_logs \
-  /aws/vpc/flowlogs/appdevexp-dev
+# 2. Create a new version of the managed policy
+POLICY_ARN="arn:aws:iam::580976914278:policy/TerraformBackendPolicy"
+aws iam create-policy-version \
+  --policy-arn "$POLICY_ARN" \
+  --policy-document file:///tmp/appdevexp/terraform-backend-policy.json \
+  --set-as-default
+
+# 3. (Optional cleanup) Delete the oldest non-default version if at limit
+aws iam list-policy-versions --policy-arn "$POLICY_ARN" --output table
 ```
 
-Also change `create_before_destroy` on the VPC flow log group in `cloud/terraform/aws/module/logging/main.tf`:
+The SID being added:
+```diff
++{
++  "Sid": "AssumeServiceRoles",
++  "Effect": "Allow",
++  "Action": "sts:AssumeRole",
++  "Resource": [
++    "arn:aws:iam::580976914278:role/appdevexp-ecs-deploy-role",
++    "arn:aws:iam::580976914278:role/appdevexp-kms-manage-role",
++    "arn:aws:iam::580976914278:role/appdevexp-waf-role",
++    "arn:aws:iam::580976914278:role/appdevexp-logs-role",
++    "arn:aws:iam::580976914278:role/appdevexp-s3-manage-role"
++  ]
++}
+```
+
+### Fix 2 (CRITICAL): Update service role trust policies to trust `GitHubActionsTerraformRole`
+
+No Makefile target exists for updating trust policies. Use AWS CLI directly.
+
+New trust document (rendered from `service-trust-policy.json.tpl` + addition):
 
 ```diff
- resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
-   name              = "/aws/vpc/flowlogs/${var.application_name}"
-   retention_in_days = var.logs_retention_days
-   kms_key_id        = var.kms_key_id
-   tags              = var.tags
-
-   lifecycle {
--    create_before_destroy = true
-+    create_before_destroy = false
-   }
+ {
+   "Version": "2012-10-17",
+   "Statement": [
+     {
+       "Effect": "Allow",
+       "Principal": {
+         "AWS": "arn:aws:iam::580976914278:root"
+       },
+       "Action": "sts:AssumeRole",
+       "Condition": {
+         "ArnLike": {
+-          "aws:PrincipalArn": "arn:aws:iam::580976914278:role/appdevexp-deployer"
++          "aws:PrincipalArn": [
++            "arn:aws:iam::580976914278:role/appdevexp-deployer",
++            "arn:aws:iam::580976914278:role/GitHubActionsTerraformRole"
++          ]
+         }
+       }
+     }
+   ]
  }
 ```
 
-### Fix 3 (WARNING): Resolve AWS_ACCOUNT_ID secret/variable mismatch — `.github/workflows/deploy_cm_infrastructure.yml`
+Admin command (do NOT run via Claude):
+```bash
+TRUST_DOC='{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {"AWS": "arn:aws:iam::580976914278:root"},
+    "Action": "sts:AssumeRole",
+    "Condition": {"ArnLike": {"aws:PrincipalArn": [
+      "arn:aws:iam::580976914278:role/appdevexp-deployer",
+      "arn:aws:iam::580976914278:role/GitHubActionsTerraformRole"
+    ]}}
+  }]
+}'
 
-```diff
--      TF_VAR_aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
-+      TF_VAR_aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+for role in \
+  appdevexp-ecs-deploy-role \
+  appdevexp-kms-manage-role \
+  appdevexp-logs-role \
+  appdevexp-waf-role \
+  appdevexp-s3-manage-role; do
+  aws iam update-assume-role-policy \
+    --role-name "$role" \
+    --policy-document "$TRUST_DOC"
+  echo "Updated trust: $role"
+done
 ```
 
-Or alternatively, move `AWS_ACCOUNT_ID` from secrets to repository variables in GitHub Settings → Variables, keeping the `vars.` reference.
-
-### Fix 4 (WARNING): Replace deprecated `dynamodb_table` backend parameter — `.github/workflows/deploy_cm_infrastructure.yml`
-
-```diff
-       - name: Terraform Init
-         run: |
-           terraform init -input=false -lockfile=readonly \
-             -backend-config="bucket=${{secrets.BACKEND_AWS_S3_BUCKET}}" \
-             -backend-config="key=${{secrets.BACKEND_AWS_S3_KEY}}" \
-             -backend-config="region=${{env.AWS_REGION}}" \
--            -backend-config="dynamodb_table=${{vars.BACKEND_AWS_DYNAMODB_TABLE}}"
-+            -backend-config="use_lockfile=true"
-```
-
-### Fix 5 (INFO): Upgrade action versions to Node.js 24 — `.github/workflows/deploy_cm_infrastructure.yml`
-
-```diff
--      - uses: actions/checkout@v4
-+      - uses: actions/checkout@v5
--      - uses: aws-actions/configure-aws-credentials@v4
-+      - uses: aws-actions/configure-aws-credentials@v5
--      - uses: hashicorp/setup-terraform@v3.0.0
-+      - uses: hashicorp/setup-terraform@v3
--      - uses: actions/upload-artifact@v4
-+      - uses: actions/upload-artifact@v5
-```
-
-*(Verify latest tag versions before applying — these are illustrative.)*
+Also update `service-trust-policy.json.tpl` to include `GitHubActionsTerraformRole`
+so future `bootstrap-service-roles` / `bootstrap-all` runs produce the correct
+trust policy automatically.
 
 ---
 
 ## Secrets to add (if any)
 
-| Secret name | Value source | How to add |
-|---|---|---|
-| `BACKEND_AWS_S3_KEY` | S3 key path for TF state (e.g. `conference-manager/dev/terraform.tfstate`) | `gh secret set BACKEND_AWS_S3_KEY` |
-| `DB_USERNAME` | RDS master username | `gh secret set DB_USERNAME` (blocked by commented module — lower priority) |
-| `DB_PASSWORD` | RDS master password | `gh secret set DB_PASSWORD` (blocked by commented module — lower priority) |
+None — `AWS_ROLE_ARN` is correctly set and resolves to `GitHubActionsTerraformRole`.
 
-⚠️ Do not add secrets via Claude — run `gh secret set` commands yourself or use GitHub Settings → Secrets UI.
-
-Also resolve: move `AWS_ACCOUNT_ID` from secrets to **repository variable** (Settings → Secrets and variables → Variables), OR update the workflow to use `secrets.AWS_ACCOUNT_ID`.
+⚠️ Do not add secrets via Claude — run `gh secret set` commands yourself
+   or use the GitHub repository Settings → Secrets UI.
 
 ---
 
 ## Verification steps after applying fixes
 
-1. Run `terraform import module.logging.aws_cloudwatch_log_group.vpc_flow_logs /aws/vpc/flowlogs/appdevexp-dev`
-2. Run `gh workflow run deploy_cm_infrastructure.yml` and confirm OIDC authentication succeeds
-3. Confirm `wafv2:PutLoggingConfiguration` no longer returns `AccessDeniedException` in the apply log
-4. Run `aws iam simulate-principal-policy --policy-source-arn <deployer-arn> --action-names wafv2:PutLoggingConfiguration logs:CreateLogGroup` and verify `allowed`
-5. Check `gh run view <new-run-id> --log-failed` — expect zero Terraform errors
+1. `make verify-service-roles` from `cloud/terraform/aws/` — confirm all 5 roles list policies
+2. Run `aws iam simulate-principal-policy` for `sts:AssumeRole` on each service role — expect `allowed`
+3. Trigger a re-run on PR #140 — `terraform plan` should reach the resource planning phase
+4. Confirm no `AccessDenied` / `Cannot assume IAM Role` errors in the new run log
 
 ---
 
 ## Suggested commit
 
 ```
-ci(gha): fix Terraform provider role assumption and CloudWatch state drift
+ci(gha): add sts:AssumeRole to TerraformBackendPolicy and update service role trust
 
-- Wire Terraform AWS provider to assume service sub-roles per resource domain
-  (waf, logs, kms, ecs-deploy) — deployer role lacked direct service permissions
-- Import orphaned CloudWatch log group to resolve ResourceAlreadyExistsException
-- Change create_before_destroy=false on vpc_flow_logs to prevent replace cycle
-- Move AWS_ACCOUNT_ID lookup from vars to secrets namespace
-- Replace deprecated dynamodb_table backend param with use_lockfile=true
+- TerraformBackendPolicy was missing AssumeServiceRoles SID — template was correct
+  but live managed policy was never updated with the sts:AssumeRole statement
+- Service role trust policies scoped to appdevexp-deployer only; add
+  GitHubActionsTerraformRole as trusted principal for all 5 provider-alias roles
+- Update service-trust-policy.json.tpl to reflect both trusted principals
 
-Refs: PIPELINE_DEBUG_REPORT.md
+Refs: PIPELINE_DEBUG_REPORT.md PR #140
 ```

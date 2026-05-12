@@ -9,7 +9,10 @@
       "Action": "sts:AssumeRole",
       "Condition": {
         "ArnLike": {
-          "aws:PrincipalArn": "arn:aws:iam::__AWS_ACCOUNT_ID__:role/appdevexp-deployer"
+          "aws:PrincipalArn": [
+            "arn:aws:iam::__AWS_ACCOUNT_ID__:role/appdevexp-deployer",
+            "arn:aws:iam::__AWS_ACCOUNT_ID__:role/GitHubActionsTerraformRole"
+          ]
         }
       }
     }
