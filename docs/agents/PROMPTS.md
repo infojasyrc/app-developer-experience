@@ -12,7 +12,7 @@ Read these files first — in order:
 
 ## Context
 
-A PR has been submitted with Terraform changes. The terraform plan is failing.
+A PR has been submitted with Terraform changes. The terraform init is failing.
 Your goal is to diagnose the failure and produce a fix report — not implement anything.
 
 ---
@@ -31,10 +31,10 @@ Execute:
 
 Focus the analysis on:
 - Terraform-specific errors (state lock, provider auth, resource conflicts)
-- OIDC authentication failures before terraform plan runs
+- OIDC authentication failures before terraform init or plan runs
 - Missing or misconfigured env vars / secrets used by the workflow
 
-Produce `PIPELINE_DEBUG_REPORT.md` at $PIPELINE_REPORTS with:
+Produce `PIPELINE_DEBUG_REPORT_<YYYYMMDD>.md` at $PIPELINE_REPORTS with:
 - Root cause (one sentence)
 - Full error context from the plan log (relevant lines only)
 - Whether the failure is in the GHA step or inside terraform plan itself
@@ -68,7 +68,7 @@ For each skill run:
 - Read its SKILL.md before executing
 - Cross-reference findings with the exact error lines from Step 1
 
-Produce a `INFRA_PLAN.md` addendum at $INFRA_PLANS named `INFRA_PLAN_PR_<pr-number>.md` with:
+Produce a `INFRA_PLAN.md` addendum at $INFRA_PLANS named `INFRA_PLAN_PR_<pr-number>_<YYYYMMDD>.md` with:
 - Error classification (auth / state / resource conflict / unknown)
 - Relevant phase findings only — skip phases not related to the error
 - Fix actions: Makefile targets to run (admin), Terraform changes needed, or workflow fixes
