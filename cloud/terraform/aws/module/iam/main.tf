@@ -57,9 +57,9 @@ data "aws_iam_policy_document" "ecs_service_scaling" {
     ]
 
     resources = [
-      "arn:aws:ecs:${var.region}:${var.account_id}:service/${var.application_name}*",
-      "arn:aws:cloudwatch:${var.region}:${var.account_id}:alarm:*",
-      "arn:aws:sns:${var.region}:${var.account_id}:*"
+      "arn:aws:ecs:${var.aws_region}:${var.account_id}:service/${var.application_name}*",
+      "arn:aws:cloudwatch:${var.aws_region}:${var.account_id}:alarm:*",
+      "arn:aws:sns:${var.aws_region}:${var.account_id}:*"
     ]
   }
 }
