@@ -1,5 +1,29 @@
 {
     "permissions": {
-        "allow": []
+        "allow": [
+            "Bash(aws iam get-role *)",
+            "Bash(aws iam get-role-policy *)",
+            "Bash(aws iam list-roles *)",
+            "Bash(aws iam list-attached-role-policies *)",
+            "Bash(aws iam list-role-policies *)",
+            "Bash(aws iam list-open-id-connect-providers *)",
+            "Bash(aws iam list-policies *)",
+            "Bash(aws s3api head-bucket *)",
+            "Bash(aws s3api head-object *)",
+            "Bash(aws s3api list-buckets *)",
+            "Bash(aws s3api list-objects-v2 *)",
+            "Bash(aws s3api get-bucket-policy *)",
+            "Bash(aws s3api get-bucket-encryption *)",
+            "Bash(aws s3api get-public-access-block *)",
+            "Bash(aws s3api get-bucket-ownership-controls *)",
+            "Bash(aws organizations describe-organization *)",
+            "Bash(terraform validate)",
+            "Bash(gh secret list)",
+            "Bash(gh variable list *)",
+            "Bash(gh pr list *)",
+            "Bash(gh pr view *)",
+            "Bash(gh run list *)",
+            "Bash(gh run view *)"
+        ]
     }
 }

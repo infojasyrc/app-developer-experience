@@ -1,16 +1,12 @@
 application_name    = "appdevexp"
 application_env     = "dev"
 aws_account_region  = "us-west-1"
-aws_account_id      = ""
 az_count            = "2"
 vpc_cidr            = "172.17.0.0/16"
 logs_retention_days = 3
 # database variables
 db_allocate_storage     = 20
 db_max_allocate_storage = 50
-db_name                 = ""
-db_username             = ""
-db_password             = ""
 db_multi_zone           = true
 db_deletion_protection  = true
 db_instance_class       = "db.t2.large"

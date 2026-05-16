@@ -19,6 +19,7 @@
       "Resource": [
         "arn:aws:logs:__AWS_REGION__:__AWS_ACCOUNT_ID__:log-group:appdevexp-*",
         "arn:aws:logs:__AWS_REGION__:__AWS_ACCOUNT_ID__:log-group:/aws/ecs/appdevexp-*",
+        "arn:aws:logs:__AWS_REGION__:__AWS_ACCOUNT_ID__:log-group:/aws/vpc/flowlogs/appdevexp-*",
         "arn:aws:logs:__AWS_REGION__:__AWS_ACCOUNT_ID__:log-group:aws-waf-logs-appdevexp-*"
       ]
     },

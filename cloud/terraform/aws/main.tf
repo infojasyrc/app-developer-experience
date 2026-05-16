@@ -9,8 +9,13 @@ locals {
 module "kms" {
   source = "./module/kms"
 
-  application_name = "${var.application_name}-${local.environment}"
-  aws_region       = var.aws_account_region
+  providers = {
+    aws = aws.kms
+  }
+
+  application_name    = "${var.application_name}-${local.environment}"
+  aws_region          = var.aws_account_region
+  terraform_role_name = "appdevexp-deployer"
 
   tags = local.common_tags
 }
@@ -18,6 +23,11 @@ module "kms" {
 
 module "logging" {
   source = "./module/logging"
+
+  providers = {
+    aws    = aws.logs
+    aws.s3 = aws.s3
+  }
 
   application_name    = "${var.application_name}-${local.environment}"
   logs_retention_days = var.logs_retention_days
@@ -33,6 +43,10 @@ module "logging" {
 module "network" {
   source = "./module/network"
 
+  providers = {
+    aws = aws.ecs
+  }
+
   vpc_cidr = var.vpc_cidr
   az_count = var.az_count
 
@@ -43,6 +57,10 @@ module "network" {
 
 module "cluster" {
   source = "./module/cluster"
+
+  providers = {
+    aws = aws.ecs
+  }
 
   application_name = "${var.application_name}-${local.environment}"
   tags             = local.common_tags
@@ -70,12 +88,21 @@ module "cluster" {
 # module "iam" {
 #   count  = var.enable_iam ? 1 : 0
 #   source = "./module/iam"
-
+#
+#   providers = {
+#     aws = aws.ecs
+#   }
+#
 #   application_name = "${var.application_name}-${local.environment}"
 # }
 
 module "security" {
   source = "./module/security"
+
+  providers = {
+    aws      = aws.waf
+    aws.logs = aws.logs
+  }
 
   application_name  = "${var.application_name}-${local.environment}"
   waf_log_group_arn = module.logging.waf_log_group_arn

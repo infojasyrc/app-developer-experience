@@ -122,7 +122,8 @@ render-all-policies: render-trust-policy render-backend-policy render-service-tr
 # Run order: bootstrap-boundary → bootstrap-deployer → bootstrap-service-roles → bootstrap-runtime-roles
 # ============================================================
 .PHONY: bootstrap-boundary bootstrap-deployer \
-	bootstrap-service-roles bootstrap-runtime-roles bootstrap-all
+	bootstrap-service-roles bootstrap-runtime-roles bootstrap-all \
+	attach-task-role-boundaries
 
 bootstrap-boundary: render-permissions-boundary ## Create permissions boundary policy (run first)
 	@echo "Creating permissions boundary policy..."
@@ -222,6 +223,23 @@ bootstrap-runtime-roles: render-task-execution-policy render-task-role-policy ##
 		--policy-document file://$(TMP)/task-role-policy.json
 
 	@echo "Done: runtime roles created"
+	$(MAKE) attach-task-role-boundaries
+
+attach-task-role-boundaries: ## Attach appdevexp-permissions-boundary to both ECS task roles
+	@echo "Attaching permissions boundary to appdevexp-task-execution-role..."
+	aws iam put-role-permissions-boundary \
+		--role-name appdevexp-task-execution-role \
+		--permissions-boundary arn:aws:iam::$(AWS_ACCOUNT_ID):policy/appdevexp-permissions-boundary
+	@echo "Attaching permissions boundary to appdevexp-$(APP_NAME)-task-role..."
+	aws iam put-role-permissions-boundary \
+		--role-name appdevexp-$(APP_NAME)-task-role \
+		--permissions-boundary arn:aws:iam::$(AWS_ACCOUNT_ID):policy/appdevexp-permissions-boundary
+	@echo "Verifying boundaries..."
+	aws iam get-role --role-name appdevexp-task-execution-role \
+		--query 'Role.PermissionsBoundary.PermissionsBoundaryArn' --output text
+	aws iam get-role --role-name appdevexp-$(APP_NAME)-task-role \
+		--query 'Role.PermissionsBoundary.PermissionsBoundaryArn' --output text
+	@echo "Done: boundaries attached."
 
 bootstrap-all: bootstrap-boundary bootstrap-deployer bootstrap-service-roles bootstrap-runtime-roles ## Run all bootstrap steps in order (one-time setup)
 	@echo "Bootstrap complete. Commit your state and let CI/CD manage from here."
