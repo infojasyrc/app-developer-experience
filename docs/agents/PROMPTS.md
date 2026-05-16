@@ -12,7 +12,7 @@ Read these files first — in order:
 
 ## Context
 
-A PR has been submitted with Terraform changes. The terraform init is failing.
+A PR has been submitted with Terraform changes. The terraform plan is failing.
 Your goal is to diagnose the failure and produce a fix report — not implement anything.
 
 ---
@@ -31,7 +31,7 @@ Execute:
 
 Focus the analysis on:
 - Terraform-specific errors (state lock, provider auth, resource conflicts)
-- OIDC authentication failures before terraform init or plan runs
+- OIDC authentication failures before terraform plan runs
 - Missing or misconfigured env vars / secrets used by the workflow
 
 Produce `PIPELINE_DEBUG_REPORT_<YYYYMMDD>.md` at $PIPELINE_REPORTS with:

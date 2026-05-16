@@ -19,7 +19,10 @@
             "Bash(aws organizations describe-organization *)",
             "Bash(terraform validate)",
             "Bash(gh secret list)",
-            "Bash(gh variable list *)"
+            "Bash(gh variable list *)",
+            "Bash(gh pr list *)",
+            "Bash(gh pr view *)",
+            "Bash(gh run list *)"
         ]
     }
 }
