@@ -13,7 +13,7 @@ export class FirebaseAdminService {
 
     const FIREBASE_SERVICE_ACCOUNT = {
       projectId: PROJECT_ID,
-      privateKey: PRIVATE_KEY_ADMIN_V2.replace(/\\n/g, '\n'),
+      privateKey: PRIVATE_KEY_ADMIN_V2!.replace(/\\n/g, '\n'),
       clientEmail: CLIENT_EMAIL,
     }
 

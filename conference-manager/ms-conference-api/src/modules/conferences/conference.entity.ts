@@ -8,7 +8,7 @@ export type ConferenceDocument = HydratedDocument<Conference>
 @Schema({ timestamps: true })
 export class Conference {
   @ApiProperty()
-  _id: string;
+  _id!: string;
   
   @Prop({ required: true })
   eventDate!: Date

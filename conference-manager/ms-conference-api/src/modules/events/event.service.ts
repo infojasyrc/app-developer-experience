@@ -43,6 +43,7 @@ export class EventService {
       return event
     } catch (error) {
       this.logger.error('Error at event service, get firebase uploaded image url', error)
+      return event
     }
   }
 
@@ -95,6 +96,7 @@ export class EventService {
     this.validateEventStatus(eventId, event)
     this.validateUserAttendingEvent(event, eventId, userId)
 
+    event.attendees = event.attendees ?? []
     event.attendees.push(new Types.ObjectId(String(userId)))
     return event.save()
   }
@@ -108,7 +110,7 @@ export class EventService {
   }
 
   private validateUserAttendingEvent(event: Event, eventId: EventIdDto, userId: UserIdDto) {
-    if (event.attendees.includes(new Types.ObjectId(String(userId)))) {
+    if ((event.attendees ?? []).includes(new Types.ObjectId(String(userId)))) {
       throw new BadRequestException(
         `User with id: ${userId} is already attending event: ${eventId}`
       )

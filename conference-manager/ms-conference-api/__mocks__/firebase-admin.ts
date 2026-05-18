@@ -7,6 +7,7 @@ export const auth = () => ({
 
 export const credential = {
   applicationDefault: jest.fn(),
+  cert: jest.fn().mockReturnValue({}),
 };
 
 export const initializeApp = jest.fn();
