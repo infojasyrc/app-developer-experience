@@ -32,7 +32,7 @@ services:
     ports:
       - 5433:5432
     volumes:
-      - unleash-db:/var/lib/postgresql/data
+      - unleash-db:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${UNLEASH_DB_USERNAME} -d ${UNLEASH_DB_NAME} -h localhost"]
       interval: 10s

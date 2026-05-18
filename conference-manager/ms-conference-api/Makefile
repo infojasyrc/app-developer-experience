@@ -34,7 +34,7 @@ DEV_VOLUME_API = \
 .PHONY: help docker-clean build-dev build-prod get-token interactive create-volumes install-dependencies \
 	audit-fix-dependencies lint unit-tests unit-tests-v1 unit-tests-v2 watch-unit-tests-v2 \
 	launch-db stop-db launch-local-dev stop-local-dev launch-local-prod stop-local-prod \
-	launch-unleash stop-unleash
+	launch-unleash stop-unleash reset-unleash
 
 docker-clean: ## ❌ Stop & prune all containers/images (DANGEROUS)
 ifeq ($(OS),Windows_NT)
@@ -107,6 +107,9 @@ launch-unleash: ## 🚀 Launch feature toggles with unleash
 
 stop-unleash: ## 🛑 Stop feature toggle service
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml down
+
+reset-unleash: ## 🗑️ Stop unleash and remove its volume (required after upgrading postgres major version)
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml down -v
 
 launch-db: ## 🗄️ Launch MongoDB container locally
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml up
