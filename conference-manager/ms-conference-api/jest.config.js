@@ -4,7 +4,7 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
   transform: {
-    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.tsx?$': ['ts-jest', { tsconfig: 'tsconfig.test.json' }],
   },
   moduleNameMapper: {
     '^firebase-admin$': '<rootDir>/__mocks__/firebase-admin.ts',
