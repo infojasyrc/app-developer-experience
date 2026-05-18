@@ -14,11 +14,12 @@ export class ImageUploadInterceptor<T> implements NestInterceptor<T, Response<T>
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
     const request = context.switchToHttp().getRequest();
+    const response = context.switchToHttp().getResponse();
     return new Observable((observer) => {
       const upload = multer().any();
 
       // Invoke multer and handle the callback in asynchronous way
-      upload(request, null, async (err: any) => {
+      upload(request, response, async (err: any) => {
         if (err) {
           observer.error(err)
         } else {
