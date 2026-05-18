@@ -46,7 +46,7 @@ export class CreateEventDto {
   @ApiHideProperty()
   @IsString()
   @IsNotEmpty()
-  userId: string
+  userId!: string
 
   @ApiProperty({
     description: 'The event description',

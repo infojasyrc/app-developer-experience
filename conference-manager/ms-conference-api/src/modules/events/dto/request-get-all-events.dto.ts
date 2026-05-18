@@ -21,7 +21,7 @@ export class RequestGetAllEventsDto {
   @ApiHideProperty()
   @IsNotEmpty()
   @IsBoolean()
-  isAdmin: boolean
+  isAdmin!: boolean
 
   @ApiHideProperty()
   @IsOptional()
