@@ -79,7 +79,7 @@ install-dependencies: ## 📦 Install Node dependencies into volume for dev
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm install"
 
 lint: ## 🔍 Run linter
-	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	docker run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run lint"
