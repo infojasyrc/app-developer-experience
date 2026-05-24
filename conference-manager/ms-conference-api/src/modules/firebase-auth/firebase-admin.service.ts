@@ -28,6 +28,10 @@ export class FirebaseAdminService {
     }
   }
 
+  getAuth() {
+    return FirebaseAdminService.instance.auth()
+  }
+
   getStorage() {
     return FirebaseAdminService.instance.storage()
   }

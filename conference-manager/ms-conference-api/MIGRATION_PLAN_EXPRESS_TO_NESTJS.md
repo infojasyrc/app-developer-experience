@@ -95,10 +95,10 @@ main.ts
 
 | Module | Endpoints | Notes |
 |---|---|---|
-| `ConferenceModule` | `POST /v2/conferences`, `GET /v2/conferences`, `GET /v2/conferences/:id`, `PUT /v2/conferences/:id`, `DELETE /v2/conferences/:id`, `POST /v2/conferences/:id/attendee/:userId` | Complete |
+| `ConferenceModule` | `POST /v2/conferences`, `GET /v2/conferences`, `GET /v2/conferences/:id`, `PUT /v2/conferences/:id`, `DELETE /v2/conferences/:id`, `POST /v2/conferences/:id/attendee/:userId`, `PUT /v2/conferences/:id/status`, `POST /v2/conferences/:id/images`, `DELETE /v2/conferences/:id/images/:imageId`, `GET /v2/conferences/:id/attendees/export` | Complete |
 | `HeadquarterModule` | `GET /v2/headquarters`, `GET /v2/headquarters/:id`, `POST /v2/headquarters`, `PUT /v2/headquarters/:id`, `DELETE /v2/headquarters/:id` | Complete |
 | `UserModule` | `GET /v2/users`, `GET /v2/users/:uid`, `POST /v2/users`, `PUT /v2/users/:uid`, `DELETE /v2/users/:uid` | Complete |
-| `EventModule` | `POST /v2/events`, `GET /v2/events`, `GET /v2/events/:id`, `PUT /v2/events/:id`, `POST /v2/events/:id/attendee/:userId` | Missing: delete, status transitions, image upload |
+| `AuthModule` | `POST /v2/auth/register`, `POST /v2/auth/revoke-token`, `POST /v2/auth/reset-password` | Complete |
 | `HealthController` | `GET /v2/health` | Complete |
 | `FirebaseModule` + `FirebaseAuthStrategy` | JWT auth via Firebase | Complete |
 | `UnleashProvider` | Feature flags | Complete |
@@ -107,36 +107,7 @@ main.ts
 
 ## 4. Migration Phases
 
-### Phase 1 — Complete EventModule (missing endpoints)
-**Scope**: Finish the already-started `EventModule` before tackling new modules.
-
-**Missing from v2 events:**
-
-| Legacy endpoint | NestJS target | Notes |
-|---|---|---|
-| `DELETE /v1/events/:id/delete` | `DELETE /v2/events/:id` | Soft-delete (set `status: deleted`) |
-| `PUT /v1/events/:id/open` | `PUT /v2/events/:id/status` with body `{ status: 'active' }` | Consolidated status transition |
-| `PUT /v1/events/:id/pause` | included in above | |
-| `PUT /v1/events/:id/close` | included in above | |
-| `PUT /v1/events/:id/images` | `POST /v2/events/:id/images` | Upload via `ImageUploadInterceptor` |
-| `DELETE /v1/events/:id/:imageId` | `DELETE /v2/events/:id/images/:imageId` | Firebase Storage delete |
-| `GET /v1/attendees/:id` | `GET /v2/events/:id/attendees/export` | CSV export endpoint |
-
-**Files to create/update:**
-- `src/modules/events/dto/update-event-status.dto.ts` — `{ status: EventStatus }` with enum validation
-- `src/infrastructure/swagger/v2/delete-event.decorator.ts`
-- `src/infrastructure/swagger/v2/update-event-status.decorator.ts`
-- `src/infrastructure/swagger/v2/export-attendees.decorator.ts`
-- `src/modules/events/event.service.ts` — add `delete()`, `updateStatus()`, `deleteImage()`, `exportAttendeesAsCsv()`
-- `src/modules/events/event.controller.ts` — add 4 endpoints
-- `src/modules/events/event.service.spec.ts` — add test cases for new methods
-- `src/modules/events/event.controller.spec.ts` — add test cases for new endpoints
-
-**Validation:** `make lint && make unit-tests-v2`
-
----
-
-### Phase 2 — AuthModule (Firebase authentication flows)
+### Phase 1 — AuthModule (Firebase authentication flows) ✅ COMPLETED
 **Scope**: Migrate `/v1/authenticate` to `/v2/auth`.
 
 **Endpoints:**
@@ -168,7 +139,7 @@ main.ts
 
 ---
 
-### Phase 3 — RolesModule
+### Phase 2 — RolesModule
 **Scope**: Migrate `/v1/roles` to `/v2/roles`.
 
 **Endpoints:**
@@ -197,7 +168,7 @@ main.ts
 
 ---
 
-### Phase 4 — ProfileModule
+### Phase 3 — ProfileModule
 **Scope**: Migrate `GET /v1/profile` to `GET /v2/profile`.
 
 The legacy profile endpoint resolves a Firebase session token to a MongoDB user record and returns it. In v2, this is already partially possible via `GET /v2/users/:uid` once the caller knows their own uid. The v2 profile endpoint provides a self-service GET that reads the authenticated user's uid from the JWT claim.
@@ -221,7 +192,7 @@ The legacy profile endpoint resolves a Firebase session token to a MongoDB user 
 
 ---
 
-### Phase 5 — Decommission Express Layer
+### Phase 4 — Decommission Express Layer
 **Scope**: Remove the dual-stack setup. This is the breaking-change phase — coordinate with consumers of the v1 API before executing.
 
 **Pre-condition**: All v1 routes from Phases 1–4 have v2 equivalents. Routes not migrated (accounts, token) are confirmed as intentionally retired.
@@ -265,7 +236,7 @@ The legacy profile endpoint resolves a Firebase session token to a MongoDB user 
 
 ---
 
-### Phase 6 — Routes Retired (not migrated)
+### Phase 5 — Routes Retired (not migrated)
 
 The following legacy routes are intentionally not migrated to v2. They can be removed in Phase 5 without replacement:
 
@@ -322,19 +293,16 @@ src/application/use-cases/user/get-users.usecase.ts
 ## 7. Implementation Order and Makefile Validation
 
 ```
-Phase 1: EventModule completion
+Phase 1: AuthModule ✅ COMPLETED
   → make lint && make unit-tests-v2
 
-Phase 2: AuthModule
+Phase 2: RolesModule
   → make lint && make unit-tests-v2
 
-Phase 3: RolesModule
+Phase 3: ProfileModule
   → make lint && make unit-tests-v2
 
-Phase 4: ProfileModule
-  → make lint && make unit-tests-v2
-
-Phase 5: Decommission Express layer
+Phase 4: Decommission Express layer
   → make lint && make unit-tests        ← run both AVA (v1) and Jest (v2)
   → verify no imports remain from deleted paths (grep -r 'controllers/v1' src/)
   → verify no imports remain from deleted paths (grep -r 'services/' src/)
