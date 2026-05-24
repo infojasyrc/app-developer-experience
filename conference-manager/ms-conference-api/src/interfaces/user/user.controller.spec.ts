@@ -1,51 +1,97 @@
-// test/app.controller.spec.ts
-jest.setTimeout(15000);
+import { Test, TestingModule } from '@nestjs/testing'
+import { Logger } from '@nestjs/common'
+import { getModelToken } from '@nestjs/mongoose'
 
-import request from 'supertest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { UserController } from './user.controller'
+import { UserService } from '../../modules/users/user.service'
+import { User } from '../../modules/users/user.entity'
+import { NotFoundException } from '../../exceptions/NotFound.exception'
+import {
+  USER_MOCK,
+  LIST_USERS_MOCK,
+  CREATE_USER_MOCK_DTO,
+  UPDATE_USER_MOCK_DTO,
+} from '../../helpers/mocks/users/user-detail'
 
-import { TestAppModule } from '../../../tests/test-app.module'; // ✅ Not AppModule
+describe('UserController', () => {
+  let controller: UserController
+  let service: UserService
 
-const mockDecodedToken = { uid: 'test-user' };
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [UserController],
+      providers: [
+        UserService,
+        Logger,
+        { provide: getModelToken(User.name), useValue: {} },
+      ],
+    }).compile()
 
-jest.mock('firebase-admin', () => ({
-  auth: () => ({
-    verifyIdToken: jest.fn((token: string) => {
-      if (token === 'valid-token') return Promise.resolve(mockDecodedToken);
-      throw new Error('Invalid token');
-    }),
-  }),
-  credential: {
-    applicationDefault: jest.fn(),
-  },
-  initializeApp: jest.fn(),
-}));
+    controller = module.get<UserController>(UserController)
+    service = module.get<UserService>(UserService)
+  })
 
-describe('AppController (e2e)', () => {
-  let app: INestApplication;
+  it('UserController should be defined', () => {
+    expect(controller).toBeDefined()
+  })
 
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [TestAppModule],
-    }).compile();
+  describe('create', () => {
+    it('should create and return a user', async () => {
+      jest.spyOn(service, 'create').mockResolvedValue(USER_MOCK)
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
+      const result = await controller.create(CREATE_USER_MOCK_DTO)
 
-  it('/users/ (GET) should return user profile with valid token', () => {
-    return request(app.getHttpServer())
-      .get('/v2/users/')
-      .set('Authorization', 'Bearer valid-token')
-      .expect(200)
-      .expect([]);
-  });
+      expect(service.create).toHaveBeenCalledWith(CREATE_USER_MOCK_DTO)
+      expect(result).toEqual(USER_MOCK)
+    })
+  })
 
-  it('/users/ (GET) should return 401 with invalid token', () => {
-    return request(app.getHttpServer())
-      .get('/v2/users/')
-      .set('Authorization', 'Bearer invalid-token')
-      .expect(401);
-  });
-});
+  describe('getAll', () => {
+    it('should return a list of users', async () => {
+      jest.spyOn(service, 'getAll').mockResolvedValue(LIST_USERS_MOCK)
+
+      const result = await controller.getAll()
+
+      expect(result).toEqual(LIST_USERS_MOCK)
+    })
+  })
+
+  describe('getByUid', () => {
+    it('should return a user by uid', async () => {
+      jest.spyOn(service, 'getByUid').mockResolvedValue(USER_MOCK)
+
+      const result = await controller.getByUid(USER_MOCK.uid)
+
+      expect(service.getByUid).toHaveBeenCalledWith(USER_MOCK.uid)
+      expect(result).toEqual(USER_MOCK)
+    })
+
+    it('should propagate NotFoundException when user is not found', async () => {
+      jest.spyOn(service, 'getByUid').mockRejectedValue(new NotFoundException('not found'))
+
+      await expect(controller.getByUid('non-existent-uid')).rejects.toThrow(NotFoundException)
+    })
+  })
+
+  describe('update', () => {
+    it('should update and return the user', async () => {
+      const updated = { ...USER_MOCK, firstName: 'Updated', isAdmin: true }
+      jest.spyOn(service, 'update').mockResolvedValue(updated)
+
+      const result = await controller.update(USER_MOCK.uid, UPDATE_USER_MOCK_DTO)
+
+      expect(service.update).toHaveBeenCalledWith(USER_MOCK.uid, UPDATE_USER_MOCK_DTO)
+      expect(result).toEqual(updated)
+    })
+  })
+
+  describe('delete', () => {
+    it('should delete a user', async () => {
+      jest.spyOn(service, 'delete').mockResolvedValue(undefined)
+
+      await controller.delete(USER_MOCK.uid)
+
+      expect(service.delete).toHaveBeenCalledWith(USER_MOCK.uid)
+    })
+  })
+})

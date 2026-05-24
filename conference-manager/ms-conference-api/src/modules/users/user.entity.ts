@@ -1,27 +1,37 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import mongoose, { HydratedDocument } from 'mongoose'
+import { ApiProperty } from '@nestjs/swagger'
+import { HydratedDocument } from 'mongoose'
 
 export type UserDocument = HydratedDocument<User>
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ required: true })
+  @ApiProperty()
+  _id!: string
+
+  @ApiProperty({ description: 'Firebase auth uid' })
+  @Prop({ required: true, unique: true })
   uid!: string
 
+  @ApiProperty({ description: 'User first name' })
   @Prop({ required: true })
   firstName!: string
 
+  @ApiProperty({ description: 'User last name' })
   @Prop({ required: true })
   lastName!: string
 
-  @Prop({ required: true })
+  @ApiProperty({ description: 'User email address' })
+  @Prop({ required: true, unique: true })
   email!: string
 
-  @Prop({ required: true })
+  @ApiProperty({ description: 'Whether the user has admin privileges' })
+  @Prop({ required: true, default: false })
   isAdmin!: boolean
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Event' })
-  eventsAttending?: mongoose.Types.ObjectId[]
+  @ApiProperty({ description: 'Whether the user has super-admin privileges' })
+  @Prop({ required: true, default: false })
+  isSuperAdmin!: boolean
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

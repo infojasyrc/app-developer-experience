@@ -1,39 +1,72 @@
-import { Body, Controller, Get, HttpCode, Logger, Param, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpCode, Logger, Param, Post, Put, UseGuards } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
-// import { AuthGuard } from '@nestjs/passport'
+import { AuthGuard } from '@nestjs/passport'
 
-// import { RolesGuard } from '../guard/roles.guard'
-// import { UserService } from './user.service'
-// import { AdddUserRequestDto } from './dto/add-user-request.dto'
-import { FirebaseAuthGuard } from '../auth/firebase.guard'
-import { GetUsersUseCase } from '../../application/use-cases/user/get-users.usecase'
+import { UserService } from '../../modules/users/user.service'
+import { UserResponse } from '../../modules/users/interfaces/user-response'
+import { CreateUserDto } from '../../modules/users/dto/create-user.dto'
+import { UpdateUserDto } from '../../modules/users/dto/update-user.dto'
+import { RolesGuard } from '../../modules/guard/roles.guard'
+import { Roles } from '../../modules/guard/roles.guard.decorator'
+import { ADMIN_ROLE } from '../../common/constants'
+import { CreateUserSwaggerDecorator } from '../../infrastructure/swagger/v2/create-user.decorator'
+import { ListUsersSwaggerDecorator } from '../../infrastructure/swagger/v2/list-users.decorator'
+import { GetUserByUidSwaggerDecorator } from '../../infrastructure/swagger/v2/get-user-by-uid.decorator'
+import { UpdateUserSwaggerDecorator } from '../../infrastructure/swagger/v2/update-user.decorator'
+import { DeleteUserSwaggerDecorator } from '../../infrastructure/swagger/v2/delete-user.decorator'
 
-@ApiTags('UserController')
+@ApiTags('users')
 @Controller('/v2/users')
 export class UserController {
-  constructor(private readonly getUsers: GetUsersUseCase, private logger: Logger) {}
-  // constructor(private readonly userService: UserService, private logger: Logger) {}
+  constructor(private readonly userService: UserService, private readonly logger: Logger) {}
 
-  // @Get('/:uid')
-  // @HttpCode(200)
-  // async getByUserId(@Param('uid') uid: string) {
-  //   this.logger.log(`Controller: retrieve by userId: ${uid}`)
-  //   return this.userService.getByUserId({ uid })
-  // }
+  @Post()
+  @CreateUserSwaggerDecorator()
+  @Roles(ADMIN_ROLE)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @HttpCode(201)
+  async create(@Body() dto: CreateUserDto): Promise<UserResponse> {
+    this.logger.log('Create user controller')
+    return this.userService.create(dto)
+  }
 
-  // @Post('')
-  // @UseGuards(AuthGuard('jwt'), RolesGuard)
-  // @HttpCode(201)
-  // async addNewUser(@Body() newUser: AdddUserRequestDto) {
-  //   this.logger.log(`Controller: add new user`)
-  //   // return this.userService.addUser(newUser)
-  // }
-
-  @UseGuards(FirebaseAuthGuard)
-  @Get('/')
+  @Get()
+  @ListUsersSwaggerDecorator()
+  @Roles(ADMIN_ROLE)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @HttpCode(200)
-  async getAllUsers() {
-    this.logger.log(`Controller: retrieve all users`)
-    return this.getUsers.execute()
+  async getAll(): Promise<UserResponse[]> {
+    this.logger.log('Get all users controller')
+    return this.userService.getAll()
+  }
+
+  @Get('/:uid')
+  @GetUserByUidSwaggerDecorator()
+  @Roles(ADMIN_ROLE)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @HttpCode(200)
+  async getByUid(@Param('uid') uid: string): Promise<UserResponse> {
+    this.logger.log(`Get user by uid: ${uid} controller`)
+    return this.userService.getByUid(uid)
+  }
+
+  @Put('/:uid')
+  @UpdateUserSwaggerDecorator()
+  @Roles(ADMIN_ROLE)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @HttpCode(200)
+  async update(@Param('uid') uid: string, @Body() dto: UpdateUserDto): Promise<UserResponse> {
+    this.logger.log(`Update user uid: ${uid} controller`)
+    return this.userService.update(uid, dto)
+  }
+
+  @Delete('/:uid')
+  @DeleteUserSwaggerDecorator()
+  @Roles(ADMIN_ROLE)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @HttpCode(204)
+  async delete(@Param('uid') uid: string): Promise<void> {
+    this.logger.log(`Delete user uid: ${uid} controller`)
+    return this.userService.delete(uid)
   }
 }

@@ -1,18 +1,28 @@
 // test/test-app.module.ts
 import { Module, Logger } from '@nestjs/common';
-// Add use cases
-import { GetUsersUseCase } from '../src/application/use-cases/user/get-users.usecase'
-// Add controllers
+import { getModelToken } from '@nestjs/mongoose';
+
+import { User } from '../src/modules/users/user.entity';
+import { UserService } from '../src/modules/users/user.service';
 import { HealthController } from '../src/interfaces/health/health.controller';
 import { UserController } from '../src/interfaces/user/user.controller';
-// Add only what you need
 import { FirebaseAuthProvider } from '../src/infrastructure/firebase-auth.provider';
 
 @Module({
   controllers: [HealthController, UserController],
   providers: [
     FirebaseAuthProvider,
-    GetUsersUseCase,
+    UserService,
+    {
+      provide: getModelToken(User.name),
+      useValue: {
+        find: jest.fn().mockReturnValue({ exec: jest.fn().mockResolvedValue([]) }),
+        findOne: jest.fn().mockResolvedValue(null),
+        findOneAndUpdate: jest.fn().mockReturnValue({ exec: jest.fn() }),
+        findOneAndDelete: jest.fn(),
+        create: jest.fn(),
+      },
+    },
     {
       provide: Logger,
       useValue: {

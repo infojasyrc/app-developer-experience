@@ -1,11 +1,12 @@
 'use strict'
 
 /**
- * Seed script — seeds headquarters and conferences via the API.
+ * Seed script — seeds users, headquarters and conferences via the API.
  *
  * Order:
- *   1. POST each headquarter from mongo-init.js → POST /v2/headquarters
- *   2. POST each conference                     → POST /v2/conferences
+ *   1. POST each user from mongo-init.js        → POST /v2/users
+ *   2. POST each headquarter from mongo-init.js → POST /v2/headquarters
+ *   3. POST each conference                     → POST /v2/conferences
  *
  * Idempotent: HTTP 400 "already exists" is treated as a skip, not a failure.
  *
@@ -34,6 +35,21 @@ const HEADQUARTER_ID = process.env.HEADQUARTER_ID  || ''
 const BASE_URL = `http://localhost:${MS_PORT}`
 
 // ─── Data (mirrors mongo-init.js) ────────────────────────────────────────────
+
+const users = [
+  {
+    uid: 'sRrmUhxMgrhA1WeMyQp9CzzxyO92',
+    firstName: 'User',
+    lastName: 'App',
+    email: 'testuser@chupito.com',
+  },
+  {
+    uid: '2qWPHHeRY9b3ouN8deae8GkCUnx1',
+    firstName: 'User',
+    lastName: 'Admin',
+    email: 'adminuser@chupito.com',
+  },
+]
 
 const headquarters = [
   { name: 'Bogota' },
@@ -109,12 +125,55 @@ const buildHeaders = () => {
 const isAlreadyExists = (status, body) =>
   status === 400 && (body.message ?? '').includes('already exists')
 
+// ─── Users ────────────────────────────────────────────────────────────────────
+
+const createUser = async (user) => {
+  const res = await fetch(`${BASE_URL}/v2/users`, {
+    method: 'POST',
+    headers: buildHeaders(),
+    body: JSON.stringify(user),
+  })
+
+  if (res.status === 201) {
+    return { status: 'created', name: `${user.firstName} ${user.lastName}` }
+  }
+
+  const body = await res.json().catch(() => ({}))
+
+  if (isAlreadyExists(res.status, body)) {
+    return { status: 'skipped', name: `${user.firstName} ${user.lastName}` }
+  }
+
+  return {
+    status: 'failed',
+    name: `${user.firstName} ${user.lastName}`,
+    detail: `HTTP ${res.status} — ${body.message ?? ''}`,
+  }
+}
+
+const seedUsers = async () => {
+  console.log(`Seeding ${users.length} users → ${BASE_URL}/v2/users\n`)
+
+  const results = { created: 0, skipped: 0, failed: 0 }
+
+  for (const user of users) {
+    const result = await createUser(user)
+    results[result.status]++
+
+    const icon = result.status === 'created' ? '✓' : result.status === 'skipped' ? '~' : '✗'
+    const detail = result.detail ? `  (${result.detail})` : ''
+    console.log(`  ${icon} [${result.status}] ${result.name}${detail}`)
+  }
+
+  console.log(
+    `\nUsers — ${results.created} created, ${results.skipped} skipped, ${results.failed} failed.\n`
+  )
+
+  return results.failed
+}
+
 // ─── Headquarters ─────────────────────────────────────────────────────────────
 
-/**
- * POSTs one headquarter to POST /v2/headquarters.
- * Returns { status: 'created' | 'skipped' | 'failed', name, id?, detail? }.
- */
 const createHeadquarter = async (hq) => {
   const res = await fetch(`${BASE_URL}/v2/headquarters`, {
     method: 'POST',
@@ -159,11 +218,6 @@ const seedHeadquarters = async () => {
 
 // ─── Headquarter resolution ───────────────────────────────────────────────────
 
-/**
- * Resolves the headquarter ObjectId to use for every seeded conference.
- * Prefers the HEADQUARTER_ID env var; falls back to the first result from
- * GET /v2/headquarters.
- */
 const resolveHeadquarterId = async () => {
   if (HEADQUARTER_ID) {
     console.log(`Using headquarter from env: ${HEADQUARTER_ID}`)
@@ -192,10 +246,6 @@ const resolveHeadquarterId = async () => {
 
 // ─── Conferences ──────────────────────────────────────────────────────────────
 
-/**
- * POSTs one conference to POST /v2/conferences.
- * Returns { status: 'created' | 'skipped' | 'failed', name, detail? }.
- */
 const createConference = async (conference, headquarterId) => {
   const payload = {
     name: conference.name,
@@ -258,11 +308,12 @@ const run = async () => {
     )
   }
 
+  const usersFailed = await seedUsers()
   const hqFailed = await seedHeadquarters()
   const headquarterId = await resolveHeadquarterId()
   const confFailed = await seedConferences(headquarterId)
 
-  const totalFailed = hqFailed + confFailed
+  const totalFailed = usersFailed + hqFailed + confFailed
   if (totalFailed > 0) {
     console.error(`\n${totalFailed} item(s) failed to seed.`)
     process.exit(1)
