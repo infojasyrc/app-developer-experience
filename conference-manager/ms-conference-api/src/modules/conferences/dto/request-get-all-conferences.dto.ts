@@ -1,5 +1,5 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
-import { IsBoolean, IsNotEmpty, IsOptional } from 'class-validator'
+import { IsBoolean, IsOptional } from 'class-validator'
 
 import { ConferenceStatus } from '../conference.enum'
 
@@ -20,7 +20,7 @@ export class RequestGetAllConferencesDto {
   headquarter?: string
 
   @ApiProperty({
-    description: 'Conference headquarter',
+    description: 'Is admin',
     required: false,
   })
   @IsBoolean()

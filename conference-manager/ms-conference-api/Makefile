@@ -34,7 +34,7 @@ DEV_VOLUME_API = \
 .PHONY: help docker-clean build-dev build-prod get-token interactive create-volumes install-dependencies \
 	audit-fix-dependencies lint unit-tests unit-tests-v1 unit-tests-v2 watch-unit-tests-v2 \
 	launch-db stop-db launch-local-dev stop-local-dev launch-local-prod stop-local-prod \
-	launch-unleash stop-unleash reset-unleash
+	launch-unleash stop-unleash reset-unleash seed-conferences
 
 docker-clean: ## ❌ Stop & prune all containers/images (DANGEROUS)
 ifeq ($(OS),Windows_NT)
@@ -50,6 +50,15 @@ build-dev: ## 🛠️ Build development container image for API
 build-prod: ## 🛠️ Build production container image for API
 	docker build --platform $(PLATFORM) \
 		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api .
+
+seed-conferences: ## 🌱 Seed conferences via the API (Usage: make seed-conferences API_TOKEN=<token>)
+	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		--network host \
+		-e API_TOKEN=$(API_TOKEN) \
+		-e HEADQUARTER_ID=$(HEADQUARTER_ID) \
+		$(DEV_VOLUME_API) \
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "node scripts/seed-conferences.js"
 
 get-token: ## 🔐 Retrieve Firebase auth token (ROLE=admin|user) Usage: make get-token ROLE=admin
 	node $(TOKEN_SCRIPT_FILE) $(ROLE)
@@ -117,7 +126,7 @@ launch-db: ## 🗄️ Launch MongoDB container locally
 stop-db: ## 🛑 Stop local MongoDB container
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml down
 
-launch-local-dev: ## 🚀 Launch API + DB (development stack)
+launch-local-dev: ## 🚀 Launch API + DB + Feature Toogles (development stack)
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml up
