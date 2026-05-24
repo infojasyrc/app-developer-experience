@@ -95,10 +95,10 @@ main.ts
 
 | Module | Endpoints | Notes |
 |---|---|---|
-| `ConferenceModule` | `POST /v2/conferences`, `GET /v2/conferences`, `GET /v2/conferences/:id`, `PUT /v2/conferences/:id`, `DELETE /v2/conferences/:id`, `POST /v2/conferences/:id/attendee/:userId` | Complete |
+| `ConferenceModule` | `POST /v2/conferences`, `GET /v2/conferences`, `GET /v2/conferences/:id`, `PUT /v2/conferences/:id`, `DELETE /v2/conferences/:id`, `POST /v2/conferences/:id/attendee/:userId`, `PUT /v2/conferences/:id/status`, `POST /v2/conferences/:id/images`, `DELETE /v2/conferences/:id/images/:imageId`, `GET /v2/conferences/:id/attendees/export` | Complete |
 | `HeadquarterModule` | `GET /v2/headquarters`, `GET /v2/headquarters/:id`, `POST /v2/headquarters`, `PUT /v2/headquarters/:id`, `DELETE /v2/headquarters/:id` | Complete |
 | `UserModule` | `GET /v2/users`, `GET /v2/users/:uid`, `POST /v2/users`, `PUT /v2/users/:uid`, `DELETE /v2/users/:uid` | Complete |
-Missing: delete, status transitions, image upload |
+| `AuthModule` | `POST /v2/auth/register`, `POST /v2/auth/revoke-token`, `POST /v2/auth/reset-password` | Complete |
 | `HealthController` | `GET /v2/health` | Complete |
 | `FirebaseModule` + `FirebaseAuthStrategy` | JWT auth via Firebase | Complete |
 | `UnleashProvider` | Feature flags | Complete |
@@ -107,7 +107,7 @@ Missing: delete, status transitions, image upload |
 
 ## 4. Migration Phases
 
-### Phase 1 — AuthModule (Firebase authentication flows)
+### Phase 1 — AuthModule (Firebase authentication flows) ✅ COMPLETED
 **Scope**: Migrate `/v1/authenticate` to `/v2/auth`.
 
 **Endpoints:**
@@ -293,19 +293,16 @@ src/application/use-cases/user/get-users.usecase.ts
 ## 7. Implementation Order and Makefile Validation
 
 ```
-Phase 1: EventModule completion
+Phase 1: AuthModule ✅ COMPLETED
   → make lint && make unit-tests-v2
 
-Phase 2: AuthModule
+Phase 2: RolesModule
   → make lint && make unit-tests-v2
 
-Phase 3: RolesModule
+Phase 3: ProfileModule
   → make lint && make unit-tests-v2
 
-Phase 4: ProfileModule
-  → make lint && make unit-tests-v2
-
-Phase 5: Decommission Express layer
+Phase 4: Decommission Express layer
   → make lint && make unit-tests        ← run both AVA (v1) and Jest (v2)
   → verify no imports remain from deleted paths (grep -r 'controllers/v1' src/)
   → verify no imports remain from deleted paths (grep -r 'services/' src/)
