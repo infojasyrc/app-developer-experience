@@ -65,7 +65,7 @@ describe('AuthController', () => {
       const mockRevoked = { revokedAt: '2024-01-01T00:00:00.000Z' }
       mockAuthService.revokeToken.mockResolvedValue(mockRevoked)
 
-      const req = { user: { uid: MOCK_UID } } as any
+      const req = { user: { userId: MOCK_UID } } as any
       const result = await controller.revokeToken(req)
 
       expect(mockAuthService.revokeToken).toHaveBeenCalledWith(MOCK_UID)
