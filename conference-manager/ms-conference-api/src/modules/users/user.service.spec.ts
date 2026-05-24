@@ -1,118 +1,153 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Logger } from '@nestjs/common'
 import { getModelToken } from '@nestjs/mongoose'
-import { Connection, connect, Model, Types } from 'mongoose'
-import { MongoMemoryServer } from 'mongodb-memory-server'
 
-import { UserResponse } from './interfaces/user-response'
-import { User, UserSchema } from './user.entity'
 import { UserService } from './user.service'
-import { AdddUserRequestDto } from './dto/add-user-request.dto'
+import { User } from './user.entity'
+import { NotFoundException } from '../../exceptions/NotFound.exception'
+import { BadRequestException } from '../../exceptions/BadRequest'
+import {
+  USER_MOCK,
+  LIST_USERS_MOCK,
+  CREATE_USER_MOCK_DTO,
+  UPDATE_USER_MOCK_DTO,
+} from '../../helpers/mocks/users/user-detail'
 
-export const USER_ID_MOCK = new Types.ObjectId('65c516a7eae2b91375ecba6e')
-const USER_UID_MOCK = '2qWPH'
-const USER_RESPONSE_MOCK: UserResponse = {
-  _id: USER_ID_MOCK,
-  uid: USER_UID_MOCK,
-  firstName: 'User',
-  lastName: 'Test',
-  email: 'usertest@project.com',
-  isAdmin: false,
+const mockExec = jest.fn()
+const mockUserModel = {
+  create: jest.fn(),
+  find: jest.fn().mockReturnValue({ exec: mockExec }),
+  findOne: jest.fn(),
+  findOneAndUpdate: jest.fn().mockReturnValue({ exec: mockExec }),
+  findOneAndDelete: jest.fn(),
 }
 
-describe.skip('UserService', () => {
+describe('UserService', () => {
   let service: UserService
-  let logger: Logger
 
-  let userModel: Model<User>
+  beforeEach(async () => {
+    jest.clearAllMocks()
+    mockUserModel.find.mockReturnValue({ exec: mockExec })
+    mockUserModel.findOneAndUpdate.mockReturnValue({ exec: mockExec })
 
-  let mongod: MongoMemoryServer
-  let mongoConnection: Connection
-
-  beforeAll(async () => {
-    await createDBServer()
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService, Logger, { provide: getModelToken(User.name), useValue: userModel }],
+      providers: [
+        UserService,
+        Logger,
+        { provide: getModelToken(User.name), useValue: mockUserModel },
+      ],
     }).compile()
 
     service = module.get<UserService>(UserService)
-    logger = module.get<Logger>(Logger)
   })
 
-  const createDBServer = async () => {
-    mongod = await MongoMemoryServer.create()
-    const URI = mongod.getUri()
-    mongoConnection = (await connect(URI)).connection
-    userModel = mongoConnection.model(User.name, UserSchema)
-  }
-
-  afterEach(async () => {
-    const collections = mongoConnection.collections
-    for (const key in collections) {
-      const collection = collections[key]
-      await collection.deleteMany({})
-    }
-  })
-
-  afterAll(async () => {
-    try {
-      await mongoConnection.dropDatabase()
-      await mongoConnection.close()
-      await mongod.stop()
-    } catch (error) {
-      console.log('error', error)
-    }
-  })
-
-  it('user service should be defined', () => {
+  it('UserService should be defined', () => {
     expect(service).toBeDefined()
   })
 
-  describe('get user by userId', () => {
-    it('should return user information', async () => {
-      const userMock = USER_RESPONSE_MOCK
+  // ─── create ──────────────────────────────────────────────────────────────────
 
-      jest.spyOn(userModel, 'findOne').mockResolvedValue(userMock)
+  describe('create', () => {
+    it('should create a user and return the mapped response', async () => {
+      mockUserModel.findOne.mockResolvedValue(null)
+      mockUserModel.create.mockResolvedValue(USER_MOCK)
 
-      const user = await service.getByUserId({ uid: USER_UID_MOCK })
+      const result = await service.create(CREATE_USER_MOCK_DTO)
 
-      expect(user?.firstName).toBe(userMock.firstName)
-      expect(user?.lastName).toEqual(userMock.lastName)
-      expect(user?.isAdmin).toBe(userMock.isAdmin)
-      expect(user?.uid).toBe(userMock.uid)
-      expect(user?.email).toBe(userMock.email)
+      expect(mockUserModel.create).toHaveBeenCalled()
+      expect(result).toEqual(USER_MOCK)
     })
 
-    it('should throw an error', async () => {
-      jest.spyOn(userModel, 'findOne').mockResolvedValue(null)
+    it('should throw BadRequestException when uid already exists', async () => {
+      mockUserModel.findOne.mockResolvedValueOnce(USER_MOCK)
 
-      await expect(service.getByUserId({ uid: USER_UID_MOCK })).rejects.toThrowError(
-        'User not found'
+      await expect(service.create(CREATE_USER_MOCK_DTO)).rejects.toThrow(BadRequestException)
+      expect(mockUserModel.create).not.toHaveBeenCalled()
+    })
+
+    it('should throw BadRequestException when email already exists', async () => {
+      mockUserModel.findOne
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(USER_MOCK)
+
+      await expect(service.create(CREATE_USER_MOCK_DTO)).rejects.toThrow(BadRequestException)
+      expect(mockUserModel.create).not.toHaveBeenCalled()
+    })
+  })
+
+  // ─── getAll ──────────────────────────────────────────────────────────────────
+
+  describe('getAll', () => {
+    it('should return a mapped list of users', async () => {
+      mockExec.mockResolvedValueOnce(LIST_USERS_MOCK)
+
+      const result = await service.getAll()
+
+      expect(mockUserModel.find).toHaveBeenCalled()
+      expect(result).toHaveLength(LIST_USERS_MOCK.length)
+    })
+  })
+
+  // ─── getByUid ─────────────────────────────────────────────────────────────────
+
+  describe('getByUid', () => {
+    it('should return the mapped user when found', async () => {
+      mockUserModel.findOne.mockResolvedValue(USER_MOCK)
+
+      const result = await service.getByUid(USER_MOCK.uid)
+
+      expect(mockUserModel.findOne).toHaveBeenCalledWith({ uid: USER_MOCK.uid })
+      expect(result).toEqual(USER_MOCK)
+    })
+
+    it('should throw NotFoundException when user does not exist', async () => {
+      mockUserModel.findOne.mockResolvedValue(null)
+
+      await expect(service.getByUid('non-existent-uid')).rejects.toThrow(NotFoundException)
+    })
+  })
+
+  // ─── update ──────────────────────────────────────────────────────────────────
+
+  describe('update', () => {
+    it('should return the updated user', async () => {
+      const updated = { ...USER_MOCK, firstName: 'Updated', isAdmin: true }
+      mockExec.mockResolvedValueOnce(updated)
+
+      const result = await service.update(USER_MOCK.uid, UPDATE_USER_MOCK_DTO)
+
+      expect(mockUserModel.findOneAndUpdate).toHaveBeenCalledWith(
+        { uid: USER_MOCK.uid },
+        expect.objectContaining({ firstName: 'Updated' }),
+        { new: true },
+      )
+      expect(result).toEqual(updated)
+    })
+
+    it('should throw NotFoundException when user does not exist', async () => {
+      mockExec.mockResolvedValueOnce(null)
+
+      await expect(service.update('non-existent-uid', UPDATE_USER_MOCK_DTO)).rejects.toThrow(
+        NotFoundException,
       )
     })
   })
 
-  describe('add user', () => {
-    it('should return the new user', async () => {
-      const mockExpectedId = new Types.ObjectId('65c516a7eae2b91375ecba6a')
-      const userMock: AdddUserRequestDto = {
-        uid: USER_UID_MOCK,
-        firstName: 'User',
-        lastName: 'Test',
-        email: 'user.test@email.com',
-      }
-      jest.spyOn(userModel.prototype, 'save').mockResolvedValue({
-        ...userMock,
-        _id: mockExpectedId,
-      })
-      const result = await service.addUser(userMock)
-      expect(result._id).toEqual(mockExpectedId)
-      expect(result.uid).toEqual(userMock.uid)
-      expect(result.email).toEqual(userMock.email)
-      expect(result.firstName).toEqual(userMock.firstName)
-      expect(result.lastName).toEqual(userMock.lastName)
+  // ─── delete ──────────────────────────────────────────────────────────────────
+
+  describe('delete', () => {
+    it('should hard-delete the user', async () => {
+      mockUserModel.findOneAndDelete.mockResolvedValue(USER_MOCK)
+
+      await service.delete(USER_MOCK.uid)
+
+      expect(mockUserModel.findOneAndDelete).toHaveBeenCalledWith({ uid: USER_MOCK.uid })
     })
 
-    it('should throw an error', async () => {})
+    it('should throw NotFoundException when user does not exist', async () => {
+      mockUserModel.findOneAndDelete.mockResolvedValue(null)
+
+      await expect(service.delete('non-existent-uid')).rejects.toThrow(NotFoundException)
+    })
   })
 })

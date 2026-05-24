@@ -1,10 +1,9 @@
-import { Types } from 'mongoose'
-
 export interface UserResponse {
-  _id: Types.ObjectId
+  _id: string
   uid: string
   firstName: string
   lastName: string
-  isAdmin: boolean
   email: string
+  isAdmin: boolean
+  isSuperAdmin: boolean
 }
