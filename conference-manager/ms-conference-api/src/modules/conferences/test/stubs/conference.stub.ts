@@ -1,10 +1,13 @@
 import { Types } from 'mongoose'
 import { Conference } from '../../conference.entity'
 import { ConferenceStatus } from '../../conference.enum'
+import { CreateConferenceDto } from '../../dto/create-conference.dto'
+import { UpdateConferenceDto } from '../../dto/update-conference.dto'
+import { AddAttendeeToConferenceDto } from '../../dto/add-attendee-to-conference.dto'
 
 const generateMockId = () => new Types.ObjectId().toHexString()
 
-export const CONFERENCE_ID_MOCK = new Types.ObjectId('65c516a7eae2b91375ecba6e').toHexString()
+export const CONFERENCE_ID_MOCK = new Types.ObjectId('65c516a7eae2b91375ecba6e')
 export const USER_ID_MOCK = new Types.ObjectId('65a9ae1f615ad496533cde52')
 export const MOCK_HEADQUARTER = {
   _id: new Types.ObjectId('654d4ac398b7a0abaa3c3a40'),
@@ -13,10 +16,10 @@ export const MOCK_HEADQUARTER = {
 export const MOCK_OWNER = '2qWPHHeRY9b3ouN8deae8GkCUnx1'
 
 export const CONFERENCE_MOCK: Conference = {
-  _id: CONFERENCE_ID_MOCK,
+  _id: CONFERENCE_ID_MOCK.toHexString(),
   name: 'Storm',
   eventDate: new Date('2023-11-21T19:00:00.000'),
-  owner: '2qWPHHeRY9b3ouN8deae8GkCUnx1',
+  owner: MOCK_OWNER,
   type: 'Recruiting',
   tags: 'Architecture',
   headquarter: MOCK_HEADQUARTER,
@@ -27,67 +30,60 @@ export const CONFERENCE_MOCK: Conference = {
   year: '2024',
 }
 
-/**
- * Get a mock event
- * @param eventStatusExpected - The expected status of the event
- * @returns A mock event
- * @example
- * const event = getMockEvent('ACTIVE')
- * @example
- * const event = getMockEvent('INACTIVE')
- * @example
- * const event = getMockEvent('CREATED')
- * @example
- * const event = getMockEvent(undefined)
- **/
-const getMockConference = (eventStatusExpected: string | undefined) => {
-  const eventRandomName = Math.floor(Math.random() * 100)
+export const CREATE_CONFERENCE_MOCK_DTO: CreateConferenceDto = {
+  name: 'Storm',
+  eventDate: new Date('2024-11-21T19:00:00.000'),
+  type: 'Recruiting',
+  tags: 'Architecture',
+  headquarter: MOCK_HEADQUARTER,
+  description: 'A description',
+  userId: MOCK_OWNER,
+  address: '2323 El Dorado Avenue',
+}
+
+export const UPDATE_CONFERENCE_MOCK_DTO: UpdateConferenceDto = {
+  description: 'Updated description',
+  address: 'Updated Address',
+}
+
+export const UPDATE_CONFERENCE_STATUS_MOCK_DTO: UpdateConferenceDto = {
+  eventDate: new Date('2024-11-21T19:00:00.000'),
+  status: ConferenceStatus.ACTIVE,
+  year: '2024',
+}
+
+export const ADD_ATTENDEE_MOCK_DTO: AddAttendeeToConferenceDto = {
+  name: 'User',
+  lastName: 'App',
+  email: 'testuser@conference.com',
+}
+
+const getMockConference = (statusExpected: string | undefined) => {
+  const randomName = Math.floor(Math.random() * 100)
   const eventDate = new Date('2024-11-21T19:00:00.000')
-  const eventStatusList = [ConferenceStatus.ACTIVE, ConferenceStatus.CREATED, ConferenceStatus.INACTIVE]
-  const eventStatusRandom = eventStatusList[Math.floor(Math.random() * eventStatusList.length)]
-  const eventStatus = eventStatusExpected ? eventStatusExpected : eventStatusRandom
+  const statusList = [ConferenceStatus.ACTIVE, ConferenceStatus.CREATED, ConferenceStatus.INACTIVE]
+  const randomStatus = statusList[Math.floor(Math.random() * statusList.length)]
+  const status = statusExpected ?? randomStatus
   return {
     _id: generateMockId(),
-    eventDate: eventDate,
+    eventDate,
     tags: 'Design',
-    name: `Linux Summit ${eventRandomName} Day`,
+    name: `Linux Summit ${randomName} Day`,
     year: '2024',
     type: 'Sales',
-    owner: 'asif',
-    status: eventStatus,
+    owner: MOCK_OWNER,
+    status,
     address: '120 Main Street',
     description: 'A description',
     headquarter: MOCK_HEADQUARTER,
   }
 }
 
-/**
- * Get a list of mock
- * @param eventStatus - The status of the events
- * @returns A list of mock events
- * @example
- * const events = getMockList('ACTIVE')
- * @example
- * const events = getMockList('INACTIVE')
- * @example
- * const events = getMockList('CREATED')
- * @example
- * const events = getMockList(undefined)
- **/
-export const getMockList = (eventStatus: string | undefined) => {
-  const listWithStatus = [
-    getMockConference(eventStatus),
-    getMockConference(eventStatus),
-    getMockConference(eventStatus)
-  ]
-  const listWithoutStatus = [
-    getMockConference(undefined),
-    getMockConference(undefined),
-    getMockConference(undefined)
-  ]
-  const eventList = eventStatus ? listWithStatus : listWithoutStatus
-  return eventList
-}
+export const getMockList = (status: string | undefined) => [
+  getMockConference(status),
+  getMockConference(status),
+  getMockConference(status),
+]
 
 export const LIST_ACTIVE_MOCK: Conference[] = [
   {
@@ -97,7 +93,7 @@ export const LIST_ACTIVE_MOCK: Conference[] = [
     name: 'Ubuntu Conf',
     year: '2024',
     type: 'Sales',
-    owner: 'asif',
+    owner: MOCK_OWNER,
     status: ConferenceStatus.ACTIVE,
     address: '85 Salvio Street',
     description: 'A description',
@@ -110,7 +106,7 @@ export const LIST_ACTIVE_MOCK: Conference[] = [
     name: 'KuberConf',
     year: '2022',
     type: 'Sales',
-    owner: 'asif',
+    owner: MOCK_OWNER,
     status: ConferenceStatus.ACTIVE,
     address: '85 Salvio Street',
     description: 'A description',
@@ -123,7 +119,7 @@ export const LIST_ACTIVE_MOCK: Conference[] = [
     name: 'Linux Summit',
     year: '2024',
     type: 'Sales',
-    owner: 'asif',
+    owner: MOCK_OWNER,
     status: ConferenceStatus.ACTIVE,
     address: '85 Salvio Street',
     description: 'A description',

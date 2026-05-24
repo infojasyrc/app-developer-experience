@@ -30,7 +30,7 @@ function isAuthEnabled() {
   if (unleashClient) {
     try {
       return unleashClient.isEnabled(toggleName)
-    } catch (_) {}
+    } catch (_) { /* swallow – fallback to env var below */ }
   }
   // Fallback to REQUIRES_AUTH env logic.
   return env.REQUIRES_AUTH === true
