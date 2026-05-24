@@ -1,5 +1,5 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpStatus, BadRequestException } from '@nestjs/common';
-import  multer from 'multer';
+import multer from 'multer';
 import { Observable } from 'rxjs';
 import { FirebaseUploadService } from '../../firebase-auth/firebase-upload-file.service';
 
@@ -18,15 +18,14 @@ export class ImageUploadInterceptor<T> implements NestInterceptor<T, Response<T>
     return new Observable((observer) => {
       const upload = multer().any();
 
-      // Invoke multer and handle the callback in asynchronous way
       upload(request, response, async (err: any) => {
         if (err) {
           observer.error(err)
         } else {
           const file = request.files[0]
-          if (request.files.length > 0 ) {
+          if (request.files.length > 0) {
             try {
-              request.body = {image: file, userId: request.user.userId, ...request.body}
+              request.body = { image: file, userId: request.user.userId, ...request.body }
               return this.subscribeToHandle(next, observer)
             } catch (error) {
               observer.error(error)

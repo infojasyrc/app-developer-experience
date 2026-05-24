@@ -8,7 +8,7 @@ import { ConferenceStatus } from './conference.enum'
 import { FirebaseModule } from '../firebase-auth/firebase.module'
 import { FirebaseAdminService } from '../firebase-auth/firebase-admin.service'
 import { FirebaseUploadService } from '../firebase-auth/firebase-upload-file.service'
-import { ImageUploadInterceptor } from '../events/interceptors/image-upload.interceptor'
+import { ImageUploadInterceptor } from './interceptors/image-upload.interceptor'
 import { RequestGetAllConferencesDto } from './dto/request-get-all-conferences.dto'
 
 import {
@@ -18,6 +18,10 @@ import {
   CREATE_CONFERENCE_MOCK_DTO,
   UPDATE_CONFERENCE_MOCK_DTO,
   ADD_ATTENDEE_MOCK_DTO,
+  UPDATE_CONFERENCE_STATUS_DTO_MOCK,
+  MOCK_CONFERENCE_IMAGE_FILE,
+  MOCK_CONFERENCE_IMAGE_URL,
+  MOCK_CONFERENCE_IMAGE_FILENAME,
   getMockList,
 } from './test/stubs/conference.stub'
 
@@ -126,6 +130,71 @@ describe('ConferenceController', () => {
       )
 
       expect(result).toEqual(CONFERENCE_MOCK)
+    })
+  })
+
+  describe('updateStatus', () => {
+    it('should update and return the conference with the new status', async () => {
+      const updated = { ...CONFERENCE_MOCK, status: ConferenceStatus.ACTIVE }
+      jest.spyOn(service, 'updateStatus').mockResolvedValue(updated as any)
+
+      const result = await controller.updateStatus(
+        String(CONFERENCE_ID_MOCK),
+        UPDATE_CONFERENCE_STATUS_DTO_MOCK,
+      )
+
+      expect(service.updateStatus).toHaveBeenCalledWith(
+        String(CONFERENCE_ID_MOCK),
+        UPDATE_CONFERENCE_STATUS_DTO_MOCK,
+      )
+      expect(result.status).toBe(ConferenceStatus.ACTIVE)
+    })
+  })
+
+  describe('uploadImage', () => {
+    it('should upload an image and return the updated conference', async () => {
+      const updated = { ...CONFERENCE_MOCK, images: [MOCK_CONFERENCE_IMAGE_URL] }
+      jest.spyOn(service, 'uploadImage').mockResolvedValue(updated as any)
+
+      const result = await controller.uploadImage(String(CONFERENCE_ID_MOCK), {
+        image: MOCK_CONFERENCE_IMAGE_FILE,
+      })
+
+      expect(service.uploadImage).toHaveBeenCalledWith(
+        String(CONFERENCE_ID_MOCK),
+        MOCK_CONFERENCE_IMAGE_FILE,
+      )
+      expect(result.images).toContain(MOCK_CONFERENCE_IMAGE_URL)
+    })
+  })
+
+  describe('deleteImage', () => {
+    it('should delete an image from the conference', async () => {
+      jest.spyOn(service, 'deleteImage').mockResolvedValue(undefined)
+
+      await controller.deleteImage(
+        String(CONFERENCE_ID_MOCK),
+        encodeURIComponent(MOCK_CONFERENCE_IMAGE_FILENAME),
+      )
+
+      expect(service.deleteImage).toHaveBeenCalledWith(
+        String(CONFERENCE_ID_MOCK),
+        MOCK_CONFERENCE_IMAGE_FILENAME,
+      )
+    })
+  })
+
+  describe('exportAttendees', () => {
+    it('should return a CSV string with attendee data', async () => {
+      const csv = 'uid,firstName,lastName,email\n"uid1","John","Doe","john@example.com"'
+      jest.spyOn(service, 'exportAttendeesAsCsv').mockResolvedValue(csv)
+      const mockRes = { set: jest.fn() } as any
+
+      const result = await controller.exportAttendees(String(CONFERENCE_ID_MOCK), mockRes)
+
+      expect(service.exportAttendeesAsCsv).toHaveBeenCalledWith(String(CONFERENCE_ID_MOCK))
+      expect(result).toBe(csv)
+      expect(mockRes.set).toHaveBeenCalledWith('Content-Type', 'text/csv')
     })
   })
 })

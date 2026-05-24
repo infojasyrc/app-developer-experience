@@ -8,9 +8,7 @@ import { Conference } from './conference.entity'
 import { ConferenceStatus } from './conference.enum'
 import { BadRequestException } from '../../exceptions/BadRequest'
 import { NotFoundException } from '../../exceptions/NotFound.exception'
-import { FirebaseAdminService } from '../firebase-auth/firebase-admin.service'
 import { FirebaseUploadService } from '../firebase-auth/firebase-upload-file.service'
-import { FirebaseModule } from '../firebase-auth/firebase.module'
 
 import {
   CONFERENCE_MOCK,
@@ -21,6 +19,10 @@ import {
   UPDATE_CONFERENCE_MOCK_DTO,
   ADD_ATTENDEE_MOCK_DTO,
   MOCK_HEADQUARTER,
+  UPDATE_CONFERENCE_STATUS_DTO_MOCK,
+  MOCK_CONFERENCE_IMAGE_FILE,
+  MOCK_CONFERENCE_IMAGE_URL,
+  MOCK_CONFERENCE_IMAGE_FILENAME,
 } from './test/stubs/conference.stub'
 
 const mockExec = jest.fn()
@@ -29,7 +31,13 @@ const mockConferenceModel = {
   find: jest.fn().mockReturnValue({ exec: mockExec }),
   findOne: jest.fn(),
   findById: jest.fn(),
+  findByIdAndUpdate: jest.fn(),
   findOneAndUpdate: jest.fn().mockReturnValue({ exec: mockExec }),
+}
+
+const mockFirebaseUploadService = {
+  uploadFile: jest.fn(),
+  deleteFile: jest.fn(),
 }
 
 describe('ConferenceService', () => {
@@ -41,13 +49,11 @@ describe('ConferenceService', () => {
     mockConferenceModel.findOneAndUpdate.mockReturnValue({ exec: mockExec })
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [FirebaseModule],
       providers: [
         ConferenceService,
         Logger,
-        FirebaseAdminService,
-        FirebaseUploadService,
         { provide: getModelToken(Conference.name), useValue: mockConferenceModel },
+        { provide: FirebaseUploadService, useValue: mockFirebaseUploadService },
       ],
     }).compile()
 
@@ -235,6 +241,139 @@ describe('ConferenceService', () => {
       await expect(
         service.addAttendeeToConference(Object(CONFERENCE_ID_MOCK), String(USER_ID_MOCK), ADD_ATTENDEE_MOCK_DTO),
       ).rejects.toThrow(BadRequestException)
+    })
+  })
+
+  // ─── updateStatus ────────────────────────────────────────────────────────────
+
+  describe('updateStatus', () => {
+    it('should update and return the conference with the new status', async () => {
+      const updated = { ...CONFERENCE_MOCK, status: ConferenceStatus.ACTIVE }
+      mockConferenceModel.findByIdAndUpdate.mockResolvedValue(updated)
+
+      const result = await service.updateStatus(String(CONFERENCE_ID_MOCK), UPDATE_CONFERENCE_STATUS_DTO_MOCK)
+
+      expect(mockConferenceModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        String(CONFERENCE_ID_MOCK),
+        { status: ConferenceStatus.ACTIVE },
+        { new: true },
+      )
+      expect(result.status).toBe(ConferenceStatus.ACTIVE)
+    })
+
+    it('should throw NotFoundException when conference does not exist', async () => {
+      mockConferenceModel.findByIdAndUpdate.mockResolvedValue(null)
+
+      await expect(
+        service.updateStatus(String(CONFERENCE_ID_MOCK), UPDATE_CONFERENCE_STATUS_DTO_MOCK),
+      ).rejects.toThrow(NotFoundException)
+    })
+  })
+
+  // ─── uploadImage ─────────────────────────────────────────────────────────────
+
+  describe('uploadImage', () => {
+    it('should upload the image and add its URL to conference.images', async () => {
+      const conferenceWithSave = {
+        ...CONFERENCE_MOCK,
+        images: [] as string[],
+        save: jest.fn().mockResolvedValue({ ...CONFERENCE_MOCK, images: [MOCK_CONFERENCE_IMAGE_URL] }),
+      }
+      mockConferenceModel.findById.mockResolvedValue(conferenceWithSave)
+      mockFirebaseUploadService.uploadFile.mockResolvedValue(MOCK_CONFERENCE_IMAGE_URL)
+
+      const result = await service.uploadImage(String(CONFERENCE_ID_MOCK), MOCK_CONFERENCE_IMAGE_FILE)
+
+      expect(mockFirebaseUploadService.uploadFile).toHaveBeenCalledWith(MOCK_CONFERENCE_IMAGE_FILE)
+      expect(conferenceWithSave.save).toHaveBeenCalled()
+      expect(result.images).toContain(MOCK_CONFERENCE_IMAGE_URL)
+    })
+
+    it('should throw NotFoundException when conference does not exist', async () => {
+      mockConferenceModel.findById.mockResolvedValue(null)
+
+      await expect(
+        service.uploadImage(String(CONFERENCE_ID_MOCK), MOCK_CONFERENCE_IMAGE_FILE),
+      ).rejects.toThrow(NotFoundException)
+    })
+
+    it('should throw BadRequestException when image is not jpeg', async () => {
+      const conferenceWithSave = { ...CONFERENCE_MOCK, images: [] as string[], save: jest.fn() }
+      mockConferenceModel.findById.mockResolvedValue(conferenceWithSave)
+      const invalidFile: Express.Multer.File = { ...MOCK_CONFERENCE_IMAGE_FILE, mimetype: 'image/png' }
+
+      await expect(
+        service.uploadImage(String(CONFERENCE_ID_MOCK), invalidFile),
+      ).rejects.toThrow(BadRequestException)
+    })
+  })
+
+  // ─── deleteImage ─────────────────────────────────────────────────────────────
+
+  describe('deleteImage', () => {
+    it('should delete the image from Firebase and remove it from conference.images', async () => {
+      const conferenceWithSave = {
+        ...CONFERENCE_MOCK,
+        images: [MOCK_CONFERENCE_IMAGE_URL],
+        save: jest.fn().mockResolvedValue(CONFERENCE_MOCK),
+      }
+      mockConferenceModel.findById.mockResolvedValue(conferenceWithSave)
+      mockFirebaseUploadService.deleteFile.mockResolvedValue(undefined)
+
+      await service.deleteImage(String(CONFERENCE_ID_MOCK), MOCK_CONFERENCE_IMAGE_FILENAME)
+
+      expect(mockFirebaseUploadService.deleteFile).toHaveBeenCalledWith(MOCK_CONFERENCE_IMAGE_FILENAME)
+      expect(conferenceWithSave.save).toHaveBeenCalled()
+    })
+
+    it('should throw NotFoundException when conference does not exist', async () => {
+      mockConferenceModel.findById.mockResolvedValue(null)
+
+      await expect(
+        service.deleteImage(String(CONFERENCE_ID_MOCK), MOCK_CONFERENCE_IMAGE_FILENAME),
+      ).rejects.toThrow(NotFoundException)
+    })
+  })
+
+  // ─── exportAttendeesAsCsv ────────────────────────────────────────────────────
+
+  describe('exportAttendeesAsCsv', () => {
+    it('should return a CSV string with attendee data', async () => {
+      const populated = {
+        ...CONFERENCE_MOCK,
+        attendees: [
+          { uid: 'uid1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
+        ],
+      }
+      mockConferenceModel.findById.mockReturnValue({
+        populate: jest.fn().mockResolvedValue(populated),
+      })
+
+      const result = await service.exportAttendeesAsCsv(String(CONFERENCE_ID_MOCK))
+
+      expect(result).toContain('uid,firstName,lastName,email')
+      expect(result).toContain('"uid1","John","Doe","john@example.com"')
+    })
+
+    it('should return only the header when there are no attendees', async () => {
+      const empty = { ...CONFERENCE_MOCK, attendees: [] as Types.ObjectId[] }
+      mockConferenceModel.findById.mockReturnValue({
+        populate: jest.fn().mockResolvedValue(empty),
+      })
+
+      const result = await service.exportAttendeesAsCsv(String(CONFERENCE_ID_MOCK))
+
+      expect(result).toBe('uid,firstName,lastName,email')
+    })
+
+    it('should throw NotFoundException when conference does not exist', async () => {
+      mockConferenceModel.findById.mockReturnValue({
+        populate: jest.fn().mockResolvedValue(null),
+      })
+
+      await expect(
+        service.exportAttendeesAsCsv(String(CONFERENCE_ID_MOCK)),
+      ).rejects.toThrow(NotFoundException)
     })
   })
 })
