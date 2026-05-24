@@ -10,7 +10,7 @@ const generateMockId = () => new Types.ObjectId().toHexString()
 export const CONFERENCE_ID_MOCK = new Types.ObjectId('65c516a7eae2b91375ecba6e')
 export const USER_ID_MOCK = new Types.ObjectId('65a9ae1f615ad496533cde52')
 export const MOCK_HEADQUARTER = {
-  _id: new Types.ObjectId('654d4ac398b7a0abaa3c3a40'),
+  _id: '654d4ac398b7a0abaa3c3a40',
   name: 'Panamá',
 }
 export const MOCK_OWNER = '2qWPHHeRY9b3ouN8deae8GkCUnx1'

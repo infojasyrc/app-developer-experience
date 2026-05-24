@@ -1,16 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { HeadquarterController } from './headquarter.controller'
-import { HeadquarterService } from './headquarter.service'
 import { Logger } from '@nestjs/common'
 import { getModelToken } from '@nestjs/mongoose'
-import { HeadquarterResponse } from './interfaces/headquarter-response'
+
+import { HeadquarterController } from './headquarter.controller'
+import { HeadquarterService } from './headquarter.service'
+import { Headquarter } from './headquarter.entity'
+import { Conference } from '../conferences/conference.entity'
+import { NotFoundException } from '../../exceptions/NotFound.exception'
 import {
   HEADQUARTERMOCK,
   LISTHEADQUARTERMOCK,
   MOCKOBJECTID,
+  CREATE_HEADQUARTER_MOCK_DTO,
+  UPDATE_HEADQUARTER_MOCK_DTO,
 } from '../../helpers/mocks/events/headquarter-detail'
 
-describe.skip('HeadquarterController', () => {
+describe('HeadquarterController', () => {
   let controller: HeadquarterController
   let service: HeadquarterService
 
@@ -20,10 +25,8 @@ describe.skip('HeadquarterController', () => {
       providers: [
         HeadquarterService,
         Logger,
-        {
-          provide: getModelToken('Headquarter'),
-          useValue: {},
-        },
+        { provide: getModelToken(Headquarter.name), useValue: {} },
+        { provide: getModelToken(Conference.name), useValue: {} },
       ],
     }).compile()
 
@@ -31,28 +34,67 @@ describe.skip('HeadquarterController', () => {
     service = module.get<HeadquarterService>(HeadquarterService)
   })
 
-  it('should be defined', () => {
+  it('HeadquarterController should be defined', () => {
     expect(controller).toBeDefined()
   })
 
-  describe('get all headquarters', () => {
-    it('should return headquarter list', async () => {
-      const response: HeadquarterResponse[] = LISTHEADQUARTERMOCK
-      jest.spyOn(service, 'getAll').mockResolvedValue(response)
+  describe('create', () => {
+    it('should create and return a headquarter', async () => {
+      jest.spyOn(service, 'create').mockResolvedValue(HEADQUARTERMOCK)
+
+      const result = await controller.create(CREATE_HEADQUARTER_MOCK_DTO)
+
+      expect(service.create).toHaveBeenCalledWith(CREATE_HEADQUARTER_MOCK_DTO)
+      expect(result).toEqual(HEADQUARTERMOCK)
+    })
+  })
+
+  describe('getAll', () => {
+    it('should return a list of headquarters', async () => {
+      jest.spyOn(service, 'getAll').mockResolvedValue(LISTHEADQUARTERMOCK)
 
       const result = await controller.getAll()
 
-      expect(result).toEqual(response)
+      expect(result).toEqual(LISTHEADQUARTERMOCK)
     })
   })
-  describe('get headquarter by id', () => {
-    it('should return the information about one headquarter', async () => {
-      const response: HeadquarterResponse = HEADQUARTERMOCK
-      jest.spyOn(service, 'getById').mockResolvedValue(response)
 
-      const result = await controller.getById(MOCKOBJECTID.toString())
+  describe('getById', () => {
+    it('should return a headquarter by id', async () => {
+      jest.spyOn(service, 'getById').mockResolvedValue(HEADQUARTERMOCK)
 
-      expect(result).toEqual(response)
+      const result = await controller.getById(String(MOCKOBJECTID))
+
+      expect(service.getById).toHaveBeenCalledWith(String(MOCKOBJECTID))
+      expect(result).toEqual(HEADQUARTERMOCK)
+    })
+
+    it('should propagate NotFoundException when not found', async () => {
+      jest.spyOn(service, 'getById').mockRejectedValue(new NotFoundException('not found'))
+
+      await expect(controller.getById('non-existent-id')).rejects.toThrow(NotFoundException)
+    })
+  })
+
+  describe('update', () => {
+    it('should update and return the headquarter', async () => {
+      const updated = { ...HEADQUARTERMOCK, name: 'Bogota Updated' }
+      jest.spyOn(service, 'update').mockResolvedValue(updated)
+
+      const result = await controller.update(String(MOCKOBJECTID), UPDATE_HEADQUARTER_MOCK_DTO)
+
+      expect(service.update).toHaveBeenCalledWith(String(MOCKOBJECTID), UPDATE_HEADQUARTER_MOCK_DTO)
+      expect(result).toEqual(updated)
+    })
+  })
+
+  describe('delete', () => {
+    it('should delete a headquarter', async () => {
+      jest.spyOn(service, 'delete').mockResolvedValue(undefined)
+
+      await controller.delete(String(MOCKOBJECTID))
+
+      expect(service.delete).toHaveBeenCalledWith(String(MOCKOBJECTID))
     })
   })
 })
