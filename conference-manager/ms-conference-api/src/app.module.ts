@@ -6,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { FirebaseAuthStrategy } from './modules/firebase-auth/firebase-auth.strategy'
 import getEnvironmentVariables from './infrastructure/environment'
 import { ConferenceModule } from './modules/conferences/conference.module'
-// import { HeadquarterModule } from './modules/headquarter/headquarter.module'
+import { HeadquarterModule } from './modules/headquarter/headquarter.module'
 // import { UserModule } from './modules/users/user.module'
 import { FirebaseModule } from './modules/firebase-auth/firebase.module'
 import { UnleashProvider } from './infrastructure/unleash.provider'
@@ -24,9 +24,9 @@ import { HealthController } from './interfaces/health/health.controller'
           isGlobal: true,
         }),
         ConferenceModule,
+        HeadquarterModule,
         // UserModule,
         // EventModule,
-        // HeadquarterModule,
         PassportModule.register({ defaultStrategy: 'jwt' }),
         FirebaseModule,
       ],

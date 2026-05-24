@@ -34,7 +34,7 @@ DEV_VOLUME_API = \
 .PHONY: help docker-clean build-dev build-prod get-token interactive create-volumes install-dependencies \
 	audit-fix-dependencies lint unit-tests unit-tests-v1 unit-tests-v2 watch-unit-tests-v2 \
 	launch-db stop-db launch-local-dev stop-local-dev launch-local-prod stop-local-prod \
-	launch-unleash stop-unleash reset-unleash seed-conferences
+	launch-unleash stop-unleash reset-unleash seed-data
 
 docker-clean: ## ❌ Stop & prune all containers/images (DANGEROUS)
 ifeq ($(OS),Windows_NT)
@@ -51,14 +51,14 @@ build-prod: ## 🛠️ Build production container image for API
 	docker build --platform $(PLATFORM) \
 		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api .
 
-seed-conferences: ## 🌱 Seed conferences via the API (Usage: make seed-conferences API_TOKEN=<token>)
+seed-data: ## 🌱 Seed headquarters and conferences via the API (Usage: make seed-data API_TOKEN=<token>)
 	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		--network host \
 		-e API_TOKEN=$(API_TOKEN) \
 		-e HEADQUARTER_ID=$(HEADQUARTER_ID) \
 		$(DEV_VOLUME_API) \
-		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "node scripts/seed-conferences.js"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "node scripts/seed-data.js"
 
 get-token: ## 🔐 Retrieve Firebase auth token (ROLE=admin|user) Usage: make get-token ROLE=admin
 	node $(TOKEN_SCRIPT_FILE) $(ROLE)

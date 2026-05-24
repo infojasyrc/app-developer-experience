@@ -1,5 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator'
-
 export interface HeadquarterResponse {
+  _id: string
   name: string
 }
