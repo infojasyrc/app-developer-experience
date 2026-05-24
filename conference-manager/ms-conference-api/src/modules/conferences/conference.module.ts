@@ -7,7 +7,7 @@ import { ConferenceService } from './conference.service'
 import { FirebaseModule } from '../firebase-auth/firebase.module'
 import { FirebaseUploadService } from '../firebase-auth/firebase-upload-file.service'
 import { FirebaseAdminService } from '../firebase-auth/firebase-admin.service'
-import { ImageUploadInterceptor } from '../events/interceptors/image-upload.interceptor'
+import { ImageUploadInterceptor } from './interceptors/image-upload.interceptor'
 
 @Module({
   imports: [

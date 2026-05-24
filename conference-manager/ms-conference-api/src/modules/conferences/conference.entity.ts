@@ -29,7 +29,7 @@ export class Conference {
   owner!: string
 
   @Prop({ required: false })
-  images?: [string]
+  images?: string[]
 
   @Prop({ required: true, enum: ['active', 'inactive', 'created'] })
   status!: string

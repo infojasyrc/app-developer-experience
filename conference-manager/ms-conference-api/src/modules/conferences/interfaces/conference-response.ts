@@ -14,4 +14,5 @@ export interface ConferenceResponse {
   description: string
   headquarter: Headquarter
   attendees?: Types.ObjectId[]
+  images?: string[]
 }

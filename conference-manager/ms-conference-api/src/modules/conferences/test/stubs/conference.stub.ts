@@ -3,6 +3,7 @@ import { Conference } from '../../conference.entity'
 import { ConferenceStatus } from '../../conference.enum'
 import { CreateConferenceDto } from '../../dto/create-conference.dto'
 import { UpdateConferenceDto } from '../../dto/update-conference.dto'
+import { UpdateConferenceStatusDto } from '../../dto/update-conference-status.dto'
 import { AddAttendeeToConferenceDto } from '../../dto/add-attendee-to-conference.dto'
 
 const generateMockId = () => new Types.ObjectId().toHexString()
@@ -84,6 +85,26 @@ export const getMockList = (status: string | undefined) => [
   getMockConference(status),
   getMockConference(status),
 ]
+
+export const UPDATE_CONFERENCE_STATUS_DTO_MOCK: UpdateConferenceStatusDto = {
+  status: ConferenceStatus.ACTIVE,
+}
+
+export const MOCK_CONFERENCE_IMAGE_FILE: Express.Multer.File = {
+  fieldname: 'image',
+  originalname: 'conf.jpg',
+  encoding: '7bit',
+  mimetype: 'image/jpeg',
+  buffer: Buffer.from('fake-image-data'),
+  size: 1024,
+  stream: null as any,
+  destination: '',
+  filename: 'conf.jpg',
+  path: '',
+}
+
+export const MOCK_CONFERENCE_IMAGE_URL = 'https://storage.googleapis.com/bucket/1234567890-conf.jpg'
+export const MOCK_CONFERENCE_IMAGE_FILENAME = '1234567890-conf.jpg'
 
 export const LIST_ACTIVE_MOCK: Conference[] = [
   {

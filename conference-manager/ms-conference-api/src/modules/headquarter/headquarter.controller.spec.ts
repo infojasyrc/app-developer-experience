@@ -13,7 +13,7 @@ import {
   MOCKOBJECTID,
   CREATE_HEADQUARTER_MOCK_DTO,
   UPDATE_HEADQUARTER_MOCK_DTO,
-} from '../../helpers/mocks/events/headquarter-detail'
+} from '../../helpers/mocks/headquarters/headquarter-detail'
 
 describe('HeadquarterController', () => {
   let controller: HeadquarterController

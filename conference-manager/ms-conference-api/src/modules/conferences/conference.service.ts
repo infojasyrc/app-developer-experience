@@ -8,6 +8,7 @@ import ConferenceMapper from './conference.mapper'
 import { ConferenceResponse } from './interfaces/conference-response'
 import { CreateConferenceDto } from './dto/create-conference.dto'
 import { UpdateConferenceDto } from './dto/update-conference.dto'
+import { UpdateConferenceStatusDto } from './dto/update-conference-status.dto'
 import { ConferenceIdDto } from './dto/conference-id.dto'
 import { AddAttendeeToConferenceDto } from './dto/add-attendee-to-conference.dto'
 import { RequestGetAllConferencesDto } from './dto/request-get-all-conferences.dto'
@@ -85,6 +86,53 @@ export class ConferenceService {
     conference.attendees = conference.attendees ?? []
     conference.attendees.push(new Types.ObjectId(String(userId)))
     return conference.save()
+  }
+
+  async updateStatus(conferenceId: string, dto: UpdateConferenceStatusDto): Promise<ConferenceResponse> {
+    this.logger.log(`Update conference status id: ${conferenceId} service`)
+    const updated = await this.conferenceModel.findByIdAndUpdate(
+      conferenceId,
+      { status: dto.status },
+      { new: true },
+    )
+    if (!updated)
+      throw new NotFoundException(`Conference with id: ${conferenceId} was not found`)
+    return updated
+  }
+
+  async uploadImage(conferenceId: string, file: Express.Multer.File): Promise<ConferenceResponse> {
+    this.logger.log(`Upload image to conference id: ${conferenceId} service`)
+    const conference = await this.conferenceModel.findById(conferenceId)
+    if (!conference)
+      throw new NotFoundException(`Conference with id: ${conferenceId} was not found`)
+    this.validateConferenceImage(file)
+    const url = await this.firebaseUploadService.uploadFile(file)
+    conference.images = [...(conference.images ?? []), url]
+    return conference.save()
+  }
+
+  async deleteImage(conferenceId: string, filename: string): Promise<void> {
+    this.logger.log(`Delete image ${filename} from conference id: ${conferenceId} service`)
+    const conference = await this.conferenceModel.findById(conferenceId)
+    if (!conference)
+      throw new NotFoundException(`Conference with id: ${conferenceId} was not found`)
+    await this.firebaseUploadService.deleteFile(filename)
+    conference.images = (conference.images ?? []).filter(img => !img.includes(filename))
+    await conference.save()
+  }
+
+  async exportAttendeesAsCsv(conferenceId: string): Promise<string> {
+    this.logger.log(`Export attendees CSV for conference id: ${conferenceId} service`)
+    const conference = await this.conferenceModel.findById(conferenceId).populate('attendees')
+    if (!conference)
+      throw new NotFoundException(`Conference with id: ${conferenceId} was not found`)
+    const headers = ['uid', 'firstName', 'lastName', 'email']
+    const rows = (conference.attendees ?? []).map((user: any) =>
+      [user.uid, user.firstName, user.lastName, user.email]
+        .map(v => `"${String(v ?? '').replace(/"/g, '""')}"`)
+        .join(',')
+    )
+    return [headers.join(','), ...rows].join('\n')
   }
 
   async getFirebaseUploadedImageUrl(file: Express.Multer.File, conference: Conference): Promise<Conference> {
