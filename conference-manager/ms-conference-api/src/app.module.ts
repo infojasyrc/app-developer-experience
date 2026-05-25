@@ -10,6 +10,7 @@ import { HeadquarterModule } from './modules/headquarter/headquarter.module'
 import { UserModule } from './modules/users/user.module'
 import { FirebaseModule } from './modules/firebase-auth/firebase.module'
 import { AuthModule } from './modules/auth/auth.module'
+import { RoleModule } from './modules/roles/role.module'
 import { UnleashProvider } from './infrastructure/unleash.provider'
 
 import { HealthController } from './interfaces/health/health.controller'
@@ -29,6 +30,7 @@ import { HealthController } from './interfaces/health/health.controller'
         PassportModule.register({ defaultStrategy: 'jwt' }),
         FirebaseModule,
         AuthModule,
+        RoleModule,
       ],
       useFactory: (configService: ConfigService) => ({
         uri: configService.get('MONGODB_URI'),
