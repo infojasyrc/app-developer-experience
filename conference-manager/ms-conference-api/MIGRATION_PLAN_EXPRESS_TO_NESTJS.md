@@ -100,6 +100,7 @@ main.ts
 | `UserModule` | `GET /v2/users`, `GET /v2/users/:uid`, `POST /v2/users`, `PUT /v2/users/:uid`, `DELETE /v2/users/:uid` | Complete |
 | `AuthModule` | `POST /v2/auth/register`, `POST /v2/auth/revoke-token`, `POST /v2/auth/reset-password` | Complete |
 | `RoleModule` | `GET /v2/roles`, `GET /v2/roles/:id` | Complete |
+| `ProfileModule` | `GET /v2/profile` | Complete |
 | `HealthController` | `GET /v2/health` | Complete |
 | `FirebaseModule` + `FirebaseAuthStrategy` | JWT auth via Firebase | Complete |
 | `UnleashProvider` | Feature flags | Complete |
@@ -169,7 +170,7 @@ main.ts
 
 ---
 
-### Phase 3 — ProfileModule
+### Phase 3 — ProfileModule ✅ COMPLETED
 **Scope**: Migrate `GET /v1/profile` to `GET /v2/profile`.
 
 The legacy profile endpoint resolves a Firebase session token to a MongoDB user record and returns it. In v2, this is already partially possible via `GET /v2/users/:uid` once the caller knows their own uid. The v2 profile endpoint provides a self-service GET that reads the authenticated user's uid from the JWT claim.
@@ -300,7 +301,7 @@ Phase 1: AuthModule ✅ COMPLETED
 Phase 2: RolesModule ✅ COMPLETED
   → make lint && make unit-tests-v2
 
-Phase 3: ProfileModule
+Phase 3: ProfileModule ✅ COMPLETED
   → make lint && make unit-tests-v2
 
 Phase 4: Decommission Express layer
