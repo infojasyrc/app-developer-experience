@@ -194,7 +194,7 @@ The legacy profile endpoint resolves a Firebase session token to a MongoDB user 
 
 ---
 
-### Phase 4 — Decommission Express Layer
+### Phase 4 — Decommission Express Layer ✅ COMPLETED
 **Scope**: Remove the dual-stack setup. This is the breaking-change phase — coordinate with consumers of the v1 API before executing.
 
 **Pre-condition**: All v1 routes from Phases 1–4 have v2 equivalents. Routes not migrated (accounts, token) are confirmed as intentionally retired.
@@ -304,8 +304,8 @@ Phase 2: RolesModule ✅ COMPLETED
 Phase 3: ProfileModule ✅ COMPLETED
   → make lint && make unit-tests-v2
 
-Phase 4: Decommission Express layer
-  → make lint && make unit-tests        ← run both AVA (v1) and Jest (v2)
+Phase 4: Decommission Express layer ✅ COMPLETED
+  → make lint && make unit-tests        ← Jest (v2) only — AVA removed with v1 layer
   → verify no imports remain from deleted paths (grep -r 'controllers/v1' src/)
   → verify no imports remain from deleted paths (grep -r 'services/' src/)
   → smoke test: make launch-local-dev && make seed-data API_TOKEN=<token>
