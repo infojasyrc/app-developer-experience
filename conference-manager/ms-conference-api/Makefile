@@ -32,7 +32,7 @@ DEV_VOLUME_API = \
 
 # Centralized phony target list (discovery + reduces duplication)
 .PHONY: help docker-clean build-dev build-prod get-token interactive create-volumes install-dependencies \
-	audit-fix-dependencies lint unit-tests unit-tests-v1 unit-tests-v2 watch-unit-tests-v2 \
+	audit-fix-dependencies lint unit-tests unit-tests-v2 watch-unit-tests-v2 \
 	launch-db stop-db launch-local-dev stop-local-dev launch-local-prod stop-local-prod \
 	launch-unleash stop-unleash reset-unleash seed-data
 
@@ -91,13 +91,7 @@ lint: ## 🧹 Run lint checks
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run lint"
 
-unit-tests: unit-tests-v1 unit-tests-v2 ## 🧪 Run all unit test suites (AVA + Jest)
-
-unit-tests-v1: ## 🧪 Run AVA unit tests (v1 legacy)
-	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
-		--platform $(PLATFORM) \
-		$(DEV_VOLUME_API) \
-		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v1"
+unit-tests: unit-tests-v2 ## 🧪 Run all unit tests (Jest)
 
 unit-tests-v2: ## 🧪 Run Jest unit tests (v2 NestJS)
 	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
