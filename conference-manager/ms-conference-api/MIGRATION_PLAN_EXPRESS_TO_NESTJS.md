@@ -238,7 +238,7 @@ The legacy profile endpoint resolves a Firebase session token to a MongoDB user 
 
 ---
 
-### Phase 5 — Routes Retired (not migrated)
+### Phase 5 — Routes Retired (not migrated) ✅ COMPLETED
 
 The following legacy routes are intentionally not migrated to v2. They can be removed in Phase 5 without replacement:
 
