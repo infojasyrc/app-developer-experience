@@ -99,6 +99,7 @@ main.ts
 | `HeadquarterModule` | `GET /v2/headquarters`, `GET /v2/headquarters/:id`, `POST /v2/headquarters`, `PUT /v2/headquarters/:id`, `DELETE /v2/headquarters/:id` | Complete |
 | `UserModule` | `GET /v2/users`, `GET /v2/users/:uid`, `POST /v2/users`, `PUT /v2/users/:uid`, `DELETE /v2/users/:uid` | Complete |
 | `AuthModule` | `POST /v2/auth/register`, `POST /v2/auth/revoke-token`, `POST /v2/auth/reset-password` | Complete |
+| `RoleModule` | `GET /v2/roles`, `GET /v2/roles/:id` | Complete |
 | `HealthController` | `GET /v2/health` | Complete |
 | `FirebaseModule` + `FirebaseAuthStrategy` | JWT auth via Firebase | Complete |
 | `UnleashProvider` | Feature flags | Complete |
@@ -139,7 +140,7 @@ main.ts
 
 ---
 
-### Phase 2 — RolesModule
+### Phase 2 — RolesModule ✅ COMPLETED
 **Scope**: Migrate `/v1/roles` to `/v2/roles`.
 
 **Endpoints:**
@@ -296,7 +297,7 @@ src/application/use-cases/user/get-users.usecase.ts
 Phase 1: AuthModule ✅ COMPLETED
   → make lint && make unit-tests-v2
 
-Phase 2: RolesModule
+Phase 2: RolesModule ✅ COMPLETED
   → make lint && make unit-tests-v2
 
 Phase 3: ProfileModule
