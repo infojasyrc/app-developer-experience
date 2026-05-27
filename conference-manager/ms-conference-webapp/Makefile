@@ -24,7 +24,9 @@ DEV_VOLUME = \
 	-v $(COMPOSE_PROJECT_NAME)-webapp-packages:$(CONTAINER_APP_FOLDER)/node_modules
 
 .PHONY: docker-clean build-dev build-prod interactive run-storybook install-dependencies \
-	lint unit-tests commit npm-audit help
+	lint unit-tests commit npm-audit dev help
+
+dev: build-dev install-dependencies launch ## 🚀 Build image, install deps, and launch webapp in dev container
 
 docker-clean: ## 🧹 Stop+kill containers, prune stopped, remove untagged images
 ifeq ($(OS),Windows_NT)
