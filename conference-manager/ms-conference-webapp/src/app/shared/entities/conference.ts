@@ -15,14 +15,18 @@ export interface Conference {
   description: string
   eventDate: string
   status: ConferenceStatus
-  eventType: string
+  /** API field name is `type`; matches v2 schema */
+  type: string
   phoneNumber?: string
   address?: string
-  year?: number
-  images?: ImageMediaType[]
+  year?: string
+  owner?: string
+  images?: string[] | ImageMediaType[]
   headquarter?: Headquarter
   subscribed?: boolean
-  tags?: string[]
+  /** Comma-separated string as returned by the v2 API */
+  tags?: string
+  attendees?: string[]
 }
 
 export interface ConferenceFilters {

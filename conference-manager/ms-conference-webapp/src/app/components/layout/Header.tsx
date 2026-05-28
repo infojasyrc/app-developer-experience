@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FiUser, FiMenu, FiLogOut, FiLogIn } from "react-icons/fi";
 
 export interface HeaderProps {
@@ -41,9 +42,7 @@ export default function Header({
           </button>
         )}
         <Link href="/" className="flex items-center">
-          <span className="font-bold text-lg tracking-wide text-white">
-            Conference Manager
-          </span>
+          <Image src="/logo.png" alt="Conference Manager" width={140} height={36} className="object-contain" />
         </Link>
       </div>
 
