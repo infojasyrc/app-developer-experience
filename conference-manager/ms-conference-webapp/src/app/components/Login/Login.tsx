@@ -56,7 +56,15 @@ export default function Login({
   return (
     <div className={loginStyle.loginBoxContainer}>
       <div className={loginStyle.logoContainer}>
-        <Image src="/logo.png" alt="App logo" width={180} height={52} />
+        <Image
+          src="/logo.png"
+          alt="App logo"
+          width={1408}
+          height={768}
+          style={{ height: "52px", width: "auto" }}
+          unoptimized
+          priority
+        />
       </div>
       <div className={loginStyle.input}>
         <div className={loginStyle.formContainer}>
