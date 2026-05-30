@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 76" width="260" height="76">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#4040CC"/>
+      <stop offset="50%"  stop-color="#5533DD"/>
+      <stop offset="100%" stop-color="#8844FF"/>
+    </linearGradient>
+  </defs>
+  <text
+    x="8"
+    y="64"
+    font-family="'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, 'Times New Roman', serif"
+    font-size="72"
+    font-style="italic"
+    font-weight="700"
+    fill="url(#logoGradient)"
+    letter-spacing="-2"
+  >Hakoo</text>
+</svg>

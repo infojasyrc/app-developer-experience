@@ -42,7 +42,15 @@ export default function Header({
           </button>
         )}
         <Link href="/" className="flex items-center">
-          <Image src="/logo.png" alt="Conference Manager" width={140} height={36} className="object-contain" />
+          <Image
+            src="/logo.svg"
+            alt="Conference Manager"
+            width={1408}
+            height={768}
+            style={{ height: "32px", width: "auto" }}
+            unoptimized
+            priority
+          />
         </Link>
       </div>
 
