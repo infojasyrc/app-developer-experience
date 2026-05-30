@@ -57,7 +57,7 @@ export default function Login({
     <div className={loginStyle.loginBoxContainer}>
       <div className={loginStyle.logoContainer}>
         <Image
-          src="/logo.png"
+          src="/logo.svg"
           alt="App logo"
           width={1408}
           height={768}

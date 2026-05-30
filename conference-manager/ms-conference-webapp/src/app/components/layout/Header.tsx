@@ -43,7 +43,7 @@ export default function Header({
         )}
         <Link href="/" className="flex items-center">
           <Image
-            src="/logo.png"
+            src="/logo.svg"
             alt="Conference Manager"
             width={1408}
             height={768}
