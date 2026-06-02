@@ -64,12 +64,12 @@ src/app/
 
 | Legacy Path | Page Component | Auth | Next.js Path | Status |
 |---|---|---|---|---|
-| `/` | `EventsPage` | Public | `/` | ⚠️ placeholder |
+| `/` | `EventsPage` | Public | `/` | ✅ done |
 | `/login` | `Login` | Public | `/login` | ✅ done |
-| `/event-info/:id` | `EventInfoPage` | Public | `/conferences/[id]` | ⚠️ stub |
-| `/events/list` | `EventsAdminPage` | Admin | `/admin/conferences` | ❌ missing |
-| `/event/add` | `EventPage` | Admin | `/admin/conferences/new` | ❌ missing |
-| `/event/edit/:id` | `EventEditPage` | Admin | `/admin/conferences/[id]/edit` | ❌ missing |
+| `/event-info/:id` | `EventInfoPage` | Public | `/conferences/[id]` | ✅ done |
+| `/events/list` | `EventsAdminPage` | Admin | `/admin/conferences` | ✅ done |
+| `/event/add` | `EventPage` | Admin | `/admin/conferences/new` | ✅ done |
+| `/event/edit/:id` | `EventEditPage` | Admin | `/admin/conferences/[id]/edit` | ✅ done |
 | `/play-event/:id` | `PlayEventPage` | Public | `/conferences/[id]/play` | ❌ missing |
 | `/users` | `UsersPage` | Admin | `/admin/users` | ❌ missing |
 | `/user/add` | `UserPage` | Admin | `/admin/users/new` | ❌ missing |
@@ -87,9 +87,9 @@ src/app/
 | `pages/Events/Events.tsx` | `app/page.tsx` | ⚠️ convert to Server Component + TanStack | Fetches conferences + headquarters; auth-aware |
 | `pages/Login/Login.tsx` | `app/login/page.tsx` | ✅ done | |
 | `pages/EventInfo/EventInfo.tsx` | `app/conferences/[id]/page.tsx` | ⚠️ stub exists | Uses `useParams` + `useHistory` → `params` + `router` |
-| `pages/EventsAdmin/EventsAdmin.tsx` | `app/admin/conferences/page.tsx` | ❌ missing | Admin guard via route group `(admin)` |
-| `pages/Event/Event.tsx` | `app/admin/conferences/new/page.tsx` | ❌ missing | Create form; uses mock tags + headquarters |
-| `pages/EventEdit/EventEdit.tsx` | `app/admin/conferences/[id]/edit/page.tsx` | ❌ missing | Edit form; fetches event by id |
+| `pages/EventsAdmin/EventsAdmin.tsx` | `app/admin/conferences/page.tsx` | ✅ done | Admin guard via route group `(admin)` |
+| `pages/Event/Event.tsx` | `app/admin/conferences/new/page.tsx` | ✅ done | Create form with ConferenceForm |
+| `pages/EventEdit/EventEdit.tsx` | `app/admin/conferences/[id]/edit/page.tsx` | ✅ done | Edit form with ConferenceEditForm |
 | `pages/PlayEvent/PlayEvent.tsx` | `app/conferences/[id]/play/page.tsx` | ❌ missing | Full-screen layout (no header/nav) |
 | `pages/Users/Users.tsx` | `app/admin/users/page.tsx` | ❌ missing | Admin-only user list |
 | `pages/User/User.tsx` | `app/admin/users/new/page.tsx` | ❌ missing | Create user form; fetches roles |
@@ -118,12 +118,12 @@ src/app/
 | `components/EventDetails/EventDetails.tsx` | `app/components/conferences/ConferenceDetails.tsx` | ❌ missing | Detail view with subscribe button |
 | `components/EventView/EventView.tsx` | `app/components/conferences/ConferenceForm.tsx` | ❌ missing | Create form (shared with edit) |
 | `components/EventEditView/EventEditView.tsx` | `app/components/conferences/ConferenceEditForm.tsx` | ❌ missing | Edit form; wraps ConferenceForm |
-| `components/EventsAdminView/EventAdminView.tsx` | `app/components/conferences/ConferenceAdminView.tsx` | ❌ missing | Admin table/grid |
-| `components/EventTypes/EventTypes.tsx` | `app/components/conferences/ConferenceTypes.tsx` | ❌ missing | Type filter tabs |
+| `components/EventsAdminView/EventAdminView.tsx` | `app/components/conferences/ConferenceAdminView.tsx` | ✅ done | Admin table/grid |
+| `components/EventTypes/EventTypes.tsx` | `app/components/conferences/ConferenceTypes.tsx` | ✅ done | Inline in ConferenceForm |
 | `components/PlayEventView/PlayEventView.tsx` | `app/components/conferences/ConferencePlayView.tsx` | ❌ missing | Full-screen play mode |
-| `components/PreviewEvent/PreviewEvent.jsx` | `app/components/conferences/ConferencePreview.tsx` | ❌ missing | Preview modal |
-| `components/PreviewEvent/PreviewActions.tsx` | `app/components/conferences/ConferencePreviewActions.tsx` | ❌ missing | Preview action buttons |
-| `components/SkeletonEvents/SkeletonEventDetails.tsx` | `app/components/conferences/ConferenceDetailSkeleton.tsx` | ❌ missing | Loading skeleton |
+| `components/PreviewEvent/PreviewEvent.jsx` | `app/components/conferences/ConferencePreview.tsx` | ✅ done | Preview modal |
+| `components/PreviewEvent/PreviewActions.tsx` | `app/components/conferences/ConferencePreviewActions.tsx` | ✅ done | Preview action buttons |
+| `components/SkeletonEvents/SkeletonEventDetails.tsx` | `app/components/conferences/ConferenceDetailSkeleton.tsx` | ✅ done | Loading skeleton |
 
 ### 3.4 Dashboard / Filter Components
 
@@ -190,11 +190,11 @@ Each API endpoint needs a corresponding TanStack Query hook in `app/lib/api/quer
 |---|---|
 | `useConferences.ts` | ✅ done |
 | `useConference.ts` | ✅ done |
-| `useHeadquarters.ts` | ❌ missing |
+| `useHeadquarters.ts` | ✅ done |
 | `useUsers.ts` | ❌ missing |
 | `useUser.ts` | ❌ missing |
 | `useRoles.ts` | ❌ missing |
-| `useMutateConference.ts` (add/edit/delete) | ❌ missing |
+| `useMutateConference.ts` (add/edit/delete) | ✅ done |
 
 ---
 
@@ -520,8 +520,8 @@ if (isAdminPath) {
 | Phase | Description | Status |
 |---|---|---|
 | Phase 1 | Route groups & layout shells | ✅ done |
-| Phase 2 | Public conferences pages | ❌ not started |
-| Phase 3 | Admin conference management | ❌ not started |
+| Phase 2 | Public conferences pages | ✅ done |
+| Phase 3 | Admin conference management | ✅ done |
 | Phase 4 | Play / full-screen mode | ❌ not started |
 | Phase 5 | User management pages | ❌ not started |
 | Phase 6 | Filter & dashboard components | ❌ not started |

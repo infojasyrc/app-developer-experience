@@ -1,8 +1,17 @@
+"use client";
+import { useConferences } from "../../../lib/api/queries/useConferences";
+import { useHeadquarters } from "../../../lib/api/queries/useHeadquarters";
+import ConferenceAdminView from "../../../components/conferences/ConferenceAdminView";
+
 export default function AdminConferencesPage() {
+  const { data: conferences = [], isLoading } = useConferences();
+  const { data: headquarters = [] } = useHeadquarters();
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-dark mb-2">Conferences</h1>
-      <p className="text-gray">Admin conference management — coming in Phase 3.</p>
-    </div>
+    <ConferenceAdminView
+      conferences={conferences}
+      headquarters={headquarters}
+      isLoading={isLoading}
+    />
   );
 }
