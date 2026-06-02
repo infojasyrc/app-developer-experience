@@ -1,11 +1,25 @@
 # syntax=docker/dockerfile:1
 
 # ─────────────────────────────────────────────
-# Stage 1 — build
-#   Installs all deps, compiles the Next.js app,
-#   and produces .next/standalone via output:standalone.
+# Stage 1 — development
+#   Bare node:20-alpine base with WORKDIR set.
+#   Built by `make build-dev` (--target development)
+#   and used as the volume-mounted dev container by
+#   `make launch` and `make install-dependencies`.
+#   Node modules are never baked in — they live in a
+#   named Docker volume managed by the Makefile.
 # ─────────────────────────────────────────────
-FROM node:20-alpine AS build
+FROM node:20-alpine AS development
+
+WORKDIR /app
+
+# ─────────────────────────────────────────────
+# Stage 2 — build
+#   Inherits the dev base, installs all deps,
+#   compiles the Next.js app, and produces
+#   .next/standalone via output:standalone.
+# ─────────────────────────────────────────────
+FROM development AS build
 
 WORKDIR /app
 
@@ -50,7 +64,7 @@ COPY . .
 RUN npm run build
 
 # ─────────────────────────────────────────────
-# Stage 2 — runtime
+# Stage 3 — runtime
 #   Copies only the Next.js standalone output.
 #   No npm install, no full next package, no SWC.
 #   Node File Tracing (NFT) ensures only the
