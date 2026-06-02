@@ -1,13 +1,29 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1
+
+# ─────────────────────────────────────────────
+# Stage 1 — development
+#   Bare node:20-alpine base with WORKDIR set.
+#   Built by `make build-dev` (--target development)
+#   and used as the volume-mounted dev container by
+#   `make launch` and `make install-dependencies`.
+#   Node modules are never baked in — they live in a
+#   named Docker volume managed by the Makefile.
+# ─────────────────────────────────────────────
 FROM node:20-alpine AS development
 
 WORKDIR /app
 
+# ─────────────────────────────────────────────
+# Stage 2 — build
+#   Inherits the dev base, installs all deps,
+#   compiles the Next.js app, and produces
+#   .next/standalone via output:standalone.
+# ─────────────────────────────────────────────
 FROM development AS build
 
 WORKDIR /app
 
-# Build-time public env vars (baked into client bundles)
+# Build-time public env vars (baked into client bundles at next build)
 ARG NEXT_PUBLIC_BASE_PATH
 ENV NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH
 
@@ -32,31 +48,47 @@ ARG NEXT_PUBLIC_MEASUREMENT_ID
 ENV NEXT_PUBLIC_MEASUREMENT_ID=$NEXT_PUBLIC_MEASUREMENT_ID
 
 COPY package*.json ./
-RUN npm ci
+
+# --mount=type=cache keeps the npm download cache across builds.
+# After the first build, npm ci only re-downloads changed packages.
+# Alpine uses musl libc: remove the glibc SWC and libvips binaries
+# (@next/swc-linux-x64-gnu, @img/sharp-libvips-linux-x64) — they are
+# never loaded on Alpine and each weighs ~124MB / ~16MB.
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci && \
+    rm -rf node_modules/@next/swc-linux-x64-gnu \
+           node_modules/@img/sharp-libvips-linux-x64
 
 COPY . .
+
 RUN npm run build
 
-# Runtime for SSR
-FROM node:20-alpine
+# ─────────────────────────────────────────────
+# Stage 3 — runtime
+#   Copies only the Next.js standalone output.
+#   No npm install, no full next package, no SWC.
+#   Node File Tracing (NFT) ensures only the
+#   modules actually required at runtime are present.
+# ─────────────────────────────────────────────
+FROM node:20-alpine AS runtime
 
 WORKDIR /app
-ENV NODE_ENV=production
 
-# Install only production deps
-COPY --from=build /app/package*.json ./
-RUN npm ci --omit=dev
+ENV NODE_ENV=production \
+    # Bind to all interfaces inside the container
+    HOSTNAME=0.0.0.0 \
+    PORT=3000
 
-# Create non-root user early and set ownership
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Copy only runtime artifacts and ensure ownership
-# - .next (compiled build)
-# - public static assets
-# - next config if needed at runtime
-COPY --from=build --chown=appuser:appgroup /app/.next ./.next
+# 1. Standalone server + NFT-traced node_modules (~10-30 packages vs 66)
+COPY --from=build --chown=appuser:appgroup /app/.next/standalone ./
+
+# 2. Static client assets (.next/static is not bundled into standalone)
+COPY --from=build --chown=appuser:appgroup /app/.next/static ./.next/static
+
+# 3. Public assets served by the Node server directly
 COPY --from=build --chown=appuser:appgroup /app/public ./public
-COPY --from=build --chown=appuser:appgroup /app/next.config.* ./
 
 USER appuser
 
@@ -65,5 +97,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 	CMD wget -qO- http://localhost:3000/ || exit 1
 
-# Start Next.js (expects a build already done)
-CMD ["npm", "run", "start"]
+# node server.js — no npm, no next CLI overhead
+CMD ["node", "server.js"]

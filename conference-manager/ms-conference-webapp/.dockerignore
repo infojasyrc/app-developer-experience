@@ -9,3 +9,4 @@
 !tsconfig.json
 !postcss.config.mjs
 !next.config.ts
+!tailwind.config.ts

@@ -23,8 +23,8 @@ DEV_VOLUME = \
 	-v $(CONTAINER_APP_FOLDER)/node_modules \
 	-v $(COMPOSE_PROJECT_NAME)-webapp-packages:$(CONTAINER_APP_FOLDER)/node_modules
 
-.PHONY: docker-clean build-dev build-prod interactive run-storybook install-dependencies \
-	lint unit-tests commit npm-audit dev stop help
+.PHONY: docker-clean build-dev build-prod interactive run-storybook \
+	install-dependencies lint unit-tests commit npm-audit dev stop help
 
 dev: build-dev install-dependencies launch ## 🚀 Build image, install deps, and launch webapp in dev container
 
@@ -39,8 +39,8 @@ build-dev: ## 🛠️ Build dev container image for webapp
 	docker build --platform $(PLATFORM) --target development \
 		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev .
 
-build-prod: ## 🛠️ Build production container image for webapp
-	docker build \
+build-prod: ## 🛠️ Build production container image for webapp (no layer cache)
+	docker build --no-cache \
 		--build-arg NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH} \
 		--build-arg NEXT_PUBLIC_VERSION=${NEXT_PUBLIC_VERSION} \
 		--build-arg NEXT_PUBLIC_API_KEY=${NEXT_PUBLIC_API_KEY} \
