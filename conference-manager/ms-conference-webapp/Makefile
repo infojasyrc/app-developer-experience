@@ -23,8 +23,8 @@ DEV_VOLUME = \
 	-v $(CONTAINER_APP_FOLDER)/node_modules \
 	-v $(COMPOSE_PROJECT_NAME)-webapp-packages:$(CONTAINER_APP_FOLDER)/node_modules
 
-.PHONY: docker-clean build-dev build-prod interactive run-storybook install-dependencies \
-	lint unit-tests commit npm-audit dev stop help
+.PHONY: docker-clean build-dev build-prod build-prod-no-cache interactive run-storybook \
+	install-dependencies lint unit-tests commit npm-audit dev stop help
 
 dev: build-dev install-dependencies launch ## 🚀 Build image, install deps, and launch webapp in dev container
 
@@ -41,6 +41,21 @@ build-dev: ## 🛠️ Build dev container image for webapp
 
 build-prod: ## 🛠️ Build production container image for webapp
 	docker build \
+		--build-arg NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH} \
+		--build-arg NEXT_PUBLIC_VERSION=${NEXT_PUBLIC_VERSION} \
+		--build-arg NEXT_PUBLIC_API_KEY=${NEXT_PUBLIC_API_KEY} \
+		--build-arg NEXT_PUBLIC_AUTH_DOMAIN=${NEXT_PUBLIC_AUTH_DOMAIN} \
+		--build-arg NEXT_PUBLIC_DATABASE_URL=${NEXT_PUBLIC_DATABASE_URL} \
+		--build-arg NEXT_PUBLIC_PROJECT_ID=${NEXT_PUBLIC_PROJECT_ID} \
+		--build-arg NEXT_PUBLIC_STORAGE_BUCKET=${NEXT_PUBLIC_STORAGE_BUCKET} \
+		--build-arg NEXT_PUBLIC_MESSAGING_SENDER_ID=${NEXT_PUBLIC_MESSAGING_SENDER_ID} \
+		--build-arg NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID} \
+		--build-arg NEXT_PUBLIC_MEASUREMENT_ID=${NEXT_PUBLIC_MEASUREMENT_ID} \
+		--platform $(PLATFORM) . \
+		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp
+
+build-prod-no-cache: ## 🛠️ Build production image from scratch (no layer cache)
+	docker build --no-cache \
 		--build-arg NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH} \
 		--build-arg NEXT_PUBLIC_VERSION=${NEXT_PUBLIC_VERSION} \
 		--build-arg NEXT_PUBLIC_API_KEY=${NEXT_PUBLIC_API_KEY} \
