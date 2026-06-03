@@ -1,15 +1,14 @@
 name: Pull Request Verification Workflow for backend templates
 
-permissions:
-  contents: read
-
 on:
   pull_request:
     branches:
       - main
     paths:
-      - backend/ms-nestjs-rest-tpl/**
-      - backend/ms-fastapi-rest-tpl/**
+      - backend/**
+
+permissions:
+  contents: read
 
 env:
   # common variables
@@ -20,25 +19,29 @@ env:
 jobs:
   get-changed-packages:
     name: Get list of changed packages
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       changed_packages: ${{ steps.changed-packages.outputs.changed_packages }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
+
       - id: changed-packages
         uses: ./.github/actions/get-changed-packages
+
       - name: Output changed packages
         run: |
           echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
+          echo ""
+          echo "Summary: ${{ steps.changed-packages.outputs.summary }}"
 
   nestjs-rest-tpl-unit-tests:
     name: run unit tests
     needs: get-changed-packages
-    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-nestjs-rest-tpl') }}
-    runs-on: ubuntu-22.04
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-nestjs-rest') }}
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -76,8 +79,8 @@ jobs:
   fastapi-rest-tpl-unit-tests:
     name: running fastapi rest template lint and unit tests
     needs: get-changed-packages
-    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-fastapi-rest-tpl') }}
-    runs-on: ubuntu-22.04
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-fastapi-rest') }}
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: ./backend/ms-fastapi-rest-tpl
