@@ -10,10 +10,16 @@ get_changed_packages() {
   local event_before="${GITHUB_EVENT_BEFORE:-}"
   local zero_sha="0000000000000000000000000000000000000000"
 
-  if [[ "$event_name" == "push" && -n "$event_before" && "$event_before" != "$zero_sha" ]]; then
-    # Push event
-    git fetch origin "$target_branch" --depth=50 2>/dev/null || true
-    committed=$(git diff --name-only "${event_before}...HEAD" 2>/dev/null || true)
+  if [[ "$event_name" == "push" ]]; then
+    if [[ -n "$event_before" && "$event_before" != "$zero_sha" ]]; then
+      # Known before SHA: use git diff for accurate multi-commit range
+      git fetch origin "$target_branch" --depth=50 2>/dev/null || true
+      committed=$(git diff --name-only "${event_before}...HEAD" 2>/dev/null || true)
+    elif [[ -n "${GITHUB_EVENT_PATH:-}" && -f "${GITHUB_EVENT_PATH}" ]]; then
+      # New branch push or local act test: parse event payload commits
+      committed=$(jq -r '.commits[]? | (.added[]?, .modified[]?, .removed[]?)' \
+          "${GITHUB_EVENT_PATH}" 2>/dev/null | sort -u || true)
+    fi
   else
     # Pull request
     git fetch origin "$target_branch" --depth=50 2>/dev/null || true
@@ -64,3 +70,9 @@ get_changed_packages() {
 
   echo "${components[*]:-}"
 }
+
+result=$(get_changed_packages)
+
+if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+  echo "changed_packages=${result}" >> "${GITHUB_OUTPUT}"
+fi
