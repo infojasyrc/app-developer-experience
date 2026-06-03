@@ -93,7 +93,7 @@ devops-ci-cm-build-and-deploy: ## validate github actions for ci_conference_mana
 
 	@# 2. Run act.
 	@#    If it FAILS (||), remove the file and then exit with error code 1.
-	@act push -W .github/workflows/ci_conference_manager.yml \
+	@act push -W .github/workflows/ci_cm_components.yml \
 		-e devops/tests/events_simulate_push_conference_manager.json -j conference-webapp-build-and-deploy \
 		|| (rm -f $(TRIGGER_FILE_WEBAPP) && exit 1)
 
