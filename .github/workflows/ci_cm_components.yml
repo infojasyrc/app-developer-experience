@@ -23,25 +23,29 @@ env:
 jobs:
   get-changed-packages:
     name: Get list of changed packages
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       changed_packages: ${{ steps.changed-packages.outputs.changed_packages }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
+
       - id: changed-packages
         uses: ./.github/actions/get-changed-packages
+
       - name: Output changed packages
         run: |
           echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
+          echo ""
+          echo "Summary: ${{ steps.changed-packages.outputs.summary }}"
   
   conference-webapp-build-and-deploy:
     name: Build, push, and deploy conference webapp
     needs: get-changed-packages
-    runs-on: ubuntu-22.04
-    if: ${{ vars.ENABLE_WEBAPP_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-webapp') }}
+    runs-on: ubuntu-24.04
+    if: ${{ vars.ENABLE_WEBAPP_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'cm-webapp') }}
     permissions:
       id-token: write
       contents: read
@@ -100,7 +104,7 @@ jobs:
           artifact-name: image-size-ms-conference-webapp
 
       - name: Deploy to ECS (composite)
-        if: ${{ github.ref == 'refs/heads/main' && env.ACT != 'true' }}
+        if: false
         uses: ./.github/actions/ecs-deploy
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
@@ -115,8 +119,8 @@ jobs:
   conference-api-build-and-deploy:
     name: Build, push, and deploy conference api
     needs: get-changed-packages
-    runs-on: ubuntu-22.04
-    if: ${{ vars.ENABLE_API_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'conference-manager/ms-conference-api') }}
+    runs-on: ubuntu-24.04
+    if: ${{ vars.ENABLE_API_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'cm-api') }}
     permissions:
       id-token: write
       contents: read
@@ -174,7 +178,7 @@ jobs:
           artifact-name: image-size-ms-conference-api
 
       - name: Deploy to ECS (composite)
-        if: ${{ github.ref == 'refs/heads/main' && env.ACT != 'true' }}
+        if: false
         uses: ./.github/actions/ecs-deploy
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
