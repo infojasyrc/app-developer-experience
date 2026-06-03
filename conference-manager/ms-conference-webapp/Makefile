@@ -24,7 +24,7 @@ DEV_VOLUME = \
 	-v $(COMPOSE_PROJECT_NAME)-webapp-packages:$(CONTAINER_APP_FOLDER)/node_modules
 
 .PHONY: docker-clean build-dev build-prod interactive run-storybook \
-	install-dependencies lint unit-tests commit npm-audit dev stop help
+	install-dependencies lint unit-tests commit npm-audit dev stop launch-detached help
 
 dev: build-dev install-dependencies launch ## 🚀 Build image, install deps, and launch webapp in dev container
 
@@ -65,6 +65,14 @@ launch: ## 🚀 Launch webapp in dev container (only nextjs)
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		-p "8080:3000" \
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run dev"
+
+launch-detached: ## 🚀 Launch webapp in dev container (detached, no TTY — for CI/scripts)
+	docker run -d --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		-p "8080:3000" \
+		--name $(COMPOSE_PROJECT_NAME)-webapp-dev \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run dev"
 
 stop: ## 🛑 Stop running webapp dev container

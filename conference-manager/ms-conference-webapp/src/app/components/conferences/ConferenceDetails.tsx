@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { FiArrowLeft, FiCalendar, FiMapPin, FiPhone, FiTag } from "react-icons/fi";
+import { FiArrowLeft, FiCalendar, FiMapPin, FiPhone, FiPlay, FiTag } from "react-icons/fi";
 import { useConference } from "../../lib/api/queries/useConference";
 import { getDateParts } from "../../shared/utils/dateHandler";
 import ConferenceStatusBadge from "./ConferenceStatusBadge";
@@ -113,7 +113,7 @@ export default function ConferenceDetails({ id }: ConferenceDetailsProps) {
         </div>
       )}
 
-      <div className="pt-4 border-t border-mediumGray">
+      <div className="pt-4 border-t border-mediumGray flex items-center gap-3 flex-wrap">
         {conference.subscribed ? (
           <span className="inline-block px-4 py-2 rounded border border-mediumGray text-gray text-sm">
             Already subscribed
@@ -123,6 +123,13 @@ export default function ConferenceDetails({ id }: ConferenceDetailsProps) {
             Register for this conference
           </button>
         )}
+        <Link
+          href={`/conferences/${conference._id}/play`}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded border border-mediumGray text-boldGray text-sm hover:border-mainBlue hover:text-mainBlue transition-colors"
+        >
+          <FiPlay size={13} />
+          Play slideshow
+        </Link>
       </div>
     </div>
   );
