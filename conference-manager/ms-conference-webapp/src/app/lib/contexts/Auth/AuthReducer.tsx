@@ -9,7 +9,7 @@ export type UserState = {
 export type AuthState = {
   isAuth: boolean
   user?: UserState
-  verifyUser?: any
+  verifyUser?: () => Promise<void>
 }
 
 export type State = AuthState

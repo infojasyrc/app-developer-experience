@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, waitFor, act } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, it, vi, expect, beforeEach } from "vitest";
 
 import Version from "./Version";

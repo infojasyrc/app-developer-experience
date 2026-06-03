@@ -1,7 +1,7 @@
 "use client";
 import { useState, useContext, useEffect, useCallback } from "react";
 import type { ReactElement } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Login from "../components/Login/Login";
 // Enable when authentication API is ready
 // import { Authentication } from "../shared/api";
@@ -52,7 +52,6 @@ export default function LoginPage(): ReactElement {
         isAdmin: state?.user?.isAdmin,
       });
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error(err);
       setErrorMessage(true);
     }
@@ -71,15 +70,20 @@ export default function LoginPage(): ReactElement {
         window.localStorage.setItem("token", JSON.stringify(user.token));
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error("Google login error:", error);
     } finally {
       setLoading(false);
     }
   };
 
+  type RedirectState = {
+    email?: string;
+    isAdmin?: boolean;
+    user?: { email?: string; isAdmin?: boolean };
+  };
+
   const handleRedirect = useCallback(
-    (userState: any) => {
+    (userState: RedirectState) => {
       const email = userState?.email || userState?.user?.email;
       const isAdmin = userState?.isAdmin || userState?.user?.isAdmin;
       let shouldRedirectTo = "/";

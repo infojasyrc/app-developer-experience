@@ -14,7 +14,7 @@ const FigureAnimation: React.FC<FigureAnimationProps> = ({
   bottomOffset = 'bottom-8'
 }) => {
   const [position, setPosition] = useState<number>(0);
-  const [figure, setFigure] = useState<number>(0);
+  const [figure] = useState<number>(0);
   
   // Figures could be emojis, SVG paths, or component names
   const figures: string[] = [
@@ -23,10 +23,6 @@ const FigureAnimation: React.FC<FigureAnimationProps> = ({
   ];
   
   useEffect(() => {
-    // Select a random figure when component mounts
-    const randomIndex: number = 0;
-    setFigure(randomIndex);
-    
     // Set up animation
     let animationFrame: number;
     let direction: number = 1;
