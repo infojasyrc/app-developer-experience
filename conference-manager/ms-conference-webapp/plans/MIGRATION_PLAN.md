@@ -70,7 +70,7 @@ src/app/
 | `/events/list` | `EventsAdminPage` | Admin | `/admin/conferences` | ✅ done |
 | `/event/add` | `EventPage` | Admin | `/admin/conferences/new` | ✅ done |
 | `/event/edit/:id` | `EventEditPage` | Admin | `/admin/conferences/[id]/edit` | ✅ done |
-| `/play-event/:id` | `PlayEventPage` | Public | `/conferences/[id]/play` | ❌ missing |
+| `/play-event/:id` | `PlayEventPage` | Public | `/conferences/[id]/play` | ✅ done |
 | `/users` | `UsersPage` | Admin | `/admin/users` | ❌ missing |
 | `/user/add` | `UserPage` | Admin | `/admin/users/new` | ❌ missing |
 
@@ -90,7 +90,7 @@ src/app/
 | `pages/EventsAdmin/EventsAdmin.tsx` | `app/admin/conferences/page.tsx` | ✅ done | Admin guard via route group `(admin)` |
 | `pages/Event/Event.tsx` | `app/admin/conferences/new/page.tsx` | ✅ done | Create form with ConferenceForm |
 | `pages/EventEdit/EventEdit.tsx` | `app/admin/conferences/[id]/edit/page.tsx` | ✅ done | Edit form with ConferenceEditForm |
-| `pages/PlayEvent/PlayEvent.tsx` | `app/conferences/[id]/play/page.tsx` | ❌ missing | Full-screen layout (no header/nav) |
+| `pages/PlayEvent/PlayEvent.tsx` | `app/conferences/[id]/play/page.tsx` | ✅ done | Full-screen layout (no header/nav) |
 | `pages/Users/Users.tsx` | `app/admin/users/page.tsx` | ❌ missing | Admin-only user list |
 | `pages/User/User.tsx` | `app/admin/users/new/page.tsx` | ❌ missing | Create user form; fetches roles |
 | `pages/Attendee/Attendee.tsx` | `app/admin/attendees/page.tsx` | ❌ stub (empty) | Deferred |
@@ -120,7 +120,7 @@ src/app/
 | `components/EventEditView/EventEditView.tsx` | `app/components/conferences/ConferenceEditForm.tsx` | ❌ missing | Edit form; wraps ConferenceForm |
 | `components/EventsAdminView/EventAdminView.tsx` | `app/components/conferences/ConferenceAdminView.tsx` | ✅ done | Admin table/grid |
 | `components/EventTypes/EventTypes.tsx` | `app/components/conferences/ConferenceTypes.tsx` | ✅ done | Inline in ConferenceForm |
-| `components/PlayEventView/PlayEventView.tsx` | `app/components/conferences/ConferencePlayView.tsx` | ❌ missing | Full-screen play mode |
+| `components/PlayEventView/PlayEventView.tsx` | `app/components/conferences/ConferencePlayView.tsx` | ✅ done | Full-screen play mode |
 | `components/PreviewEvent/PreviewEvent.jsx` | `app/components/conferences/ConferencePreview.tsx` | ✅ done | Preview modal |
 | `components/PreviewEvent/PreviewActions.tsx` | `app/components/conferences/ConferencePreviewActions.tsx` | ✅ done | Preview action buttons |
 | `components/SkeletonEvents/SkeletonEventDetails.tsx` | `app/components/conferences/ConferenceDetailSkeleton.tsx` | ✅ done | Loading skeleton |
@@ -522,7 +522,7 @@ if (isAdminPath) {
 | Phase 1 | Route groups & layout shells | ✅ done |
 | Phase 2 | Public conferences pages | ✅ done |
 | Phase 3 | Admin conference management | ✅ done |
-| Phase 4 | Play / full-screen mode | ❌ not started |
+| Phase 4 | Play / full-screen mode | ✅ done |
 | Phase 5 | User management pages | ❌ not started |
 | Phase 6 | Filter & dashboard components | ❌ not started |
 | Phase 7 | Shared UI & profile | ❌ not started |
