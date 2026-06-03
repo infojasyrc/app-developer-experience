@@ -6,5 +6,5 @@ export const AuthContext = createContext<
 >({
   isAuth: false,
   setLoginData: () => {},
-  verifyUser: () => Promise<void>,
+  verifyUser: async () => {},
 });
