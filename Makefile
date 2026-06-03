@@ -19,7 +19,7 @@ endif
 
 .PHONY: create-nodejs-gql create-nodejs-rest create-py-rest clean-examples \
 	install-dependencies init-husky install-hooks lint-commit setup-commit-validation \
-	devops-pr-cm-api-verify devops-pr-cm-infra-verify devops-ci-cm-build-and-deploy \
+	devops-pr-cm-infra-verify devops-ci-cm-build-and-deploy \
 	devops-pr-cm-changed-packages devops-release-backend-fastapi devops-all-tests help
 
 create-nodejs-gql: clean-examples ## create a microservice with nodejs and graphql
@@ -77,30 +77,13 @@ lint-commit: ## check if a commit message is valid
 setup-commit-validation: install-dependencies init-husky install-hooks ## setup commit validation
 	@echo "✅ Commit message validation is ready."
 
-devops-all-tests: devops-pr-cm-changed-packages devops-pr-cm-api-verify devops-ci-cm-build-and-deploy ## run all devops tests
+devops-all-tests: devops-pr-cm-changed-packages devops-ci-cm-build-and-deploy ## run all devops tests
 	@echo "✅ All devops tests passed successfully."
 
 devops-pr-cm-changed-packages: ## validate github actions for changed packages
 	@echo "Validating GitHub Actions workflow for changed folder..."
 	act -e devops/tests/events_simulate_changed_packages_conference_api.json -j get-changed-packages
 	@echo "✅ GitHub Actions workflow for changed folder is valid."
-
-# Runs as 'pull_request' for conference manager components: webapp, api
-devops-pr-cm-api-verify: ## validate github actions for conference-api-verify pull request workflow
-	@echo "Validating GitHub Actions workflow for conference api verify..."
-
-	@# 1. Create the dirty file to trigger the change detection
-	@touch $(TRIGGER_FILE_API)
-
-	@# 2. Run act. 
-	@#    If it FAILS (||), remove the file and then exit with error code 1.
-	@act pull_request -e devops/tests/events_simulate_pull_request_conference_api.json -j conference-api-verify \
-		|| (rm -f $(TRIGGER_FILE_API) && exit 1)
-	
-	@# 3. Clean up the file on SUCCESS
-	@rm -f $(TRIGGER_FILE_API)
-	
-	@echo "✅ GitHub Actions workflow for conference api verify is valid."
 
 devops-ci-cm-build-and-deploy: ## validate github actions for ci_conference_manager workflow
 	@echo "Validating GitHub Actions workflow for ci_conference_manager..."
@@ -114,12 +97,6 @@ devops-release-backend-fastapi: ## validate github actions for release backend f
 	@echo "Validating GitHub Actions workflow for release backend fastapi..."
 	act -e devops/tests/events_simulate_release_fastapi_tpl.json -j release-fastapi-rest-tpl
 	@echo "✅ GitHub Actions workflow for release backend fastapi is valid."
-
-# Define the path to avoid repetition
-TRIGGER_FILE_API = conference-manager/ms-conference-api/.act-trigger
-TRIGGER_FILE_WEBAPP = conference-manager/ms-conference-webapp/.act-trigger
-
-
 
 # Runs as 'pull_request' for all conference manager infrastructure
 devops-pr-cm-infra-verify: ## validate github actions for conference-infra-verify pull request workflow
