@@ -523,7 +523,7 @@ if (isAdminPath) {
 | Phase 2 | Public conferences pages | ✅ done |
 | Phase 3 | Admin conference management | ✅ done |
 | Phase 4 | Play / full-screen mode | ✅ done |
-| Phase 5 | User management pages | ❌ not started |
+| Phase 5 | User management pages | ✅ done |
 | Phase 6 | Filter & dashboard components | ❌ not started |
 | Phase 7 | Shared UI & profile | ❌ not started |
 | Phase 8 | i18n & theme cleanup | ❌ not started |

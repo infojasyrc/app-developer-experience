@@ -9,7 +9,7 @@ import { AuthSession } from '../../../shared/entities/auth'
 type Props = {
   children: ReactNode
 }
-let initialState: State = {
+const initialState: State = {
   isAuth: false,
 }
 
@@ -29,16 +29,13 @@ export const AuthProvider = ({ children }: Props) => {
         await getUserInfo(payload.userUid)
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.log(error)
     }
   }
 
   const getUserInfo = async (userUid: string, displayName?: string) => {
     // TODO: get user info from db
-    // eslint-disable-next-line no-console
     console.log('user id: ', userUid)
-    // eslint-disable-next-line no-console
     console.log('display name: ', displayName)
   }
 

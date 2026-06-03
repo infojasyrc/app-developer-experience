@@ -36,7 +36,7 @@ export default function ConferenceAdminView({
   const { mutate: updateMutation } = useUpdateConference();
 
   const filtered = useMemo(() => {
-    let list = selectedHQ
+    const list = selectedHQ
       ? conferences.filter((c) => c.headquarter?._id === selectedHQ)
       : conferences;
     return [...list].sort(sortBy === "asc" ? sortAscending : sortDescending);
