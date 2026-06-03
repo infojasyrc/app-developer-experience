@@ -23,7 +23,17 @@
             "Bash(gh pr list *)",
             "Bash(gh pr view *)",
             "Bash(gh run list *)",
-            "Bash(gh run view *)"
+            "Bash(gh run view *)",
+            "Bash(make lint)",
+            "Bash(make unit-tests)",
+            "Bash(make build-dev)",
+            "Bash(make build-prod)",
+            "Bash(make install-dependencies)",
+            "Bash(make launch)",
+            "Bash(make launch-detached)",
+            "Bash(make stop)",
+            "Bash(make run-storybook)",
+            "Bash(make interactive)"
         ]
     }
 }
