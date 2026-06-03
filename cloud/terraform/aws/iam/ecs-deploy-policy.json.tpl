@@ -86,10 +86,17 @@
       }
     },
     {
-      "Sid": "ECRAccess",
+      "Sid": "ECRGetToken",
       "Effect": "Allow",
       "Action": [
-        "ecr:GetAuthorizationToken",
+        "ecr:GetAuthorizationToken"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ECRRead",
+      "Effect": "Allow",
+      "Action": [
         "ecr:BatchCheckLayerAvailability",
         "ecr:GetDownloadUrlForLayer",
         "ecr:BatchGetImage",
