@@ -1,5 +1,5 @@
-name: Container Build (make build:prod)
-description: Build a container image using the standard make build:prod command
+name: Container Build
+description: Build a container image using the standard make command
 
 inputs:
   working-directory:

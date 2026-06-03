@@ -31,7 +31,8 @@ _check-env:
 .PHONY: render-trust-policy render-backend-policy render-service-trust \
 	render-ecs-policy render-kms-policy render-waf-policy \
 	render-logs-policy render-s3-policy render-task-execution-policy \
-	render-task-role-policy render-permissions-boundary render-all-policies
+	render-task-role-policy render-permissions-boundary render-ecr-push-policy \
+	render-all-policies
 
 render-trust-policy: _mkdir-tmp ## Render OIDC trust policy JSON from template
 	@cat iam/terraform-trust-policy.json.tpl \
@@ -114,7 +115,14 @@ render-permissions-boundary: _mkdir-tmp ## Render permissions boundary policy JS
 		> $(TMP)/permissions-boundary.json
 	@echo "Rendered: $(TMP)/permissions-boundary.json"
 
-render-all-policies: render-trust-policy render-backend-policy render-service-trust render-ecs-policy render-kms-policy render-waf-policy render-logs-policy render-s3-policy render-task-execution-policy render-task-role-policy render-permissions-boundary ## Render all 11 policy JSON files from templates
+render-ecr-push-policy: _mkdir-tmp ## Render ECR push policy JSON from template
+	@cat iam/ecr-push-policy.json.tpl \
+		| sed 's/__AWS_ACCOUNT_ID__/$(AWS_ACCOUNT_ID)/g' \
+		| sed 's/__AWS_REGION__/$(AWS_REGION)/g' \
+		> $(TMP)/ecr-push-policy.json
+	@echo "Rendered: $(TMP)/ecr-push-policy.json"
+
+render-all-policies: render-trust-policy render-backend-policy render-service-trust render-ecs-policy render-kms-policy render-waf-policy render-logs-policy render-s3-policy render-task-execution-policy render-task-role-policy render-permissions-boundary render-ecr-push-policy ## Render all 12 policy JSON files from templates
 	@echo "All policies rendered to $(TMP)/"
 
 # ============================================================
@@ -133,7 +141,7 @@ bootstrap-boundary: render-permissions-boundary ## Create permissions boundary p
 		--description "Permission ceiling for all appdevexp roles"
 	@echo "Done: appdevexp-permissions-boundary"
 
-bootstrap-deployer: render-trust-policy render-backend-policy ## Create OIDC deployer role and attach backend policy
+bootstrap-deployer: render-trust-policy render-backend-policy render-ecr-push-policy ## Create OIDC deployer role and attach backend + ECR push policies
 	@echo "Creating OIDC deployer role..."
 	aws iam create-role \
 		--role-name $(DEPLOYER_ROLE) \
@@ -143,6 +151,10 @@ bootstrap-deployer: render-trust-policy render-backend-policy ## Create OIDC dep
 		--role-name $(DEPLOYER_ROLE) \
 		--policy-name terraform-backend \
 		--policy-document file://$(TMP)/terraform-backend-policy.json
+	aws iam put-role-policy \
+		--role-name $(DEPLOYER_ROLE) \
+		--policy-name ecr-push \
+		--policy-document file://$(TMP)/ecr-push-policy.json
 	@echo "Done: $(DEPLOYER_ROLE)"
 
 bootstrap-service-roles: render-service-trust render-ecs-policy render-kms-policy render-waf-policy render-logs-policy render-s3-policy ## Create ECS, KMS, WAF, Logs, and S3 service roles
@@ -251,11 +263,15 @@ bootstrap-all: bootstrap-boundary bootstrap-deployer bootstrap-service-roles boo
 	update-logs-role update-s3-role update-task-execution-role \
 	update-task-role update-permissions-boundary update-all-roles
 
-update-deployer: render-backend-policy ## Re-apply backend policy to deployer role
+update-deployer: render-backend-policy render-ecr-push-policy ## Re-apply backend and ECR push policies to deployer role
 	aws iam put-role-policy \
 		--role-name $(DEPLOYER_ROLE) \
 		--policy-name terraform-backend \
 		--policy-document file://$(TMP)/terraform-backend-policy.json
+	aws iam put-role-policy \
+		--role-name $(DEPLOYER_ROLE) \
+		--policy-name ecr-push \
+		--policy-document file://$(TMP)/ecr-push-policy.json
 	@echo "Updated: $(DEPLOYER_ROLE)"
 
 update-ecs-role: render-ecs-policy ## Re-apply ECS deploy policy to ecs-deploy-role

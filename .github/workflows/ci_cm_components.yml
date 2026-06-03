@@ -78,7 +78,7 @@ jobs:
         uses: ./.github/actions/container-build
         with:
           working-directory: ./conference-manager/ms-conference-webapp
-          target: build:prod
+          target: build-prod
         env:
           # Provide coordinates via env so each component Makefile can consume/override its defaults
           IMAGE: ${{ steps.image.outputs.image }}
@@ -153,7 +153,7 @@ jobs:
         uses: ./.github/actions/container-build
         with:
           working-directory: ./conference-manager/ms-conference-api
-          target: build:prod
+          target: build-prod
         env:
           IMAGE: ${{ steps.image.outputs.image }}
           PLATFORM: ${{ env.PLATFORM }}
