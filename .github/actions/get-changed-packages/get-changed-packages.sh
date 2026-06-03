@@ -9,7 +9,7 @@ get_changed_packages() {
   local event_name="${GITHUB_EVENT_NAME:-}"
   local event_before="${GITHUB_EVENT_BEFORE:-}"
   local zero_sha="0000000000000000000000000000000000000000"
-  
+
   if [[ "$event_name" == "push" && -n "$event_before" && "$event_before" != "$zero_sha" ]]; then
     # Push event
     git fetch origin "$target_branch" --depth=50 2>/dev/null || true
@@ -25,44 +25,40 @@ get_changed_packages() {
     return 0
   fi
 
+  # Package registry: "path_prefix|component_name|summary_label"
+  local -a packages=(
+    "conference-manager/ms-conference-api/|cm-api|conference manager API"
+    "conference-manager/ms-conference-webapp/|cm-webapp|conference manager webapp"
+    "conference-manager/ms-conference-admin/|cm-admin|conference manager admin"
+    "backend/ms-fast-api-rest-tpl/|ms-fastapi|FastAPI microservice template"
+    "backend/ms-nestjs-rest-tpl/|ms-nestjs-rest|NestJS REST microservice template"
+    "backend/ms-nestjs-gql-tpl/|ms-nestjs-gql|NestJS GraphQL microservice template"
+    "mobile-app/whitewalker/|mobile-rn|React Native mobile template"
+    "mobile-app/whitewolf/|mobile-expo|Expo mobile template"
+  )
+
   local components=()
-
-  local cm_api
-  cm_api=$(printf "%s\n" "$committed" | grep -E '^(conference-manager/ms-conference-api/)' || true)
-
-  if [[ -n "$cm_api" ]]; then
-    components+=("cm-api")
-  fi
-
-  # map cm webapp changes to cm-webapp component
-  local cm_webapp
-  cm_webapp=$(printf "%s\n" "$committed" | grep -E '^(conference-manager/ms-conference-webapp/)' || true)
-
-  if [[ -n "$cm_webapp" ]]; then
-    components+=("cm-webapp")
-  fi
-
-  # build a summary of the changes per component
   local summary=""
-  if [[ -n "$cm_api" ]]; then
-    summary+="--- conference manager, api changes files:"$'\n'
-    while IFS= read -r line; do
-      summary+="    - $line"$'\n'
-    done <<< "$cm_api"
-  fi
-  if [[ -n "$cm_webapp" ]]; then
-    summary+="--- conference manager, webapp changes files:"$'\n'
-    while IFS= read -r line; do
-      summary+="    - $line"$'\n'
-    done <<< "$cm_webapp"
-  fi
+
+  for pkg in "${packages[@]}"; do
+    local path_prefix component_name label matches
+    IFS='|' read -r path_prefix component_name label <<< "$pkg"
+    matches=$(printf "%s\n" "$committed" | grep -E "^${path_prefix}" || true)
+    if [[ -n "$matches" ]]; then
+      components+=("$component_name")
+      summary+="--- ${label} changed files:"$'\n'
+      while IFS= read -r line; do
+        summary+="    - $line"$'\n'
+      done <<< "$matches"
+    fi
+  done
 
   # write the summary to the output
-  if [[ -n "${GITHUB_OUTPUT}" && -n "$summary" ]]; then
+  if [[ -n "${GITHUB_OUTPUT:-}" && -n "$summary" ]]; then
     {
-        echo "summary<<EOF"
-        echo "$summary"
-        echo "EOF"
+      echo "summary<<EOF"
+      echo "$summary"
+      echo "EOF"
     } >> "${GITHUB_OUTPUT}"
   fi
 
