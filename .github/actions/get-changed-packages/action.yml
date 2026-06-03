@@ -1,10 +1,13 @@
-name: Get changed packages in repo
-description: Gets list of all changed packages in repo relative to main
+name: Get changed packages
+description: Gets list of all changed packages
 
 outputs:
   changed_packages: 
-    description: List of all changed packages
+    description: List of all changed packages space-separated (e.g. "cm-api cm-webapp cm-admin tpl-fastapi-rest")
     value: ${{ steps.changed-packages.outputs.changed_packages }}
+  summary: 
+    description: Human-readable summary of changed packages (e.g. "conference manager api, conference manager webapp")
+    value: ${{ steps.changed-packages.outputs.summary }}
   
 runs:
   using: composite
@@ -12,37 +15,7 @@ runs:
     - name: Get changed packages
       id: changed-packages
       shell: bash
-      run: |
-        # 0. Fix 'Dubious Ownership' error common in act/containers
-        git config --global --add safe.directory '*'
-
-        # 1. Determine the Base Branch
-        TARGET_BRANCH="${GITHUB_BASE_REF:-main}"
-        
-        # 2. Fetch target branch history 
-        # (silenced to prevent failure if offline or no auth in act)
-        git fetch origin "$TARGET_BRANCH" --depth=1 2>/dev/null || true
-        
-        echo "Detecting changes against base: $TARGET_BRANCH"
-        
-        # 3. Get Changed Files
-        # A. COMMITTED: diff strategy depends on event type.
-        #    PR event (GITHUB_BASE_REF set)   → three-dot diff against base branch.
-        #    Push event (GITHUB_BASE_REF empty) → diff HEAD against its parent
-        #    (HEAD^ = previous tip of main before the merge commit).
-        if [ -n "$GITHUB_BASE_REF" ]; then
-          COMMITTED=$(git diff --name-only "origin/$TARGET_BRANCH...HEAD" 2>/dev/null || true)
-        else
-          COMMITTED=$(git diff --name-only "HEAD^" "HEAD" 2>/dev/null || true)
-        fi
-        
-        # B. UNCOMMITTED: Check for local dirty files (Crucial for act)
-        UNCOMMITTED=$(git status --porcelain 2>/dev/null | awk '{print $2}')
-        
-        # 4. Combine, Filter, and Output
-        # ADDED '|| true' HERE -> If grep finds nothing, it won't crash the build
-        CHANGED=$(echo "$COMMITTED
-        $UNCOMMITTED" | grep -E '^(conference-manager|backend)' | cut -d'/' -f1-3 | sort | uniq | paste -sd " " - || true)
-        
-        echo "Detected changes in: $CHANGED"
-        echo "changed_packages=$CHANGED" >> $GITHUB_OUTPUT
+      env:
+        GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+        GITHUB_EVENT_NAME_VAL: ${{ github.event.name }}
+      run: ${{ github.action_path }}/get-changed-packages.sh

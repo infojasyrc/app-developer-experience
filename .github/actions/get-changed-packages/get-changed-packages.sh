@@ -27,12 +27,12 @@ get_changed_packages() {
 
   # Package registry: "path_prefix|component_name|summary_label"
   local -a packages=(
-    "conference-manager/ms-conference-api/|cm-api|conference manager API"
+    "conference-manager/ms-conference-api/|cm-api|conference manager api"
     "conference-manager/ms-conference-webapp/|cm-webapp|conference manager webapp"
     "conference-manager/ms-conference-admin/|cm-admin|conference manager admin"
-    "backend/ms-fast-api-rest-tpl/|ms-fastapi|FastAPI microservice template"
-    "backend/ms-nestjs-rest-tpl/|ms-nestjs-rest|NestJS REST microservice template"
-    "backend/ms-nestjs-gql-tpl/|ms-nestjs-gql|NestJS GraphQL microservice template"
+    "backend/ms-fast-api-rest-tpl/|tpl-fastapi-rest|FastAPI REST microservice template"
+    "backend/ms-nestjs-rest-tpl/|tpl-nestjs-rest|NestJS REST microservice template"
+    "backend/ms-nestjs-gql-tpl/|tpl-nestjs-gql|NestJS GraphQL microservice template"
     "mobile-app/whitewalker/|mobile-rn|React Native mobile template"
     "mobile-app/whitewolf/|mobile-expo|Expo mobile template"
   )
