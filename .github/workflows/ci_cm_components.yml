@@ -1,5 +1,6 @@
 name: Build and Deploy Conference Manager to AWS
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -45,7 +46,7 @@ jobs:
     name: Build, push, and deploy conference webapp
     needs: get-changed-packages
     runs-on: ubuntu-24.04
-    if: ${{ vars.ENABLE_WEBAPP_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'cm-webapp') }}
+    if: ${{ vars.ENABLE_WEBAPP_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'cm-webapp') || github.event_name == 'workflow_dispatch' }}
     permissions:
       id-token: write
       contents: read
@@ -120,7 +121,7 @@ jobs:
     name: Build, push, and deploy conference api
     needs: get-changed-packages
     runs-on: ubuntu-24.04
-    if: ${{ vars.ENABLE_API_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'cm-api') }}
+    if: ${{ vars.ENABLE_API_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'cm-api') || github.event_name == 'workflow_dispatch' }}
     permissions:
       id-token: write
       contents: read
