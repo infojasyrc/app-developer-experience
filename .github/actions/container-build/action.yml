@@ -10,7 +10,7 @@ inputs:
   target:
     description: Make target to execute
     required: false
-    default: build:prod
+    default: build-prod
 
 runs:
   using: composite

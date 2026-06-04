@@ -17,6 +17,9 @@ PROJECT_NAME             := $(PROJECT_NAME)
 COMPOSE_PROJECT_NAME     := $(COMPOSE_PROJECT_NAME)
 DOCKER_COMPOSE           = docker compose
 PLATFORM                 := $(PLATFORM)
+# For CI
+IMAGE_NAME               ?= $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api
+IMAGE_TAG                ?= latest
 
 ifeq ($(OS),Windows_NT)
 	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
@@ -49,7 +52,7 @@ build-dev: ## 🛠️ Build development container image for API
 
 build-prod: ## 🛠️ Build production container image for API
 	docker build --platform $(PLATFORM) \
-		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api .
+		-t $(IMAGE_NAME):$(IMAGE_TAG) .
 
 seed-data: ## 🌱 Seed headquarters and conferences via the API (Usage: make seed-data API_TOKEN=<token>)
 	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \

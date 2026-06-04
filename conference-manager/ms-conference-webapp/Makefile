@@ -11,6 +11,9 @@ PROJECT_NAME             := $(PROJECT_NAME)
 COMPOSE_PROJECT_NAME     := $(COMPOSE_PROJECT_NAME)
 # Available platforms: linux/amd64 | linux/arm64/v8 | linux/x86_64 | linux/arm/v7
 PLATFORM                 := $(PLATFORM)
+# For CI
+IMAGE_NAME               ?= $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp
+IMAGE_TAG                ?= latest
 
 ifeq ($(OS),Windows_NT)
 	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
@@ -52,7 +55,7 @@ build-prod: ## 🛠️ Build production container image for webapp (no layer cac
 		--build-arg NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID} \
 		--build-arg NEXT_PUBLIC_MEASUREMENT_ID=${NEXT_PUBLIC_MEASUREMENT_ID} \
 		--platform $(PLATFORM) . \
-		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp
+		-t $(IMAGE_NAME):$(IMAGE_TAG)
 
 interactive: ## 🧑‍💻 Open interactive shell in dev container
 	docker run -it --rm --net=host --workdir="$(CONTAINER_APP_FOLDER)" \

@@ -1,5 +1,6 @@
 name: Build and Deploy Conference Manager to AWS
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -45,7 +46,7 @@ jobs:
     name: Build, push, and deploy conference webapp
     needs: get-changed-packages
     runs-on: ubuntu-24.04
-    if: ${{ vars.ENABLE_WEBAPP_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'cm-webapp') }}
+    if: ${{ vars.ENABLE_WEBAPP_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'cm-webapp') || github.event_name == 'workflow_dispatch' }}
     permissions:
       id-token: write
       contents: read
@@ -64,15 +65,15 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Set image coordinates
-        id: image
+        id: container-image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           set -euo pipefail
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
           echo "repository=${{ env.WEB_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
-          echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
-          echo "image=$REGISTRY/${{ env.WEB_CONTAINER_NAME }}:${GITHUB_SHA}" >> $GITHUB_OUTPUT
+          echo "tag=latest" >> $GITHUB_OUTPUT
+          echo "image=$REGISTRY/${{ env.WEB_CONTAINER_NAME }}:latest" >> $GITHUB_OUTPUT
 
       - name: Build container image (composite)
         uses: ./.github/actions/container-build
@@ -80,24 +81,24 @@ jobs:
           working-directory: ./conference-manager/ms-conference-webapp
           target: build-prod
         env:
-          # Provide coordinates via env so each component Makefile can consume/override its defaults
-          IMAGE: ${{ steps.image.outputs.image }}
+          IMAGE_NAME: ${{ steps.container-image.outputs.image }}
+          IMAGE_TAG: ${{ steps.container-image.outputs.tag }}
           PLATFORM: ${{ env.PLATFORM }}
 
       - name: Push image to ECR and collect metadata (composite)
         id: push-meta
         uses: ./.github/actions/container-regisry-push-and-metadata
         with:
-          image: ${{ steps.image.outputs.image }}
-          repository: ${{ steps.image.outputs.repository }}
-          image-tag: ${{ steps.image.outputs.tag }}
+          image: ${{ steps.container-image.outputs.image }}
+          repository: ${{ steps.container-image.outputs.repository }}
+          image-tag: ${{ steps.container-image.outputs.tag }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Write & upload image size report (composite)
         uses: ./.github/actions/image-size-report
         with:
           package: conference-manager/ms-conference-webapp
-          image: ${{ steps.image.outputs.image }}
+          image: ${{ steps.container-image.outputs.image }}
           digest: ${{ steps.push-meta.outputs.digest }}
           compressed-size-bytes: ${{ steps.push-meta.outputs.compressed_size_bytes }}
           working-directory: ./conference-manager/ms-conference-webapp
@@ -109,7 +110,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.WEB_CONTAINER_NAME }}
-          image: ${{ steps.image.outputs.image }}
+          image: ${{ steps.container-image.outputs.image }}
           ecs-service: ${{ env.ECS_WEB_SERVICE }}
           ecs-cluster: ${{ env.ECS_CLUSTER }}
           aws-region: ${{ env.AWS_REGION }}
@@ -120,7 +121,7 @@ jobs:
     name: Build, push, and deploy conference api
     needs: get-changed-packages
     runs-on: ubuntu-24.04
-    if: ${{ vars.ENABLE_API_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'cm-api') }}
+    if: ${{ vars.ENABLE_API_DEPLOY == 'true' && contains(needs.get-changed-packages.outputs.changed_packages, 'cm-api') || github.event_name == 'workflow_dispatch' }}
     permissions:
       id-token: write
       contents: read
@@ -139,15 +140,15 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Set image coordinates
-        id: image
+        id: container-image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           set -euo pipefail
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
           echo "repository=${{ env.API_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
-          echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
-          echo "image=$REGISTRY/${{ env.API_CONTAINER_NAME }}:${GITHUB_SHA}" >> $GITHUB_OUTPUT
+          echo "tag=latest" >> $GITHUB_OUTPUT
+          echo "image=$REGISTRY/${{ env.API_CONTAINER_NAME }}:latest" >> $GITHUB_OUTPUT
 
       - name: Build container image (composite)
         uses: ./.github/actions/container-build
@@ -155,23 +156,24 @@ jobs:
           working-directory: ./conference-manager/ms-conference-api
           target: build-prod
         env:
-          IMAGE: ${{ steps.image.outputs.image }}
+          IMAGE_NAME: ${{ steps.container-image.outputs.image }}
+          IMAGE_TAG: ${{ steps.container-image.outputs.tag }}
           PLATFORM: ${{ env.PLATFORM }}
 
       - name: Push image to ECR and collect metadata (composite)
         id: push-meta
         uses: ./.github/actions/container-regisry-push-and-metadata
         with:
-          image: ${{ steps.image.outputs.image }}
-          repository: ${{ steps.image.outputs.repository }}
-          image-tag: ${{ steps.image.outputs.tag }}
+          image: ${{ steps.container-image.outputs.image }}
+          repository: ${{ steps.container-image.outputs.repository }}
+          image-tag: ${{ steps.container-image.outputs.tag }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Write & upload image size report (composite)
         uses: ./.github/actions/image-size-report
         with:
           package: conference-manager/ms-conference-api
-          image: ${{ steps.image.outputs.image }}
+          image: ${{ steps.container-image.outputs.image }}
           digest: ${{ steps.push-meta.outputs.digest }}
           compressed-size-bytes: ${{ steps.push-meta.outputs.compressed_size_bytes }}
           working-directory: ./conference-manager/ms-conference-api
@@ -183,7 +185,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.API_CONTAINER_NAME }}
-          image: ${{ steps.image.outputs.image }}
+          image: ${{ steps.container-image.outputs.image }}
           ecs-service: ${{ env.ECS_API_SERVICE }}
           ecs-cluster: ${{ env.ECS_CLUSTER }}
           aws-region: ${{ env.AWS_REGION }}
