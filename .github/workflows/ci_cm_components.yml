@@ -71,9 +71,9 @@ jobs:
         run: |
           set -euo pipefail
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
-          echo "repository=${{ env.WEB_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
+          echo "repository=conference-manager/${{ env.WEB_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
           echo "tag=latest" >> $GITHUB_OUTPUT
-          echo "image=$REGISTRY/${{ env.WEB_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
+          echo "image=$REGISTRY/conference-manager/${{ env.WEB_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
 
       - name: Build container image (composite)
         uses: ./.github/actions/container-build
@@ -146,9 +146,9 @@ jobs:
         run: |
           set -euo pipefail
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
-          echo "repository=${{ env.API_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
+          echo "repository=conference-manager/${{ env.API_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
           echo "tag=latest" >> $GITHUB_OUTPUT
-          echo "image=$REGISTRY/${{ env.API_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
+          echo "image=$REGISTRY/conference-manager/${{ env.API_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
 
       - name: Build container image (composite)
         uses: ./.github/actions/container-build
