@@ -2,7 +2,7 @@ name: Push to Container Registry and collect metadata
 description: Push Docker image to Amazon ECR and return digest and compressed size
 
 inputs:
-  image:
+  image-name:
     description: Full image name (registry/repo:tag)
     required: true
   repository:
@@ -35,11 +35,11 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        docker push "${{ inputs.image }}"
+        docker push "${{ inputs.image-name }}"
 
         # Capture immutable digest from the pushed image reference (best-effort)
         # This avoids tag ambiguity when looking up metadata in ECR.
-        DIGEST_LOCAL=$(docker image inspect "${{ inputs.image }}" --format='{{index .RepoDigests 0}}' 2>/dev/null || true)
+        DIGEST_LOCAL=$(docker image inspect "${{ inputs.image-name }}" --format='{{index .RepoDigests 0}}' 2>/dev/null || true)
         if [ -n "$DIGEST_LOCAL" ] && echo "$DIGEST_LOCAL" | grep -q '@sha256:'; then
           # Extract sha256:... portion
           DIGEST_ONLY="${DIGEST_LOCAL#*@}"

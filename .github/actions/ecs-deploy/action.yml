@@ -10,7 +10,7 @@ inputs:
     description: Container name inside the task definition to update
     required: true
 
-  image:
+  image-name:
     description: Full image reference to deploy (e.g., <acct>.dkr.ecr.<region>.amazonaws.com/repo:tag)
     required: true
 
@@ -80,7 +80,7 @@ runs:
       with:
         task-definition: ${{ inputs.working-directory }}/${{ inputs.output-task-definition-file }}
         container-name: ${{ inputs.container-name }}
-        image: ${{ inputs.image }}
+        image: ${{ inputs.image-name }}
 
     - name: Deploy task definition to ECS service
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1

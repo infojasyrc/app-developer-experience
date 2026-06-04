@@ -6,7 +6,7 @@ inputs:
     description: Monorepo package identifier (e.g. conference-manager/ms-conference-webapp)
     required: true
 
-  image:
+  image-name:
     description: Full image reference (registry/repo:tag)
     required: true
 
@@ -78,7 +78,7 @@ runs:
         else
           COMPUTE_FLAG="${{ inputs.compute-unpacked-size }}"
           if [ "$COMPUTE_FLAG" = "true" ] || [ "$COMPUTE_FLAG" = "True" ] || [ "$COMPUTE_FLAG" = "TRUE" ]; then
-            UNPACKED_BYTES=$(docker image inspect "${{ inputs.image }}" --format='{{.Size}}' 2>/dev/null || true)
+            UNPACKED_BYTES=$(docker image inspect "${{ inputs.image-name }}" --format='{{.Size}}' 2>/dev/null || true)
             if [ -n "$UNPACKED_BYTES" ] && [ "$UNPACKED_BYTES" != "<no value>" ]; then
               UNPACKED_JSON="$UNPACKED_BYTES"
             fi
@@ -88,7 +88,7 @@ runs:
         cat > "${{ inputs.report-filename }}" <<EOF
         {
           "package": "${{ inputs.package }}",
-          "image": "${{ inputs.image }}",
+          "image": "${{ inputs.image-name }}",
           "digest": "${{ inputs.digest }}",
           "compressed_size_bytes": "${{ inputs.compressed-size-bytes }}",
           "unpacked_size_bytes": ${UNPACKED_JSON},
