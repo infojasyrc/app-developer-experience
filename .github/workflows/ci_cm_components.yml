@@ -73,7 +73,7 @@ jobs:
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
           echo "repository=${{ env.WEB_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
           echo "tag=latest" >> $GITHUB_OUTPUT
-          echo "image=$REGISTRY/${{ env.WEB_CONTAINER_NAME }}:latest" >> $GITHUB_OUTPUT
+          echo "image=$REGISTRY/${{ env.WEB_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
 
       - name: Build container image (composite)
         uses: ./.github/actions/container-build
@@ -89,7 +89,7 @@ jobs:
         id: push-meta
         uses: ./.github/actions/container-regisry-push-and-metadata
         with:
-          image: ${{ steps.container-image.outputs.image }}
+          image-name: ${{ steps.container-image.outputs.image }}:${{ steps.container-image.outputs.tag }}
           repository: ${{ steps.container-image.outputs.repository }}
           image-tag: ${{ steps.container-image.outputs.tag }}
           aws-region: ${{ env.AWS_REGION }}
@@ -98,7 +98,7 @@ jobs:
         uses: ./.github/actions/image-size-report
         with:
           package: conference-manager/ms-conference-webapp
-          image: ${{ steps.container-image.outputs.image }}
+          image-name: ${{ steps.container-image.outputs.image }}:${{ steps.container-image.outputs.tag }}
           digest: ${{ steps.push-meta.outputs.digest }}
           compressed-size-bytes: ${{ steps.push-meta.outputs.compressed_size_bytes }}
           working-directory: ./conference-manager/ms-conference-webapp
@@ -110,7 +110,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.WEB_CONTAINER_NAME }}
-          image: ${{ steps.container-image.outputs.image }}
+          image-name: ${{ steps.container-image.outputs.image }}:${{ steps.container-image.outputs.tag }}
           ecs-service: ${{ env.ECS_WEB_SERVICE }}
           ecs-cluster: ${{ env.ECS_CLUSTER }}
           aws-region: ${{ env.AWS_REGION }}
@@ -148,7 +148,7 @@ jobs:
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
           echo "repository=${{ env.API_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
           echo "tag=latest" >> $GITHUB_OUTPUT
-          echo "image=$REGISTRY/${{ env.API_CONTAINER_NAME }}:latest" >> $GITHUB_OUTPUT
+          echo "image=$REGISTRY/${{ env.API_CONTAINER_NAME }}" >> $GITHUB_OUTPUT
 
       - name: Build container image (composite)
         uses: ./.github/actions/container-build
@@ -164,7 +164,7 @@ jobs:
         id: push-meta
         uses: ./.github/actions/container-regisry-push-and-metadata
         with:
-          image: ${{ steps.container-image.outputs.image }}
+          image-name: ${{ steps.container-image.outputs.image }}:${{ steps.container-image.outputs.tag }}
           repository: ${{ steps.container-image.outputs.repository }}
           image-tag: ${{ steps.container-image.outputs.tag }}
           aws-region: ${{ env.AWS_REGION }}
@@ -173,7 +173,7 @@ jobs:
         uses: ./.github/actions/image-size-report
         with:
           package: conference-manager/ms-conference-api
-          image: ${{ steps.container-image.outputs.image }}
+          image-name: ${{ steps.container-image.outputs.image }}:${{ steps.container-image.outputs.tag }}
           digest: ${{ steps.push-meta.outputs.digest }}
           compressed-size-bytes: ${{ steps.push-meta.outputs.compressed_size_bytes }}
           working-directory: ./conference-manager/ms-conference-api
@@ -185,7 +185,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.API_CONTAINER_NAME }}
-          image: ${{ steps.container-image.outputs.image }}
+          image-name: ${{ steps.container-image.outputs.image }}:${{ steps.container-image.outputs.tag }}
           ecs-service: ${{ env.ECS_API_SERVICE }}
           ecs-cluster: ${{ env.ECS_CLUSTER }}
           aws-region: ${{ env.AWS_REGION }}
