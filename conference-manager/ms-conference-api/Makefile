@@ -37,7 +37,7 @@ DEV_VOLUME_API = \
 .PHONY: help docker-clean build-dev build-prod get-token interactive create-volumes install-dependencies \
 	audit-fix-dependencies lint unit-tests unit-tests-v2 watch-unit-tests-v2 \
 	launch-db stop-db launch-local-dev stop-local-dev launch-local-prod stop-local-prod \
-	launch-unleash stop-unleash reset-unleash seed-data
+	launch-unleash stop-unleash reset-unleash seed-data clear-data
 
 docker-clean: ## ❌ Stop & prune all containers/images (DANGEROUS)
 ifeq ($(OS),Windows_NT)
@@ -62,6 +62,15 @@ seed-data: ## 🌱 Seed users, headquarters and conferences directly via service
 		-e DB_HOST=$(COMPOSE_PROJECT_NAME)-db \
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn seed"
+
+clear-data: ## 🗑️ Remove all seeded users, headquarters and conferences (dev only)
+	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		--network $(COMPOSE_PROJECT_NAME)-network \
+		--env-file .env \
+		-e DB_HOST=$(COMPOSE_PROJECT_NAME)-db \
+		$(DEV_VOLUME_API) \
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn clear"
 
 get-token: ## 🔐 Retrieve Firebase auth token (ROLE=admin|user) Usage: make get-token ROLE=admin
 	@if [ -z "$(EMAIL)" ] || [ -z "$(PASSWORD)" ]; then \
