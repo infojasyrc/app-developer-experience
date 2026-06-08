@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common'
-import { App, cert, initializeApp } from 'firebase-admin/app'
+import { App, applicationDefault, initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
 import { getStorage } from 'firebase-admin/storage'
-import getEnvironmentVariables from '../../infrastructure/environment'
 
 @Injectable()
 export class FirebaseAdminService {
@@ -10,10 +9,8 @@ export class FirebaseAdminService {
 
   onModuleInit() {
     if (!FirebaseAdminService.app) {
-      const { GOOGLE_APPLICATION_CREDENTIALS } = getEnvironmentVariables()
-      const credentials = JSON.parse(GOOGLE_APPLICATION_CREDENTIALS)
       FirebaseAdminService.app = initializeApp({
-        credential: cert(credentials),
+        credential: applicationDefault(),
       })
     }
   }
