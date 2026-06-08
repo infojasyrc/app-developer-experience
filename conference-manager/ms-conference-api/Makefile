@@ -54,14 +54,14 @@ build-prod: ## 🛠️ Build production container image for API
 	docker build --platform $(PLATFORM) \
 		-t $(IMAGE_NAME):$(IMAGE_TAG) .
 
-seed-data: ## 🌱 Seed headquarters and conferences via the API (Usage: make seed-data API_TOKEN=<token>)
+seed-data: ## 🌱 Seed users, headquarters and conferences directly via services (dev only)
 	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
-		--network host \
-		-e API_TOKEN=$(API_TOKEN) \
-		-e HEADQUARTER_ID=$(HEADQUARTER_ID) \
+		--network $(COMPOSE_PROJECT_NAME)-network \
+		--env-file .env \
+		-e DB_HOST=$(COMPOSE_PROJECT_NAME)-db \
 		$(DEV_VOLUME_API) \
-		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "node scripts/seed-data.js"
+		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn seed"
 
 get-token: ## 🔐 Retrieve Firebase auth token (ROLE=admin|user) Usage: make get-token ROLE=admin
 	@if [ -z "$(EMAIL)" ] || [ -z "$(PASSWORD)" ]; then \
