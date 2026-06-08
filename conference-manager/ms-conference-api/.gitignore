@@ -3,7 +3,6 @@
 
 /node_modules/
 
-
 # Unit tests
 /coverage/
 /.nyc_output/
@@ -14,13 +13,8 @@
 .env.test
 .env.production
 
-src/services-config/app.prod.json
-/services-config/app.web.prod.json
-/services-config/app.web.json
-
 # Credential files
-credentials/*.json
+.config/
 
 # Transitional nestjs files to ignore 
 dist/
-

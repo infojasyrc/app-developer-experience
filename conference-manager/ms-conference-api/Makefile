@@ -11,7 +11,7 @@ LOCAL_APP_FOLDER         = /usr/src/app
 
 DB_URL                   = mongodb://$(DB_ROOT_USERNAME):$(DB_ROOT_PASSWORD)@localhost:$(DB_PORT)/?authSource=admin
 DEFAULT_DB               = mongodb
-TOKEN_SCRIPT_FILE        = scripts/firebase-auth-test
+TOKEN_SCRIPT_FILE        = ./scripts/get-token.sh
 
 PROJECT_NAME             := $(PROJECT_NAME)
 COMPOSE_PROJECT_NAME     := $(COMPOSE_PROJECT_NAME)
@@ -64,7 +64,11 @@ seed-data: ## 🌱 Seed headquarters and conferences via the API (Usage: make se
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "node scripts/seed-data.js"
 
 get-token: ## 🔐 Retrieve Firebase auth token (ROLE=admin|user) Usage: make get-token ROLE=admin
-	node $(TOKEN_SCRIPT_FILE) $(ROLE)
+	@if [ -z "$(EMAIL)" ] || [ -z "$(PASSWORD)" ]; then \
+		echo "Error: EMAIL and PASSWORD must be set. Usage: make get-token EMAIL=your-email PASSWORD=your-password"; \
+		exit 1; \
+	fi;
+	$(TOKEN_SCRIPT_FILE) $(EMAIL) $(PASSWORD)
 
 interactive: ## 🚀 Run API standalone (healthcheck only, no DB)
 	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \

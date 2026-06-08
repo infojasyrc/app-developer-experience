@@ -3,7 +3,6 @@ import { Module } from '@nestjs/common'
 import { PassportModule } from '@nestjs/passport'
 import { MongooseModule } from '@nestjs/mongoose'
 
-import { FirebaseAuthStrategy } from './modules/firebase-auth/firebase-auth.strategy'
 import getEnvironmentVariables from './infrastructure/environment'
 import { ConferenceModule } from './modules/conferences/conference.module'
 import { HeadquarterModule } from './modules/headquarter/headquarter.module'
@@ -40,6 +39,6 @@ import { HealthController } from './interfaces/health/health.controller'
       inject: [ConfigService],
     }),],
   controllers: [HealthController],
-  providers: [FirebaseAuthStrategy, UnleashProvider],
+  providers: [UnleashProvider],
 })
 export class AppModule { }
