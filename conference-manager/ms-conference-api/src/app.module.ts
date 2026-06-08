@@ -27,7 +27,7 @@ import { HealthController } from './interfaces/health/health.controller'
         ConferenceModule,
         HeadquarterModule,
         UserModule,
-        PassportModule.register({ defaultStrategy: 'jwt' }),
+        PassportModule.register({ defaultStrategy: 'firebase-auth' }),
         FirebaseModule,
         AuthModule,
         RoleModule,
