@@ -23,7 +23,7 @@ export class UserController {
   @Post()
   @CreateUserSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(201)
   async create(@Body() dto: CreateUserDto): Promise<UserResponse> {
     this.logger.log('Create user controller')
@@ -33,7 +33,7 @@ export class UserController {
   @Get()
   @ListUsersSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(200)
   async getAll(): Promise<UserResponse[]> {
     this.logger.log('Get all users controller')
@@ -43,7 +43,7 @@ export class UserController {
   @Get('/:uid')
   @GetUserByUidSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(200)
   async getByUid(@Param('uid') uid: string): Promise<UserResponse> {
     this.logger.log(`Get user by uid: ${uid} controller`)
@@ -53,7 +53,7 @@ export class UserController {
   @Put('/:uid')
   @UpdateUserSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(200)
   async update(@Param('uid') uid: string, @Body() dto: UpdateUserDto): Promise<UserResponse> {
     this.logger.log(`Update user uid: ${uid} controller`)
@@ -63,7 +63,7 @@ export class UserController {
   @Delete('/:uid')
   @DeleteUserSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(204)
   async delete(@Param('uid') uid: string): Promise<void> {
     this.logger.log(`Delete user uid: ${uid} controller`)

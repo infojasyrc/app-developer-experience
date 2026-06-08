@@ -17,7 +17,7 @@ export class ProfileController {
 
   @Get()
   @GetProfileSwaggerDecorator()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('firebase-auth'))
   @HttpCode(200)
   async getProfile(@Req() req: Request): Promise<UserResponse> {
     const uid = (req.user as any).userId

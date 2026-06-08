@@ -23,7 +23,7 @@ export class HeadquarterController {
   @Post()
   @CreateHeadquarterSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(201)
   async create(@Body() dto: CreateHeadquarterDto): Promise<HeadquarterResponse> {
     this.logger.log('Create headquarter controller')
@@ -49,7 +49,7 @@ export class HeadquarterController {
   @Put('/:headquarterId')
   @UpdateHeadquarterSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(200)
   async update(
     @Param('headquarterId') headquarterId: string,
@@ -62,7 +62,7 @@ export class HeadquarterController {
   @Delete('/:headquarterId')
   @DeleteHeadquarterSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(204)
   async delete(@Param('headquarterId') headquarterId: string): Promise<void> {
     this.logger.log(`Delete headquarter with id: ${headquarterId} controller`)
