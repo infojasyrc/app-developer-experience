@@ -25,13 +25,13 @@ export class ImageUploadInterceptor<T> implements NestInterceptor<T, Response<T>
           const file = request.files[0]
           if (request.files.length > 0) {
             try {
-              request.body = { image: file, userId: request.user.userId, ...request.body }
+              request.body = { image: file, createdBy: request.user.userId, updatedBy: request.user.userId, ...request.body }
               return this.subscribeToHandle(next, observer)
             } catch (error) {
               observer.error(error)
             }
           }
-          request.body = { userId: request.user.userId, ...request.body }
+          request.body = { createdBy: request.user.userId, updatedBy: request.user.userId, ...request.body }
           return this.subscribeToHandle(next, observer)
         }
       });

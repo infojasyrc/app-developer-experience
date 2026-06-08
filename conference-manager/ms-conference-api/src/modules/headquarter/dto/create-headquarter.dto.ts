@@ -9,5 +9,6 @@ export class CreateHeadquarterDto {
 
   @ApiHideProperty()
   @IsOptional()
-  userId?: string
+  @IsString()
+  createdBy?: string
 }

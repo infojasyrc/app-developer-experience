@@ -72,19 +72,19 @@ export class ConferenceService {
 
   async addAttendeeToConference(
     conferenceId: ConferenceIdDto,
-    userId: string,
+    attendeeId: string,
     attendeeData: AddAttendeeToConferenceDto,
   ): Promise<ConferenceResponse> {
-    this.logger.log(`Add attendee ${userId} to conference id: ${conferenceId} service`)
+    this.logger.log(`Add attendee ${attendeeId} to conference id: ${conferenceId} service`)
     const conference = await this.conferenceModel.findById(conferenceId)
     if (!conference)
       throw new NotFoundException(
         `Error at add attendee to conference service, conference _id: ${conferenceId} was not found`,
       )
     this.validateConferenceStatus(conferenceId, conference)
-    this.validateUserAlreadyAttending(conference, conferenceId, userId)
+    this.validateUserAlreadyAttending(conference, conferenceId, attendeeId)
     conference.attendees = conference.attendees ?? []
-    conference.attendees.push(new Types.ObjectId(String(userId)))
+    conference.attendees.push(new Types.ObjectId(String(attendeeId)))
     return conference.save()
   }
 
@@ -92,7 +92,7 @@ export class ConferenceService {
     this.logger.log(`Update conference status id: ${conferenceId} service`)
     const updated = await this.conferenceModel.findByIdAndUpdate(
       conferenceId,
-      { status: dto.status },
+      { status: dto.status, updatedBy: dto.updatedBy },
       { new: true },
     )
     if (!updated)
@@ -167,13 +167,13 @@ export class ConferenceService {
   private validateUserAlreadyAttending(
     conference: Conference,
     conferenceId: ConferenceIdDto,
-    userId: string,
+    attendeeId: string,
   ): void {
     const attendees = conference.attendees ?? []
-    const userObjectId = new Types.ObjectId(String(userId))
-    if (attendees.some(id => id.equals(userObjectId)))
+    const attendeeObjectId = new Types.ObjectId(String(attendeeId))
+    if (attendees.some(id => id.equals(attendeeObjectId)))
       throw new BadRequestException(
-        `User with id: ${userId} is already attending conference: ${conferenceId}`,
+        `User with id: ${attendeeId} is already attending conference: ${conferenceId}`,
       )
   }
 }

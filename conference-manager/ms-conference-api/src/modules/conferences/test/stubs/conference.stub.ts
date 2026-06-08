@@ -9,18 +9,23 @@ import { AddAttendeeToConferenceDto } from '../../dto/add-attendee-to-conference
 const generateMockId = () => new Types.ObjectId().toHexString()
 
 export const CONFERENCE_ID_MOCK = new Types.ObjectId('65c516a7eae2b91375ecba6e')
-export const USER_ID_MOCK = new Types.ObjectId('65a9ae1f615ad496533cde52')
+export const USER_ID_MOCK       = new Types.ObjectId('65a9ae1f615ad496533cde52')
+export const MOCK_CREATED_BY    = '2qWPHHeRY9b3ouN8deae8GkCUnx1'
+export const MOCK_AUDIT_DATE    = new Date('2026-01-01T00:00:00.000Z')
+
 export const MOCK_HEADQUARTER = {
   _id: '654d4ac398b7a0abaa3c3a40',
   name: 'Panamá',
+  createdBy: MOCK_CREATED_BY,
+  createdAt: MOCK_AUDIT_DATE,
+  updatedAt: MOCK_AUDIT_DATE,
 }
-export const MOCK_OWNER = '2qWPHHeRY9b3ouN8deae8GkCUnx1'
 
 export const CONFERENCE_MOCK: Conference = {
   _id: CONFERENCE_ID_MOCK.toHexString(),
   name: 'Storm',
   eventDate: new Date('2023-11-21T19:00:00.000'),
-  owner: MOCK_OWNER,
+  createdBy: MOCK_CREATED_BY,
   type: 'Recruiting',
   tags: 'Architecture',
   headquarter: MOCK_HEADQUARTER,
@@ -29,6 +34,8 @@ export const CONFERENCE_MOCK: Conference = {
   attendees: [USER_ID_MOCK],
   status: ConferenceStatus.ACTIVE,
   year: '2024',
+  createdAt: MOCK_AUDIT_DATE,
+  updatedAt: MOCK_AUDIT_DATE,
 }
 
 export const CREATE_CONFERENCE_MOCK_DTO: CreateConferenceDto = {
@@ -38,7 +45,7 @@ export const CREATE_CONFERENCE_MOCK_DTO: CreateConferenceDto = {
   tags: 'Architecture',
   headquarter: MOCK_HEADQUARTER,
   description: 'A description',
-  userId: MOCK_OWNER,
+  createdBy: MOCK_CREATED_BY,
   address: '2323 El Dorado Avenue',
 }
 
@@ -61,10 +68,9 @@ export const ADD_ATTENDEE_MOCK_DTO: AddAttendeeToConferenceDto = {
 
 const getMockConference = (statusExpected: string | undefined) => {
   const randomName = Math.floor(Math.random() * 100)
-  const eventDate = new Date('2024-11-21T19:00:00.000')
+  const eventDate  = new Date('2024-11-21T19:00:00.000')
   const statusList = [ConferenceStatus.ACTIVE, ConferenceStatus.CREATED, ConferenceStatus.INACTIVE]
-  const randomStatus = statusList[Math.floor(Math.random() * statusList.length)]
-  const status = statusExpected ?? randomStatus
+  const status     = statusExpected ?? statusList[Math.floor(Math.random() * statusList.length)]
   return {
     _id: generateMockId(),
     eventDate,
@@ -72,11 +78,13 @@ const getMockConference = (statusExpected: string | undefined) => {
     name: `Linux Summit ${randomName} Day`,
     year: '2024',
     type: 'Sales',
-    owner: MOCK_OWNER,
+    createdBy: MOCK_CREATED_BY,
     status,
     address: '120 Main Street',
     description: 'A description',
     headquarter: MOCK_HEADQUARTER,
+    createdAt: MOCK_AUDIT_DATE,
+    updatedAt: MOCK_AUDIT_DATE,
   }
 }
 
@@ -103,7 +111,7 @@ export const MOCK_CONFERENCE_IMAGE_FILE: Express.Multer.File = {
   path: '',
 }
 
-export const MOCK_CONFERENCE_IMAGE_URL = 'https://storage.googleapis.com/bucket/1234567890-conf.jpg'
+export const MOCK_CONFERENCE_IMAGE_URL      = 'https://storage.googleapis.com/bucket/1234567890-conf.jpg'
 export const MOCK_CONFERENCE_IMAGE_FILENAME = '1234567890-conf.jpg'
 
 export const LIST_ACTIVE_MOCK: Conference[] = [
@@ -114,11 +122,13 @@ export const LIST_ACTIVE_MOCK: Conference[] = [
     name: 'Ubuntu Conf',
     year: '2024',
     type: 'Sales',
-    owner: MOCK_OWNER,
+    createdBy: MOCK_CREATED_BY,
     status: ConferenceStatus.ACTIVE,
     address: '85 Salvio Street',
     description: 'A description',
     headquarter: MOCK_HEADQUARTER,
+    createdAt: MOCK_AUDIT_DATE,
+    updatedAt: MOCK_AUDIT_DATE,
   },
   {
     _id: generateMockId(),
@@ -127,11 +137,13 @@ export const LIST_ACTIVE_MOCK: Conference[] = [
     name: 'KuberConf',
     year: '2022',
     type: 'Sales',
-    owner: MOCK_OWNER,
+    createdBy: MOCK_CREATED_BY,
     status: ConferenceStatus.ACTIVE,
     address: '85 Salvio Street',
     description: 'A description',
     headquarter: MOCK_HEADQUARTER,
+    createdAt: MOCK_AUDIT_DATE,
+    updatedAt: MOCK_AUDIT_DATE,
   },
   {
     _id: generateMockId(),
@@ -140,10 +152,12 @@ export const LIST_ACTIVE_MOCK: Conference[] = [
     name: 'Linux Summit',
     year: '2024',
     type: 'Sales',
-    owner: MOCK_OWNER,
+    createdBy: MOCK_CREATED_BY,
     status: ConferenceStatus.ACTIVE,
     address: '85 Salvio Street',
     description: 'A description',
     headquarter: MOCK_HEADQUARTER,
+    createdAt: MOCK_AUDIT_DATE,
+    updatedAt: MOCK_AUDIT_DATE,
   },
 ]

@@ -15,7 +15,6 @@ services:
         condition: service_started
       unleash-app:
         condition: service_started
-    # Load bulk vars from the .env file
     env_file:
       - ../.env
     tty: true

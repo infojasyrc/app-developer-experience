@@ -97,13 +97,13 @@ describe('ConferenceService', () => {
       expect(result).toEqual(LIST_ACTIVE_MOCK)
     })
 
-    it('should filter by owner when isAdmin is true', async () => {
-      const userId = 'owner-uid'
+    it('should filter by createdBy when isAdmin is true', async () => {
+      const createdBy = 'owner-uid'
       mockExec.mockResolvedValueOnce(LIST_ACTIVE_MOCK)
 
-      await service.getAll({ isAdmin: true, userId })
+      await service.getAll({ isAdmin: true, createdBy })
 
-      expect(mockConferenceModel.find).toHaveBeenCalledWith({ owner: userId })
+      expect(mockConferenceModel.find).toHaveBeenCalledWith({ createdBy })
     })
 
     it('should pass extra filters (year, headquarter) to the query', async () => {
@@ -255,7 +255,7 @@ describe('ConferenceService', () => {
 
       expect(mockConferenceModel.findByIdAndUpdate).toHaveBeenCalledWith(
         String(CONFERENCE_ID_MOCK),
-        { status: ConferenceStatus.ACTIVE },
+        { status: ConferenceStatus.ACTIVE, updatedBy: undefined },
         { new: true },
       )
       expect(result.status).toBe(ConferenceStatus.ACTIVE)

@@ -1,6 +1,6 @@
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
 import { PartialType } from '@nestjs/swagger'
-import { IsBoolean, IsOptional } from 'class-validator'
-import { ApiProperty } from '@nestjs/swagger'
+import { IsBoolean, IsOptional, IsString } from 'class-validator'
 import { CreateUserDto } from './create-user.dto'
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
@@ -8,4 +8,9 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsBoolean()
   @IsOptional()
   isAdmin?: boolean
+
+  @ApiHideProperty()
+  @IsOptional()
+  @IsString()
+  updatedBy?: string
 }

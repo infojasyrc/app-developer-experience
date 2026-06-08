@@ -25,5 +25,6 @@ export class RegisterDto {
 
   @ApiHideProperty()
   @IsOptional()
-  userId?: string
+  @IsString()
+  createdBy?: string
 }
