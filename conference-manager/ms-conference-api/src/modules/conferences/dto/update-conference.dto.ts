@@ -1,6 +1,6 @@
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
 import { PartialType } from '@nestjs/swagger'
-import { IsEnum, IsOptional } from 'class-validator'
-import { ApiProperty } from '@nestjs/swagger'
+import { IsEnum, IsOptional, IsString } from 'class-validator'
 import { CreateConferenceDto } from './create-conference.dto'
 import { ConferenceStatus } from '../conference.enum'
 
@@ -12,4 +12,9 @@ export class UpdateConferenceDto extends PartialType(CreateConferenceDto) {
 
   @IsOptional()
   year?: string
+
+  @ApiHideProperty()
+  @IsOptional()
+  @IsString()
+  updatedBy?: string
 }

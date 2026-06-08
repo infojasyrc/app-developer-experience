@@ -8,19 +8,21 @@ import { RequestGetAllConferencesDto } from './dto/request-get-all-conferences.d
 @Injectable()
 export default class ConferenceMapper {
   public static createConferenceMapper(dto: CreateConferenceDto): Conference {
-    const { eventDate, userId, ...rest } = dto
+    const { eventDate, createdBy, ...rest } = dto
     const parsedDate = new Date(eventDate)
     return {
       ...rest,
       eventDate: parsedDate,
       year: parsedDate.getFullYear().toString(),
       status: ConferenceStatus.CREATED,
-      owner: userId,
+      createdBy,
     } as Conference
   }
 
   public static updateConferenceMapper(dto: UpdateConferenceDto): Partial<Conference> {
-    const mapped: Partial<Conference> = { ...dto } as Partial<Conference>
+    // Strip createdBy (immutable after creation) and image (handled by upload service)
+    const { createdBy: _createdBy, image: _image, ...rest } = dto
+    const mapped: Partial<Conference> = { ...rest } as Partial<Conference>
     if (dto.eventDate) {
       mapped.eventDate = new Date(dto.eventDate)
       mapped.year = mapped.eventDate.getFullYear().toString()
@@ -29,9 +31,9 @@ export default class ConferenceMapper {
   }
 
   public static getAllMapper(params: RequestGetAllConferencesDto): Record<string, unknown> {
-    const { isAdmin, userId, ...filters } = params
+    const { isAdmin, createdBy, ...filters } = params
     return isAdmin
-      ? { owner: userId, ...filters }
+      ? { createdBy, ...filters }
       : { status: ConferenceStatus.ACTIVE, ...filters }
   }
 }

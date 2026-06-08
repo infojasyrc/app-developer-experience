@@ -10,6 +10,10 @@ export default class HeadquarterMapper {
     return {
       _id: String(headquarter._id),
       name: headquarter.name,
+      createdBy: headquarter.createdBy,
+      updatedBy: headquarter.updatedBy,
+      createdAt: headquarter.createdAt!,
+      updatedAt: headquarter.updatedAt!,
     }
   }
 
@@ -18,12 +22,16 @@ export default class HeadquarterMapper {
   }
 
   public static createHeadquarterMapper(dto: CreateHeadquarterDto): Partial<Headquarter> {
-    return { name: dto.name }
+    return {
+      name: dto.name,
+      createdBy: dto.createdBy ?? '',
+    }
   }
 
   public static updateHeadquarterMapper(dto: UpdateHeadquarterDto): Partial<Headquarter> {
     const update: Partial<Headquarter> = {}
     if (dto.name !== undefined) update.name = dto.name
+    if (dto.updatedBy !== undefined) update.updatedBy = dto.updatedBy
     return update
   }
 }

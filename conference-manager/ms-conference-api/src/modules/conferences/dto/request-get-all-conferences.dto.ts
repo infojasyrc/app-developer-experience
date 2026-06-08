@@ -31,7 +31,7 @@ export class RequestGetAllConferencesDto {
 
   @ApiHideProperty()
   @IsOptional()
-  userId?: string
+  createdBy?: string
 
   @ApiProperty({
     description: 'Conference year',

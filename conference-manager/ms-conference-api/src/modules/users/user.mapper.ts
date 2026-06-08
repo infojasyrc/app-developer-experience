@@ -15,6 +15,10 @@ export default class UserMapper {
       email: user.email,
       isAdmin: user.isAdmin,
       isSuperAdmin: user.isSuperAdmin,
+      createdBy: user.createdBy,
+      updatedBy: user.updatedBy,
+      createdAt: user.createdAt!,
+      updatedAt: user.updatedAt!,
     }
   }
 
@@ -30,6 +34,7 @@ export default class UserMapper {
       email: dto.email,
       isAdmin: false,
       isSuperAdmin: false,
+      createdBy: dto.createdBy ?? '',
     }
   }
 
@@ -39,6 +44,7 @@ export default class UserMapper {
     if (dto.lastName !== undefined) update.lastName = dto.lastName
     if (dto.email !== undefined) update.email = dto.email
     if (dto.isAdmin !== undefined) update.isAdmin = dto.isAdmin
+    if (dto.updatedBy !== undefined) update.updatedBy = dto.updatedBy
     return update
   }
 }

@@ -11,5 +11,5 @@ export class UpdateConferenceStatusDto {
 
   @ApiHideProperty()
   @IsOptional()
-  userId?: string
+  updatedBy?: string
 }

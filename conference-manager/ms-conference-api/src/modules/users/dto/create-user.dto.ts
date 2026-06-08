@@ -24,5 +24,6 @@ export class CreateUserDto {
 
   @ApiHideProperty()
   @IsOptional()
-  userId?: string
+  @IsString()
+  createdBy?: string
 }

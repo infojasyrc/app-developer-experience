@@ -12,6 +12,16 @@ export class Headquarter {
   @ApiProperty({ description: 'Unique headquarter name' })
   @Prop({ required: true, unique: true })
   name!: string
+
+  @Prop({ required: true })
+  createdBy!: string
+
+  @Prop({ required: false })
+  updatedBy?: string
+
+  // Managed by Mongoose timestamps: true — do not add @Prop
+  readonly createdAt!: Date
+  readonly updatedAt!: Date
 }
 
 export const HeadquarterSchema = SchemaFactory.createForClass(Headquarter)

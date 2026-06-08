@@ -8,8 +8,8 @@ export type ConferenceDocument = HydratedDocument<Conference>
 @Schema({ timestamps: true })
 export class Conference {
   @ApiProperty()
-  _id!: string;
-  
+  _id!: string
+
   @Prop({ required: true })
   eventDate!: Date
 
@@ -26,7 +26,10 @@ export class Conference {
   type!: string
 
   @Prop({ required: true })
-  owner!: string
+  createdBy!: string
+
+  @Prop({ required: false })
+  updatedBy?: string
 
   @Prop({ required: false })
   images?: string[]
@@ -44,7 +47,11 @@ export class Conference {
   headquarter!: Headquarter
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], default: [] })
-  attendees?: mongoose.Types.ObjectId[];
+  attendees?: mongoose.Types.ObjectId[]
+
+  // Managed by Mongoose timestamps: true — do not add @Prop
+  readonly createdAt!: Date
+  readonly updatedAt!: Date
 }
 
 export const ConferenceSchema = SchemaFactory.createForClass(Conference)

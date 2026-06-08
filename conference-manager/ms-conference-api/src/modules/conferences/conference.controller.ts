@@ -98,18 +98,18 @@ export class ConferenceController {
     return this.conferenceService.delete(conferenceId)
   }
 
-  @Post('/:conferenceId/attendee/:userId')
+  @Post('/:conferenceId/attendee/:attendeeId')
   @AddAttendeeToConferenceSwaggerDecorator()
   @Roles(ADMIN_ROLE, USER_ROLE)
   @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(200)
   async addAttendeeToConference(
     @Param('conferenceId') conferenceId: ConferenceIdDto,
-    @Param('userId') userId: string,
+    @Param('attendeeId') attendeeId: string,
     @Body() attendeeData: AddAttendeeToConferenceDto,
   ): Promise<ConferenceResponse> {
-    this.logger.log(`Add attendee ${userId} to conference id: ${conferenceId} controller`)
-    return this.conferenceService.addAttendeeToConference(conferenceId, userId, attendeeData)
+    this.logger.log(`Add attendee ${attendeeId} to conference id: ${conferenceId} controller`)
+    return this.conferenceService.addAttendeeToConference(conferenceId, attendeeId, attendeeData)
   }
 
   @Put('/:conferenceId/status')

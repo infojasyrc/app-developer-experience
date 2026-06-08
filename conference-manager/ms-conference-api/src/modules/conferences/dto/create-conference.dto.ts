@@ -31,7 +31,7 @@ export class CreateConferenceDto {
   @ApiHideProperty()
   @IsString()
   @IsNotEmpty()
-  userId!: string
+  createdBy!: string
 
   @ApiProperty({ description: 'Conference description', required: true })
   @IsString()
