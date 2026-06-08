@@ -14,6 +14,7 @@
     "test:unit-tests:v2": "jest --runInBand --coverage --detectOpenHandles",
     "test:watch:v2": "jest --watchAll",
     "seed": "ts-node -r tsconfig-paths/register src/infrastructure/seed/seed.bootstrap.ts",
+    "clear": "ts-node -r tsconfig-paths/register src/infrastructure/seed/clear.bootstrap.ts",
     "dedupe": "yarn-deduplicate yarn.lock",
     "security:audit": "audit-ci --high --critical --report-type summary --config audit-ci.json",
     "security:fix": "yarn upgrade && yarn install || true"
