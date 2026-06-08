@@ -21,7 +21,7 @@ export class RoleController {
   @Get()
   @ListRolesSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(200)
   async getAll(): Promise<RoleResponse[]> {
     this.logger.log('Get all roles controller')
@@ -31,7 +31,7 @@ export class RoleController {
   @Get('/:roleId')
   @GetRoleByIdSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(200)
   async getById(@Param('roleId') roleId: string): Promise<RoleResponse> {
     this.logger.log(`Get role by id: ${roleId} controller`)

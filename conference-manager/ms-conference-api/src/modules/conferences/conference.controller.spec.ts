@@ -5,10 +5,7 @@ import { getModelToken } from '@nestjs/mongoose'
 import { ConferenceController } from './conference.controller'
 import { ConferenceService } from './conference.service'
 import { ConferenceStatus } from './conference.enum'
-import { FirebaseModule } from '../firebase-auth/firebase.module'
-import { FirebaseAdminService } from '../firebase-auth/firebase-admin.service'
 import { FirebaseUploadService } from '../firebase-auth/firebase-upload-file.service'
-import { ImageUploadInterceptor } from './interceptors/image-upload.interceptor'
 import { RequestGetAllConferencesDto } from './dto/request-get-all-conferences.dto'
 
 import {
@@ -25,20 +22,24 @@ import {
   getMockList,
 } from './test/stubs/conference.stub'
 
+const mockFirebaseUploadService = {
+  uploadFile: jest.fn(),
+  deleteFile: jest.fn(),
+}
+
 describe('ConferenceController', () => {
   let controller: ConferenceController
   let service: ConferenceService
 
   beforeEach(async () => {
+    jest.clearAllMocks()
+
     const module: TestingModule = await Test.createTestingModule({
-      imports: [FirebaseModule],
       controllers: [ConferenceController],
       providers: [
         ConferenceService,
         Logger,
-        FirebaseAdminService,
-        FirebaseUploadService,
-        ImageUploadInterceptor,
+        { provide: FirebaseUploadService, useValue: mockFirebaseUploadService },
         {
           provide: getModelToken('Conference'),
           useValue: {},

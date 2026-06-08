@@ -51,7 +51,7 @@ export class ConferenceController {
   @Post()
   @CreateConferenceSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @UseInterceptors(ImageUploadInterceptor)
   @HttpCode(201)
   async create(@Body() dto: CreateConferenceDto): Promise<ConferenceResponse> {
@@ -78,7 +78,7 @@ export class ConferenceController {
   @Put('/:conferenceId')
   @UpdateConferenceSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(200)
   async update(
     @Param('conferenceId') conferenceId: ConferenceIdDto,
@@ -91,7 +91,7 @@ export class ConferenceController {
   @Delete('/:conferenceId')
   @DeleteConferenceSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(204)
   async delete(@Param('conferenceId') conferenceId: ConferenceIdDto): Promise<void> {
     this.logger.log(`Delete conference id: ${conferenceId} controller`)
@@ -101,7 +101,7 @@ export class ConferenceController {
   @Post('/:conferenceId/attendee/:userId')
   @AddAttendeeToConferenceSwaggerDecorator()
   @Roles(ADMIN_ROLE, USER_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(200)
   async addAttendeeToConference(
     @Param('conferenceId') conferenceId: ConferenceIdDto,
@@ -115,7 +115,7 @@ export class ConferenceController {
   @Put('/:conferenceId/status')
   @UpdateConferenceStatusSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(200)
   async updateStatus(
     @Param('conferenceId') conferenceId: string,
@@ -128,7 +128,7 @@ export class ConferenceController {
   @Post('/:conferenceId/images')
   @UploadConferenceImageSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @UseInterceptors(ImageUploadInterceptor)
   @HttpCode(200)
   async uploadImage(
@@ -142,7 +142,7 @@ export class ConferenceController {
   @Delete('/:conferenceId/images/:imageId')
   @DeleteConferenceImageSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(204)
   async deleteImage(
     @Param('conferenceId') conferenceId: string,
@@ -155,7 +155,7 @@ export class ConferenceController {
   @Get('/:conferenceId/attendees/export')
   @ExportConferenceAttendeesSwaggerDecorator()
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   async exportAttendees(
     @Param('conferenceId') conferenceId: string,
     @Res({ passthrough: true }) res: Response,

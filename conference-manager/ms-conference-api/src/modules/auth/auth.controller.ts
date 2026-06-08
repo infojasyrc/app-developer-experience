@@ -23,7 +23,7 @@ export class AuthController {
 
   @Post('register')
   @Roles(ADMIN_ROLE)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('firebase-auth'), RolesGuard)
   @HttpCode(201)
   @RegisterSwaggerDecorator()
   async register(@Body() dto: RegisterDto) {
@@ -32,7 +32,7 @@ export class AuthController {
   }
 
   @Post('revoke-token')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('firebase-auth'))
   @HttpCode(200)
   @RevokeTokenSwaggerDecorator()
   async revokeToken(@Req() req: Request) {
