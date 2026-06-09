@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FiCalendar, FiUsers, FiKey } from "react-icons/fi";
+import { SettingsButton } from "./SettingsButton";
 
 export interface LeftMenuProps {
   isAdmin: boolean;
@@ -34,25 +35,32 @@ export default function LeftMenu({ isAdmin, onClose }: LeftMenuProps) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col gap-0.5 p-2" aria-label="Main navigation">
-      {NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin).map((item) => {
-        const isActive = pathname === item.href;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onClose}
-            className={`flex items-center gap-3 px-3 py-2.5 text-sm rounded-md transition-colors ${
-              isActive
-                ? "bg-mainBlue text-white font-medium"
-                : "text-dark hover:bg-lightBlue"
-            }`}
-          >
-            {item.icon}
-            {item.label}
-          </Link>
-        );
-      })}
-    </nav>
+    <div className="flex flex-col h-full">
+      <nav className="flex flex-col gap-0.5 p-2" aria-label="Main navigation">
+        {NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin).map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onClose}
+              className={`flex items-center gap-3 px-3 py-2.5 text-sm rounded-md transition-colors ${
+                isActive
+                  ? "bg-mainBlue text-white font-medium"
+                  : "text-dark hover:bg-lightBlue"
+              }`}
+            >
+              {item.icon}
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Settings — pinned to the bottom of the sidebar */}
+      <div className="mt-auto border-t border-mediumGray px-2 py-2">
+        <SettingsButton />
+      </div>
+    </div>
   );
 }
