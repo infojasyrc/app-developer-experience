@@ -34,6 +34,6 @@ export default class ConferenceMapper {
     const { isAdmin, createdBy, ...filters } = params
     return isAdmin
       ? { createdBy, ...filters }
-      : { status: ConferenceStatus.ACTIVE, ...filters }
+      : { ...filters, status: ConferenceStatus.ACTIVE }
   }
 }

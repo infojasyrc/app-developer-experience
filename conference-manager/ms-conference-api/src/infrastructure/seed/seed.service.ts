@@ -3,7 +3,8 @@ import { Injectable, Logger } from '@nestjs/common'
 import { UserService } from '../../modules/users/user.service'
 import { HeadquarterService } from '../../modules/headquarter/headquarter.service'
 import { ConferenceService } from '../../modules/conferences/conference.service'
-import { SEED_USERS, SEED_HEADQUARTERS, SEED_CONFERENCES, SeedConferenceFixture } from './seed.data'
+import { ConferenceStatus } from '../../modules/conferences/conference.enum'
+import { SEED_USERS, SEED_HEADQUARTERS, SEED_CONFERENCES, SEED_ADMIN_UID, SeedConferenceFixture } from './seed.data'
 import { CreateConferenceDto } from '../../modules/conferences/dto/create-conference.dto'
 import { Headquarter } from '../../modules/headquarter/headquarter.entity'
 
@@ -72,7 +73,11 @@ export class SeedService {
     for (const fixture of SEED_CONFERENCES) {
       const dto = this.buildConferenceDto(fixture, headquarterId)
       try {
-        await this.conferenceService.create(dto)
+        const created = await this.conferenceService.create(dto)
+        await this.conferenceService.updateStatus(created._id, {
+          status: ConferenceStatus.ACTIVE,
+          updatedBy: SEED_ADMIN_UID,
+        })
         this.logger.log(`  ✓ created  ${fixture.name}`)
       } catch (err: any) {
         if (this.isDuplicate(err)) {
