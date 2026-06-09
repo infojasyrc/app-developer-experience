@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FiCalendar, FiUsers, FiKey } from "react-icons/fi";
-import { SettingsButton } from "./SettingsButton";
 
 export interface LeftMenuProps {
   isAdmin: boolean;
@@ -57,10 +56,6 @@ export default function LeftMenu({ isAdmin, onClose }: LeftMenuProps) {
         })}
       </nav>
 
-      {/* Settings — pinned to the bottom of the sidebar */}
-      <div className="mt-auto border-t border-mediumGray px-2 py-2">
-        <SettingsButton />
-      </div>
     </div>
   );
 }

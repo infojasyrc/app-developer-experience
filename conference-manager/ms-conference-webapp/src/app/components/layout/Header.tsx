@@ -2,7 +2,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { FiUser, FiMenu, FiLogOut, FiLogIn } from "react-icons/fi";
+import { FiUser, FiMenu, FiLogOut, FiSun, FiMoon } from "react-icons/fi";
+import { useThemeMode } from "@/app/lib/contexts/ThemeContext";
 
 export interface HeaderProps {
   isAuthenticated: boolean;
@@ -22,6 +23,7 @@ export default function Header({
   version,
 }: HeaderProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { mode, toggleTheme } = useThemeMode();
 
   const closeDropdown = () => setDropdownOpen(false);
 
@@ -54,13 +56,22 @@ export default function Header({
         </Link>
       </div>
 
-      {/* Right: version + auth actions */}
+      {/* Right: version + theme toggle + auth actions */}
       <div className="flex items-center gap-3 relative">
         {version && (
           <span className="text-xs text-transparentWhite hidden sm:block">
             v{version}
           </span>
         )}
+
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label="Toggle dark mode"
+          className="p-1.5 rounded hover:bg-darkerBlue transition-colors"
+        >
+          {mode === "dark" ? <FiSun size={18} /> : <FiMoon size={18} />}
+        </button>
 
         {isAuthenticated ? (
           <>
@@ -101,10 +112,12 @@ export default function Header({
           </>
         ) : (
           <button
+            type="button"
             onClick={onLogin}
-            className="flex items-center gap-1.5 bg-white text-mainBlue text-sm font-medium px-3 py-1.5 rounded hover:bg-lightBlue transition-colors"
+            className="flex items-center bg-white text-mainBlue text-sm font-semibold px-4 py-2.5 rounded-full hover:bg-lightBlue transition-colors min-w-[88px] min-h-[44px] justify-center"
+            aria-label="Sign in to your account"
           >
-            <FiLogIn size={14} /> Login
+            Sign In
           </button>
         )}
       </div>

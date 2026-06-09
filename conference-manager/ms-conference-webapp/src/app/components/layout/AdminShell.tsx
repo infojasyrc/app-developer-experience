@@ -6,6 +6,7 @@ import { useAuth } from "../../lib/hooks/useAuth";
 import Header from "./Header";
 import DrawerMenu from "./DrawerMenu";
 import LeftMenu from "./LeftMenu";
+import pkg from "../../../../package.json";
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -29,6 +30,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         onLogin={() => router.push("/login")}
         onLogout={handleLogout}
         onMenuOpen={() => setDrawerOpen(true)}
+        version={pkg.version}
       />
 
       {/* Mobile drawer */}

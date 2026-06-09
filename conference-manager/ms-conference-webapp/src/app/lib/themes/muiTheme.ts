@@ -23,8 +23,8 @@ const tokens = {
   lightGray: '#f6f7f7',
   white:     '#ffffff',
 
-  // Font stack (matches Tailwind `fontFamily.sans`)
   fontFamily: [
+    'var(--font-geist-sans)',
     '-apple-system',
     'BlinkMacSystemFont',
     '"Segoe UI"',
