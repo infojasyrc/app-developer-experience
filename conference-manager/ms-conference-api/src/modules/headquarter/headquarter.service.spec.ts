@@ -65,7 +65,7 @@ describe('HeadquarterService', () => {
       expect(result).toEqual(HEADQUARTERMOCK)
     })
 
-    it('should throw BadRequestException when name already exists', async () => {
+    it('should throw BadRequestException when city and country already exists', async () => {
       mockHeadquarterModel.findOne.mockResolvedValue(HEADQUARTERMOCK)
 
       await expect(service.create(CREATE_HEADQUARTER_MOCK_DTO)).rejects.toThrow(BadRequestException)
@@ -84,7 +84,8 @@ describe('HeadquarterService', () => {
       expect(mockHeadquarterModel.find).toHaveBeenCalled()
       expect(result).toHaveLength(LISTHEADQUARTERMOCK.length)
       expect(result[0]).toHaveProperty('_id')
-      expect(result[0]).toHaveProperty('name')
+      expect(result[0]).toHaveProperty('city')
+      expect(result[0]).toHaveProperty('country')
     })
   })
 
@@ -110,14 +111,14 @@ describe('HeadquarterService', () => {
 
   describe('update', () => {
     it('should return the updated headquarter', async () => {
-      const updated = { ...HEADQUARTERMOCK, name: 'Bogota Updated' }
+      const updated = { ...HEADQUARTERMOCK, city: 'Bogota Norte', country: 'Colombia' }
       mockExec.mockResolvedValueOnce(updated)
 
       const result = await service.update(String(MOCKOBJECTID), UPDATE_HEADQUARTER_MOCK_DTO)
 
       expect(mockHeadquarterModel.findOneAndUpdate).toHaveBeenCalledWith(
         { _id: String(MOCKOBJECTID) },
-        expect.objectContaining({ name: 'Bogota Updated' }),
+        expect.objectContaining({ city: 'Bogota Norte', country: 'Colombia' }),
         { new: true },
       )
       expect(result).toEqual(updated)

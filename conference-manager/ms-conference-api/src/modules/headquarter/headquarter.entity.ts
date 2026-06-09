@@ -9,9 +9,13 @@ export class Headquarter {
   @ApiProperty()
   _id!: string
 
-  @ApiProperty({ description: 'Unique headquarter name' })
-  @Prop({ required: true, unique: true })
-  name!: string
+  @ApiProperty({ description: 'Headquarter city' })
+  @Prop({ required: true })
+  city!: string
+
+  @ApiProperty({ description: 'Headquarter country' })
+  @Prop({ required: true })
+  country!: string
 
   @Prop({ required: true })
   createdBy!: string
@@ -25,3 +29,6 @@ export class Headquarter {
 }
 
 export const HeadquarterSchema = SchemaFactory.createForClass(Headquarter)
+
+// Compound unique index — a city+country pair must be unique across headquarters
+HeadquarterSchema.index({ city: 1, country: 1 }, { unique: true })

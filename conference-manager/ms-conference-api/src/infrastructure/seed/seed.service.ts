@@ -48,12 +48,12 @@ export class SeedService {
       try {
         const hq = await this.headquarterService.create(dto)
         if (!firstId) firstId = hq._id
-        this.logger.log(`  ✓ created  ${dto.name}`)
+        this.logger.log(`  ✓ created  ${dto.city}, ${dto.country}`)
       } catch (err: any) {
         if (this.isDuplicate(err)) {
-          this.logger.log(`  ~ skipped  ${dto.name} (already exists)`)
+          this.logger.log(`  ~ skipped  ${dto.city}, ${dto.country} (already exists)`)
         } else {
-          this.logger.error(`  ✗ failed   ${dto.name}: ${err.message}`)
+          this.logger.error(`  ✗ failed   ${dto.city}, ${dto.country}: ${err.message}`)
         }
       }
     }

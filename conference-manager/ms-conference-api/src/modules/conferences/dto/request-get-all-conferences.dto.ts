@@ -14,7 +14,7 @@ export class RequestGetAllConferencesDto {
   status?: string
 
   @ApiProperty({
-    description: 'Conference headquarter',
+    description: 'Filter conferences by headquarter ID',
     required: false,
   })
   @IsOptional()

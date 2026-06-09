@@ -9,11 +9,12 @@ export default class HeadquarterMapper {
   public static toResponse(headquarter: Headquarter): HeadquarterResponse {
     return {
       _id: String(headquarter._id),
-      name: headquarter.name,
+      city: headquarter.city,
+      country: headquarter.country,
       createdBy: headquarter.createdBy,
       updatedBy: headquarter.updatedBy,
-      createdAt: headquarter.createdAt!,
-      updatedAt: headquarter.updatedAt!,
+      createdAt: headquarter.createdAt,
+      updatedAt: headquarter.updatedAt,
     }
   }
 
@@ -23,14 +24,16 @@ export default class HeadquarterMapper {
 
   public static createHeadquarterMapper(dto: CreateHeadquarterDto): Partial<Headquarter> {
     return {
-      name: dto.name,
+      city: dto.city,
+      country: dto.country,
       createdBy: dto.createdBy ?? '',
     }
   }
 
   public static updateHeadquarterMapper(dto: UpdateHeadquarterDto): Partial<Headquarter> {
     const update: Partial<Headquarter> = {}
-    if (dto.name !== undefined) update.name = dto.name
+    if (dto.city    !== undefined) update.city    = dto.city
+    if (dto.country !== undefined) update.country = dto.country
     if (dto.updatedBy !== undefined) update.updatedBy = dto.updatedBy
     return update
   }

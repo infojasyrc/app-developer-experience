@@ -10,22 +10,26 @@ export const SEED_USERS: CreateUserDto[] = [
     uid: 'sRrmUhxMgrhA1WeMyQp9CzzxyO92',
     firstName: 'User',
     lastName: 'App',
-    email: 'testuser@chupito.com',
+    email: 'testuser@hakoopro.com',
     createdBy: SEED_ADMIN_UID,
   },
   {
     uid: SEED_ADMIN_UID,
     firstName: 'User',
     lastName: 'Admin',
-    email: 'adminuser@chupito.com',
+    email: 'adminuser@hakoopro.com',
     createdBy: SEED_ADMIN_UID,
   },
 ]
 
 export const SEED_HEADQUARTERS: CreateHeadquarterDto[] = [
-  { name: 'Bogota', createdBy: SEED_ADMIN_UID },
-  { name: 'Panama', createdBy: SEED_ADMIN_UID },
-  { name: 'Lima',   createdBy: SEED_ADMIN_UID },
+  { city: 'Bogota',      country: 'Colombia', createdBy: SEED_ADMIN_UID },
+  { city: 'Panama City', country: 'Panama',   createdBy: SEED_ADMIN_UID },
+  { city: 'Lima',        country: 'Peru',     createdBy: SEED_ADMIN_UID },
+  { city: 'California',  country: 'USA',     createdBy: SEED_ADMIN_UID },
+  { city: 'New York',    country: 'USA',     createdBy: SEED_ADMIN_UID },
+  { city: 'Washington',  country: 'USA',     createdBy: SEED_ADMIN_UID },
+  { city: 'Paris',       country: 'France',   createdBy: SEED_ADMIN_UID },
 ]
 
 // `headquarter` is injected at seed time; `image` is omitted (no file upload during seeding)

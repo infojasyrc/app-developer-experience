@@ -6,7 +6,7 @@ export function CreateHeadquarterSwaggerDecorator() {
   return applyDecorators(
     ApiResponse({ status: 201, description: 'Headquarter successfully created', type: Headquarter }),
     ApiResponse({ status: 400, description: 'Bad request, some fields did not pass validation.' }),
-    ApiResponse({ status: 409, description: 'A headquarter with that name already exists.' }),
+    ApiResponse({ status: 409, description: 'A headquarter in that city and country already exists.' }),
     ApiBearerAuth()
   )
 }
