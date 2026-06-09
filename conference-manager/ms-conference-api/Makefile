@@ -37,7 +37,7 @@ DEV_VOLUME_API = \
 .PHONY: help docker-clean build-dev build-prod get-token interactive create-volumes install-dependencies \
 	audit-fix-dependencies lint unit-tests unit-tests-v2 watch-unit-tests-v2 \
 	launch-db stop-db launch-local-dev stop-local-dev launch-local-prod stop-local-prod \
-	launch-unleash stop-unleash reset-unleash seed-data clear-data
+	launch-unleash stop-unleash reset-unleash seed-data clear-data reset-db
 
 docker-clean: ## ❌ Stop & prune all containers/images (DANGEROUS)
 ifeq ($(OS),Windows_NT)
@@ -135,6 +135,9 @@ launch-db: ## 🗄️ Launch MongoDB container locally
 
 stop-db: ## 🛑 Stop local MongoDB container
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml down
+
+reset-db: ## 🗑️ Stop MongoDB and wipe its data volume — clears stale indexes (dev only)
+	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml down -v
 
 launch-local-dev: ## 🚀 Launch API + DB + Feature Toogles (development stack)
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \

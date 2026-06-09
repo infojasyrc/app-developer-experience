@@ -15,7 +15,8 @@ export const MOCK_AUDIT_DATE    = new Date('2026-01-01T00:00:00.000Z')
 
 export const MOCK_HEADQUARTER = {
   _id: '654d4ac398b7a0abaa3c3a40',
-  name: 'Panamá',
+  city: 'Panama City',
+  country: 'Panama',
   createdBy: MOCK_CREATED_BY,
   createdAt: MOCK_AUDIT_DATE,
   updatedAt: MOCK_AUDIT_DATE,

@@ -33,9 +33,9 @@ export class ClearService {
   }
 
   private async clearHeadquarters(): Promise<void> {
-    const names = SEED_HEADQUARTERS.map(h => h.name)
-    this.logger.log(`Clearing ${names.length} headquarters`)
-    const { deletedCount } = await this.headquarterModel.deleteMany({ name: { $in: names } })
+    const cities = SEED_HEADQUARTERS.map(h => h.city)
+    this.logger.log(`Clearing ${cities.length} headquarters`)
+    const { deletedCount } = await this.headquarterModel.deleteMany({ city: { $in: cities } })
     this.logger.log(`  ✓ ${deletedCount} headquarter(s) removed`)
   }
 

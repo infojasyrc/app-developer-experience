@@ -78,7 +78,7 @@ describe('HeadquarterController', () => {
 
   describe('update', () => {
     it('should update and return the headquarter', async () => {
-      const updated = { ...HEADQUARTERMOCK, name: 'Bogota Updated' }
+      const updated = { ...HEADQUARTERMOCK, city: 'Bogota Norte', country: 'Colombia' }
       jest.spyOn(service, 'update').mockResolvedValue(updated)
 
       const result = await controller.update(String(MOCKOBJECTID), UPDATE_HEADQUARTER_MOCK_DTO)

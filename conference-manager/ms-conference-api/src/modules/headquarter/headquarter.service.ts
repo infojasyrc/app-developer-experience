@@ -22,9 +22,9 @@ export class HeadquarterService {
 
   async create(dto: CreateHeadquarterDto): Promise<HeadquarterResponse> {
     this.logger.log('Create headquarter service')
-    const existing = await this.headquarterModel.findOne({ name: dto.name })
+    const existing = await this.headquarterModel.findOne({ city: dto.city, country: dto.country })
     if (existing)
-      throw new BadRequestException(`The headquarter with name: ${dto.name}, already exists`)
+      throw new BadRequestException(`A headquarter in ${dto.city}, ${dto.country} already exists`)
     const created = await this.headquarterModel.create(HeadquarterMapper.createHeadquarterMapper(dto))
     return HeadquarterMapper.toResponse(created)
   }
