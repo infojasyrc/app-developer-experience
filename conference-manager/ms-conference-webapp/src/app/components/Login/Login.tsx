@@ -1,12 +1,10 @@
 "use client";
 import React, { useState } from 'react';
 import type { ReactElement } from 'react';
-import {
-  MdMailOutline,
-  MdLock,
-  MdVisibility,
-  MdVisibilityOff,
-} from 'react-icons/md';
+import MailOutlinedIcon from '@mui/icons-material/MailOutlined';
+import LockIcon from '@mui/icons-material/Lock';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import GoogleButton from 'react-google-button';
 import { loginStyle } from '../../shared/styles/login';
 import Image from 'next/image';
@@ -70,7 +68,7 @@ export default function Login({
         <div className={loginStyle.formContainer}>
           <div className="relative w-full mb-3">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <MdMailOutline className={loginStyle.icons} />
+              <MailOutlinedIcon className={loginStyle.icons} />
             </div>
             <input
               type="email"
@@ -85,7 +83,7 @@ export default function Login({
 
           <div className="relative w-full">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <MdLock className={loginStyle.icons} />
+              <LockIcon className={loginStyle.icons} />
             </div>
             <input
               type={showPassword ? 'text' : 'password'}
@@ -98,14 +96,16 @@ export default function Login({
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-3">
               {showPassword ? (
-                <MdVisibility
+                <VisibilityIcon
                   onClick={() => setShowPassword(!showPassword)}
                   className={loginStyle.icons}
+                  style={{ cursor: 'pointer' }}
                 />
               ) : (
-                <MdVisibilityOff
+                <VisibilityOffIcon
                   onClick={() => setShowPassword(!showPassword)}
                   className={loginStyle.icons}
+                  style={{ cursor: 'pointer' }}
                 />
               )}
             </div>

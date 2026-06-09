@@ -65,7 +65,7 @@ export default function DrawerMenu({
         </div>
 
         {/* Navigation */}
-        <div className="flex-1 overflow-y-auto py-2">
+        <div className="flex flex-col flex-1 overflow-y-auto py-2">
           <LeftMenu isAdmin={isAdmin} onClose={onClose} />
         </div>
 
