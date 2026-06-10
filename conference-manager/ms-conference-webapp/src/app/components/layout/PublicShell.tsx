@@ -16,7 +16,7 @@ export default function PublicShell({ children }: { children: React.ReactNode })
   };
 
   return (
-    <div className="min-h-screen bg-lightGray">
+    <div className="min-h-screen bg-lightGray dark:bg-[#121212]">
       <Header
         isAuthenticated={isLoggedIn ?? false}
         username={username}

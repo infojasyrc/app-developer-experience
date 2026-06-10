@@ -46,7 +46,7 @@ export default function LeftMenu({ isAdmin, onClose }: LeftMenuProps) {
               className={`flex items-center gap-3 px-3 py-2.5 text-sm rounded-md transition-colors ${
                 isActive
                   ? "bg-mainBlue text-white font-medium"
-                  : "text-dark hover:bg-lightBlue"
+                  : "text-dark dark:text-white hover:bg-lightBlue dark:hover:bg-[#2a2a2a]"
               }`}
             >
               {item.icon}

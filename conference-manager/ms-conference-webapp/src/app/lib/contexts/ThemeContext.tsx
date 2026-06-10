@@ -29,6 +29,12 @@ export const ThemeContextProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [])
 
+  // Sync the `.dark` class on <html> so Tailwind dark: utilities activate.
+  // Runs after every mode change (including the post-hydration localStorage restore).
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', mode === 'dark')
+  }, [mode])
+
   const toggleTheme = () => {
     setMode(prev => {
       const next: ThemeMode = prev === 'light' ? 'dark' : 'light'
