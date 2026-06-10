@@ -70,7 +70,7 @@ export default function Header({
           aria-label="Toggle dark mode"
           className="p-1.5 rounded hover:bg-darkerBlue transition-colors"
         >
-          {mode === "dark" ? <FiSun size={18} /> : <FiMoon size={18} />}
+          {mode === "dark" ? <FiMoon size={18} /> : <FiSun size={18} />}
         </button>
 
         {isAuthenticated ? (
