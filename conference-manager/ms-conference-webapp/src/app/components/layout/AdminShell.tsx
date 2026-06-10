@@ -6,6 +6,7 @@ import { useAuth } from "../../lib/hooks/useAuth";
 import Header from "./Header";
 import DrawerMenu from "./DrawerMenu";
 import LeftMenu from "./LeftMenu";
+import pkg from "../../../../package.json";
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -22,13 +23,14 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <div className="min-h-screen bg-lightGray">
+    <div className="min-h-screen bg-lightGray dark:bg-[#121212]">
       <Header
         isAuthenticated={isLoggedIn ?? false}
         username={username}
         onLogin={() => router.push("/login")}
         onLogout={handleLogout}
         onMenuOpen={() => setDrawerOpen(true)}
+        version={pkg.version}
       />
 
       {/* Mobile drawer */}
@@ -41,7 +43,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
       <div className="flex pt-14">
         {/* Desktop sidebar */}
-        <aside className="hidden md:flex flex-col w-56 bg-white border-r border-mediumGray fixed top-14 bottom-0 left-0 z-30 overflow-y-auto">
+        <aside className="hidden md:flex flex-col w-56 bg-white dark:bg-[#1e1e1e] border-r border-mediumGray dark:border-[#333] fixed top-14 bottom-0 left-0 z-30 overflow-y-auto">
           <LeftMenu isAdmin={isAdmin} />
         </aside>
 

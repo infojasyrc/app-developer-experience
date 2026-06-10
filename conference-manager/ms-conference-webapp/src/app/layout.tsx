@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "./providers";
 import { ThemeRegistry } from "./components/ThemeRegistry";
-import Version from "./components/layout/Version";
 
 import "./globals.css";
 
@@ -27,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
@@ -35,7 +34,6 @@ export default function RootLayout({
         <ThemeRegistry>
           <Providers>{children}</Providers>
         </ThemeRegistry>
-        <Version />
       </body>
     </html>
   );

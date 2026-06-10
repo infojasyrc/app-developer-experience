@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, ReactNode, useContext, useState } from 'react'
+import React, { createContext, ReactNode, startTransition, useContext, useEffect, useState } from 'react'
 
 export type ThemeMode = 'light' | 'dark'
 
@@ -17,11 +17,23 @@ const ThemeContext = createContext<ThemeContextProps>({
 })
 
 export const ThemeContextProvider = ({ children }: { children: ReactNode }) => {
-  const [mode, setMode] = useState<ThemeMode>(() => {
-    if (typeof window === 'undefined') return 'light'
+  // Always start with 'light' so the server and client produce identical HTML on
+  // the first render. After hydration, a useEffect syncs the stored preference —
+  // eliminating the server/client branch that caused the hydration mismatch.
+  const [mode, setMode] = useState<ThemeMode>('light')
+
+  useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY) as ThemeMode | null
-    return stored === 'light' || stored === 'dark' ? stored : 'light'
-  })
+    if (stored === 'light' || stored === 'dark') {
+      startTransition(() => setMode(stored))
+    }
+  }, [])
+
+  // Sync the `.dark` class on <html> so Tailwind dark: utilities activate.
+  // Runs after every mode change (including the post-hydration localStorage restore).
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', mode === 'dark')
+  }, [mode])
 
   const toggleTheme = () => {
     setMode(prev => {

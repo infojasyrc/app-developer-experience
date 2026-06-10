@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Class-based dark mode: activates dark: utilities when <html> has the .dark class */
+@variant dark (&:where(.dark, .dark *));
 
 :root {
   --background: #ffffff;
@@ -8,19 +10,47 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Brand palette — mirrors tailwind.config.ts tokens */
+  --color-mainBlue:          #5669FF;
+  --color-darkerBlue:        #3D37F1;
+  --color-lightBlue:         #F2F2FA;
+  --color-disabledButton:    #929EFF;
+  --color-pink:              #F178B6;
+  --color-boldPink:          #EF5DA8;
+  --color-darkPink:          #C55492;
+  --color-green:             #13CB89;
+  --color-blue:              #1f6ae2;
+  --color-red:               #ff0505;
+  --color-yellow:            #E9B741;
+  --color-orangeTransparent: #ff6d007d;
+  --color-lightOrange:       #f89937;
+
+  /* Neutrals */
+  --color-dark:              #3c3c3c;
+  --color-boldGray:          #6A6A6A;
+  --color-gray:              #9a9a9a;
+  --color-mediumGray:        #cdcdcd;
+  --color-lightGray:         #f6f7f7;
+  --color-darkGray:          #567077;
+  --color-shadowGray:        #959595;
+  --color-white:             #ffffff;
+  --color-black:             #000000;
+  --color-transparentYellow: #FEFBF5;
+  --color-transparentWhite:  #ffffff69;
+  --color-transparentBlack:  #0808087d;
+
+  /* Typography */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }

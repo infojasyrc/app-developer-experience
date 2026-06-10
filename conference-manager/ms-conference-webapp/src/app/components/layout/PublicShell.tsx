@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { useRouter } from "next/navigation";
 import UserContext from "../../lib/contexts/UserContext";
 import Header from "./Header";
+import pkg from "../../../../package.json";
 
 export default function PublicShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -15,12 +16,13 @@ export default function PublicShell({ children }: { children: React.ReactNode })
   };
 
   return (
-    <div className="min-h-screen bg-lightGray">
+    <div className="min-h-screen bg-lightGray dark:bg-[#121212]">
       <Header
         isAuthenticated={isLoggedIn ?? false}
         username={username}
         onLogin={() => router.push("/login")}
         onLogout={handleLogout}
+        version={pkg.version}
       />
       <main className="pt-14">{children}</main>
     </div>

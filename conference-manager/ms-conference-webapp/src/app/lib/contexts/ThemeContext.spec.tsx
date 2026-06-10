@@ -27,6 +27,7 @@ function renderWithProvider() {
 describe("ThemeContext", () => {
   beforeEach(() => {
     localStorage.clear();
+    document.documentElement.classList.remove("dark");
     vi.restoreAllMocks();
   });
 
@@ -107,6 +108,51 @@ describe("ThemeContext", () => {
       await user.click(screen.getByRole("button", { name: "Toggle" }));
 
       expect(spy).toHaveBeenCalledWith("theme-mode", "light");
+    });
+  });
+
+  describe("ThemeContextProvider — dark class on <html>", () => {
+    it("does not add dark class in default light mode", async () => {
+      renderWithProvider();
+      await act(async () => {});
+      expect(document.documentElement.classList.contains("dark")).toBe(false);
+    });
+
+    it("adds dark class when toggled to dark", async () => {
+      const user = userEvent.setup();
+      renderWithProvider();
+
+      await user.click(screen.getByRole("button", { name: "Toggle" }));
+
+      expect(document.documentElement.classList.contains("dark")).toBe(true);
+    });
+
+    it("removes dark class when toggled back to light", async () => {
+      const user = userEvent.setup();
+      renderWithProvider();
+
+      await user.click(screen.getByRole("button", { name: "Toggle" }));
+      expect(document.documentElement.classList.contains("dark")).toBe(true);
+
+      await user.click(screen.getByRole("button", { name: "Toggle" }));
+      expect(document.documentElement.classList.contains("dark")).toBe(false);
+    });
+
+    it("adds dark class on mount when localStorage stored dark", async () => {
+      localStorage.setItem("theme-mode", "dark");
+      renderWithProvider();
+
+      await waitFor(() =>
+        expect(document.documentElement.classList.contains("dark")).toBe(true)
+      );
+    });
+
+    it("does not add dark class when localStorage stored light", async () => {
+      localStorage.setItem("theme-mode", "light");
+      renderWithProvider();
+
+      await act(async () => {});
+      expect(document.documentElement.classList.contains("dark")).toBe(false);
     });
   });
 

@@ -32,7 +32,7 @@ export default function DrawerMenu({
 
       {/* Slide-in panel */}
       <aside
-        className={`fixed top-0 left-0 h-full w-60 bg-white shadow-xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed top-0 left-0 h-full w-60 bg-white dark:bg-[#1e1e1e] shadow-xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out md:hidden ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
         aria-label="Navigation drawer"
@@ -70,13 +70,13 @@ export default function DrawerMenu({
         </div>
 
         {/* Logout */}
-        <div className="border-t border-mediumGray">
+        <div className="border-t border-mediumGray dark:border-[#333]">
           <button
             onClick={() => {
               onClose();
               onLogout();
             }}
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-dark hover:bg-lightGray transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-dark dark:text-white hover:bg-lightGray dark:hover:bg-[#2a2a2a] transition-colors"
           >
             <FiLogOut size={18} /> Logout
           </button>
