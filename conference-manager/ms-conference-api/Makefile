@@ -146,11 +146,13 @@ reset-db: ## 🗑️ Stop MongoDB and wipe its data volume — clears stale inde
 launch-local-dev: ## 🚀 Launch API + DB + Feature Toogles (development stack)
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
+		-f docker-compose/docker-compose.tools.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml up
 
 stop-local-dev: ## 🛑 Stop development stack
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
+		-f docker-compose/docker-compose.tools.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml down
 
 launch-local-prod: ## 🚀 Launch production-like stack locally

@@ -5,6 +5,8 @@ services:
   ob-prometheus:
     container_name: ${COMPOSE_PROJECT_NAME}-ob-prometheus
     image: prom/prometheus
+    platform: ${PLATFORM}
+    restart: always
     ports:
       - 9090:9090
     volumes:
