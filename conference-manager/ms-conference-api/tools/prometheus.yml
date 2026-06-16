@@ -9,4 +9,4 @@ scrape_configs:
     static_configs:
       # 'host.docker.internal' allows Prometheus in container to 
       # communicate with the host machine where the API is running
-      - targets: ['host.docker.internal:5002']
+      - targets: ['ms-conference-api:5002']
