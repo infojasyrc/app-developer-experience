@@ -86,8 +86,14 @@ interactive: ## 🚀 Run API standalone (healthcheck only, no DB)
 		-p "${MS_PORT}:${MS_PORT}" \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash
 
-create-volumes: ## 📦 Create external container volume for node_modules (run once before first use)
-	docker volume create $(COMPOSE_PROJECT_NAME)-api-packages
+create-volumes: ## 📦 Create external container volume if they do not exist
+	@echo "Checking and creating external volumes..."
+	@docker volume inspect $(COMPOSE_PROJECT_NAME)-api-packages >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-api-packages" && docker volume create $(COMPOSE_PROJECT_NAME)-api-packages)
+	@docker volume inspect $(COMPOSE_PROJECT_NAME)-prometheus-data >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-prometheus-data" && docker volume create $(COMPOSE_PROJECT_NAME)-prometheus-data)
+	@docker volume inspect $(COMPOSE_PROJECT_NAME)-grafana-data >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-grafana-data" && docker volume create $(COMPOSE_PROJECT_NAME)-grafana-data)
 
 install-dependencies: ## 📦 Install node packages into dev volume
 	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
@@ -142,11 +148,13 @@ reset-db: ## 🗑️ Stop MongoDB and wipe its data volume — clears stale inde
 launch-local-dev: ## 🚀 Launch API + DB + Feature Toogles (development stack)
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
+		-f docker-compose/docker-compose.tools.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml up
 
 stop-local-dev: ## 🛑 Stop development stack
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
+		-f docker-compose/docker-compose.tools.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml down
 
 launch-local-prod: ## 🚀 Launch production-like stack locally

@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s # by default, scrape targets every 15 seconds
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'cm-api'
+    scrape_interval: 5s # Faster sampling for local development
+    metrics_path: '/metrics'
+    static_configs:
+      # 'host.docker.internal' allows Prometheus in container to 
+      # communicate with the host machine where the API is running
+      - targets: ['ms-conference-api:5002']
