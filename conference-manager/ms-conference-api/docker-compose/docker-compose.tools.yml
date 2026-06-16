@@ -11,7 +11,12 @@ services:
       - 9090:9090
     volumes:
       - prometheus-data:/prometheus
-      # - /path/to/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../tools/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
 
 networks:
   default:

@@ -3,11 +3,20 @@ import { ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
 import { AppModule } from './app.module'
+import { MetricsInterceptor } from './infrastructure/monitoring/metrics.interceptor'
+import { MetricsService } from './infrastructure/monitoring/metrics.service'
 import { initSwagger } from './infrastructure/swagger/swagger.config'
 import { getCORSHeaders } from './infrastructure/headers'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+
+  const configService = app.get(ConfigService)
+  app.enableCors(getCORSHeaders())
+
+  const metricsService = app.get(MetricsService)
+  app.useGlobalInterceptors(new MetricsInterceptor(metricsService))
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -15,8 +24,6 @@ async function bootstrap() {
       transform: true,
     })
   )
-
-  const configService = app.get(ConfigService)
 
   const swaggerTitle = configService.get<string>('SWAGGER_DOCS_TITLE', 'V2 API')
   const swaggerDescription = configService.get<string>(
@@ -28,9 +35,12 @@ async function bootstrap() {
 
   initSwagger(app, { title: swaggerTitle, description: swaggerDescription, version: swaggerVersion }, swaggerPath)
 
-  app.enableCors(getCORSHeaders())
   await app.init()
-  app.listen(Number(configService.get<string>('MS_PORT', '3000')))
+  const port = Number(configService.get<string>('MS_PORT', '3000'));
+  await app.listen(port, '0.0.0.0');
+
+  console.log(`🚀 Application is running on: http://localhost:${port}`);
+  console.log(`📊 Metrics available on: http://localhost:${port}/metrics`);
 }
 
 bootstrap()

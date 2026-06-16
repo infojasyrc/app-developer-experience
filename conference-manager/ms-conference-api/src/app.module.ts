@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport'
 import { MongooseModule } from '@nestjs/mongoose'
 
 import getEnvironmentVariables from './infrastructure/environment'
+import { MetricsModule } from './infrastructure/monitoring/metrics.module'
 import { ConferenceModule } from './modules/conferences/conference.module'
 import { HeadquarterModule } from './modules/headquarter/headquarter.module'
 import { UserModule } from './modules/users/user.module'
@@ -24,6 +25,7 @@ import { HealthController } from './interfaces/health/health.controller'
           load: [getEnvironmentVariables],
           isGlobal: true,
         }),
+        MetricsModule,
         ConferenceModule,
         HeadquarterModule,
         UserModule,
