@@ -54,7 +54,13 @@ Never hardcode paths in AGENT.md or SKILL.md — always derive from here.
 |---|---|---|
 | `MOBILE_ROOT` | `mobile-app/` | All mobile templates |
 | `MOBILE_RN` | `mobile-app/whitewalker/` | React Native template |
-| `MOBILE_EXPO` | `mobile-app/whitewolf/` | Expo template |
+| `MOBILE_EXPO` | `mobile-app/whitewolf-rn/` | Expo template |
+
+## CLI Tooling
+
+| Alias | Resolved Path | Description |
+|---|---|---|
+| `CLI_ROOT` | `cli/` | Interactive conventional commits CLI (Python) |
 
 ## Agent Outputs
 
