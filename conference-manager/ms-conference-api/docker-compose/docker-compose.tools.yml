@@ -1,7 +1,7 @@
 ---
 
 services:
-  # observability-prometheus:
+  # observability-prometheus
   ob-prometheus:
     container_name: ${COMPOSE_PROJECT_NAME}-ob-prometheus
     image: prom/prometheus
@@ -18,6 +18,23 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
 
+  # observability-grafana
+  ob-grafana:
+    container_name: ${COMPOSE_PROJECT_NAME}-ob-grafana
+    image: grafana/grafana
+    platform: ${PLATFORM}
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - ob-prometheus
+    links:
+      - ob-prometheus
+
 networks:
   default:
     name: ${COMPOSE_PROJECT_NAME}-network
@@ -25,3 +42,5 @@ networks:
 volumes:
   prometheus-data:
     name: ${COMPOSE_PROJECT_NAME}-prometheus-data
+  grafana-data:
+    name: ${COMPOSE_PROJECT_NAME}-grafana-data

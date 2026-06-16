@@ -92,6 +92,8 @@ create-volumes: ## 📦 Create external container volume if they do not exist
 		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-api-packages" && docker volume create $(COMPOSE_PROJECT_NAME)-api-packages)
 	@docker volume inspect $(COMPOSE_PROJECT_NAME)-prometheus-data >/dev/null 2>&1 || \
 		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-prometheus-data" && docker volume create $(COMPOSE_PROJECT_NAME)-prometheus-data)
+	@docker volume inspect $(COMPOSE_PROJECT_NAME)-grafana-data >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-grafana-data" && docker volume create $(COMPOSE_PROJECT_NAME)-grafana-data)
 
 install-dependencies: ## 📦 Install node packages into dev volume
 	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \

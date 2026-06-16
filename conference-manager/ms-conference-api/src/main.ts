@@ -36,7 +36,7 @@ async function bootstrap() {
   initSwagger(app, { title: swaggerTitle, description: swaggerDescription, version: swaggerVersion }, swaggerPath)
 
   await app.init()
-  const port = Number(configService.get<string>('MS_PORT', '3000'));
+  const port = Number(configService.get<string>('MS_PORT', '5002'));
   await app.listen(port, '0.0.0.0');
 
   console.log(`🚀 Application is running on: http://localhost:${port}`);
