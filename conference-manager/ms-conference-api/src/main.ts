@@ -3,8 +3,6 @@ import { ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
 import { AppModule } from './app.module'
-import { MetricsInterceptor } from './infrastructure/monitoring/metrics.interceptor'
-import { MetricsService } from './infrastructure/monitoring/metrics.service'
 import { initSwagger } from './infrastructure/swagger/swagger.config'
 import { getCORSHeaders } from './infrastructure/headers'
 
@@ -13,9 +11,6 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService)
   app.enableCors(getCORSHeaders())
-
-  const metricsService = app.get(MetricsService)
-  app.useGlobalInterceptors(new MetricsInterceptor(metricsService))
 
   app.useGlobalPipes(
     new ValidationPipe({
