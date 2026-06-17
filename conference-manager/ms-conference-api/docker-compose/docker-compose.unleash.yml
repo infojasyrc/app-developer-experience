@@ -2,7 +2,7 @@
 
 services:
   unleash-app:
-    image: unleashorg/unleash-server
+    image: unleashorg/unleash-server:8.0
     container_name: unleash-app
     restart: unless-stopped
     platform: ${PLATFORM}
@@ -14,8 +14,7 @@ services:
       - DATABASE_SSL=false
       - UNLEASH_DEFAULT_ADMIN_USERNAME=${UNLEASH_DEFAULT_ADMIN_USERNAME}
       - UNLEASH_DEFAULT_ADMIN_PASSWORD=${UNLEASH_DEFAULT_ADMIN_PASSWORD}
-    ports:
-      - ${UNLEASH_DB_PORT}:4242
+      - AUTH_TYPE=none
     depends_on:
       unleash-db:
         condition: service_healthy

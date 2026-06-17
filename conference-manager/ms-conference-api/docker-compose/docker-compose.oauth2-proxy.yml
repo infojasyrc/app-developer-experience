@@ -1,0 +1,53 @@
+---
+
+# OAuth2 Proxy — SSO gateway for Unleash (Keycloak OIDC)
+#
+# Unleash OSS has no native OIDC. This proxy handles the Keycloak auth flow
+# and forwards authenticated requests to unleash-app (internal only).
+# Unleash runs with AUTH_TYPE=none so the proxy is the sole auth gate.
+#
+# URL split: --login-url uses localhost (browser redirect, host-accessible).
+# --redeem-url / --validate-url / --oidc-jwks-url use the container name
+# (server-to-server calls from proxy to Keycloak, Docker-internal).
+# --insecure-oidc-skip-issuer-verification is required because Keycloak's
+# iss claim reflects the hostname used in the request, which differs between
+# browser (localhost) and proxy container (keycloak container name).
+
+services:
+  oauth2-proxy-unleash:
+    container_name: ${COMPOSE_PROJECT_NAME}-oauth2-proxy-unleash
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0
+    platform: ${PLATFORM}
+    restart: unless-stopped
+    command:
+      - --provider=oidc
+      - --skip-oidc-discovery=true
+      - --insecure-oidc-skip-issuer-verification=true
+      - --oidc-issuer-url=http://localhost:8080/realms/conference-manager-tools
+      - --login-url=http://localhost:8080/realms/conference-manager-tools/protocol/openid-connect/auth
+      - --redeem-url=http://${COMPOSE_PROJECT_NAME}-keycloak:8080/realms/conference-manager-tools/protocol/openid-connect/token
+      - --validate-url=http://${COMPOSE_PROJECT_NAME}-keycloak:8080/realms/conference-manager-tools/protocol/openid-connect/userinfo
+      - --oidc-jwks-url=http://${COMPOSE_PROJECT_NAME}-keycloak:8080/realms/conference-manager-tools/protocol/openid-connect/certs
+      - --client-id=unleash
+      - --client-secret=${KEYCLOAK_UNLEASH_CLIENT_SECRET}
+      - --redirect-url=http://localhost:4242/oauth2/callback
+      - --upstream=http://unleash-app:4242
+      - --http-address=0.0.0.0:4243
+      - --cookie-secret=${OAUTH2_PROXY_COOKIE_SECRET}
+      - --cookie-secure=false
+      - --email-domain=*
+      - --skip-provider-button=true
+      - --skip-auth-regex=^/api/client/.*
+      - --skip-auth-regex=^/api/frontend/.*
+      - --skip-auth-regex=^/health$
+    ports:
+      - ${UNLEASH_DB_PORT}:4243
+    depends_on:
+      unleash-app:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+
+networks:
+  default:
+    name: ${COMPOSE_PROJECT_NAME}-network

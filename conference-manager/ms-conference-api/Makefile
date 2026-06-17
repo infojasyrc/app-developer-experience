@@ -37,7 +37,9 @@ DEV_VOLUME_API = \
 .PHONY: help docker-clean build-dev build-prod get-token interactive create-volumes install-dependencies \
 	audit-fix-dependencies lint unit-tests unit-tests-v2 watch-unit-tests-v2 \
 	launch-db stop-db launch-local-dev stop-local-dev launch-local-prod stop-local-prod \
-	launch-unleash stop-unleash reset-unleash seed-data clear-data reset-db
+	launch-unleash stop-unleash reset-unleash seed-data clear-data reset-db \
+	launch-keycloak stop-keycloak reset-keycloak \
+	launch-oauth2-proxy stop-oauth2-proxy
 
 docker-clean: ## ❌ Stop & prune all containers/images (DANGEROUS)
 ifeq ($(OS),Windows_NT)
@@ -145,15 +147,19 @@ stop-db: ## 🛑 Stop local MongoDB container
 reset-db: ## 🗑️ Stop MongoDB and wipe its data volume — clears stale indexes (dev only)
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml down -v
 
-launch-local-dev: ## 🚀 Launch API + DB + Feature Toogles (development stack)
+launch-local-dev: ## 🚀 Launch full dev stack (API + DB + Unleash + Keycloak SSO + Grafana SSO)
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
+		-f docker-compose/docker-compose.keycloak.yml \
+		-f docker-compose/docker-compose.oauth2-proxy.yml \
 		-f docker-compose/docker-compose.tools.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml up
 
-stop-local-dev: ## 🛑 Stop development stack
+stop-local-dev: ## 🛑 Stop full dev stack
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
+		-f docker-compose/docker-compose.keycloak.yml \
+		-f docker-compose/docker-compose.oauth2-proxy.yml \
 		-f docker-compose/docker-compose.tools.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml down
 
@@ -164,6 +170,24 @@ launch-local-prod: ## 🚀 Launch production-like stack locally
 stop-local-prod: ## 🛑 Stop production-like local stack
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.local.api.yml down
+
+launch-oauth2-proxy: ## 🔐 Launch oauth2-proxy SSO gateway for Unleash (requires Keycloak + Unleash running)
+	docker compose --env-file $(ENV_FILE) \
+		-f docker-compose/docker-compose.unleash.yml \
+		-f docker-compose/docker-compose.keycloak.yml \
+		-f docker-compose/docker-compose.oauth2-proxy.yml up
+
+stop-oauth2-proxy: ## 🛑 Stop oauth2-proxy SSO gateway
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.oauth2-proxy.yml down
+
+launch-keycloak: ## 🔐 Launch Keycloak IdP standalone
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml up
+
+stop-keycloak: ## 🛑 Stop Keycloak IdP
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml down
+
+reset-keycloak: ## 🗑️ Stop Keycloak and remove its data (re-imports realm on next start)
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml down -v
 
 help: ## List available make targets
 ifeq ($(OS),Windows_NT)

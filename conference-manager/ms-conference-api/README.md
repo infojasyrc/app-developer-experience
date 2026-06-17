@@ -24,13 +24,13 @@ removal, and listing of events. It utilizes Firebase service for Authentication.
 
 ## Dependencies
 
-For this application, we are using Node.js v18. (You will check .nvmrc file)
+For this application, we are using Node.js v20. (You will check .nvmrc file)
 
 For MacOS:
 
 ```bash
 brew install nvm docker
-nvm install v18
+nvm install v20
 ```
 
 We are using docker to manage containers
