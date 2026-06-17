@@ -3,7 +3,7 @@
 services:
   keycloak:
     container_name: ${COMPOSE_PROJECT_NAME}-keycloak
-    image: quay.io/keycloak/keycloak:26.2
+    image: quay.io/keycloak/keycloak:26.6
     platform: ${PLATFORM}
     restart: unless-stopped
     command: start-dev --import-realm
