@@ -16,7 +16,7 @@ export class MetricsService implements OnModuleInit {
     this.httpRequestsCounter = new client.Counter({
       name: 'cm_api_http_requests_total',
       help: 'Total de peticiones HTTP procesadas',
-      labelNames: ['method', 'status'], // Las dimensiones que analizaremos en PromQL
+      labelNames: ['method', 'status'],
     });
 
     // Gauge metric

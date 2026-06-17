@@ -1,0 +1,30 @@
+---
+
+services:
+  keycloak:
+    container_name: ${COMPOSE_PROJECT_NAME}-keycloak
+    image: quay.io/keycloak/keycloak:26.2
+    platform: ${PLATFORM}
+    restart: unless-stopped
+    command: start-dev --import-realm
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=${KEYCLOAK_ADMIN_USERNAME}
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+      - KC_HTTP_PORT=8080
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_HTTP_ENABLED=true
+    ports:
+      - 8080:8080
+    volumes:
+      - ../tools/keycloak/realms:/opt/keycloak/data/import
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -sf http://localhost:8080/realms/master || exit 1']
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+networks:
+  default:
+    name: ${COMPOSE_PROJECT_NAME}-network

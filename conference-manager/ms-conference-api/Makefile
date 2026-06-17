@@ -37,7 +37,8 @@ DEV_VOLUME_API = \
 .PHONY: help docker-clean build-dev build-prod get-token interactive create-volumes install-dependencies \
 	audit-fix-dependencies lint unit-tests unit-tests-v2 watch-unit-tests-v2 \
 	launch-db stop-db launch-local-dev stop-local-dev launch-local-prod stop-local-prod \
-	launch-unleash stop-unleash reset-unleash seed-data clear-data reset-db
+	launch-unleash stop-unleash reset-unleash seed-data clear-data reset-db \
+	launch-keycloak stop-keycloak reset-keycloak
 
 docker-clean: ## ❌ Stop & prune all containers/images (DANGEROUS)
 ifeq ($(OS),Windows_NT)
@@ -148,12 +149,14 @@ reset-db: ## 🗑️ Stop MongoDB and wipe its data volume — clears stale inde
 launch-local-dev: ## 🚀 Launch API + DB + Feature Toogles (development stack)
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
+		-f docker-compose/docker-compose.keycloak.yml \
 		-f docker-compose/docker-compose.tools.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml up
 
 stop-local-dev: ## 🛑 Stop development stack
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
+		-f docker-compose/docker-compose.keycloak.yml \
 		-f docker-compose/docker-compose.tools.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml down
 
@@ -164,6 +167,15 @@ launch-local-prod: ## 🚀 Launch production-like stack locally
 stop-local-prod: ## 🛑 Stop production-like local stack
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.local.api.yml down
+
+launch-keycloak: ## 🔐 Launch Keycloak IdP standalone
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml up
+
+stop-keycloak: ## 🛑 Stop Keycloak IdP
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml down
+
+reset-keycloak: ## 🗑️ Stop Keycloak and remove its data (re-imports realm on next start)
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml down -v
 
 help: ## List available make targets
 ifeq ($(OS),Windows_NT)

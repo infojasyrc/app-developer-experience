@@ -1,0 +1,130 @@
+{
+  "realm": "conference-manager-tools",
+  "enabled": true,
+  "displayName": "Conference Manager Tools",
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "roles": {
+    "realm": [
+      { "name": "grafana-admin", "description": "Full Grafana Admin" },
+      { "name": "grafana-editor", "description": "Grafana Editor" },
+      { "name": "grafana-viewer", "description": "Grafana read-only viewer" },
+      { "name": "unleash-admin", "description": "Full Unleash Admin" },
+      { "name": "unleash-viewer", "description": "Unleash read-only viewer" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "grafana",
+      "name": "Grafana",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "grafana-client-secret",
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "attributes": {
+        "access.token.lifespan": "3600"
+      },
+      "protocolMappers": [
+        {
+          "name": "realm-roles-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "unleash",
+      "name": "Unleash",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "unleash-client-secret",
+      "redirectUris": ["http://localhost:4242/*"],
+      "webOrigins": ["http://localhost:4242"],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "protocolMappers": [
+        {
+          "name": "realm-roles-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "dev-admin",
+      "email": "dev-admin@conference-manager-tools.local",
+      "firstName": "Dev",
+      "lastName": "Admin",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin1234",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["grafana-admin", "unleash-admin"]
+    },
+    {
+      "username": "dev-editor",
+      "email": "dev-editor@conference-manager-tools.local",
+      "firstName": "Dev",
+      "lastName": "Editor",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "editor1234",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["grafana-editor"]
+    },
+    {
+      "username": "dev-viewer",
+      "email": "dev-viewer@conference-manager-tools.local",
+      "firstName": "Dev",
+      "lastName": "Viewer",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "viewer1234",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["grafana-viewer", "unleash-viewer"]
+    }
+  ]
+}
