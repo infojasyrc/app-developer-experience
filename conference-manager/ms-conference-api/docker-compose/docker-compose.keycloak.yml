@@ -19,11 +19,11 @@ services:
     volumes:
       - ../tools/keycloak/realms:/opt/keycloak/data/import
     healthcheck:
-      test: ['CMD-SHELL', 'curl -sf http://localhost:8080/realms/master || exit 1']
-      interval: 15s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
+      test: ['CMD-SHELL', 'bash -c "exec 3<>/dev/tcp/localhost/8080"']
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
 
 networks:
   default:

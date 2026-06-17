@@ -36,9 +36,27 @@ services:
       - grafana-data:/var/lib/grafana
       - ../tools/grafana/provisioning:/etc/grafana/provisioning
     environment:
+      # Keep local fallback admin in case SSO is misconfigured
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      # Generic OAuth / OIDC (Keycloak)
+      - GF_AUTH_GENERIC_OAUTH_ENABLED=true
+      - GF_AUTH_GENERIC_OAUTH_NAME=Keycloak SSO
+      - GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP=true
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=grafana
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${KEYCLOAK_GRAFANA_CLIENT_SECRET}
+      - GF_AUTH_GENERIC_OAUTH_SCOPES=openid email profile roles
+      # Internal Docker network URLs (container-to-container)
+      - GF_AUTH_GENERIC_OAUTH_AUTH_URL=http://localhost:8080/realms/conference-manager-tools/protocol/openid-connect/auth
+      - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=http://${COMPOSE_PROJECT_NAME}-keycloak:8080/realms/conference-manager-tools/protocol/openid-connect/token
+      - GF_AUTH_GENERIC_OAUTH_API_URL=http://${COMPOSE_PROJECT_NAME}-keycloak:8080/realms/conference-manager-tools/protocol/openid-connect/userinfo
+      - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(roles[*], 'grafana-admin') && 'Admin' || contains(roles[*], 'grafana-editor') && 'Editor' || 'Viewer'
+      - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT=false
+      # Server URL used for OAuth redirect — must be browser-accessible
+      - GF_SERVER_ROOT_URL=http://localhost:3000
     depends_on:
       ob-prometheus:
+        condition: service_healthy
+      keycloak:
         condition: service_healthy
 
 networks:
