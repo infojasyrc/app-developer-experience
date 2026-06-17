@@ -4,7 +4,7 @@ services:
   # observability-prometheus
   ob-prometheus:
     container_name: ${COMPOSE_PROJECT_NAME}-ob-prometheus
-    image: prom/prometheus
+    image: prom/prometheus:v3
     platform: ${PLATFORM}
     restart: always
     ports:
@@ -27,7 +27,7 @@ services:
   # observability-grafana
   ob-grafana:
     container_name: ${COMPOSE_PROJECT_NAME}-ob-grafana
-    image: grafana/grafana
+    image: grafana/grafana:11.6
     platform: ${PLATFORM}
     restart: always
     ports:
