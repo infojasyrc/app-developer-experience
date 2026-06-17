@@ -36,38 +36,44 @@ The strategy verifies the JWT signature against the Firebase private key (`PRIVA
 
 ---
 
-## Authentication Flow
+## Auth Flow
+
+The NestJS API uses Firebase as its IdP. This is a separate auth from tools apps such as grafana and unleash.
 
 ```mermaid
 sequenceDiagram
-    actor Client
-    participant Firebase
-    participant API as NestJS API
-    participant Guard as AuthGuard('jwt')
-    participant RG as RolesGuard
-    participant Controller
+    actor Client as API Client<br/>(web / mobile / CLI)
+    participant Firebase as Firebase Auth<br/>(external)
+    participant API as NestJS API :5002
+    participant Strategy as FirebaseAuthStrategy<br/>(passport-custom)
+    participant Guard as RolesGuard
 
-    Client->>Firebase: signInWithEmailAndPassword(email, password)
-    Firebase-->>Client: ID Token (JWT)
+    Client->>Firebase: signInWithEmailAndPassword()
+    Firebase-->>Client: Firebase ID Token (JWT)
 
-    Client->>API: POST /v2/... + Authorization: Bearer <token>
-    API->>Guard: validate token signature & expiry
+    Client->>API: POST /v2/... + Authorization: Bearer <firebase-jwt>
+
+    API->>Strategy: validate(request)
+    Strategy->>Firebase: verifyIdToken(token)
+
     alt Token invalid or expired
-        Guard-->>Client: 401 Unauthorized
+        Firebase-->>Strategy: error
+        Strategy-->>Client: 401 Unauthorized
     else Token valid
-        Guard->>Guard: populate req.user = { userId, email, role }
-        alt Route requires a role (@Roles decorator present)
-            Guard->>RG: check req.user.role in required roles
-            RG->>RG: inject userId into req.body
+        Firebase-->>Strategy: { uid, email, role }
+        Strategy-->>API: req.user = { userId, email, role }
+
+        alt Route has @Roles decorator
+            API->>Guard: canActivate(context)
+            Guard->>Guard: check req.user.role in requiredRoles<br/>inject userId into req.body
             alt Role not satisfied
-                RG-->>Client: 403 Forbidden
+                Guard-->>Client: 403 Forbidden
             else Role satisfied
-                RG->>Controller: proceed
-                Controller-->>Client: 2xx Response
+                Guard-->>API: proceed to controller
+                API-->>Client: 2xx Response
             end
-        else No role required (jwt-only)
-            Guard->>Controller: proceed
-            Controller-->>Client: 2xx Response
+        else No role required
+            API-->>Client: 2xx Response
         end
     end
 ```

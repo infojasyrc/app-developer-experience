@@ -190,18 +190,3 @@ resource "keycloak_role" "grafana_admin" {
 - Vault via `data "vault_generic_secret"`
 
 The Terraform state (which contains the secret) must be stored in a remote backend with encryption at rest (S3 + DynamoDB lock, or Terraform Cloud).
-
----
-
-## Future: Migrate NestJS API Auth from Firebase to Keycloak
-
-If the team decides to also migrate the API's auth to Keycloak (replacing Firebase), the following additional steps apply — **not in current scope**:
-
-1. Add a `ms-conference-api` OIDC client to the Keycloak realm
-2. Replace `FirebaseAuthStrategy` with a `JwtStrategy` using Keycloak's JWKS endpoint:  
-   `http://ms-conference-keycloak:8080/realms/conference-manager/protocol/openid-connect/certs`
-3. Remove `firebase-admin` SDK dependency
-4. Remove Firebase env vars (`FIREBASE_*`, `GOOGLE_APPLICATION_CREDENTIALS`)
-5. Update `UserEntity.uid` to store `sub` claim from Keycloak JWT instead of Firebase UID
-6. Update `AuthService.register()` to call Keycloak Admin REST API instead of Firebase Admin SDK
-7. Add an `auth.keycloak.enabled` Unleash feature toggle (mirroring the existing `auth.firebase.enabled`)

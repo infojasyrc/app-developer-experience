@@ -1,4 +1,4 @@
-# Keycloak SSO — Architecture & Auth Flows
+# SSO — Architecture & Auth Flows
 
 Keycloak acts as the single Identity Provider (IdP) for the observability and feature-flag tooling tier. The NestJS API continues to use Firebase as its own IdP (separate concern, separate auth boundary).
 
@@ -15,7 +15,6 @@ graph TB
         P3000(":3000")
         P4242(":4242")
         P8080(":8080")
-        P5002(":5002")
         P9090(":9090")
     end
 
@@ -37,10 +36,8 @@ graph TB
             UnleashDB[("🐘 PostgreSQL :5432")]
         end
 
-        subgraph API["Application"]
-            NestJS["⚙️ NestJS API :5002\nFirebase JWT auth\n(separate IdP — unchanged)"]
-            MongoDB[("🍃 MongoDB :27017")]
-            Firebase["🔥 Firebase\n(external)"]
+        subgraph Application
+            API["ms-conference-api :5002\nNESTJS API"]
         end
     end
 
@@ -48,12 +45,10 @@ graph TB
     Browser -->|"OIDC login UI"| P8080
     Browser -->|"dashboards"| P3000
     Browser -->|"feature flags UI"| P4242
-    Browser -->|"REST API"| P5002
 
     P8080 --> Keycloak
     P3000 --> Grafana
     P4242 --> Proxy
-    P5002 --> NestJS
     P9090 --> Prometheus
 
     %% SSO flows (server-to-server, internal)
@@ -62,16 +57,13 @@ graph TB
     Proxy -- "proxy after auth" --> Unleash
 
     %% Internal connections
-    NestJS -- "feature flags\n(direct, no proxy)" --> Unleash
-    NestJS --> MongoDB
-    NestJS -.->|"JWT validation"| Firebase
+    API -.->|"JWT validation"| Firebase
     Unleash --> UnleashDB
-    Prometheus -- "scrape /metrics" --> NestJS
+    Prometheus -- "scrape /metrics" --> API
 
     %% Styling
     classDef sso fill:#4a4a8a,color:#fff,stroke:#6a6ab8
     classDef proxy fill:#2d6a4f,color:#fff,stroke:#52b788
-    classDef app fill:#495057,color:#fff,stroke:#868e96
     classDef db fill:#6c3d14,color:#fff,stroke:#c77e3a
     classDef port fill:#f8f9fa,color:#212529,stroke:#ced4da
     classDef browser fill:#1971c2,color:#fff,stroke:#1864ab
@@ -79,9 +71,8 @@ graph TB
     class Keycloak sso
     class Proxy,Unleash proxy
     class Grafana,Prometheus app
-    class NestJS,Firebase app
     class MongoDB,UnleashDB db
-    class P3000,P4242,P8080,P5002,P9090 port
+    class P3000,P4242,P8080,P9090 port
     class Browser browser
 ```
 
@@ -205,50 +196,6 @@ sequenceDiagram
 
 ---
 
-## Auth Flow 3 — NestJS API (Firebase — unchanged)
-
-The NestJS API uses Firebase as its IdP. This is a separate auth boundary — Keycloak has no involvement here.
-
-```mermaid
-sequenceDiagram
-    actor Client as API Client<br/>(web / mobile / CLI)
-    participant Firebase as Firebase Auth<br/>(external)
-    participant API as NestJS API :5002
-    participant Strategy as FirebaseAuthStrategy<br/>(passport-custom)
-    participant Guard as RolesGuard
-
-    Client->>Firebase: signInWithEmailAndPassword()
-    Firebase-->>Client: Firebase ID Token (JWT)
-
-    Client->>API: POST /v2/... + Authorization: Bearer <firebase-jwt>
-
-    API->>Strategy: validate(request)
-    Strategy->>Firebase: verifyIdToken(token)
-
-    alt Token invalid or expired
-        Firebase-->>Strategy: error
-        Strategy-->>Client: 401 Unauthorized
-    else Token valid
-        Firebase-->>Strategy: { uid, email, role }
-        Strategy-->>API: req.user = { userId, email, role }
-
-        alt Route has @Roles decorator
-            API->>Guard: canActivate(context)
-            Guard->>Guard: check req.user.role in requiredRoles<br/>inject userId into req.body
-            alt Role not satisfied
-                Guard-->>Client: 403 Forbidden
-            else Role satisfied
-                Guard-->>API: proceed to controller
-                API-->>Client: 2xx Response
-            end
-        else No role required
-            API-->>Client: 2xx Response
-        end
-    end
-```
-
----
-
 ## Internal Unleash Access (NestJS API — no proxy)
 
 The NestJS API reads feature flags directly from Unleash using the internal Docker network, bypassing oauth2-proxy entirely. This path is never exposed externally.
@@ -271,7 +218,7 @@ graph LR
 | `4242` | Yes | oauth2-proxy | Keycloak SSO (OIDC proxy) → Unleash |
 | `4242` (internal) | No | Unleash | None (`AUTH_TYPE=none`) |
 | `8080` | Yes | Keycloak | Keycloak admin credentials (`master` realm) |
-| `5002` | Yes | NestJS API | Firebase JWT |
+| `5002` | Yes | API (NESTJS API) | Firebase JWT |
 | `9090` | Yes | Prometheus | None (dev — restrict in production) |
 
 ## Key Environment Variables
