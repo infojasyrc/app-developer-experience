@@ -42,6 +42,8 @@ include makefiles/aws-roles.mk
 include makefiles/aws-backend.mk
 ## Import ECR tasks
 include makefiles/aws-ecr.mk
+## Import Secrets Manager bootstrap tasks
+include makefiles/aws-secrets.mk
 
 # --- Phony Targets ---
 .PHONY: all help init plan apply destroy
