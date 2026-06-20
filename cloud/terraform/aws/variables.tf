@@ -63,11 +63,15 @@ variable "db_name" {
 }
 
 variable "db_username" {
-  type = string
+  description = "Database admin username"
+  type        = string
+  sensitive   = true
 }
 
 variable "db_password" {
-  type = string
+  description = "Database admin password"
+  type        = string
+  sensitive   = true
 }
 
 variable "db_multi_zone" {
