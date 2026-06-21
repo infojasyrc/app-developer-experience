@@ -79,7 +79,8 @@ resource "aws_iam_role_policy_attachment" "ecs_service_scaling" {
 # # ## ## ## ## ## ## ## ## ## ## ## ## ## ##
 
 resource "aws_iam_role" "task_execution" {
-  name = "${var.application_name}-task-execution-role"
+  name                 = "${var.application_name}-task-execution-role"
+  permissions_boundary = "arn:aws:iam::${var.account_id}:policy/appdevexp-permissions-boundary"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -145,7 +146,8 @@ resource "aws_iam_role_policy" "task_execution_extras" {
 # # ## ## ## ## ## ## ## ## ## ## ## ## ## ##
 
 resource "aws_iam_role" "app_task" {
-  name = "${var.application_name}-app-task-role"
+  name                 = "${var.application_name}-app-task-role"
+  permissions_boundary = "arn:aws:iam::${var.account_id}:policy/appdevexp-permissions-boundary"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
