@@ -108,3 +108,81 @@ resource "aws_security_group" "api_tasks" {
 
   tags = merge(var.tags, { Name = "sg-api-tasks" })
 }
+
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
+# Webapp External ALB
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
+
+resource "aws_lb" "webapp" {
+  name                       = "${var.application_name}-webapp"
+  internal                   = false
+  load_balancer_type         = "application"
+  subnets                    = var.public_subnets
+  security_groups            = [aws_security_group.webapp_alb.id]
+  enable_deletion_protection = var.enable_deletion_protection
+  drop_invalid_header_fields = true
+
+  access_logs {
+    bucket  = var.access_logs_bucket
+    prefix  = "webapp-alb"
+    enabled = true
+  }
+
+  tags = merge(var.tags, { Name = "alb-webapp" })
+}
+
+resource "aws_wafv2_web_acl_association" "webapp" {
+  count        = var.waf_acl_arn != "" ? 1 : 0
+  resource_arn = aws_lb.webapp.arn
+  web_acl_arn  = var.waf_acl_arn
+}
+
+resource "aws_lb_target_group" "webapp" {
+  name        = "${var.application_name}-webapp-tg"
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
+
+  health_check {
+    path                = "/"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 10
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
+  }
+
+  tags = merge(var.tags, { Name = "tg-webapp" })
+}
+
+resource "aws_lb_listener" "webapp_http" {
+  load_balancer_arn = aws_lb.webapp.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.webapp.arn
+  }
+
+  tags = var.tags
+}
+
+# HTTPS listener — only created when acm_certificate_arn is provided
+resource "aws_lb_listener" "webapp_https" {
+  count             = var.acm_certificate_arn != "" ? 1 : 0
+  load_balancer_arn = aws_lb.webapp.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = var.acm_certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.webapp.arn
+  }
+
+  tags = var.tags
+}
