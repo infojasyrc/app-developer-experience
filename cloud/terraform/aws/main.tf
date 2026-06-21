@@ -86,7 +86,6 @@ module "cluster" {
 # }
 
 module "iam" {
-  count  = var.enable_iam ? 1 : 0
   source = "./module/iam"
 
   providers = {
