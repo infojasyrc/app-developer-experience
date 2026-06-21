@@ -2,12 +2,10 @@
 # Role for ECS Execution Task
 # # ## ## ## ## ## ## ## ## ## ## ## ## ## ##
 
-data "aws_iam_policy" "ecs_service_policy" {
-  arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
 resource "aws_iam_role" "ecs_service_role" {
-  name               = "${var.application_name}-ecs-role-manager"
+  name                 = "${var.application_name}-ecs-role-manager"
+  permissions_boundary = "arn:aws:iam::${var.account_id}:policy/appdevexp-permissions-boundary"
+
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -27,7 +25,7 @@ EOF
 
 resource "aws_iam_role_policy_attachment" "ecs_service_role_policy_attach" {
   role       = aws_iam_role.ecs_service_role.name
-  policy_arn = data.aws_iam_policy.ecs_service_policy.arn
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 data "aws_iam_policy_document" "ecs_service_scaling" {
