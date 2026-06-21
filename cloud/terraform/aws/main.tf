@@ -98,6 +98,25 @@ module "iam" {
   kms_key_arn      = module.kms.key_arn
 }
 
+module "efs" {
+  count  = var.enable_efs ? 1 : 0
+  source = "./module/efs"
+
+  providers = {
+    aws = aws.ecs
+  }
+
+  application_name = "${var.application_name}-${local.environment}"
+  vpc_id           = module.network.vpc_id
+  private_subnets  = module.network.private_subnets
+  allowed_sg_ids   = [] # populated in Phase 3 once ecs-app task SGs exist
+  kms_key_arn      = module.kms.key_arn
+
+  tags = local.common_tags
+
+  depends_on = [module.kms, module.network]
+}
+
 module "security" {
   source = "./module/security"
 

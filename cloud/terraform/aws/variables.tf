@@ -219,6 +219,12 @@ variable "enable_iam" {
   default     = false
 }
 
+variable "enable_efs" {
+  description = "Enable EFS module for containerized database persistence"
+  type        = bool
+  default     = false
+}
+
 variable "enable_application" {
   description = "Enable application module"
   type        = bool

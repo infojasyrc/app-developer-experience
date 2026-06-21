@@ -43,5 +43,6 @@ migration_entrypoint_folder = ""
 # enable modules (activate per phase — see agents/infrastructure/plans/20260620123839.md)
 enable_database     = false
 enable_iam          = true
+enable_efs          = true
 enable_application  = false
 enable_auto_scaling = false
