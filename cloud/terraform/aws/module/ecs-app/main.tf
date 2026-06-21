@@ -257,3 +257,94 @@ resource "aws_lb_listener" "api_https" {
 
   tags = var.tags
 }
+
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
+# Webapp ECS — Next.js, 512 CPU / 1024 MB
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
+
+resource "aws_cloudwatch_log_group" "webapp" {
+  name              = "/ecs/${var.application_name}/webapp"
+  retention_in_days = var.logs_retention_days
+  kms_key_id        = var.kms_key_arn
+
+  tags = var.tags
+}
+
+resource "aws_ecs_task_definition" "webapp" {
+  family                   = "${var.application_name}-webapp"
+  task_role_arn            = var.app_task_role_arn
+  execution_role_arn       = var.task_execution_role_arn
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "512"
+  memory                   = "1024"
+
+  container_definitions = jsonencode([{
+    name      = "cm-webapp"
+    image     = var.ui_image
+    essential = true
+    portMappings = [{
+      containerPort = 3000
+      hostPort      = 3000
+      protocol      = "tcp"
+    }]
+    environment = [
+      { name = "NODE_ENV",         value = "production" },
+      { name = "PORT",             value = "3000" },
+      # Server-side Next.js only — this URL never reaches the browser
+      { name = "API_INTERNAL_URL", value = "http://${aws_lb.api.dns_name}" }
+    ]
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        "awslogs-group"         = "/ecs/${var.application_name}/webapp"
+        "awslogs-region"        = var.aws_region
+        "awslogs-stream-prefix" = "webapp"
+      }
+    }
+    healthCheck = {
+      command     = ["CMD-SHELL", "wget -qO- http://localhost:3000/ || exit 1"]
+      interval    = 30
+      timeout     = 10
+      retries     = 3
+      startPeriod = 60
+    }
+  }])
+
+  tags = merge(var.tags, { Name = "task-def-webapp" })
+}
+
+resource "aws_ecs_service" "webapp" {
+  name                              = "${var.application_name}-webapp"
+  cluster                           = var.cluster_id
+  task_definition                   = aws_ecs_task_definition.webapp.arn
+  desired_count                     = 1
+  launch_type                       = "FARGATE"
+  platform_version                  = "LATEST"
+  force_new_deployment              = true
+  health_check_grace_period_seconds = 60
+
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
+  network_configuration {
+    security_groups  = [aws_security_group.webapp_tasks.id]
+    subnets          = var.private_subnets
+    assign_public_ip = false
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.webapp.arn
+    container_name   = "cm-webapp"
+    container_port   = 3000
+  }
+
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
+
+  depends_on = [aws_lb_listener.webapp_http]
+  tags       = merge(var.tags, { Name = "service-webapp" })
+}
