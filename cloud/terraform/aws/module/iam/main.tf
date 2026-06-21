@@ -141,3 +141,44 @@ resource "aws_iam_role_policy" "task_execution_extras" {
     ]
   })
 }
+
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
+# App Task Role (application code — read /appdevexp/dev/* secrets only)
+# # ## ## ## ## ## ## ## ## ## ## ## ## ## ##
+
+resource "aws_iam_role" "app_task" {
+  name = "${var.application_name}-app-task-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "ecs-tasks.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
+  })
+
+  tags = {
+    project = var.application_name
+  }
+}
+
+resource "aws_iam_role_policy" "app_task_policy" {
+  name = "${var.application_name}-app-task-policy"
+  role = aws_iam_role.app_task.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "SecretsManagerDevRead"
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = "arn:aws:secretsmanager:${var.aws_region}:${var.account_id}:secret:/appdevexp/dev/*"
+      }
+    ]
+  })
+}
