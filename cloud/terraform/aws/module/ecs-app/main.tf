@@ -348,3 +348,83 @@ resource "aws_ecs_service" "webapp" {
   depends_on = [aws_lb_listener.webapp_http]
   tags       = merge(var.tags, { Name = "service-webapp" })
 }
+
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
+# API ECS — NestJS + MongoDB sidecar, 1024 CPU / 2048 MB
+# desired_count = 1 enforced: only one writer to the EFS volume at a time
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
+
+resource "aws_cloudwatch_log_group" "api" {
+  name              = "/ecs/${var.application_name}/api"
+  retention_in_days = var.logs_retention_days
+  kms_key_id        = var.kms_key_arn
+
+  tags = var.tags
+}
+
+resource "aws_ecs_task_definition" "api" {
+  family                   = "${var.application_name}-api"
+  task_role_arn            = var.app_task_role_arn
+  execution_role_arn       = var.task_execution_role_arn
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "1024"
+  memory                   = "2048"
+
+  volume {
+    name = "mongodb-data"
+    efs_volume_configuration {
+      file_system_id     = var.efs_file_system_id
+      transit_encryption = "ENABLED"
+      authorization_config {
+        access_point_id = var.mongodb_ap_id
+        iam             = "ENABLED"
+      }
+    }
+  }
+
+  container_definitions = templatefile("${path.root}/container_definitions.json.tpl", {
+    api_image        = var.api_image
+    aws_region       = var.aws_region
+    log_group        = "/ecs/${var.application_name}/api"
+    mongo_secret_arn = var.mongo_secret_arn
+    api_mode         = "production"
+  })
+
+  tags = merge(var.tags, { Name = "task-def-api" })
+}
+
+resource "aws_ecs_service" "api" {
+  name                              = "${var.application_name}-api"
+  cluster                           = var.cluster_id
+  task_definition                   = aws_ecs_task_definition.api.arn
+  desired_count                     = 1
+  launch_type                       = "FARGATE"
+  platform_version                  = "LATEST"
+  force_new_deployment              = true
+  health_check_grace_period_seconds = 120
+
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
+  network_configuration {
+    security_groups  = [aws_security_group.api_tasks.id]
+    subnets          = var.private_subnets
+    assign_public_ip = false
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.api.arn
+    container_name   = "cm-api"
+    container_port   = 3000
+  }
+
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
+
+  depends_on = [aws_lb_listener.api_http]
+  tags       = merge(var.tags, { Name = "service-api" })
+}
