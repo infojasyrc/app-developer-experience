@@ -6,6 +6,7 @@ vpc_cidr            = "172.17.0.0/16"
 logs_retention_days = 3
 
 # database — instance config (non-sensitive)
+db_name                 = "conference_manager"
 db_allocate_storage     = 20
 db_max_allocate_storage = 50
 db_multi_zone           = true
@@ -41,6 +42,6 @@ migration_entrypoint_folder = ""
 
 # enable modules (activate per phase — see agents/infrastructure/plans/20260620123839.md)
 enable_database     = false
-enable_iam          = false
+enable_iam          = true
 enable_application  = false
 enable_auto_scaling = false
