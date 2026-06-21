@@ -186,3 +186,74 @@ resource "aws_lb_listener" "webapp_https" {
 
   tags = var.tags
 }
+
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
+# API Internal ALB — no internet path
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
+
+resource "aws_lb" "api" {
+  name                       = "${var.application_name}-api"
+  internal                   = true
+  load_balancer_type         = "application"
+  subnets                    = var.private_subnets
+  security_groups            = [aws_security_group.api_alb.id]
+  enable_deletion_protection = var.enable_deletion_protection
+  drop_invalid_header_fields = true
+
+  access_logs {
+    bucket  = var.access_logs_bucket
+    prefix  = "api-alb"
+    enabled = true
+  }
+
+  tags = merge(var.tags, { Name = "alb-api" })
+}
+
+resource "aws_lb_target_group" "api" {
+  name        = "${var.application_name}-api-tg"
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
+
+  health_check {
+    path                = "/health"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
+  }
+
+  tags = merge(var.tags, { Name = "tg-api" })
+}
+
+resource "aws_lb_listener" "api_http" {
+  load_balancer_arn = aws_lb.api.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.api.arn
+  }
+
+  tags = var.tags
+}
+
+resource "aws_lb_listener" "api_https" {
+  count             = var.acm_certificate_arn != "" ? 1 : 0
+  load_balancer_arn = aws_lb.api.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = var.acm_certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.api.arn
+  }
+
+  tags = var.tags
+}
