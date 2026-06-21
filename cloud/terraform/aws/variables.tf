@@ -141,7 +141,7 @@ variable "assign_public_ip" {
 }
 
 variable "api_mode" {
-  type = string
+  type    = string
   default = "DEVELOPMENT"
 }
 
