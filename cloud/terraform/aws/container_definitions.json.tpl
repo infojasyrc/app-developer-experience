@@ -1,72 +1,94 @@
 [
   {
-    "name": "${container_name}_api",
-    "image": "${api_image}",
-    "workingDirectory": "${api_entrypoint_folder}",
-    "command": ["/bin/bash","-ci","flask run -h 0.0.0.0 -p 4000"],
-    "environment" : [
-      { "name" : "FLASK_ENV", "value" : "${api_mode}" },
-      { "name" : "APP_DB_URL", "value" : "${db_url}" },
-      { "name" : "APP_DB", "value" : "${db_name}" }
-    ],
-    "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "${log_group}",
-          "awslogs-region": "${aws_region}",
-          "awslogs-stream-prefix": "${container_name}_api"
-        }
-    },
-    "portMappings": [
+    "name": "cm-mongo",
+    "image": "mongo:8.0-noble",
+    "essential": true,
+    "mountPoints": [
       {
-        "containerPort": 4000,
-        "protocol": "tcp",
-        "hostPort": 4000
+        "sourceVolume": "mongodb-data",
+        "containerPath": "/data/db",
+        "readOnly": false
       }
-    ]
+    ],
+    "secrets": [
+      {
+        "name": "MONGO_INITDB_ROOT_USERNAME",
+        "valueFrom": "${mongo_secret_arn}:username::"
+      },
+      {
+        "name": "MONGO_INITDB_ROOT_PASSWORD",
+        "valueFrom": "${mongo_secret_arn}:password::"
+      }
+    ],
+    "healthCheck": {
+      "command": [
+        "CMD",
+        "mongosh",
+        "--eval",
+        "db.adminCommand('ping')"
+      ],
+      "interval": 30,
+      "timeout": 10,
+      "retries": 5,
+      "startPeriod": 60
+    },
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${aws_region}",
+        "awslogs-stream-prefix": "cm-mongo"
+      }
+    }
   },
   {
-    "name": "${container_name}_ui",
-    "image": "${ui_image}",
-    "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "${log_group}",
-          "awslogs-region": "${aws_region}",
-          "awslogs-stream-prefix": "${container_name}_ui"
-        }
-    },
+    "name": "cm-api",
+    "image": "${api_image}",
+    "essential": true,
     "portMappings": [
       {
-        "containerPort": 80,
+        "containerPort": 3000,
         "protocol": "tcp",
-        "hostPort": 80
+        "hostPort": 3000
       }
     ],
+    "environment": [
+      { "name": "NODE_ENV", "value": "${api_mode}" },
+      { "name": "PORT", "value": "3000" }
+    ],
+    "secrets": [
+      {
+        "name": "MONGO_USERNAME",
+        "valueFrom": "${mongo_secret_arn}:username::"
+      },
+      {
+        "name": "MONGO_PASSWORD",
+        "valueFrom": "${mongo_secret_arn}:password::"
+      }
+    ],
+    "healthCheck": {
+      "command": [
+        "CMD-SHELL",
+        "curl -f http://localhost:3000/health || exit 1"
+      ],
+      "interval": 30,
+      "timeout": 10,
+      "retries": 3,
+      "startPeriod": 60
+    },
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${aws_region}",
+        "awslogs-stream-prefix": "cm-api"
+      }
+    },
     "dependsOn": [
       {
-        "containerName": "${container_name}_api",
-        "condition": "START"
+        "containerName": "cm-mongo",
+        "condition": "HEALTHY"
       }
     ]
-  },
-  {
-      "name": "db_migration",
-      "image": "${api_image}",
-      "essential": false,
-      "workingDirectory": "${migration_entrypoint_folder}",
-      "command": ["/bin/bash","-ci","python ./database_migration.py;"],
-      "environment" : [
-          { "name": "APP_DB_URL", "value": "${db_url}" },
-          { "name": "APP_DB", "value": "${db_name}" }
-      ],
-      "logConfiguration": {
-          "logDriver": "awslogs",
-          "options": {
-            "awslogs-group": "${log_group}",
-            "awslogs-region": "${aws_region}",
-            "awslogs-stream-prefix": "db_migration"
-          }
-      }
   }
 ]
