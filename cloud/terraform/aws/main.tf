@@ -128,7 +128,7 @@ module "security" {
 #     log_group                   = module.logging.app_log_group_name
 #     db_url                      = var.enable_database ? "postgresql://${var.db_username}:${var.db_password}@${module.database[0].db_endpoint}" : ""
 #     db_name                     = var.db_name
-#     flask_mode                  = var.flask_mode
+#     api_mode                    = var.api_mode
 #     api_entrypoint_folder       = var.api_entrypoint_folder
 #     migration_entrypoint_folder = var.migration_entrypoint_folder
 #   })

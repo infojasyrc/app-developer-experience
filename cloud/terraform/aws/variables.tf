@@ -63,11 +63,15 @@ variable "db_name" {
 }
 
 variable "db_username" {
-  type = string
+  description = "Database admin username"
+  type        = string
+  sensitive   = true
 }
 
 variable "db_password" {
-  type = string
+  description = "Database admin password"
+  type        = string
+  sensitive   = true
 }
 
 variable "db_multi_zone" {
@@ -136,8 +140,9 @@ variable "assign_public_ip" {
   type        = bool
 }
 
-variable "flask_mode" {
-  type = string
+variable "api_mode" {
+  type    = string
+  default = "DEVELOPMENT"
 }
 
 variable "health_check_path" {

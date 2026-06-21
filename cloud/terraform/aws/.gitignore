@@ -19,6 +19,10 @@ backend.conf
 
 # environment files
 .env
+.env.secrets
+
+# sensitive Terraform variable overrides (local only — CI uses TF_VAR_* env vars)
+secrets.auto.tfvars
 
 # specific information for aws
 aws-info.log
