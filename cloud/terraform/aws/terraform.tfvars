@@ -44,5 +44,9 @@ migration_entrypoint_folder = ""
 enable_database     = false
 enable_iam          = true
 enable_efs          = true
-enable_application  = false
+enable_application  = true
 enable_auto_scaling = false
+
+# HTTPS — provide ACM wildcard cert ARN to enable TLS listeners on both ALBs
+# Provision *.test.com cert in ACM first, then set the ARN here.
+acm_certificate_arn = ""

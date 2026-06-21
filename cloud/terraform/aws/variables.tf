@@ -236,3 +236,9 @@ variable "enable_auto_scaling" {
   type        = bool
   default     = false
 }
+
+variable "acm_certificate_arn" {
+  description = "ACM wildcard certificate ARN for HTTPS listeners (empty = HTTP only until cert is provisioned)"
+  type        = string
+  default     = ""
+}

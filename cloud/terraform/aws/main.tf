@@ -99,7 +99,6 @@ module "iam" {
 }
 
 module "efs" {
-  count  = var.enable_efs ? 1 : 0
   source = "./module/efs"
 
   providers = {
@@ -131,44 +130,59 @@ module "security" {
   tags = local.common_tags
 }
 
-# # ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
-# # Application on ECS
-# # # ## ## ## ## ## ## ## ## ## ## ## ## ## ##
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
+# ECS Application — webapp + API services
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
 
-# module "application" {
-#   count            = var.enable_application ? 1 : 0
-#   source           = "./module/application"
-#   application_name = "${var.application_name}-${local.environment}"
-#   private_subnets  = module.network.private_subnets
-#   public_subnets   = module.network.public_subnets
-#   container_definitions = templatefile("./container_definitions.json.tpl", {
-#     api_image                   = "${var.ecr_backend}:latest"
-#     ui_image                    = "${var.ecr_frontend}:latest"
-#     container_name              = var.container_name
-#     aws_region                  = var.aws_account_region
-#     log_group                   = module.logging.app_log_group_name
-#     db_url                      = var.enable_database ? "postgresql://${var.db_username}:${var.db_password}@${module.database[0].db_endpoint}" : ""
-#     db_name                     = var.db_name
-#     api_mode                    = var.api_mode
-#     api_entrypoint_folder       = var.api_entrypoint_folder
-#     migration_entrypoint_folder = var.migration_entrypoint_folder
-#   })
-#   cluster_id              = module.cluster.cluster_id
-#   ecs_task_execution_role = var.enable_iam ? module.iam[0].ecs_service_role.arn : ""
-#   app_count               = var.app_count
-#   cpu_for_tasks           = var.cpu_for_tasks
-#   memory_for_tasks        = var.memory_for_tasks
-#   vpc_id                  = module.network.vpc_id
-#   health_check_path       = var.health_check_path
-#   domain                  = var.domain
-#   ui_domain               = var.ui_domain
-#   api_domain              = var.api_domain
-#   container_name          = var.container_name
-#   assign_public_ip        = var.assign_public_ip
-#   tags                    = local.common_tags
-#   access_logs_bucket      = module.logging.alb_access_logs_bucket
-#   waf_acl_arn             = module.security.waf_acl_arn
-# }
+module "ecs_app" {
+  count  = var.enable_application ? 1 : 0
+  source = "./module/ecs-app"
+
+  providers = {
+    aws = aws.ecs
+  }
+
+  application_name        = "${var.application_name}-${local.environment}"
+  vpc_id                  = module.network.vpc_id
+  vpc_cidr                = var.vpc_cidr
+  public_subnets          = module.network.public_subnets
+  private_subnets         = module.network.private_subnets
+  cluster_id              = module.cluster.cluster_id
+  task_execution_role_arn = module.iam.task_execution_role_arn
+  app_task_role_arn       = module.iam.app_task_role_arn
+  api_image               = "${var.ecr_backend}:latest"
+  ui_image                = "${var.ecr_frontend}:latest"
+  aws_region              = var.aws_account_region
+  api_domain              = var.api_domain
+  access_logs_bucket      = module.logging.alb_access_logs_bucket
+  waf_acl_arn             = module.security.waf_acl_arn
+  kms_key_arn             = module.kms.key_arn
+  logs_retention_days     = var.logs_retention_days
+  mongo_secret_arn        = "arn:aws:secretsmanager:${var.aws_account_region}:${var.aws_account_id}:secret:/appdevexp/dev/mongo/admin"
+  efs_file_system_id      = module.efs.file_system_id
+  mongodb_ap_id           = module.efs.mongodb_ap_id
+  acm_certificate_arn     = var.acm_certificate_arn
+  enable_deletion_protection = false
+
+  tags = local.common_tags
+
+  depends_on = [module.iam, module.efs, module.cluster, module.network]
+}
+
+# Adds NFS ingress to the EFS SG from the API task SG.
+# Created here rather than via module.efs.allowed_sg_ids to avoid the
+# ecs_app → efs → ecs_app circular dependency.
+resource "aws_security_group_rule" "efs_nfs_from_api" {
+  provider                 = aws.ecs
+  count                    = var.enable_application ? 1 : 0
+  type                     = "ingress"
+  from_port                = 2049
+  to_port                  = 2049
+  protocol                 = "tcp"
+  source_security_group_id = module.ecs_app[0].api_tasks_sg_id
+  security_group_id        = module.efs.efs_sg_id
+  description              = "NFS from API task security group"
+}
 
 # # ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
 # # Application on ECS
