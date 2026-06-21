@@ -5,7 +5,7 @@
     "workingDirectory": "${api_entrypoint_folder}",
     "command": ["/bin/bash","-ci","flask run -h 0.0.0.0 -p 4000"],
     "environment" : [
-      { "name" : "FLASK_ENV", "value" : "${flask_mode}" },
+      { "name" : "FLASK_ENV", "value" : "${api_mode}" },
       { "name" : "APP_DB_URL", "value" : "${db_url}" },
       { "name" : "APP_DB", "value" : "${db_name}" }
     ],

@@ -140,8 +140,9 @@ variable "assign_public_ip" {
   type        = bool
 }
 
-variable "flask_mode" {
+variable "api_mode" {
   type = string
+  default = "DEVELOPMENT"
 }
 
 variable "health_check_path" {
