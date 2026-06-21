@@ -85,16 +85,18 @@ module "cluster" {
 #   tags                    = local.common_tags
 # }
 
-# module "iam" {
-#   count  = var.enable_iam ? 1 : 0
-#   source = "./module/iam"
-#
-#   providers = {
-#     aws = aws.ecs
-#   }
-#
-#   application_name = "${var.application_name}-${local.environment}"
-# }
+module "iam" {
+  source = "./module/iam"
+
+  providers = {
+    aws = aws.ecs
+  }
+
+  application_name = "${var.application_name}-${local.environment}"
+  account_id       = var.aws_account_id
+  aws_region       = var.aws_account_region
+  kms_key_arn      = module.kms.key_arn
+}
 
 module "security" {
   source = "./module/security"
