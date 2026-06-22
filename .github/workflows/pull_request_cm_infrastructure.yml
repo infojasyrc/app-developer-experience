@@ -61,7 +61,7 @@ jobs:
         with:
           tfsec_args: --soft-fail
           github_token: ${{ github.token }}
-          working_directory: cloud/terraform/aws
+          working_directory: .
 
       - name: Terraform Plan
         id: plan
