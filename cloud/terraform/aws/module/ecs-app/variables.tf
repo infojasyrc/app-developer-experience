@@ -63,6 +63,12 @@ variable "access_logs_bucket" {
   type        = string
 }
 
+variable "enable_waf" {
+  description = "Attach WAF WebACL to the webapp ALB when true"
+  type        = bool
+  default     = false
+}
+
 variable "waf_acl_arn" {
   description = "WAF WebACL ARN — attached to the webapp external ALB; skipped when empty"
   type        = string

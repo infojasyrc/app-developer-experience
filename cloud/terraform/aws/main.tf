@@ -156,6 +156,7 @@ module "ecs_app" {
   api_domain                 = var.api_domain
   access_logs_bucket         = module.logging.alb_access_logs_bucket
   waf_acl_arn                = module.security.waf_acl_arn
+  enable_waf                 = true
   kms_key_arn                = module.kms.key_arn
   logs_retention_days        = var.logs_retention_days
   mongo_secret_arn           = "arn:aws:secretsmanager:${var.aws_account_region}:${var.aws_account_id}:secret:/appdevexp/dev/mongo/admin"

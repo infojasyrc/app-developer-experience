@@ -132,7 +132,7 @@ resource "aws_lb" "webapp" {
 }
 
 resource "aws_wafv2_web_acl_association" "webapp" {
-  count        = var.waf_acl_arn != "" ? 1 : 0
+  count        = var.enable_waf ? 1 : 0
   resource_arn = aws_lb.webapp.arn
   web_acl_arn  = var.waf_acl_arn
 }
