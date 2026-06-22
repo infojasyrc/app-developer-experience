@@ -18,7 +18,7 @@ db_instance_accessible  = false
 # CI/CD runs:  values are injected as TF_VAR_db_username / TF_VAR_db_password from GitHub secrets.
 
 # ecs variables
-app_count         = 1
+app_desired_count = 0
 cpu_for_tasks     = "4096"
 memory_for_tasks  = "8192"
 ecr_frontend      = "580976914278.dkr.ecr.us-west-1.amazonaws.com/conference-manager/ms-conference-webapp"

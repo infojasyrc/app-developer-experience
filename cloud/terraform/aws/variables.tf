@@ -97,7 +97,7 @@ variable "db_instance_accessible" {
 ### ECS
 ##########################################
 
-variable "app_count" {
+variable "app_desired_count" {
   description = "Number of docker containers to run"
   type        = number
   default     = 1

@@ -1,3 +1,8 @@
+variable "aws_region" {
+  description = "AWS region for CloudWatch logs configuration"
+  type        = string
+}
+
 variable "application_name" {
   description = "Application name prefix for resource naming"
   type        = string
@@ -38,6 +43,12 @@ variable "app_task_role_arn" {
   type        = string
 }
 
+variable "desired_count" {
+  description = "Number of desired ECS tasks"
+  type        = number
+  default     = 0
+}
+
 variable "api_image" {
   description = "ECR URI for the NestJS API image (include :tag)"
   type        = string
@@ -48,10 +59,6 @@ variable "ui_image" {
   type        = string
 }
 
-variable "aws_region" {
-  description = "AWS region for CloudWatch logs configuration"
-  type        = string
-}
 
 variable "api_domain" {
   description = "API internal subdomain — used as API_INTERNAL_URL for server-side Next.js calls"
@@ -85,7 +92,7 @@ variable "logs_retention_days" {
   type        = number
 }
 
-variable "mongo_secret_arn" {
+variable "database_secret_arn" {
   description = "Full Secrets Manager ARN for MongoDB admin credentials — used in ECS valueFrom with JSON key extraction"
   type        = string
 }

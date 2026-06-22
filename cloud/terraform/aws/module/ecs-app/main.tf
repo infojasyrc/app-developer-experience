@@ -318,7 +318,7 @@ resource "aws_ecs_service" "webapp" {
   name                              = "${var.application_name}-webapp"
   cluster                           = var.cluster_id
   task_definition                   = aws_ecs_task_definition.webapp.arn
-  desired_count                     = 1
+  desired_count                     = var.desired_count
   launch_type                       = "FARGATE"
   platform_version                  = "LATEST"
   force_new_deployment              = true
@@ -384,11 +384,11 @@ resource "aws_ecs_task_definition" "api" {
   }
 
   container_definitions = templatefile("${path.root}/container_definitions.json.tpl", {
-    api_image        = var.api_image
-    aws_region       = var.aws_region
-    log_group        = "/ecs/${var.application_name}/api"
-    mongo_secret_arn = var.mongo_secret_arn
-    api_mode         = "production"
+    api_image           = var.api_image
+    aws_region          = var.aws_region
+    log_group           = "/ecs/${var.application_name}/api"
+    database_secret_arn = var.database_secret_arn
+    api_mode            = "production"
   })
 
   tags = merge(var.tags, { Name = "task-def-api" })
@@ -398,7 +398,7 @@ resource "aws_ecs_service" "api" {
   name                              = "${var.application_name}-api"
   cluster                           = var.cluster_id
   task_definition                   = aws_ecs_task_definition.api.arn
-  desired_count                     = 1
+  desired_count                     = var.desired_count
   launch_type                       = "FARGATE"
   platform_version                  = "LATEST"
   force_new_deployment              = true

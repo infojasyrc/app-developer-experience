@@ -150,6 +150,7 @@ module "ecs_app" {
   cluster_id                 = module.cluster.cluster_id
   task_execution_role_arn    = module.iam.task_execution_role_arn
   app_task_role_arn          = module.iam.app_task_role_arn
+  desired_count              = var.app_desired_count
   api_image                  = "${var.ecr_backend}:latest"
   ui_image                   = "${var.ecr_frontend}:latest"
   aws_region                 = var.aws_account_region
@@ -159,7 +160,7 @@ module "ecs_app" {
   enable_waf                 = true
   kms_key_arn                = module.kms.key_arn
   logs_retention_days        = var.logs_retention_days
-  mongo_secret_arn           = "arn:aws:secretsmanager:${var.aws_account_region}:${var.aws_account_id}:secret:/appdevexp/dev/mongo/admin"
+  database_secret_arn        = "arn:aws:secretsmanager:${var.aws_account_region}:${var.aws_account_id}:secret:/appdevexp/dev/mongo/admin"
   efs_file_system_id         = module.efs.file_system_id
   mongodb_ap_id              = module.efs.mongodb_ap_id
   acm_certificate_arn        = var.acm_certificate_arn
