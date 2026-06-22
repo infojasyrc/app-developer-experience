@@ -97,7 +97,7 @@ variable "db_instance_accessible" {
 ### ECS
 ##########################################
 
-variable "app_count" {
+variable "app_desired_count" {
   description = "Number of docker containers to run"
   type        = number
   default     = 1
@@ -235,4 +235,10 @@ variable "enable_auto_scaling" {
   description = "Enable auto scaling module"
   type        = bool
   default     = false
+}
+
+variable "acm_certificate_arn" {
+  description = "ACM wildcard certificate ARN for HTTPS listeners (empty = HTTP only until cert is provisioned)"
+  type        = string
+  default     = ""
 }

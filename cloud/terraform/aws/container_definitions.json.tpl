@@ -13,11 +13,11 @@
     "secrets": [
       {
         "name": "MONGO_INITDB_ROOT_USERNAME",
-        "valueFrom": "${mongo_secret_arn}:username::"
+        "valueFrom": "${database_secret_arn}:username::"
       },
       {
         "name": "MONGO_INITDB_ROOT_PASSWORD",
-        "valueFrom": "${mongo_secret_arn}:password::"
+        "valueFrom": "${database_secret_arn}:password::"
       }
     ],
     "healthCheck": {
@@ -59,11 +59,11 @@
     "secrets": [
       {
         "name": "MONGO_USERNAME",
-        "valueFrom": "${mongo_secret_arn}:username::"
+        "valueFrom": "${database_secret_arn}:username::"
       },
       {
         "name": "MONGO_PASSWORD",
-        "valueFrom": "${mongo_secret_arn}:password::"
+        "valueFrom": "${database_secret_arn}:password::"
       }
     ],
     "healthCheck": {

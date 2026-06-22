@@ -7,6 +7,7 @@ You are operating in the ADE monorepo root. CLAUDE.md and AGENTS.md are already 
 Read these files first — in order:
 1. agents/shared/context/monorepo-paths.md
 2. agents/shared/context/commit-conventions.md
+3. agents/shared/development-guidance.md
 
 ---
 
