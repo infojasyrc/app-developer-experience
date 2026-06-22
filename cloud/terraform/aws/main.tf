@@ -142,26 +142,26 @@ module "ecs_app" {
     aws = aws.ecs
   }
 
-  application_name        = "${var.application_name}-${local.environment}"
-  vpc_id                  = module.network.vpc_id
-  vpc_cidr                = var.vpc_cidr
-  public_subnets          = module.network.public_subnets
-  private_subnets         = module.network.private_subnets
-  cluster_id              = module.cluster.cluster_id
-  task_execution_role_arn = module.iam.task_execution_role_arn
-  app_task_role_arn       = module.iam.app_task_role_arn
-  api_image               = "${var.ecr_backend}:latest"
-  ui_image                = "${var.ecr_frontend}:latest"
-  aws_region              = var.aws_account_region
-  api_domain              = var.api_domain
-  access_logs_bucket      = module.logging.alb_access_logs_bucket
-  waf_acl_arn             = module.security.waf_acl_arn
-  kms_key_arn             = module.kms.key_arn
-  logs_retention_days     = var.logs_retention_days
-  mongo_secret_arn        = "arn:aws:secretsmanager:${var.aws_account_region}:${var.aws_account_id}:secret:/appdevexp/dev/mongo/admin"
-  efs_file_system_id      = module.efs.file_system_id
-  mongodb_ap_id           = module.efs.mongodb_ap_id
-  acm_certificate_arn     = var.acm_certificate_arn
+  application_name           = "${var.application_name}-${local.environment}"
+  vpc_id                     = module.network.vpc_id
+  vpc_cidr                   = var.vpc_cidr
+  public_subnets             = module.network.public_subnets
+  private_subnets            = module.network.private_subnets
+  cluster_id                 = module.cluster.cluster_id
+  task_execution_role_arn    = module.iam.task_execution_role_arn
+  app_task_role_arn          = module.iam.app_task_role_arn
+  api_image                  = "${var.ecr_backend}:latest"
+  ui_image                   = "${var.ecr_frontend}:latest"
+  aws_region                 = var.aws_account_region
+  api_domain                 = var.api_domain
+  access_logs_bucket         = module.logging.alb_access_logs_bucket
+  waf_acl_arn                = module.security.waf_acl_arn
+  kms_key_arn                = module.kms.key_arn
+  logs_retention_days        = var.logs_retention_days
+  mongo_secret_arn           = "arn:aws:secretsmanager:${var.aws_account_region}:${var.aws_account_id}:secret:/appdevexp/dev/mongo/admin"
+  efs_file_system_id         = module.efs.file_system_id
+  mongodb_ap_id              = module.efs.mongodb_ap_id
+  acm_certificate_arn        = var.acm_certificate_arn
   enable_deletion_protection = false
 
   tags = local.common_tags

@@ -289,8 +289,8 @@ resource "aws_ecs_task_definition" "webapp" {
       protocol      = "tcp"
     }]
     environment = [
-      { name = "NODE_ENV",         value = "production" },
-      { name = "PORT",             value = "3000" },
+      { name = "NODE_ENV", value = "production" },
+      { name = "PORT", value = "3000" },
       # Server-side Next.js only — this URL never reaches the browser
       { name = "API_INTERNAL_URL", value = "http://${aws_lb.api.dns_name}" }
     ]
