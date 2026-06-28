@@ -69,8 +69,25 @@
       "Sid": "WAFManagedRuleGroups",
       "Effect": "Allow",
       "Action": [
+        "wafv2:CreateWebACL",
+        "wafv2:UpdateWebACL",
         "wafv2:ListAvailableManagedRuleGroups",
         "wafv2:DescribeManagedRuleGroup"
+      ],
+      "Resource": "arn:aws:wafv2:__AWS_REGION__:__AWS_ACCOUNT_ID__:regional/managedruleset/*/*"
+    },
+    {
+      "Sid": "WAFLoggingSetup",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogDelivery",
+        "logs:GetLogDelivery",
+        "logs:UpdateLogDelivery",
+        "logs:DeleteLogDelivery",
+        "logs:ListLogDeliveries",
+        "logs:PutResourcePolicy",
+        "logs:DescribeResourcePolicies",
+        "logs:DescribeLogGroups"
       ],
       "Resource": "*"
     },

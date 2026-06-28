@@ -24,6 +24,21 @@
       ]
     },
     {
+      "Sid": "LogStreamManagement",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:DescribeLogStreams",
+        "logs:PutLogEvents"
+      ],
+      "Resource": [
+        "arn:aws:logs:__AWS_REGION__:__AWS_ACCOUNT_ID__:log-group:appdevexp-*:log-stream:*",
+        "arn:aws:logs:__AWS_REGION__:__AWS_ACCOUNT_ID__:log-group:/aws/ecs/appdevexp-*:log-stream:*",
+        "arn:aws:logs:__AWS_REGION__:__AWS_ACCOUNT_ID__:log-group:/aws/vpc/flowlogs/appdevexp-*:log-stream:*",
+        "arn:aws:logs:__AWS_REGION__:__AWS_ACCOUNT_ID__:log-group:aws-waf-logs-appdevexp-*:log-stream:*"
+      ]
+    },
+    {
       "Sid": "LogResourcePolicy",
       "Effect": "Allow",
       "Action": [
