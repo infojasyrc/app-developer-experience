@@ -156,12 +156,17 @@
       }
     },
     {
+      "Sid": "ECSAppLogGroupDescribeAll",
+      "Effect": "Allow",
+      "Action": "logs:DescribeLogGroups",
+      "Resource": "*"
+    },
+    {
       "Sid": "ECSAppLogGroupManagement",
       "Effect": "Allow",
       "Action": [
         "logs:CreateLogGroup",
         "logs:DeleteLogGroup",
-        "logs:DescribeLogGroups",
         "logs:PutRetentionPolicy",
         "logs:AssociateKmsKey",
         "logs:DisassociateKmsKey",
@@ -172,6 +177,21 @@
       "Resource": [
         "arn:aws:logs:__AWS_REGION__:__AWS_ACCOUNT_ID__:log-group:/ecs/*"
       ]
+    },
+    {
+      "Sid": "WAFAssociateWithALB",
+      "Effect": "Allow",
+      "Action": [
+        "wafv2:AssociateWebACL",
+        "wafv2:DisassociateWebACL",
+        "wafv2:GetWebACLForResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "__AWS_REGION__"
+        }
+      }
     },
     {
       "Sid": "KMSUseForEncryptedResources",
