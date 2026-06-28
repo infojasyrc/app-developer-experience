@@ -2,10 +2,17 @@
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Sid": "KMSCreateKey",
+      "Effect": "Allow",
+      "Action": [
+        "kms:CreateKey"
+      ],
+      "Resource": "*"
+    },
+    {
       "Sid": "KMSKeyLifecycle",
       "Effect": "Allow",
       "Action": [
-        "kms:CreateKey",
         "kms:DescribeKey",
         "kms:GetKeyPolicy",
         "kms:PutKeyPolicy",
