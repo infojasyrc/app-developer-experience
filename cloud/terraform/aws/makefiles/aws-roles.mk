@@ -406,9 +406,10 @@ destroy-runtime-roles: ## [DESTRUCTIVE] Delete ECS task execution and app task r
 
 destroy-deployer: ## [DESTRUCTIVE] Delete the OIDC deployer role
 	@echo "WARNING: Deleting deployer role..."
-	aws iam delete-role-policy \
-		--role-name $(DEPLOYER_ROLE) \
-		--policy-name terraform-backend 2>/dev/null || true
+	policies=$$(aws iam list-role-policies --role-name $(DEPLOYER_ROLE) --query PolicyNames --output text 2>/dev/null); \
+	for p in $$policies; do \
+		aws iam delete-role-policy --role-name $(DEPLOYER_ROLE) --policy-name $$p 2>/dev/null || true; \
+	done
 	aws iam delete-role --role-name $(DEPLOYER_ROLE) 2>/dev/null \
 		&& echo "Deleted $(DEPLOYER_ROLE)" || echo "Skipped (not found)"
 
@@ -416,6 +417,15 @@ destroy-boundary: ## [DESTRUCTIVE] Delete the permissions boundary policy
 	@echo "WARNING: Deleting permissions boundary policy..."
 	$(eval BOUNDARY_ARN := $(shell aws iam list-policies --query "Policies[?PolicyName=='appdevexp-permissions-boundary'].Arn" --output text))
 	@if [ -n "$(BOUNDARY_ARN)" ]; then \
+		echo "Detaching boundary from all roles that hold it..."; \
+		aws iam list-entities-for-policy --policy-arn $(BOUNDARY_ARN) \
+			--query "PolicyRoles[].RoleName" --output text 2>/dev/null \
+		| tr '\t' '\n' \
+		| while read -r role; do \
+			[ -z "$$role" ] && continue; \
+			echo "  Removing boundary from $$role..."; \
+			aws iam delete-role-permissions-boundary --role-name "$$role" 2>/dev/null || true; \
+		done; \
 		versions=$$(aws iam list-policy-versions --policy-arn $(BOUNDARY_ARN) --query "Versions[?!IsDefaultVersion].VersionId" --output text); \
 		for v in $$versions; do \
 			aws iam delete-policy-version --policy-arn $(BOUNDARY_ARN) --version-id $$v; \

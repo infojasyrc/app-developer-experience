@@ -63,7 +63,7 @@ resource "aws_security_group" "webapp_tasks" {
 # Internal ALB — accepts only from webapp tasks SG; no internet path
 resource "aws_security_group" "api_alb" {
   name        = "${var.application_name}-api-alb-sg"
-  description = "Internal API ALB: port 80 from webapp tasks SG only — no internet path"
+  description = "Internal API ALB: port 80 from webapp tasks SG only - no internet path"
   vpc_id      = var.vpc_id
 
   ingress {

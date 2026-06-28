@@ -2,10 +2,12 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "KMSCreateKey",
+      "Sid": "KMSGlobalOperations",
       "Effect": "Allow",
       "Action": [
-        "kms:CreateKey"
+        "kms:CreateKey",
+        "kms:ListAliases",
+        "kms:ListKeys"
       ],
       "Resource": "*"
     },
@@ -24,9 +26,7 @@
         "kms:UpdateKeyDescription",
         "kms:TagResource",
         "kms:UntagResource",
-        "kms:ListResourceTags",
-        "kms:ListKeys",
-        "kms:ListAliases"
+        "kms:ListResourceTags"
       ],
       "Resource": "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:key/*"
     },
@@ -36,8 +36,7 @@
       "Action": [
         "kms:CreateAlias",
         "kms:DeleteAlias",
-        "kms:UpdateAlias",
-        "kms:ListAliases"
+        "kms:UpdateAlias"
       ],
       "Resource": [
         "arn:aws:kms:__AWS_REGION__:__AWS_ACCOUNT_ID__:alias/*",
