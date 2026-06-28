@@ -184,7 +184,8 @@
       "Action": [
         "wafv2:AssociateWebACL",
         "wafv2:DisassociateWebACL",
-        "wafv2:GetWebACLForResource"
+        "wafv2:GetWebACLForResource",
+        "wafv2:ListWebACLs"
       ],
       "Resource": "*",
       "Condition": {
@@ -192,6 +193,12 @@
           "aws:RequestedRegion": "__AWS_REGION__"
         }
       }
+    },
+    {
+      "Sid": "WAFGetWebACL",
+      "Effect": "Allow",
+      "Action": "wafv2:GetWebACL",
+      "Resource": "arn:aws:wafv2:__AWS_REGION__:__AWS_ACCOUNT_ID__:regional/webacl/*"
     },
     {
       "Sid": "KMSUseForEncryptedResources",
