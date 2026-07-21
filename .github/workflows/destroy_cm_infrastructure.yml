@@ -1,4 +1,4 @@
-name: 🚀 Destroy Conference Manager Infrastructure
+name: 🚨 Destroy Conference Manager Infrastructure
 
 on:
   workflow_dispatch:
