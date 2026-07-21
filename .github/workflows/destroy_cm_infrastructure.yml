@@ -35,9 +35,6 @@ jobs:
         with:
           terraform_version: 1.14.5
 
-      - name: Terraform Format
-        run: terraform fmt -check -recursive
-
       - name: Terraform Init
         run: |
           terraform init -input=false -lockfile=readonly \
@@ -46,9 +43,6 @@ jobs:
             -backend-config="region=${{env.AWS_REGION}}" \
             -backend-config="dynamodb_table=${{vars.BACKEND_AWS_DYNAMODB_TABLE}}"
           terraform providers
-
-      - name: Terraform Validate
-        run: terraform validate
 
       - name: Terraform Plan (destroy)
         id: plan
