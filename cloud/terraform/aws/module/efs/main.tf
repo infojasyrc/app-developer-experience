@@ -8,8 +8,6 @@ resource "aws_security_group" "efs" {
   description = "EFS mount targets: NFS port 2049 from ECS task SGs only"
   vpc_id      = var.vpc_id
 
-  # dynamic block: no ingress rule created when allowed_sg_ids is empty (Phase 2).
-  # Phase 3 populates allowed_sg_ids with api-tasks and tools-tasks SG IDs.
   dynamic "ingress" {
     for_each = length(var.allowed_sg_ids) > 0 ? [1] : []
     content {
