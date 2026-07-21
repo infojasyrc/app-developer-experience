@@ -1,0 +1,83 @@
+name: 🚀 Destroy Conference Manager Infrastructure
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  # Common variables
+  AWS_REGION: us-west-1
+
+jobs:
+  destroy-infra:
+    name: Infrastructure Destroy for Conference Manager
+    runs-on: ubuntu-22.04
+    environment: DEV
+    defaults:
+      run:
+        working-directory: cloud/terraform/aws
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3.0.0
+        with:
+          terraform_version: 1.14.5
+
+      - name: Terraform Format
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init
+        run: |
+          terraform init -input=false -lockfile=readonly \
+            -backend-config="bucket=${{secrets.BACKEND_AWS_S3_BUCKET}}" \
+            -backend-config="key=${{secrets.BACKEND_AWS_S3_KEY}}" \
+            -backend-config="region=${{env.AWS_REGION}}" \
+            -backend-config="dynamodb_table=${{vars.BACKEND_AWS_DYNAMODB_TABLE}}"
+          terraform providers
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan (destroy)
+        id: plan
+        run: terraform plan -destroy -input=false -out=plans/plan.tfplan
+        env:
+          TF_VAR_aws_account_region: ${{ env.AWS_REGION }}
+          TF_VAR_aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+          TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
+          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+
+      - name: Terraform Destroy
+        shell: bash
+        env:
+          TF_IN_AUTOMATION: "true"
+          TF_LOG: ERROR
+          TF_LOG_PATH: terraform.log
+          TF_VAR_aws_account_region: ${{ env.AWS_REGION }}
+          TF_VAR_aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+          TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
+          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+        run: |
+          set -o pipefail
+          terraform apply plans/plan.tfplan 2>&1 | tee terraform-destroy.out
+
+      - name: Upload terraform logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-debug-logs
+          path: |
+            cloud/terraform/aws/terraform.log
+            cloud/terraform/aws/terraform-destroy.out
