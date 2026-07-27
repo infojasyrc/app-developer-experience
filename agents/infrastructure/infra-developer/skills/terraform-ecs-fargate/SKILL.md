@@ -1,20 +1,24 @@
 ---
 name: terraform-ecs-fargate
 description: >
-  Implements Terraform fixes and new modules for ECS Fargate + ECR + RDS
-  deployments on AWS. Use when the plan requires creating or fixing ECS task
-  definitions, ECS services, ECR repositories, security groups, or networking
-  resources. Always reads monorepo-paths.md then INFRA_PLAN.md Phase A before
-  writing any .tf file. Runs terraform validate after each change — never apply.
+  Implements Terraform fixes and extensions to this repo's actual
+  module/ecs-app (webapp + API on ECS Fargate, dual ALB, EFS-backed Mongo
+  sidecar) and related modules (module/network, module/cluster, module/efs).
+  Use when the plan requires creating or fixing ECS task definitions, ECS
+  services, security groups, or load balancers within module/ecs-app. Always
+  reads monorepo-paths.md then INFRA_PLAN.md Phase A before writing any .tf
+  file. Runs terraform validate after each change — never apply.
 metadata:
   author: app-dev-exp
-  version: "1.0"
+  version: "2.0"
 ---
 
 # terraform-ecs-fargate
 
-Implements Phase A of `INFRA_PLAN.md`: Terraform module fixes for ECS Fargate
-+ ECR + RDS. Paths resolved from `agents/shared/context/monorepo-paths.md`.
+Implements Phase A of `INFRA_PLAN.md`: Terraform module fixes for
+`cloud/terraform/aws/module/ecs-app/` (+ its dependencies: `module/network`,
+`module/cluster`, `module/efs`). Paths resolved from
+`agents/shared/context/monorepo-paths.md`.
 
 ---
 
@@ -23,207 +27,73 @@ Implements Phase A of `INFRA_PLAN.md`: Terraform module fixes for ECS Fargate
 ```bash
 # Always read paths first
 cat agents/shared/context/monorepo-paths.md
+# provider-alias chain — module/ecs-app runs under aws.ecs
+cat agents/shared/context/aws-infrastructure-map.md
 TERRAFORM_AWS="cloud/terraform/aws"
 INFRA_PLANS="agents/infrastructure/plans"
 
 # Read the plan
 cat $INFRA_PLANS/INFRA_PLAN.md
 
-# Understand existing module structure
-find $TERRAFORM_AWS -name "*.tf" | sort
+# Understand existing module structure — this is the real layout, not a generic one
+cat $TERRAFORM_AWS/module/ecs-app/main.tf $TERRAFORM_AWS/module/ecs-app/variables.tf $TERRAFORM_AWS/module/ecs-app/outputs.tf
+cat $TERRAFORM_AWS/main.tf   # see how module.ecs_app is wired to module.iam / module.network / module.cluster
 
 # Validate current state
 cd $TERRAFORM_AWS && terraform validate
-terraform plan -out=plan.tfplan 2>&1 | tail -30
+terraform plan 2>&1 | tail -30
 ```
 
 ---
 
-## ECS Task Definition — correct Fargate template
+## Real architecture: two services, two ALBs, one EFS-backed sidecar
 
-```hcl
-# modules/ecs/task_definition.tf
-resource "aws_ecs_task_definition" "app" {
-  family                   = "${var.app_name}-${var.environment}"
-  network_mode             = "awsvpc"          # required for Fargate
-  requires_compatibilities = ["FARGATE"]        # required
-  cpu                      = var.task_cpu       # e.g. "512"
-  memory                   = var.task_memory    # e.g. "1024"
-  execution_role_arn       = var.execution_role_arn
-  task_role_arn            = var.task_role_arn
+`module/ecs-app` is **not** a single generic ECS service — it deploys two
+independent Fargate services behind two ALBs, both in `main.tf`'s
+`module.ecs_app` block (`enable_application` flag, `aws.ecs` provider alias):
 
-  container_definitions = jsonencode([{
-    name      = var.app_name
-    image     = "${var.ecr_repository_url}:${var.image_tag}"
-    essential = true
+| Service | Task def | ALB | Reachability | CPU/Mem |
+|---|---|---|---|---|
+| `aws_ecs_service.webapp` | `aws_ecs_task_definition.webapp` (family `${application_name}-webapp`) | `aws_lb.webapp` — **external**, public subnets, HTTP+HTTPS from `0.0.0.0/0` | Internet-facing | 512 / 1024 |
+| `aws_ecs_service.api` | `aws_ecs_task_definition.api` (family `${application_name}-api`), EFS volume `mongodb-data` for the Mongo sidecar | `aws_lb.api` — **internal**, private subnets only, `internal = true` | VPC-only, no internet path | 1024 / 2048, `desired_count` forced to a single writer (EFS constraint) |
 
-    portMappings = [{
-      containerPort = var.container_port
-      protocol      = "tcp"
-    }]
+Container definitions: `webapp` is inline `jsonencode(...)` in `main.tf`; `api`
+uses `templatefile("${path.root}/container_definitions.json.tpl", {...})` at
+the repo's `TERRAFORM_AWS` root — **not** a second inline block. If you need
+to add an env var or secret to the API container, edit
+`container_definitions.json.tpl`, not `module/ecs-app/main.tf`.
 
-    environment = [
-      for k, v in var.env_vars : { name = k, value = v }
-    ]
+Security groups follow a strict internet → webapp-ALB → webapp-tasks →
+api-ALB (internal) → api-tasks chain (see `aws_security_group.webapp_alb`,
+`webapp_tasks`, `api_alb`, `api_tasks` in `main.tf`) — each SG's ingress
+references the *previous* SG's ID, never a CIDR block, past the webapp ALB.
+Preserve this chain; don't add a CIDR-based shortcut across it.
 
-    secrets = [
-      for k, v in var.secrets : {
-        name      = k
-        valueFrom = v  # SSM ARN or Secrets Manager ARN
-      }
-    ]
+`task_execution_role_arn` and `app_task_role_arn` are passed in as module
+variables from `module.iam`'s outputs (see `main.tf`'s `module.ecs_app` block)
+— this module never creates its own IAM roles. If a fix requires new IAM
+permissions, that's Phase B (`iam-roles-ecs`), not this skill.
 
-    logConfiguration = {
-      logDriver = "awslogs"
-      options = {
-        "awslogs-group"         = "/ecs/${var.app_name}-${var.environment}"
-        "awslogs-region"        = var.aws_region
-        "awslogs-stream-prefix" = "ecs"
-        "awslogs-create-group"  = "true"
-      }
-    }
-  }])
+EFS wiring: `efs_file_system_id` / `mongodb_ap_id` come from `module.efs`, and
+NFS ingress from the API task SG to the EFS SG is added at the **root**
+`main.tf` level (`aws_security_group_rule.efs_nfs_from_api`), not inside
+`module/ecs-app`, specifically to avoid an `ecs_app → efs → ecs_app`
+circular module dependency. Don't move that rule into `module/ecs-app`.
 
-  tags = var.common_tags
-}
+---
+
+## Valid Fargate CPU/memory pairs (for any new task definition)
+
+```
+256→512/1024/2048  512→1024-4096  1024→2048-8192  2048→4096-16384  4096→8192-30720
 ```
 
-## ECS Service — correct Fargate template
+`network_mode = "awsvpc"` and `requires_compatibilities = ["FARGATE"]` are
+required on every task definition; `launch_type = "FARGATE"` and
+`assign_public_ip = false` (both services already use private subnets) are
+required on every service.
 
-```hcl
-# modules/ecs/service.tf
-resource "aws_ecs_service" "app" {
-  name                               = "${var.app_name}-${var.environment}"
-  cluster                            = var.ecs_cluster_id
-  task_definition                    = aws_ecs_task_definition.app.arn
-  desired_count                      = var.desired_count
-  launch_type                        = "FARGATE"
-  platform_version                   = "LATEST"
-  health_check_grace_period_seconds  = 60
-
-  network_configuration {
-    subnets          = var.private_subnet_ids   # always private subnets
-    security_groups  = [aws_security_group.ecs_tasks.id]
-    assign_public_ip = false                     # false for private subnets
-  }
-
-  load_balancer {
-    target_group_arn = var.target_group_arn
-    container_name   = var.app_name
-    container_port   = var.container_port
-  }
-
-  deployment_circuit_breaker {
-    enable   = true
-    rollback = true
-  }
-
-  lifecycle {
-    ignore_changes = [desired_count]  # managed by auto-scaling
-  }
-
-  tags = var.common_tags
-}
-```
-
-## Security Groups — ECS to RDS
-
-```hcl
-# modules/networking/security_groups.tf
-
-# ECS tasks security group
-resource "aws_security_group" "ecs_tasks" {
-  name        = "${var.app_name}-ecs-tasks-${var.environment}"
-  description = "Security group for ECS Fargate tasks"
-  vpc_id      = var.vpc_id
-
-  egress {
-    description = "Allow all outbound (ECR pull, SSM, CloudWatch)"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge(var.common_tags, { Name = "${var.app_name}-ecs-tasks-${var.environment}" })
-}
-
-# RDS security group
-resource "aws_security_group" "rds" {
-  name        = "${var.app_name}-rds-${var.environment}"
-  description = "Security group for RDS — only accepts from ECS tasks"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    description     = "PostgreSQL from ECS tasks only"
-    from_port       = 5432          # change to 3306 for MySQL
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.ecs_tasks.id]  # reference, not CIDR
-  }
-
-  tags = merge(var.common_tags, { Name = "${var.app_name}-rds-${var.environment}" })
-}
-
-# Allow ECS to reach RDS (explicit ingress rule on ECS SG)
-resource "aws_security_group_rule" "ecs_to_rds" {
-  type                     = "egress"
-  from_port                = 5432
-  to_port                  = 5432
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.rds.id
-  security_group_id        = aws_security_group.ecs_tasks.id
-  description              = "Allow ECS tasks to reach RDS"
-}
-```
-
-## ECR Repository
-
-```hcl
-# modules/ecr/main.tf
-resource "aws_ecr_repository" "app" {
-  name                 = "${var.app_name}-${var.environment}"
-  image_tag_mutability = "MUTABLE"
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-
-  encryption_configuration {
-    encryption_type = "AES256"
-  }
-
-  tags = var.common_tags
-}
-
-resource "aws_ecr_lifecycle_policy" "app" {
-  repository = aws_ecr_repository.app.name
-
-  policy = jsonencode({
-    rules = [{
-      rulePriority = 1
-      description  = "Keep last 10 images"
-      selection = {
-        tagStatus   = "any"
-        countType   = "imageCountMoreThan"
-        countNumber = 10
-      }
-      action = { type = "expire" }
-    }]
-  })
-}
-```
-
-## CloudWatch Log Group
-
-```hcl
-resource "aws_cloudwatch_log_group" "ecs" {
-  name              = "/ecs/${var.app_name}-${var.environment}"
-  retention_in_days = var.environment == "prod" ? 90 : 14
-
-  tags = var.common_tags
-}
-```
+---
 
 ## Verification after changes
 
@@ -234,10 +104,10 @@ cd $TERRAFORM_AWS
 terraform validate
 
 # Plan — verify only expected resources in diff
-terraform plan -var-file="environments/${var.environment}.tfvars" \
-  -out=plan.tfplan 2>&1
+terraform plan 2>&1
 
 # Check for unintended destroy operations
+terraform plan -out=plan.tfplan 2>&1
 terraform show plan.tfplan | grep -E "will be destroyed|must be replaced"
 # If any unexpected destroy → STOP and report to human
 ```
@@ -245,15 +115,14 @@ terraform show plan.tfplan | grep -E "will be destroyed|must be replaced"
 ## Completion report format
 
 ```
-✅ Phase A Complete — Terraform ECS Fargate
+✅ Phase A Complete — Terraform ECS Fargate (module/ecs-app)
 
 Files created/modified:
-- modules/ecs/task_definition.tf
-- modules/ecs/service.tf
-- modules/networking/security_groups.tf
+- module/ecs-app/main.tf
+- container_definitions.json.tpl   (if API container config changed)
 
 terraform validate: ✅ Success
 terraform plan: ✅ N resources to add, M to change, 0 to destroy
 
-Ready for Phase B: iam-roles-ecs
+Ready for Phase B: iam-roles-ecs (only if new IAM permissions are needed)
 ```

@@ -59,9 +59,10 @@ cat agents/shared/context/development-guidance.md
 agents/
 ├── shared/
 │   └── context/
-│       ├── monorepo-paths.md        ← filesystem paths — read first, always
-│       └── commit-conventions.md    ← conventional commits rules — read always
-│       └── development-guidance.md  ← team rules to implement frontend + backend
+│       ├── monorepo-paths.md         ← filesystem paths — read first, always
+│       └── commit-conventions.md     ← conventional commits rules — read always
+│       └── development-guidance.md   ← team rules to implement frontend + backend
+|       └── aws-infrastructure-map.md ← dual IAM system, provider-alias chain, failure taxonomy
 ├── frontend/
 │   ├── frontend-planner/          → AGENT.md + skills/
 │   └── frontend-developer/        → AGENT.md + skills/

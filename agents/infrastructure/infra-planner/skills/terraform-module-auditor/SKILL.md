@@ -25,9 +25,19 @@ metadata:
 ```bash
 cat agents/shared/context/monorepo-paths.md
 cat agents/shared/context/commit-conventions.md
+# dual IAM system, provider-alias chain, failure taxonomy
+cat agents/shared/context/aws-infrastructure-map.md
 TERRAFORM_AWS="cloud/terraform/aws"
 INFRA_PLANS="agents/infrastructure/infra-planner/output"
 ```
+
+**Early check — which IAM role set does this module actually wire up?**
+`main.tf`'s `module.iam` block is the only Terraform-native IAM source; if any
+audited module references role ARNs by hardcoded `appdevexp-*` name instead
+of a `module.iam.*_role_arn` output, that's a 🔴 CRITICAL finding — it means
+the module bypasses `module/iam` and points at the Makefile-managed role set,
+which `aws-infrastructure-map.md` §1 confirms is not what's actually live for
+ECS tasks. Confirm before auditing anything else in this module.
 
 ## Step 2 — Discover module structure
 

@@ -14,6 +14,7 @@ Never hardcode paths in AGENT.md or SKILL.md — always derive from here.
 | `TERRAFORM_AWS` | `cloud/terraform/aws/` | AWS-specific Terraform modules |
 | `TERRAFORM_AZURE` | `cloud/terraform/azure/` | Azure-specific Terraform modules |
 | `INFRA_PLANS` | `agents/infrastructure/plans/` | Agent-produced plan artifacts (INFRA_PLAN.md) |
+| `AWS_INFRA_MAP` | `agents/shared/context/aws-infrastructure-map.md` | Durable dual-IAM-system / provider-alias / bootstrap-order map |
 
 ## Conference Manager
 

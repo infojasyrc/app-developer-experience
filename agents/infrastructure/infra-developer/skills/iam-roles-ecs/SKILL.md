@@ -1,21 +1,24 @@
 ---
 name: iam-roles-ecs
 description: >
-  Creates and fixes IAM roles and policies for ECS Fargate deployments:
-  task execution role (ECR pull, CloudWatch, Secrets Manager at startup),
-  task role (SSM, Secrets Manager at runtime, RDS IAM auth, CloudWatch),
-  and GitHub Actions OIDC role for CI/CD deployments. Use when the plan
-  identifies IAM permission gaps. Always uses least-privilege — never
-  AdministratorAccess or wildcard resources. Requires Phase A complete.
+  Creates and fixes IAM roles and policies for ECS Fargate deployments in
+  this repo's actual module/iam structure: ecs_service_role (service
+  auto-scaling), task_execution role (ECR pull, CloudWatch, Secrets Manager,
+  EFS mount at startup), and app_task role (Secrets Manager at runtime).
+  Use when the plan identifies IAM permission gaps in module/iam. Always
+  uses least-privilege — never AdministratorAccess or wildcard resources.
+  Requires Phase A complete. Does NOT create a GitHub Actions OIDC role —
+  that role is Makefile-managed; see the note below before touching CI auth.
 metadata:
   author: app-dev-exp
-  version: "1.0"
+  version: "2.0"
 ---
 
 # iam-roles-ecs
 
-Implements Phase B of `INFRA_PLAN.md`: IAM roles and policies for ECS Fargate.
-Paths resolved from `agents/shared/context/monorepo-paths.md`.
+Implements Phase B of `INFRA_PLAN.md`: IAM roles and policies for ECS Fargate,
+in `cloud/terraform/aws/module/iam/`. Paths resolved from
+`agents/shared/context/monorepo-paths.md`.
 
 ---
 
@@ -24,309 +27,165 @@ Paths resolved from `agents/shared/context/monorepo-paths.md`.
 ```bash
 # Always read paths first
 cat agents/shared/context/monorepo-paths.md
+# dual-IAM-system map — read before touching any role
+cat agents/shared/context/aws-infrastructure-map.md
 TERRAFORM_AWS="cloud/terraform/aws"
 INFRA_PLANS="agents/infrastructure/plans"
 
 cat $INFRA_PLANS/INFRA_PLAN.md  # read Phase B section
-grep -rn "execution_role_arn\|task_role_arn" $TERRAFORM_AWS --include="*.tf"
+cat $TERRAFORM_AWS/module/iam/main.tf $TERRAFORM_AWS/module/iam/variables.tf $TERRAFORM_AWS/module/iam/outputs.tf
 terraform validate
 ```
 
+**Read `aws-infrastructure-map.md` §1 first.** There are two independently
+maintained IAM provisioning systems in this repo — `module/iam` (Terraform,
+what's actually live) and `makefiles/aws-roles.mk` + `iam/*.json.tpl`
+(Makefile/AWS CLI, admin-run, not live). This skill only ever touches
+`module/iam`. If a finding says the fix is in `iam/*.json.tpl` or
+`makefiles/aws-roles.mk`, that is **not** this skill's job — flag it back to
+the plan rather than implementing it here.
+
 ---
 
-## ECS Task Execution Role
+## Real module structure (`module/iam/`)
+
+Three roles, one Terraform module, each already wired into `main.tf`'s
+`module.iam` block (`aws.ecs` provider alias) and consumed by
+`module.ecs_app` via `task_execution_role_arn` / `app_task_role_arn` outputs:
+
+| Role (Terraform resource) | Live name | Purpose |
+|---|---|---|
+| `aws_iam_role.ecs_service_role` | `${application_name}-ecs-role-manager` | ECS service auto-scaling (application-autoscaling, CloudWatch alarms, SNS) — **not** a task role |
+| `aws_iam_role.task_execution` | `${application_name}-task-execution-role` | ECS agent: pull image (managed `AmazonECSTaskExecutionRolePolicy`) + Secrets Manager read + KMS decrypt + EFS mount |
+| `aws_iam_role.app_task` | `${application_name}-app-task-role` | Application container runtime: Secrets Manager read for `/appdevexp/dev/*` only |
+
+All three carry `permissions_boundary = "arn:aws:iam::${var.account_id}:policy/appdevexp-permissions-boundary"`
+(Makefile-bootstrapped boundary policy — see `aws-infrastructure-map.md` §3).
+Never create a role in this module without that boundary attached.
+
+**Naming convention:** `${var.application_name}-<role-purpose>` — no
+environment suffix inside the role name itself (`application_name` already
+includes the environment via `main.tf`'s `"${var.application_name}-${local.environment}"`
+interpolation at the call site). Do not invent a different naming scheme —
+this is the one real scheme, and there is already a second, incompatible one
+in the Makefile system that this repo is trying to *not* add a third to.
+
+### Task execution role — extending permissions
 
 ```hcl
-# modules/iam/ecs_execution_role.tf
+# module/iam/main.tf — extend the existing aws_iam_role_policy.task_execution_extras
+# statement list; do not create a second inline policy for the same purpose.
 
-data "aws_iam_policy_document" "ecs_execution_assume" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-}
+resource "aws_iam_role_policy" "task_execution_extras" {
+  name = "${var.application_name}-task-execution-extras"
+  role = aws_iam_role.task_execution.id
 
-resource "aws_iam_role" "ecs_execution" {
-  name               = "${var.app_name}-ecs-execution-${var.environment}"
-  assume_role_policy = data.aws_iam_policy_document.ecs_execution_assume.json
-  tags               = var.common_tags
-}
-
-# Base execution permissions (ECR + CloudWatch)
-resource "aws_iam_role_policy_attachment" "ecs_execution_managed" {
-  role       = aws_iam_role.ecs_execution.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-# Secrets at startup (task definition secrets block)
-data "aws_iam_policy_document" "ecs_execution_secrets" {
-  statement {
-    sid    = "SecretsManagerAccess"
-    effect = "Allow"
-    actions = [
-      "secretsmanager:GetSecretValue",
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "SecretsManagerRead"
+        Effect = "Allow"
+        Action = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
+        Resource = "arn:aws:secretsmanager:${var.aws_region}:${var.account_id}:secret:/appdevexp/*"
+      },
+      {
+        Sid      = "KmsDecrypt"
+        Effect   = "Allow"
+        Action   = ["kms:Decrypt", "kms:GenerateDataKey"]
+        Resource = var.kms_key_arn
+      },
+      {
+        Sid    = "EfsMount"
+        Effect = "Allow"
+        Action = [
+          "elasticfilesystem:ClientMount",
+          "elasticfilesystem:ClientRootAccess",
+          "elasticfilesystem:ClientWrite",
+          "elasticfilesystem:DescribeMountTargets"
+        ]
+        Resource = "arn:aws:elasticfilesystem:${var.aws_region}:${var.account_id}:file-system/*"
+      }
+      # New statement goes here — scope Resource as tightly as the existing ones.
     ]
-    resources = [
-      "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:${var.app_name}/${var.environment}/*"
-    ]
-  }
-
-  statement {
-    sid    = "SSMParameterAccess"
-    effect = "Allow"
-    actions = [
-      "ssm:GetParameters",
-      "ssm:GetParameter",
-    ]
-    resources = [
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:parameter/${var.app_name}/${var.environment}/*"
-    ]
-  }
-
-  statement {
-    sid    = "KMSDecrypt"
-    effect = "Allow"
-    actions = ["kms:Decrypt"]
-    resources = [var.kms_key_arn]  # scope to your KMS key ARN
-  }
-}
-
-resource "aws_iam_role_policy" "ecs_execution_secrets" {
-  name   = "secrets-access"
-  role   = aws_iam_role.ecs_execution.id
-  policy = data.aws_iam_policy_document.ecs_execution_secrets.json
+  })
 }
 ```
 
-## ECS Task Role (application runtime permissions)
+### App task role — extending permissions
 
 ```hcl
-# modules/iam/ecs_task_role.tf
+# module/iam/main.tf — extend aws_iam_role_policy.app_task_policy's statement list.
+# Current scope is deliberately narrow: /appdevexp/dev/* only, nothing broader.
 
-data "aws_iam_policy_document" "ecs_task_assume" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-}
+resource "aws_iam_role_policy" "app_task_policy" {
+  name = "${var.application_name}-app-task-policy"
+  role = aws_iam_role.app_task.id
 
-resource "aws_iam_role" "ecs_task" {
-  name               = "${var.app_name}-ecs-task-${var.environment}"
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume.json
-  tags               = var.common_tags
-}
-
-# SSM Parameter Store — runtime config reads
-data "aws_iam_policy_document" "ecs_task_ssm" {
-  statement {
-    sid    = "SSMParameterRead"
-    effect = "Allow"
-    actions = [
-      "ssm:GetParameter",
-      "ssm:GetParameters",
-      "ssm:GetParametersByPath",
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid      = "SecretsManagerDevRead"
+        Effect   = "Allow"
+        Action   = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
+        Resource = "arn:aws:secretsmanager:${var.aws_region}:${var.account_id}:secret:/appdevexp/dev/*"
+      }
+      # New statement goes here.
     ]
-    resources = [
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:parameter/${var.app_name}/${var.environment}/*"
-    ]
-  }
-}
-
-# Secrets Manager — runtime secret reads
-data "aws_iam_policy_document" "ecs_task_secrets" {
-  statement {
-    sid     = "SecretsManagerRead"
-    effect  = "Allow"
-    actions = ["secretsmanager:GetSecretValue"]
-    resources = [
-      "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:${var.app_name}/${var.environment}/*"
-    ]
-  }
-}
-
-# CloudWatch Logs — application logging
-data "aws_iam_policy_document" "ecs_task_logs" {
-  statement {
-    sid    = "CloudWatchLogs"
-    effect = "Allow"
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
-    resources = [
-      "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:log-group:/ecs/${var.app_name}-${var.environment}:*"
-    ]
-  }
-}
-
-resource "aws_iam_role_policy" "ecs_task_ssm" {
-  name   = "ssm-read"
-  role   = aws_iam_role.ecs_task.id
-  policy = data.aws_iam_policy_document.ecs_task_ssm.json
-}
-
-resource "aws_iam_role_policy" "ecs_task_secrets" {
-  name   = "secrets-read"
-  role   = aws_iam_role.ecs_task.id
-  policy = data.aws_iam_policy_document.ecs_task_secrets.json
-}
-
-resource "aws_iam_role_policy" "ecs_task_logs" {
-  name   = "cloudwatch-logs"
-  role   = aws_iam_role.ecs_task.id
-  policy = data.aws_iam_policy_document.ecs_task_logs.json
+  })
 }
 ```
 
-## GitHub Actions OIDC Role (CI/CD deployments without static keys)
+If a new permission doesn't fit either role's existing purpose (execution vs.
+app runtime), don't force it in — flag as an `⚠️ UNPLANNED FINDING` per
+`infra-developer`'s Deviation Protocol instead of guessing which role should
+own it.
 
-```hcl
-# modules/iam/github_actions_role.tf
+---
 
-data "aws_iam_openid_connect_provider" "github" {
-  url = "https://token.actions.githubusercontent.com"
-}
+## GitHub Actions OIDC role — NOT created here
 
-# Create OIDC provider if it doesn't exist
-resource "aws_iam_openid_connect_provider" "github" {
-  count = var.create_github_oidc_provider ? 1 : 0
+**This skill does not create, and must never create, a GitHub Actions OIDC
+role in Terraform.** In this repo, OIDC role creation is deliberately kept
+out of Terraform — it lives in `makefiles/aws-roles.mk`'s `bootstrap-deployer`
+target (creates `appdevexp-deployer` from `iam/terraform-trust-policy.json.tpl`),
+precisely so Terraform's own credentials don't have to bootstrap themselves.
+`AWS_ROLE_ARN` in GitHub repo secrets points at `appdevexp-deployer`, not at
+anything this module creates.
 
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
-}
+If a plan phase asks for a Terraform-created OIDC/GitHub Actions role: that
+would create a **third**, parallel IAM system on top of the two already
+described in `aws-infrastructure-map.md` §1 — stop, flag it as an
+`⚠️ UNPLANNED FINDING`, and do not implement it without explicit human
+confirmation that this is an intentional architecture change.
 
-data "aws_iam_policy_document" "github_actions_assume" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-
-    principals {
-      type        = "Federated"
-      identifiers = [data.aws_iam_openid_connect_provider.github.arn]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "token.actions.githubusercontent.com:aud"
-      values   = ["sts.amazonaws.com"]
-    }
-
-    condition {
-      test     = "StringLike"
-      variable = "token.actions.githubusercontent.com:sub"
-      # Scope to your repo and branch — never use wildcard org
-      values   = ["repo:${var.github_org}/${var.github_repo}:ref:refs/heads/${var.deploy_branch}"]
-    }
-  }
-}
-
-resource "aws_iam_role" "github_actions" {
-  name               = "${var.app_name}-github-actions-${var.environment}"
-  assume_role_policy = data.aws_iam_policy_document.github_actions_assume.json
-  tags               = var.common_tags
-}
-
-# Permissions GHA needs for CI/CD
-data "aws_iam_policy_document" "github_actions_deploy" {
-  statement {
-    sid    = "ECRAuth"
-    effect = "Allow"
-    actions = ["ecr:GetAuthorizationToken"]
-    resources = ["*"]  # GetAuthorizationToken requires *
-  }
-
-  statement {
-    sid    = "ECRPush"
-    effect = "Allow"
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage",
-      "ecr:InitiateLayerUpload",
-      "ecr:UploadLayerPart",
-      "ecr:CompleteLayerUpload",
-      "ecr:PutImage",
-    ]
-    resources = [
-      "arn:aws:ecr:${var.aws_region}:${var.aws_account_id}:repository/${var.app_name}-${var.environment}"
-    ]
-  }
-
-  statement {
-    sid    = "ECSDeployment"
-    effect = "Allow"
-    actions = [
-      "ecs:UpdateService",
-      "ecs:DescribeServices",
-      "ecs:DescribeTaskDefinition",
-      "ecs:RegisterTaskDefinition",
-    ]
-    resources = [
-      "arn:aws:ecs:${var.aws_region}:${var.aws_account_id}:service/${var.app_name}-${var.environment}/${var.app_name}-${var.environment}",
-      "arn:aws:ecs:${var.aws_region}:${var.aws_account_id}:task-definition/${var.app_name}-${var.environment}:*",
-    ]
-  }
-
-  statement {
-    sid    = "PassRolesToECS"
-    effect = "Allow"
-    actions = ["iam:PassRole"]
-    resources = [
-      aws_iam_role.ecs_execution.arn,
-      aws_iam_role.ecs_task.arn,
-    ]
-  }
-}
-
-resource "aws_iam_role_policy" "github_actions_deploy" {
-  name   = "ecs-deploy"
-  role   = aws_iam_role.github_actions.id
-  policy = data.aws_iam_policy_document.github_actions_deploy.json
-}
-
-output "github_actions_role_arn" {
-  description = "ARN to set as AWS_ROLE_ARN in GitHub repository secrets"
-  value       = aws_iam_role.github_actions.arn
-}
-```
+---
 
 ## Verification
 
 ```bash
 cd $TERRAFORM_AWS
 terraform validate
-terraform plan -var-file="environments/${var.environment}.tfvars" 2>&1 | \
-  grep -E "will be created|will be updated|will be destroyed|Error"
+terraform plan 2>&1 | grep -E "will be created|will be updated|will be destroyed|Error"
 
 # After plan looks correct — simulate permissions (never apply yet)
 aws iam simulate-principal-policy \
-  --policy-source-arn $(terraform output -raw github_actions_role_arn) \
-  --action-names "ecr:PutImage" "ecs:UpdateService" "iam:PassRole" \
+  --policy-source-arn $(terraform output -raw task_execution_role_arn 2>/dev/null || echo "<pending-apply>") \
+  --action-names "secretsmanager:GetSecretValue" "kms:Decrypt" \
   --query 'EvaluationResults[*].{Action:EvalActionName,Decision:EvalDecision}'
 ```
 
 ## Completion report format
 
 ```
-✅ Phase B Complete — IAM Roles
+✅ Phase B Complete — IAM Roles (module/iam)
 
-Created:
-- modules/iam/ecs_execution_role.tf  (execution role + secrets access)
-- modules/iam/ecs_task_role.tf       (task role: SSM + Secrets + Logs)
-- modules/iam/github_actions_role.tf (OIDC role for GHA)
+Modified:
+- module/iam/main.tf   (extended task_execution_extras / app_task_policy statements)
 
 terraform validate: ✅
-terraform plan: ✅ 8 to add, 0 to change, 0 to destroy
+terraform plan: ✅ N to change, 0 to add, 0 to destroy
 
-Output: github_actions_role_arn = arn:aws:iam::<account>:role/...
-→ Add this ARN as AWS_ROLE_ARN secret in GitHub repository settings
+Note: appdevexp-deployer (GitHub OIDC role) is Makefile-managed — not touched by this phase.
 ```
