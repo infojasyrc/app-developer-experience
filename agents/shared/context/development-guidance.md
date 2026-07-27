@@ -6,7 +6,7 @@ description: >
   what to do (and what never to do) in each component.
 metadata:
   author: app-dev-exp
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Development Guidance — ADE Monorepo
@@ -219,6 +219,15 @@ AWS infrastructure managed with Terraform. All Terraform commands run inside a c
 | `make help` | List all targets |
 
 **Important:** `make apply` and `make destroy` are irreversible operations that affect shared cloud infrastructure. Always review `make plan` output before applying.
+
+**IAM/OIDC bootstrap layer (separate from the targets above):** `cloud/terraform/aws/makefiles/` holds four additional Makefiles — `aws-backend.mk`, `aws-roles.mk`, `aws-ecr.mk`, `aws-secrets.mk` — that provision the IAM roles, OIDC trust, and backend resources Terraform itself needs to run. These are **manual, admin-only, and never invoked from CI**. Bootstrap run order (see `aws-roles.mk`):
+
+```
+bootstrap-boundary → bootstrap-deployer → bootstrap-service-roles → bootstrap-runtime-roles
+```
+
+Full detail on how this layer relates to `module/iam` (Terraform-native, the one that actually backs running ECS tasks), the provider-alias broker chain, and the known IAM failure taxonomy lives in
+`agents/shared/context/aws-infrastructure-map.md` — read it before diagnosing any IAM/OIDC/permission issue in this package.
 
 ---
 

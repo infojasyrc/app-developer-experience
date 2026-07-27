@@ -7,6 +7,9 @@ description: >
   failures, Docker build errors, and missing secrets. Use when the user reports
   a failing CI/CD pipeline, workflow errors, or asks to debug GitHub Actions.
   Produces PIPELINE_DEBUG_REPORT.md with diffs — never modifies workflow files.
+metadata:
+  author: app-dev-exp
+  version: "1.0"
 ---
 
 # gha-debugger
@@ -94,6 +97,39 @@ permissions:
 2. `AWS_ROLE_ARN` secret not set → empty role ARN
 3. OIDC trust policy `sub` condition too strict (branch mismatch)
 4. Using `aws-actions/configure-aws-credentials@v1` (too old for OIDC)
+5. `AWS_ROLE_ARN` resolves — see the identity-resolution step below before assuming the workflow YAML is the problem
+
+**Before diagnosing further: resolve what `AWS_ROLE_ARN` actually points to.**
+A secret being *set* only means a string exists — it doesn't mean the role it
+names is owned by anything, or that its trust/identity policy is intact. Two
+roles that look identical from workflow YAML (`AWS_ROLE_ARN: <secret>`) can be
+in completely different states: one Makefile-managed and correctly
+configured, the other a dangling name nothing creates.
+
+```bash
+# Read agents/shared/context/aws-infrastructure-map.md first — it documents
+# the credential-broker chain (OIDC → appdevexp-deployer → 5 service roles)
+# and the confirmed-dangling GitHubActionsTerraformRole reference.
+cat agents/shared/context/aws-infrastructure-map.md
+
+# Resolve the live identity behind the secret's role name (get the name from
+# gh secret list / a human — the value itself is not readable via gh CLI)
+aws iam get-role --role-name <role-name-from-AWS_ROLE_ARN>
+aws iam list-role-policies --role-name <role-name-from-AWS_ROLE_ARN>
+aws iam list-attached-role-policies --role-name <role-name-from-AWS_ROLE_ARN>
+```
+
+Then classify against the map:
+- Role name matches `appdevexp-deployer` and has `terraform-backend` +
+  `ecr-push` inline policies → Makefile-managed, correctly configured. The
+  failure is downstream (a specific service-role assume-role in the broker
+  chain — see map §2) or in workflow YAML, not here.
+- `get-role` returns `NoSuchEntity`, or the role exists but isn't produced by
+  any `bootstrap-*` target in `aws-roles.mk` and isn't an `aws_iam_role`
+  resource in `module/` → **this is the dangling-reference class** (map §5,
+  confirmed for `GitHubActionsTerraformRole`). Escalate as a cross-cutting
+  architectural finding rather than proposing a workflow-YAML diff — a YAML
+  fix cannot repair a role that nothing creates.
 
 ---
 

@@ -26,6 +26,8 @@ metadata:
 ```bash
 cat agents/shared/context/monorepo-paths.md
 cat agents/shared/context/commit-conventions.md
+# provider-alias broker chain — needed to interpret AccessDenied on any aws.* alias
+cat agents/shared/context/aws-infrastructure-map.md
 TERRAFORM_AWS="cloud/terraform/aws"
 
 # Derive cluster name from Terraform files

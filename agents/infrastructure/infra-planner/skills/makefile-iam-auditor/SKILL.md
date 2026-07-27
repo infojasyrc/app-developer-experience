@@ -26,6 +26,8 @@ metadata:
 ```bash
 cat agents/shared/context/monorepo-paths.md
 cat agents/shared/context/commit-conventions.md
+# bootstrap run order + which roles this system does NOT own live IAM for
+cat agents/shared/context/aws-infrastructure-map.md
 IAM_TEMPLATES="cloud/terraform/aws/iam"
 MAKEFILE_DIR="makefiles"
 ```

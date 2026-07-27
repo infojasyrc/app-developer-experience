@@ -38,8 +38,9 @@ resource "aws_cloudwatch_log_stream" "app_log_stream" {
 # # ## ## ## ## ## ## ## ## ## ## ## ## ## ##
 
 resource "aws_s3_bucket" "alb_access_logs" {
-  provider = aws.s3
-  bucket   = "${var.application_name}-alb-logs-${data.aws_caller_identity.current.account_id}"
+  provider      = aws.s3
+  bucket        = "${var.application_name}-alb-logs-${data.aws_caller_identity.current.account_id}"
+  force_destroy = true
 
   tags = var.tags
 }

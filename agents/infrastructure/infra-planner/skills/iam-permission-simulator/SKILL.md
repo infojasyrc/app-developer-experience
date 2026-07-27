@@ -27,6 +27,8 @@ description: >
 ```bash
 cat agents/shared/context/monorepo-paths.md
 cat agents/shared/context/commit-conventions.md
+# confirm role set (Makefile vs module/iam) before simulating
+cat agents/shared/context/aws-infrastructure-map.md
 
 # Set role names (from iam-template-validator output)
 TERRAFORM_ROLE="<name-from-phase-d>"

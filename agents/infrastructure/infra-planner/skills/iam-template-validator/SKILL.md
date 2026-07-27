@@ -25,20 +25,29 @@ metadata:
 ```bash
 cat agents/shared/context/monorepo-paths.md
 cat agents/shared/context/commit-conventions.md
+# dual IAM system + failure taxonomy
+cat agents/shared/context/aws-infrastructure-map.md
 IAM_TEMPLATES="cloud/terraform/aws/iam"
 TERRAFORM_AWS="cloud/terraform/aws"
 ```
 
-## Step 2 — Identify roles to validate
+## Step 2 — Identify roles to validate, and confirm which role SET is live
+
+**Do this before validating anything else.** There are two independently
+maintained role sets in this repo (`aws-infrastructure-map.md` §1) —
+`appdevexp-*` (Makefile-created, not live) and `${application_name}-*-role`
+(Terraform-native `module/iam`, live). They can both exist in the account
+simultaneously and look superficially similar; validating the wrong set
+produces a report that's accurate about a system nothing actually uses.
 
 ```bash
-# Makefile-created roles (from templates)
+# Makefile-created roles (from templates) — bootstraps Terraform's own credentials, not live app IAM
 TERRAFORM_ROLE=$(aws iam list-roles \
   --query 'Roles[?contains(RoleName,`terraform`) || contains(RoleName,`github`)].RoleName' \
   --output text | head -1)
 echo "Terraform pipeline role: $TERRAFORM_ROLE"
 
-# Terraform-created ECS roles (from task definition)
+# Terraform-created ECS roles (from task definition) — this is the live app-runtime IAM
 TASK_DEF=$(aws ecs list-task-definitions --sort DESC \
   --query 'taskDefinitionArns[0]' --output text | awk -F'/' '{print $NF}')
 EXEC_ROLE=$(aws ecs describe-task-definition --task-definition $TASK_DEF \
@@ -48,6 +57,14 @@ TASK_ROLE=$(aws ecs describe-task-definition --task-definition $TASK_DEF \
 
 echo "Execution role: $EXEC_ROLE"
 echo "Task role: $TASK_ROLE"
+
+# Confirm: do EXEC_ROLE/TASK_ROLE match the module/iam naming
+# (${application_name}-task-execution-role / ${application_name}-app-task-role),
+# or the Makefile naming (appdevexp-task-execution-role / appdevexp-$(APP_NAME)-task-role)?
+# If module/iam naming — expected, this is the live system, proceed normally.
+# If Makefile naming — flag as 🔴 CRITICAL: the live task definition is pointing at
+# the non-Terraform role set, which module/iam's own outputs are NOT wired to.
+# This is a standing risk to check on every audit, not a one-time finding.
 ```
 
 ## Step 3 — Cross-check OIDC trust template vs live role

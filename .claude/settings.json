@@ -34,6 +34,12 @@
             "Bash(make stop)",
             "Bash(make run-storybook)",
             "Bash(make interactive)"
+        ],
+        "deny": [
+            "Bash(terraform apply*)",
+            "Bash(terraform destroy*)",
+            "Bash(make destroy*)",
+            "Bash(make bootstrap-all*)"
         ]
     }
 }
