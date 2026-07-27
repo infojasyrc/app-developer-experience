@@ -9,7 +9,8 @@
 
 # --- Phony Targets ---
 .PHONY: setup-backend create-bucket create-lock-table \
-create-oidc-provider whoami list-resources
+create-oidc-provider whoami list-resources \
+empty-s3-bucket destroy-s3-bucket
 
 ## -----------------------------------------------------------------------------
 ## Backend Infrastructure (Run as Admin)
@@ -54,6 +55,37 @@ create-oidc-provider: ## 🛡️ Register GitHub as an OIDC Provider (Run ONCE p
 		--url https://token.actions.githubusercontent.com \
 		--client-id-list sts.amazonaws.com \
 		--thumbprint-list 6938fd4d98bab03faadb97b34396831e3780aea1 || echo "Provider already exists."
+
+## -----------------------------------------------------------------------------
+## Cleanup (destructive — run as ADMIN, requires jq)
+## -----------------------------------------------------------------------------
+
+empty-s3-bucket: ## 🧹 Purge all object versions + delete markers from a versioned S3 bucket (as ADMIN). Usage: make empty-s3-bucket BUCKET=<bucket-name>
+	@if [ -z "$(BUCKET)" ]; then echo "Usage: make empty-s3-bucket BUCKET=<bucket-name>"; exit 1; fi
+	@echo "Purging all object versions from $(BUCKET)..."
+	@while :; do \
+		PAYLOAD=$$(aws s3api list-object-versions --bucket $(BUCKET) --max-items 1000 \
+			--query '{Objects: Versions[].{Key:Key,VersionId:VersionId}, Quiet: `true`}' --output json); \
+		COUNT=$$(echo "$$PAYLOAD" | jq '.Objects | length'); \
+		[ "$$COUNT" -eq 0 ] && break; \
+		aws s3api delete-objects --bucket $(BUCKET) --delete "$$PAYLOAD" > /dev/null; \
+		echo "  deleted $$COUNT version(s)..."; \
+	done
+	@echo "Purging all delete markers from $(BUCKET)..."
+	@while :; do \
+		PAYLOAD=$$(aws s3api list-object-versions --bucket $(BUCKET) --max-items 1000 \
+			--query '{Objects: DeleteMarkers[].{Key:Key,VersionId:VersionId}, Quiet: `true`}' --output json); \
+		COUNT=$$(echo "$$PAYLOAD" | jq '.Objects | length'); \
+		[ "$$COUNT" -eq 0 ] && break; \
+		aws s3api delete-objects --bucket $(BUCKET) --delete "$$PAYLOAD" > /dev/null; \
+		echo "  deleted $$COUNT delete-marker(s)..."; \
+	done
+	@echo "Done: $(BUCKET) is empty."
+
+destroy-s3-bucket: empty-s3-bucket ## 💥 [DESTRUCTIVE] Empty and permanently delete an S3 bucket (as ADMIN). Usage: make destroy-s3-bucket BUCKET=<bucket-name>
+	@echo "WARNING: Deleting bucket $(BUCKET)..."
+	aws s3api delete-bucket --bucket $(BUCKET)
+	@echo "Deleted: $(BUCKET)"
 
 ## -----------------------------------------------------------------------------
 ## Utilities
