@@ -29,6 +29,7 @@
       "Action": [
         "logs:CreateLogStream",
         "logs:DescribeLogStreams",
+        "logs:DeleteLogStream",
         "logs:PutLogEvents"
       ],
       "Resource": [
