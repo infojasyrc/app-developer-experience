@@ -55,41 +55,38 @@ In this configuration:
 
 ## Project Dependencies
 
-- [Terraform Workspaces](https://www.terraform.io/docs/language/state/workspaces.html)
+- Remote state backend: S3 + DynamoDB (see [`docs/ADMIN_SETUP.md`](./docs/ADMIN_SETUP.md))
+- GitHub OIDC federation for CI authentication — no static AWS credentials
 
 ## Using Terraform
 
-Create the specific environment: (as an example for dev)
+**This project does not use `terraform workspace`.** There is a single state
+per backend config (`backend.conf`) and a single `terraform.tfvars` /
+`secrets.auto.tfvars` pair per environment checkout — Terraform loads
+`*.auto.tfvars` automatically, so no `-var-file` flag is needed for the
+sensitive variables. All commands run through the root `Makefile`, never
+`terraform` directly (see `agents/shared/context/development-guidance.md`):
 
 ```bash
-terraform workspace new dev
+make init    # terraform init -backend-config=backend.conf
+make plan    # terraform plan -out=plans/plan.tfplan
+make apply   # terraform apply plans/plan.tfplan
 ```
 
-Select the specific environment: (as an example for dev)
+To destroy (irreversible, affects shared infrastructure):
 
 ```bash
-terraform workspace select dev
+make destroy
 ```
 
-Run plan for execution. As an example, the expected plan would be called: 20210907_01_update_core_infrastructure.
-
-On Linux or MacOS:
-
-```bash
-terraform plan --out=20210907_01_Update_core_infrastructure -var-file=terraform.dev.tfvars
-```
-
-On Windows:
-
-```powershell
-terraform plan --out 20210907_01_Update_core_infrastructure -var-file terraform.dev.tfvars
-```
-
-Apply specific execution plan
-
-```bash
-terraform apply "20210907_01_Update_core_infrastructure"
-```
+In CI (`.github/workflows/deploy_cm_infrastructure.yml`), the same `init` →
+`plan` → `apply` sequence runs after assuming `appdevexp-deployer` via GitHub
+OIDC (`role-to-assume: ${{ secrets.AWS_ROLE_ARN }}`) — `db_username`/
+`db_password` are injected as `TF_VAR_*` environment variables sourced from
+GitHub secrets rather than read from a local `secrets.auto.tfvars` file. See
+[`docs/ADMIN_SETUP.md`](./docs/ADMIN_SETUP.md) for one-time backend/IAM
+bootstrap, and `agents/shared/context/aws-infrastructure-map.md` for the full
+IAM/OIDC role chain this depends on.
 
 ## Project Requirements for standalone deployment
 
