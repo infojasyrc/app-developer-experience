@@ -2,6 +2,8 @@ name: 🚨 Destroy Conference Manager Infrastructure
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 5 * * *' # 00:00 America/Panama (UTC-5), daily
 
 permissions:
   id-token: write

@@ -1,10 +1,3 @@
-# Agent output gitignore
-# Archive plans are kept for audit trail but tmp files are not
-
-# Temporary working files
-**/output/tmp/
-
-# Never ignore active plans or reports — those go through PR review
-# !**/output/MIGRATION_PLAN.md
-# !**/output/INFRA_PLAN.md
-# !**/output/PIPELINE_DEBUG_REPORT.md
+# ignore plans and archived plans
+infrastructure/plans/*.md
+infrastructure/plans/archived/*.md

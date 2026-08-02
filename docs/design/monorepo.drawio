@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="MGo1HoTLdUoSCvDEGyLK" name="Page-1">
-        <mxGraphModel dx="873" dy="816" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1079" dy="1256" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -39,6 +39,41 @@
                 </mxCell>
                 <mxCell id="13" value="&lt;ul style=&quot;padding-left: 20px;&quot;&gt;&lt;li&gt;Each project should have a CI pipeline to avoid breaking the app&lt;/li&gt;&lt;/ul&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="139" y="730" width="290" height="70" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="NcAYHRdI8qZ2FUu7eFAt" name="Page-2">
+        <mxGraphModel dx="1079" dy="1256" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="VKRz2ImXvteCSrtww14v-1" value="Aprovisionamiento esencial" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="150" y="240" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="VKRz2ImXvteCSrtww14v-2" value="Los recursos para una solucion" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="570" y="240" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="VKRz2ImXvteCSrtww14v-4" value="IT Manager de la Org (Superadmin)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="150" y="310" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="VKRz2ImXvteCSrtww14v-5" value="ECR / Bucket" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="150" y="170" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="VKRz2ImXvteCSrtww14v-6" value="IT Manager de la Org (OIDC)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="570" y="320" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="VKRz2ImXvteCSrtww14v-7" value="Permisos / Roles :Crea / Actualizar (No remueve)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="570" y="90" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="VKRz2ImXvteCSrtww14v-8" value="Pipeline" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="570" y="170" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="VKRz2ImXvteCSrtww14v-9" value="makefile -&amp;gt; backend (bucket terraform)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="150" y="70" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="VKRz2ImXvteCSrtww14v-10" value="Acceso / Actualizacion (No remover bucket)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="425" y="170" width="120" height="60" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
