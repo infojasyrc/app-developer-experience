@@ -42,6 +42,7 @@
         "s3:GetObject",
         "s3:PutObject",
         "s3:DeleteObject",
+        "s3:DeleteObjectVersion",
         "s3:PutObjectAcl"
       ],
       "Resource": "arn:aws:s3:::appdevexp-*/*"
