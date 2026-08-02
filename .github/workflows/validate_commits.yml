@@ -1,4 +1,4 @@
-name: 🚨 Validate Conventional Commits
+name: 🔍 Validate Conventional Commits
 
 on:
   push:
