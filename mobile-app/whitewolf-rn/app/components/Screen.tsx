@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingViewProps,
   LayoutChangeEvent,
   Platform,
-  ScrollView,
   ScrollViewProps,
   StyleProp,
   View,
@@ -14,7 +13,10 @@ import {
 } from "react-native"
 import { $styles } from "../theme"
 import { ExtendedEdge, useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
+import {
+  KeyboardAwareScrollView,
+  KeyboardAwareScrollViewRef,
+} from "react-native-keyboard-controller"
 import { useAppTheme } from "@/utils/useAppTheme"
 
 export const DEFAULT_BOTTOM_OFFSET = 50
@@ -196,7 +198,7 @@ function ScreenWithScrolling(props: ScreenProps) {
     style,
   } = props as ScrollScreenProps
 
-  const ref = useRef<ScrollView>(null)
+  const ref = useRef<KeyboardAwareScrollViewRef>(null)
 
   const { scrollEnabled, onContentSizeChange, onLayout } = useAutoPreset(props as AutoScreenProps)
 

@@ -6,7 +6,7 @@ import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { $styles } from "@/theme"
 
-interface DemoUseCaseProps {
+export interface DemoUseCaseProps {
   name: TxKeyPath
   description?: TxKeyPath
   layout?: "column" | "row"

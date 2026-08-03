@@ -65,9 +65,7 @@ export const darkTheme: Theme = {
  */
 export type ThemedStyle<T> = (theme: Theme) => T
 export type ThemedStyleArray<T> = (
-  | ThemedStyle<T>
-  | StyleProp<T>
-  | (StyleProp<T> | ThemedStyle<T>)[]
+  ThemedStyle<T> | StyleProp<T> | (StyleProp<T> | ThemedStyle<T>)[]
 )[]
 
 // Export the theme objects with backwards compatibility for the old theme structure.

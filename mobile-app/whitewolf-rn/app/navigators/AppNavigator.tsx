@@ -96,9 +96,15 @@ export const AppNavigator = observer(function AppNavigator(props: NavigationProp
 
   useBackButtonHandler((routeName) => exitRoutes.includes(routeName))
 
+  const { ref: _navigationRefProp, ...navigationContainerProps } = props
+
   return (
     <ThemeProvider value={{ themeScheme, setThemeContextOverride }}>
-      <NavigationContainer ref={navigationRef} theme={navigationTheme} {...props}>
+      <NavigationContainer<AppStackParamList>
+        ref={navigationRef}
+        theme={navigationTheme}
+        {...navigationContainerProps}
+      >
         <AppStack />
       </NavigationContainer>
     </ThemeProvider>

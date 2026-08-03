@@ -26,7 +26,7 @@ import { TxKeyPath } from "./i18n"
  */
 export function translate(key: TxKeyPath, options?: TOptions): string {
   if (i18n.isInitialized) {
-    return i18n.t(key, options)
+    return (i18n.t as (key: TxKeyPath, options?: TOptions) => string)(key, options)
   }
   return key
 }

@@ -12,7 +12,6 @@ import {
   View,
   ViewStyle,
 } from "react-native"
-import { type ContentStyle } from "@shopify/flash-list"
 import Animated, {
   Extrapolation,
   interpolate,
@@ -79,7 +78,6 @@ export const DemoPodcastListScreen: FC<DemoTabScreenProps<"DemoPodcastList">> = 
           data={episodeStore.episodesForList.slice()}
           extraData={episodeStore.favorites.length + episodeStore.episodes.length}
           refreshing={refreshing}
-          estimatedItemSize={177}
           onRefresh={manualRefresh}
           ListEmptyComponent={
             isLoading ? (
@@ -310,7 +308,7 @@ const EpisodeCard = observer(function EpisodeCard({
 })
 
 // #region Styles
-const $listContentContainer: ThemedStyle<ContentStyle> = ({ spacing }) => ({
+const $listContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   paddingHorizontal: spacing.lg,
   paddingTop: spacing.lg + spacing.xl,
   paddingBottom: spacing.lg,

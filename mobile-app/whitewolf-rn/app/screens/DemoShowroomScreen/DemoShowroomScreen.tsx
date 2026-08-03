@@ -1,8 +1,16 @@
 import { Link, RouteProp, useRoute } from "@react-navigation/native"
-import { FC, ReactElement, useCallback, useEffect, useRef, useState } from "react"
+import {
+  FC,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentType,
+} from "react"
 import { Image, ImageStyle, Platform, SectionList, TextStyle, View, ViewStyle } from "react-native"
 import { Drawer } from "react-native-drawer-layout"
-import { type ContentStyle } from "@shopify/flash-list"
 import { ListItem, ListView, ListViewRef, Screen, Text } from "../../components"
 import { TxKeyPath, isRTL, translate } from "../../i18n"
 import { DemoTabParamList, DemoTabScreenProps } from "../../navigators/DemoNavigator"
@@ -13,13 +21,14 @@ import * as Demos from "./demos"
 import { DrawerIconButton } from "./DrawerIconButton"
 import SectionListWithKeyboardAwareScrollView from "./SectionListWithKeyboardAwareScrollView"
 import { useAppTheme } from "@/utils/useAppTheme"
+import type { DemoUseCaseProps } from "./DemoUseCase"
 
 const logo = require("../../../assets/images/logo.png")
 
 export interface Demo {
   name: string
   description: TxKeyPath
-  data: ({ themed, theme }: { themed: any; theme: Theme }) => ReactElement[]
+  data: ({ themed, theme }: { themed: any; theme: Theme }) => ReactElement<DemoUseCaseProps>[]
 }
 
 interface DemoListItem {
@@ -36,21 +45,28 @@ const slugify = (str: string) =>
     .replace(/[\s_-]+/g, "-")
     .replace(/^-+|-+$/g, "")
 
+type WebLinkProps = { href: string; style?: ViewStyle; children: ReactNode; key?: string }
+
+const WebLink = Link as ComponentType<WebLinkProps>
+
 const WebListItem: FC<DemoListItem> = ({ item, sectionIndex }) => {
   const sectionSlug = item.name.toLowerCase()
   const { themed } = useAppTheme()
   return (
     <View>
-      <Link to={`/showroom/${sectionSlug}`} style={themed($menuContainer)}>
+      <WebLink href={`/showroom/${sectionSlug}`} style={themed($menuContainer)}>
         <Text preset="bold">{item.name}</Text>
-      </Link>
+      </WebLink>
       {item.useCases.map((u) => {
         const itemSlug = slugify(u)
 
         return (
-          <Link key={`section${sectionIndex}-${u}`} to={`/showroom/${sectionSlug}/${itemSlug}`}>
+          <WebLink
+            key={`section${sectionIndex}-${u}`}
+            href={`/showroom/${sectionSlug}/${itemSlug}`}
+          >
             <Text>{u}</Text>
-          </Link>
+          </WebLink>
         )
       })}
     </View>
@@ -86,7 +102,7 @@ const isAndroid = Platform.OS === "android"
 export const DemoShowroomScreen: FC<DemoTabScreenProps<"DemoShowroom">> =
   function DemoShowroomScreen(_props) {
     const [open, setOpen] = useState(false)
-    const timeout = useRef<ReturnType<typeof setTimeout>>()
+    const timeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
     const listRef = useRef<SectionList>(null)
     const menuRef = useRef<ListViewRef<DemoListItem["item"]>>(null)
     const route = useRoute<RouteProp<DemoTabParamList, "DemoShowroom">>()
@@ -153,7 +169,9 @@ export const DemoShowroomScreen: FC<DemoTabScreenProps<"DemoShowroom">> =
     }
 
     useEffect(() => {
-      return () => timeout.current && clearTimeout(timeout.current)
+      return () => {
+        if (timeout.current) clearTimeout(timeout.current)
+      }
     }, [])
 
     const $drawerInsets = useSafeAreaInsetsStyle(["top"])
@@ -173,7 +191,6 @@ export const DemoShowroomScreen: FC<DemoTabScreenProps<"DemoShowroom">> =
             <ListView<DemoListItem["item"]>
               ref={menuRef}
               contentContainerStyle={themed($listContentContainer)}
-              estimatedItemSize={250}
               data={Object.values(Demos).map((d) => ({
                 name: d.name,
                 useCases: d.data({ theme, themed }).map((u) => translate(u.props.name)),
@@ -238,7 +255,7 @@ const $drawer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   flex: 1,
 })
 
-const $listContentContainer: ThemedStyle<ContentStyle> = ({ spacing }) => ({
+const $listContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   paddingHorizontal: spacing.lg,
 })
 
