@@ -1,0 +1,31 @@
+[[tool.poetry.source]]
+name = "pypi"
+
+[project]
+name = "app-dev-exp-cli"
+description = "A cli for handling all projects in the monorepo"
+version = "0.1.0"
+readme = "README.md"
+dynamic = [ "version" ]
+requires-python = ">=3.11, <3.12"
+classifiers = [
+    "Topic :: Software Development :: Command Line Tools",
+]
+dependencies = [
+    "inquirer (==3.4.0)",
+    "gitpython (==3.1.44)",
+    "click (==8.1.8)",
+    "pyinstaller (==6.10.0)",
+    "wheel (==0.45.1)",
+    # macholib = { version="==1.16.3" , markers = "sys_platform == 'darwin'" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10, <3.11"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "==8.3.5"
+pytest-mock = "==3.14.0"
+
+[tool.poetry.dependencies]
+python = "==3.11"
