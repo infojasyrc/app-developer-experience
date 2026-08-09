@@ -1,7 +1,9 @@
 # OSX
+#
 .DS_Store
 
 # Xcode
+#
 build/
 *.pbxuser
 !default.pbxuser
@@ -11,10 +13,10 @@ build/
 !default.mode2v3
 *.perspectivev3
 !default.perspectivev3
-xcuserdata/
+xcuserdata
 *.xccheckout
 *.moved-aside
-DerivedData/
+DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
@@ -24,5 +26,5 @@ project.xcworkspace
 # Bundle artifacts
 *.jsbundle
 
-# CocoaPods — lockfile is tracked; Pods/ is regenerated via `pod install`
+# CocoaPods
 /Pods/
