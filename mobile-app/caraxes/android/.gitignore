@@ -1,33 +1,19 @@
 # OSX
+#
 .DS_Store
 
-# Android Studio / IntelliJ
+# Android/IntelliJ
+#
 build/
-.idea/
-.gradle/
+.idea
+.gradle
 local.properties
 *.iml
 *.hprof
 .cxx/
-.externalNativeBuild/
-.kotlin/
-captures/
-output.json
-*.apk
-*.aab
-*.ap_
-*.dex
 
-# Signing (keep the template debug keystore)
-*.keystore
-!debug.keystore
-*.jks
-
-# Generated inline modules (Expo)
+# generated inline modules
 app/src/main/java/inline/
-
-# Native / NDK leftovers
-obj/
 
 # Bundle artifacts
 *.jsbundle

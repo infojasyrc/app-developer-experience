@@ -6,7 +6,7 @@
   - [ ] App Developer Experience (ade)
 - Mobile App
   - [ ] React Native (whitewalker)
-  - [ ] Expo (whitewolf)
+  - [ ] Expo (caraxes)
 - Cloud
   - [ ] aws
   - [ ] azure
