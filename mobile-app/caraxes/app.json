@@ -1,10 +1,10 @@
 {
-  "name": "whitewolf-rn",
-  "displayName": "whitewolf-rn",
+  "name": "Caraxes",
+  "displayName": "Caraxes",
   "expo": {
-    "name": "whitewolf-rn",
-    "slug": "whitewolf-rn",
-    "scheme": "whitewolf-rn",
+    "name": "Caraxes",
+    "slug": "caraxes",
+    "scheme": "caraxes",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
