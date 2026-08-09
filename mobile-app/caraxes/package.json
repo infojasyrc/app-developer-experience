@@ -37,7 +37,7 @@
     "@shopify/flash-list": "2.0.2",
     "apisauce": "3.1.0",
     "date-fns": "^4.1.0",
-    "expo": "~57.0.9",
+    "expo": "~57.0.11",
     "expo-application": "~57.0.2",
     "expo-build-properties": "~57.0.8",
     "expo-font": "~57.0.1",
@@ -95,5 +95,9 @@
   },
   "engines": {
     "node": ">=22.13.0"
+  },
+  "overrides": {
+    "nanoid": "3.3.18",
+    "uuid": "11.1.1"
   }
 }
