@@ -21,7 +21,7 @@ services:
     links:
       - mongodb
     volumes:
-      - ../ms-conference-admin/:/app:rw
+      - ../:/app:rw
       - backend-packages:/app/.venv:rw
 
   admin:
@@ -47,7 +47,7 @@ services:
     links:
       - mongodb
     volumes:
-      - ../ms-conference-admin/:/app:rw
+      - ../:/app:rw
       - backend-packages:/app/.venv:rw
 
 networks:
