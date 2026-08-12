@@ -73,7 +73,7 @@ install-dependencies: ## install packages
 
 launch-local: ## launch application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
-		-f docker-compose/docker-compose.local.yml up
+		-f docker-compose/docker-compose.local.yml up -d
 
 stop-local: ## stop application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
@@ -81,8 +81,12 @@ stop-local: ## stop application for local development
 
 launch-prod: ## launch application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
-		-f docker-compose/docker-compose.prod.yml up
+		-f docker-compose/docker-compose.prod.yml up -d
 
 stop-prod: ## stop application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.prod.yml down
+
+logs: ## show logs for local development
+	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+		-f docker-compose/docker-compose.local.yml logs -f
