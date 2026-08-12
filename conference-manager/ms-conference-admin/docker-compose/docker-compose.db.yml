@@ -1,0 +1,28 @@
+---
+
+services:
+  mongodb:
+    container_name: ${COMPOSE_PROJECT_NAME}-db
+    image: mongo:8.0-noble
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${DEFAULT_DB}
+    volumes:
+      - dev-db:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+networks:
+  default:
+    name: ${COMPOSE_PROJECT_NAME}-network
+
+volumes:
+  dev-db:
+    name: ${COMPOSE_PROJECT_NAME}-dev-db

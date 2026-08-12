@@ -9,7 +9,7 @@ services:
     platform: ${PLATFORM}
     tty: true
     environment:
-      - ENVIRONMENT=development
+      - ENVIRONMENT=${ENVIRONMENT}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_ROOT_USERNAME=${DB_ROOT_USERNAME}
@@ -17,11 +17,12 @@ services:
       - DEFAULT_DB=${DEFAULT_DB}
       - MS_PORT=${MS_PORT}
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     links:
       - mongodb
     volumes:
-      - ../ms-conference-admin/:/app:rw
+      - ../:/app:rw
       - backend-packages:/app/.venv:rw
 
   admin:
@@ -43,11 +44,10 @@ services:
       - DEFAULT_DB=${DEFAULT_DB}
       - MS_PORT=${MS_PORT}
     depends_on:
-      - migrations
-    links:
-      - mongodb
+      migrations:
+        condition: service_completed_successfully
     volumes:
-      - ../ms-conference-admin/:/app:rw
+      - ../:/app:rw
       - backend-packages:/app/.venv:rw
 
 networks:
