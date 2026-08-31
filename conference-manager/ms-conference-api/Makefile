@@ -39,7 +39,7 @@ DEV_VOLUME_API = \
 	launch-db stop-db launch-local-dev stop-local-dev launch-local-prod stop-local-prod \
 	launch-unleash stop-unleash reset-unleash seed-data clear-data reset-db \
 	launch-keycloak stop-keycloak reset-keycloak \
-	launch-oauth2-proxy stop-oauth2-proxy
+	launch-oauth2-proxy stop-oauth2-proxy logs
 
 docker-clean: ## ❌ Stop & prune all containers/images (DANGEROUS)
 ifeq ($(OS),Windows_NT)
@@ -115,6 +115,13 @@ lint: ## 🧹 Run lint checks
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run lint"
 
+logs: ## 📜 Tail stack logs (all services, or app=<service> e.g. api, mongodb)
+	@if [ ! -z "$(app)" ]; then \
+		app="api"; \
+	fi
+	@echo "tailing logs for $(app)..."
+	docker compose logs -f $(app)
+
 unit-tests: unit-tests-v2 ## 🧪 Run all unit tests (Jest)
 
 unit-tests-v2: ## 🧪 Run Jest unit tests (v2 NestJS)
@@ -148,15 +155,17 @@ reset-db: ## 🗑️ Stop MongoDB and wipe its data volume — clears stale inde
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml down -v
 
 launch-local-dev: ## 🚀 Launch full dev stack (API + DB + Unleash + Keycloak SSO + Grafana SSO)
-	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) \
+		-f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.keycloak.yml \
 		-f docker-compose/docker-compose.oauth2-proxy.yml \
 		-f docker-compose/docker-compose.tools.yml \
-		-f docker-compose/docker-compose.local.dev.api.yml up
+		-f docker-compose/docker-compose.local.dev.api.yml up -d
 
 stop-local-dev: ## 🛑 Stop full dev stack
-	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) \
+		-f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.keycloak.yml \
 		-f docker-compose/docker-compose.oauth2-proxy.yml \
