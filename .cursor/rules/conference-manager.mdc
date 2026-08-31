@@ -1,0 +1,16 @@
+---
+description: Conventions for conference-manager/ — full reference solution
+globs:
+  - "conference-manager/**"
+alwaysApply: false
+---
+
+# conference-manager/
+
+Full solution: Django admin, RESTful API, Next.js webapp. This is the reference example that proves the platform templates (`backend/`, `cli/`, `cloud/`, `devops/`, `mobile-app/`) work in a real solution — it's how the org validates its own bootstrap templates instead of leaving them theoretical.
+
+- **Known stack mismatch, not a bug**: this app's current backend (Django admin + REST API) predates/differs from the `backend/` templates (FastAPI/NestJS). Don't rewrite existing Django code to match the templates just for consistency's sake.
+- **Going forward**: any *new* microservice added to this solution should be bootstrapped from the matching `backend/` template rather than written from scratch. If a mobile client is ever added here, bootstrap it from `mobile-app/`. CI/CD and infra changes should follow the patterns in `devops/` and `cloud/`.
+- If a task here reveals a gap in a template (something conference-manager needs that the template doesn't support), the plan should propose extending the template, not just patching conference-manager in isolation.
+- Keep Django admin, the REST API, and the Next.js webapp in their own layers — don't blur backend/frontend responsibilities.
+- Follow the same coverage (80% minimum) and container-first conventions as the rest of the monorepo unless documented otherwise.

@@ -1,0 +1,18 @@
+---
+description: Conventions for cloud/ (platform infrastructure / IaC)
+globs:
+  - "cloud/**"
+alwaysApply: false
+---
+
+# cloud/
+
+**Bootstrap template** for infrastructure — new infra across the org should start from these patterns, not from scratch. Split by provider:
+- `cloud/terraform/aws` — AWS via Terraform
+- `cloud/terraform/azure` — Azure via Bicep
+
+Changes here can be destructive (resources, permissions) — the plan must explicitly state which resources are created/modified/deleted and the blast radius.
+
+- Never apply/deploy changes (`terraform apply`, `az deployment ...`) without explicit user confirmation.
+- Keep AWS (Terraform) and Azure (Bicep) changes in their respective folders — don't mix tooling across providers.
+- Container images consumed by this infra follow the container-first convention from `backend/` (optimized, source only).

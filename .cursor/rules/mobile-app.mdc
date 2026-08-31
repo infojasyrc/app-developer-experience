@@ -1,0 +1,14 @@
+---
+description: Conventions for mobile-app/ (reusable platform component — mobile templates)
+globs:
+  - "mobile-app/**"
+alwaysApply: false
+---
+
+# mobile-app/
+
+React Native and Expo templates, TypeScript. **Bootstrap templates** — new mobile apps across the org (including a future `conference-manager/` mobile client) should be generated from these, not built from scratch.
+
+- Keep React Native and Expo templates separate/clearly labeled — don't merge their conventions.
+- TypeScript only — no plain JS files added to these templates.
+- Clarify in the plan what belongs in the shared template vs. what's specific to an app instantiated from it.

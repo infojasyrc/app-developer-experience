@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This is a monorepo that handles multiple packages: microservices for RESTful
+This is a monorepo that handles multiple packages: services for RESTful
 and GraphQL APIs, mobile app templates, DevOps pipeline templates, Terraform
 infrastructure as code, and a conference management solution.
 
@@ -12,7 +12,7 @@ infrastructure as code, and a conference management solution.
 ## Solutions
 
 1. **Conference Manager** — Full solution: Django admin, RESTful API, Next.js webapp
-2. **Microservices** — RESTful (FastAPI, NestJS) and GraphQL (NestJS) templates
+2. **Backend Services** — RESTful (FastAPI, NestJS) and GraphQL (NestJS) templates
 3. **Mobile App Templates** — React Native and Expo templates using TypeScript
 4. **DevOps Pipelines** — CI/CD pipelines for containers and IaC (Terraform, Bicep)
 5. **Infrastructure as Code** — AWS (Terraform) and Azure (Bicep) deployments
@@ -26,7 +26,7 @@ See `agents/shared/context/monorepo-paths.md` for canonical paths.
 | Area | Root Path |
 |---|---|
 | Conference Manager | `conference-manager/` |
-| Backend microservices | `backend/` |
+| Backend services | `backend/` |
 | Mobile templates | `mobile-app/` |
 | DevOps pipeline templates | `devops/` |
 | Infrastructure (AWS) | `cloud/terraform/aws` |
@@ -38,7 +38,7 @@ See `agents/shared/context/monorepo-paths.md` for canonical paths.
 
 ## Key Architectural Concepts
 
-- **DDD** — All microservices use Domain Driven Design to organize features
+- **DDD** — All services use Domain Driven Design to organize features
 - **Clean Architecture** — Separation of domain, application, and infrastructure layers
 - **Container-first** — Every service ships as an optimized Docker image (source only)
 

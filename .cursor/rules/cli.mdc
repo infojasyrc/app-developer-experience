@@ -1,0 +1,15 @@
+---
+description: Conventions for cli/ (reusable platform component)
+globs:
+  - "cli/**"
+alwaysApply: false
+---
+
+# cli/
+
+Command-line interface for the platform. Changes to flags, subcommands, or output format are a public contract — log them in the plan.
+
+<!-- TODO: fill in with your actual conventions -->
+- CLI framework/library:
+- Command and flag conventions:
+- How commands are documented (help text, docs/):
