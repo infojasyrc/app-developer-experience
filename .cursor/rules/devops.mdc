@@ -1,0 +1,14 @@
+---
+description: Conventions for devops/ (CI/CD pipeline templates)
+globs:
+  - "devops/**"
+alwaysApply: false
+---
+
+# devops/
+
+CI/CD **pipeline templates** for containers and IaC (Terraform, Bicep) — new pipelines across the org should be bootstrapped from these, not written from scratch. Changes to pipelines must state in the plan what happens if the change fails (rollback, who gets notified).
+
+- Keep consistency with the GitHub Actions workflows already defined in `.github/workflows/`.
+- Pipeline templates here should stay generic/reusable — solution-specific pipeline config belongs to the consuming solution (e.g. `conference-manager/`), not here.
+- Container-related pipelines must enforce the container-first convention (optimized images, source only, no dev dependencies).

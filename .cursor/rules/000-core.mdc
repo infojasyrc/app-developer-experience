@@ -1,0 +1,51 @@
+---
+description: Core project context and workflow — always active
+globs:
+alwaysApply: true
+---
+
+# app-developer-experience — Core Rules
+
+Nx monorepo with multiple solutions:
+
+| Area | Root Path | Stack |
+|---|---|---|
+| Conference Manager (reference app) | `conference-manager/` | Django admin, RESTful API, Next.js webapp |
+| Backend services (platform) | `backend/` | RESTful (FastAPI, NestJS) and GraphQL (NestJS) templates |
+| Mobile templates (platform) | `mobile-app/` | React Native and Expo, TypeScript |
+| DevOps pipeline templates (platform) | `devops/` | CI/CD for containers and IaC |
+| Infrastructure as Code (platform) | `cloud/terraform/aws`, `cloud/terraform/azure` | Terraform (AWS), Bicep (Azure) |
+| GitHub Actions | `.github/workflows/` | — |
+| AI Agents | `agents/` | — |
+
+**Canonical source of paths**: `agents/shared/context/monorepo-paths.md`. Before any task that touches file paths, read it — don't assume a path from this file or from memory.
+
+Mandatory context, do not duplicate it here: always read @AGENTS.md and @CLAUDE.md before proposing changes.
+
+## Key architectural concepts (apply across platform packages)
+
+- **DDD** — backend services are organized around Domain Driven Design.
+- **Clean Architecture** — separation of domain, application, and infrastructure layers.
+- **Container-first** — every service ships as an optimized Docker image (source only, no dev dependencies).
+- **Coverage** — 80% minimum per component.
+
+## Workflow: Plan → Implement
+
+Do not implement directly if the task touches more than one file or changes the contract/interface of a platform component. Follow:
+
+1. **Plan** — before writing code, produce a plan in `docs/plans/<YYYYMMDD>-<kebab-case-slug>.md` using `docs/plans/TEMPLATE.md` (e.g. `docs/plans/20260831-add-auth-endpoint.md`). If more than one plan is created on the same day for unrelated tasks, add the time as `<YYYYMMDD>-<HHmm>-<slug>.md` to disambiguate. Do not write code in this phase.
+2. Wait for explicit user confirmation before moving to implementation.
+3. **Implement** — implement one step of the plan at a time. After each step: show the diff, run relevant lint/tests (respect the 80% coverage minimum), and do not move to the next step without confirmation if the previous step changed the original plan.
+4. If something doesn't add up during implementation, go back to plan mode before continuing (update the `.md`, don't improvise silently).
+
+## Platform packages are bootstrap templates, not runtime dependencies
+
+`backend/`, `cli/`, `cloud/`, `devops/`, `mobile-app/` are templates the org uses to bootstrap new work — services, pipelines, infra, mobile apps — instead of starting from scratch (manually or via generic AI scaffolding). Reuse here means "new work is generated/aligned from these templates and their conventions (DDD, Clean Architecture, container-first, CI/CD, IaC patterns)", not "imports code from them at runtime".
+
+`conference-manager/` is the reference example proving these templates work in a real solution. Its current backend (Django admin + REST API) predates/differs from the `backend/` templates (FastAPI/NestJS) — that's a known, accepted mismatch, not something to silently "fix". Any *new* microservice added to `conference-manager/` (or any other solution) should be bootstrapped from the matching template going forward.
+
+## General rules
+
+- Don't assume undocumented conventions: if a component has no precedent, ask or propose 2-3 options before deciding.
+- When starting a new service, pipeline, infra piece, or mobile app anywhere in the monorepo, check first whether a template in `backend/`, `cli/`, `cloud/`, `devops/`, or `mobile-app/` should be the starting point — don't scaffold from scratch.
+- Changes to a public contract (API, exported types, CLI flags) of a platform package must list impacted consumers/instances in the plan.
