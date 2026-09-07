@@ -2,6 +2,8 @@
 
 This document defines the branching strategy used in this monorepo and how it integrates with CI/CD workflows.
 
+Conference Manager branch prefixes and commit scopes use project aliases (`cm-api`, `cm-webapp`, `cm-admin`, `cm-tools`). They translate to `ms-conference-*` folders — see `agents/shared/context/monorepo-paths.md`. GitHub Actions **job IDs** (`conference-api-verify`, `conference-webapp-verify`) are unchanged. Some workflow `github.head_ref` filters may still match older `conference-api/` / `conference-webapp/` prefixes until a later pipeline change; new branches should use `cm-*`.
+
 ## Branch Strategy Overview
 
 ### Main Branch
@@ -21,6 +23,7 @@ Branches follow a **component-based naming convention**:
 - `cm-webapp/feat` – New feature for Conference Webapp
 - `cm-webapp/fix` – Bug fix for Conference Webapp
 - `cm-admin/refactor` – Refactoring for Conference Admin
+- `cm-tools/feat` – Observability/tools under the API package (Keycloak, Unleash, Grafana)
 - `fastapi-rest-tpl/feat` – New feature in backend template: fastapi-rest-tpl
 - `nestjs-rest-tpl/fix` – Bug fix in backend template: nestjs-rest-tpl
 
@@ -133,7 +136,7 @@ act pull_request -e devops/tests/events_simulate_pull_request_conference_api.jso
 ### Scenario 1: New Conference API Feature
 ```bash
 # Branch name
-conference-api/feat/add-new-endpoint
+cm-api/feat/add-new-endpoint
 
 # Commits (conventional format)
 git commit -m "feat(cm-api): add new endpoint"

@@ -192,7 +192,7 @@ via Husky + Commitlint. Format: `type(scope): description`
 | `docs` | Documentation only |
 | `test` | Tests only |
 
-Scopes should match the affected package: `cm-api`, `cm-webapp`, `ms-nestjs-rest`, etc.
+Scopes should match the affected package. For Conference Manager use project aliases that translate to folders: `cm-api` → `ms-conference-api`, `cm-webapp` → `ms-conference-webapp`, `cm-admin` → `ms-conference-admin`, `cm-tools` → observability files under `ms-conference-api`. Other packages use their own short names (`ms-nestjs-rest`, etc.).
 
 Node tooling is used for commit hooks regardless of the service's language because
 Husky is the most mature Git hook manager and Commitlint is the most flexible

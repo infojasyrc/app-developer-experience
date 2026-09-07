@@ -34,6 +34,17 @@ See `agents/shared/context/monorepo-paths.md` for canonical paths.
 | GitHub Actions | `.github/workflows/` |
 | AI Agents | `agents/` |
 
+### Conference Manager project aliases
+
+Short names for branches, commits, PR checkboxes, and agent plans. They are **not** directory names. Full map: `agents/shared/context/monorepo-paths.md`.
+
+| Project alias | Resolves to |
+|---|---|
+| `cm-api` | `conference-manager/ms-conference-api/` |
+| `cm-webapp` | `conference-manager/ms-conference-webapp/` |
+| `cm-admin` | `conference-manager/ms-conference-admin/` |
+| `cm-tools` | observability files under `conference-manager/ms-conference-api/` (no dedicated folder) |
+
 ---
 
 ## Key Architectural Concepts

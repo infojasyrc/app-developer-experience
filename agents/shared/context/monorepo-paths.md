@@ -29,6 +29,20 @@ Never hardcode paths in AGENT.md or SKILL.md — always derive from here.
 | `CONF_ADMIN` | `conference-manager/ms-conference-admin/` | Django admin service |
 | `FRONTEND_PLANS` | `conference-manager/ms-conference-webapp/plans/` | MIGRATION_PLAN.md lives here |
 
+### Project aliases (branches, commits, PRs, agent plans)
+
+Short names used in git history. They are **not** directory names. When a plan, branch, commit, or PR checkbox says `cm-api`, resolve it to the path below before touching files.
+
+| Project alias | Resolves to | Notes |
+|---|---|---|
+| `cm-api` | `conference-manager/ms-conference-api/` | Same as `CONF_API` |
+| `cm-webapp` | `conference-manager/ms-conference-webapp/` | Same as `WEBAPP_ROOT` |
+| `cm-admin` | `conference-manager/ms-conference-admin/` | Same as `CONF_ADMIN` |
+| `cm-tools` | `conference-manager/ms-conference-api/` compose + `tools/` | Observability (Keycloak, Unleash, Prometheus, Grafana). No `conference-manager-tools/` folder. |
+| `status-aggregator` | — | Planned. Listed in the PR template only; no path yet. |
+
+Use git aliases in branch names (`cm-api/feat/...`), commit scopes (`feat(cm-api):`), PR checkboxes, and agent suggested commits. Use the resolved path in `cd`, Makefiles, and filesystem commands.
+
 ## Backend Microservice Templates
 
 | Alias | Resolved Path | Description |

@@ -46,8 +46,8 @@ cat agents/shared/context/commit-conventions.md
 cat agents/shared/context/development-guidance.md
 ```
 
-- `monorepo-paths.md` — single source of truth for all filesystem paths
-- `commit-conventions.md` — conventional commits rules for all agent-generated changes
+- `monorepo-paths.md` — single source of truth for all filesystem paths, including Conference Manager project aliases (`cm-api` → `ms-conference-api`, and the rest)
+- `commit-conventions.md` — conventional commits rules for all agent-generated changes; Conference Manager scopes are those git aliases
 - `development-guidance.md` - team rules for running, developing, and troubleshooting for developing frontend and backend packages
 
 ---

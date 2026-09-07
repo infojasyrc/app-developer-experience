@@ -6,7 +6,7 @@ description: >
   what to do (and what never to do) in each component.
 metadata:
   author: app-dev-exp
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Development Guidance — ADE Monorepo
@@ -77,7 +77,7 @@ make build-prod
 
 ### Conference Manager — Root (`conference-manager/`)
 
-Orchestrates all three Conference Manager services together.
+Orchestrates Conference Manager services together. Project aliases for child packages: `cm-api`, `cm-webapp`, `cm-admin`, `cm-tools` (see `monorepo-paths.md`).
 
 | Target | Purpose |
 |---|---|
@@ -89,7 +89,7 @@ Orchestrates all three Conference Manager services together.
 
 ---
 
-### Conference Manager API (`conference-manager/ms-conference-api/`)
+### Conference Manager API (`cm-api` → `conference-manager/ms-conference-api/`)
 
 NestJS REST API backed by MongoDB and Unleash feature flags.
 
@@ -123,7 +123,7 @@ NestJS REST API backed by MongoDB and Unleash feature flags.
 
 ---
 
-### Conference Manager Webapp (`conference-manager/ms-conference-webapp/`)
+### Conference Manager Webapp (`cm-webapp` → `conference-manager/ms-conference-webapp/`)
 
 Next.js 14 App Router frontend. Node dependencies live in a Docker volume — not on the host.
 
@@ -153,7 +153,7 @@ Next.js 14 App Router frontend. Node dependencies live in a Docker volume — no
 
 ---
 
-### Conference Manager Admin (`conference-manager/ms-conference-admin/`)
+### Conference Manager Admin (`cm-admin` → `conference-manager/ms-conference-admin/`)
 
 Django admin panel. Managed via the Conference Manager root Makefile.
 
@@ -165,6 +165,12 @@ Django admin panel. Managed via the Conference Manager root Makefile.
 | `make launch-local` | Start admin for local development |
 | `make stop-local` | Stop local admin service |
 | `make interactive` | Open a bash shell in the admin container |
+
+---
+
+### Conference Manager Tools (`cm-tools` → files under `conference-manager/ms-conference-api/`)
+
+Observability and local tooling (Keycloak, Unleash, Prometheus, Grafana) ship with the API package (`docker-compose/` + `tools/`). There is no `conference-manager-tools/` directory. Use git alias `cm-tools` in branches, commits, and PRs when changing those files; `cd` into `conference-manager/ms-conference-api/` to run Makefile targets.
 
 ---
 
