@@ -1,15 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HealthCheckService, HttpHealthIndicator } from '@nestjs/terminus';
 import { ConfigService } from '@nestjs/config';
-import { HealthCheckExecutor } from '@nestjs/terminus/dist/health-check/health-check-executor.service';
+import {
+  HealthCheckError,
+  HttpHealthIndicator,
+  TerminusModule,
+} from '@nestjs/terminus';
+import { Test, TestingModule } from '@nestjs/testing';
 
 import { EnvironmentVariables } from './../../../../../infrastructure/environment-variables';
 
 import { ReadyController } from './ready.controller';
-
-const healthCheckExecutorMock: Partial<HealthCheckExecutor> = {
-  execute: jest.fn(),
-};
 
 const httpHealthIndicatorMock: Partial<HttpHealthIndicator> = {
   pingCheck: jest.fn(),
@@ -21,41 +20,27 @@ const configServiceMock: Partial<ConfigService<EnvironmentVariables>> = {
 
 describe('ReadyController', () => {
   let controller: ReadyController;
-  let healthCheckService: HealthCheckService;
-  let httpHealtIndicator: HttpHealthIndicator;
-  let healthCheckExecutor: HealthCheckExecutor;
-  let config: ConfigService<EnvironmentVariables>;
+  let httpHealthIndicator: HttpHealthIndicator;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
+      imports: [TerminusModule],
       controllers: [ReadyController],
       providers: [
-        HealthCheckService,
-        {
-          provide: HealthCheckExecutor,
-          useValue: healthCheckExecutorMock,
-        },
-        {
-          provide: HttpHealthIndicator,
-          useValue: httpHealthIndicatorMock,
-        },
         {
           provide: ConfigService,
           useValue: configServiceMock,
         },
       ],
-    }).compile();
+    })
+      .overrideProvider(HttpHealthIndicator)
+      .useValue(httpHealthIndicatorMock)
+      .compile();
 
-    healthCheckService = module.get<HealthCheckService>(HealthCheckService);
-    healthCheckExecutor = module.get<HealthCheckExecutor>(HealthCheckExecutor);
-    httpHealtIndicator = module.get<HttpHealthIndicator>(HttpHealthIndicator);
-    config = module.get<ConfigService<EnvironmentVariables>>(ConfigService);
-
-    controller = new ReadyController(
-      healthCheckService,
-      httpHealtIndicator,
-      config,
-    );
+    httpHealthIndicator = module.get<HttpHealthIndicator>(HttpHealthIndicator);
+    controller = module.get<ReadyController>(ReadyController);
   });
 
   it('should be defined', () => {
@@ -63,36 +48,34 @@ describe('ReadyController', () => {
   });
 
   it('should return status ok', async () => {
-    const successResult = {
-      status: 'ok',
-      info: {
-        'healthcheck-datocms': {
-          status: 'up',
-        },
-      },
-      error: {},
-      details: {
-        'healthcheck-datocms': {
-          status: 'up',
-        },
-      },
-    };
-    (healthCheckExecutor.execute as jest.Mock).mockReturnValue(successResult);
+    (httpHealthIndicator.pingCheck as jest.Mock).mockResolvedValue({
+      'healthcheck-integration': { status: 'up' },
+    });
+
     const result = await controller.check();
+
+    expect(httpHealthIndicator.pingCheck).toHaveBeenCalledWith(
+      'healthcheck-integration',
+      'TEST',
+      {
+        headers: {
+          Authorization: 'Bearer TEST',
+        },
+      },
+    );
     expect(result).toMatchObject({ status: 'ok' });
   });
 
   it('should return with status error', async () => {
-    const errorResult = {
-      status: 'error',
-      info: {},
-    };
-    (healthCheckExecutor.execute as jest.Mock).mockReturnValue(errorResult);
-    try {
-      await controller.check();
-    } catch (error) {
-      expect((error as any).response).toMatchObject({ status: 'error' });
-      expect((error as any).status).toBe(503);
-    }
+    (httpHealthIndicator.pingCheck as jest.Mock).mockRejectedValue(
+      new HealthCheckError('failed', {
+        'healthcheck-integration': { status: 'down' },
+      }),
+    );
+
+    await expect(controller.check()).rejects.toMatchObject({
+      response: { status: 'error' },
+      status: 503,
+    });
   });
 });

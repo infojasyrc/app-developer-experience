@@ -10,7 +10,11 @@ module.exports = {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!main.ts",
+      "!**/*.module.ts",
+      "!**/*.schema.ts",
+      "!**/feature-flags.usecase.ts"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
