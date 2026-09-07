@@ -34,7 +34,7 @@ Never hardcode paths in AGENT.md or SKILL.md — always derive from here.
 | Alias | Resolved Path | Description |
 |---|---|---|
 | `BACKEND_ROOT` | `backend/` | All microservice templates |
-| `MS_FASTAPI` | `backend/ms-fast-api-rest-tpl/` | FastAPI RESTful template |
+| `MS_FASTAPI` | `backend/ms-fastapi-rest-tpl/` | FastAPI RESTful template |
 | `MS_NESTJS_REST` | `backend/ms-nestjs-rest-tpl/` | NestJS RESTful template |
 | `MS_NESTJS_GQL` | `backend/ms-nestjs-gql-tpl/` | NestJS GraphQL template |
 

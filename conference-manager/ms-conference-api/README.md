@@ -11,16 +11,14 @@ removal, and listing of events. It utilizes Firebase service for Authentication.
 - [Folder structure](#folder-structure)
 - [Local Development](#local-development)
   - [Environment Configuration](#environment-configuration)
-  - [Launch application standalone](#launch-application-standalone)
-    - [Database](#database)
-    - [API](#api)
-    - [Debugging](#debugging)
-    - [Run unit tests](#run-unit-tests)
   - [Launch application using containers](#launch-application-using-containers)
-- [Proposals Type Commits](#proposals-type-commits)
+  - [Launch application standalone](./docs/development/Local_Development.md)
+- [Commit Types](./docs/development/Commit_Types.md)
 - [Authentication](#authentication)
 - [Features](#features)
   - [Examples of available endpoints](#examples-of-available-endpoints)
+  - [Local services](#local-services)
+  - [Troubleshooting](#troubleshooting)
 
 ## Dependencies
 
@@ -101,86 +99,21 @@ Examples of the database url for connection:
 | Without containers | localhost | mongodb://mongoDev:Passw0rd@localhost:27017/?authSource=admin |
 | Using containers   | mongodb   | mongodb://mongoDev:Passw0rd@mongodb:27017/?authSource=admin   |
 
-### Launch application standalone
-
-This way of development requires to launch each component individually: API and DATABASE
-
-#### Database
-
-To store and retrieve event information, ensure that the database is up and running. You can launch ONLY the database with the following command:
-
-```bash
-make launch-db
-```
-
-This command will initialize a service for the database, load collections, and preload admin and user credentials for testing purposes. Remember to customize the configurations based on your environment:
-
-#### API
-
-Ensure you have the required Node.js version installed according the dependencies. If not, you can set it up using Node Version Manager [NVM](https://github.com/nvm-sh/nvm), which should already be installed and configure it.
-To select the appropriate Node.js version, use the following command:
-
-```bash
-nvm use
-```
-
-Then, install project dependencies with:
-
-```bash
-yarn install
-```
-
-- If you prefer to run the application with auto-reloading during development, use the following command:
-
-```bash
-yarn dev
-```
-
-- If you prefer not to auto-reload on each change and run the application, use the following command:
-
-```bash
-yarn start
-```
-
-These steps will help you set up your local development environment for the Event Manager Backend.
-
-#### Debugging
-
-This way of execution allows you debugging the applciation using Visual Studio Code.
-On MacOS, if you use nvm within a specific version,
-please add the following in launch.json:
-
-```bash
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/index.js",
-      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/{Specific version}/bin/node"
-    }
-  ]
-}
-```
-
-#### Run unit tests
-
-You can run unit tests using the following command:
-
-```bash
-yarn test:ci
-```
-
 ### Launch application using containers
 
 Use the following command:
 
 ```bash
+# build container for development
 make build-dev
-make install-packages
-make launch-local
+# install dependencies
+make install-dependencies
+# launch service in development mode
+make launch-local-dev
+# run unit tests
+make unit-tests
+# stop all services
+make stop-local-dev
 ```
 
 To simulate production environment, use:
@@ -188,56 +121,6 @@ To simulate production environment, use:
 ```bash
 make launch-prod
 ```
-
-### Proposals Type Commits
-
-- `feat`: Introduces a new feature to the codebase (this correlates with MINOR in [SemVer](https://semver.org/)).
-
-  `feat: add new implementation to Xyz`
-
-- `fix`: Patches a bug in the codebase (this correlates with PATCH in [SemVer](https://semver.org/)).
-
-  `fix: change constant value CONSTANT_XYZ in Xyz class`
-
-- `build`: Changes that affect the build system or dependencies (npm, gradle, etc)
-
-  `build: change database driver version`
-
-- `ci`: Continuous Integration configuration changes in files/scripts (GitLab CI, GitHub Actions)
-
-  `ci: change config in .circleci adding a code-lint job`
-
-- `docs`: Documentation files changes (Readme.md)
-
-  `docs: change Readme.md adding info to local deploy`
-
-- `perf`: Improves the performance
-
-  `perf: delete boilerplate implementation in Xyz`
-
-- `refactor`: Code that neither fixes a bug/feature
-
-  `refactor: delete boilerplate implementation in Xyz`
-
-- `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
-
-  `style: change the tabulation format in Xyz`
-
-- `test`: Adding missing tests or correcting existing ones
-
-  `test: add missing test to Xyz implementation`
-
-- `chore`: Other changes that don't modify src or test files
-
-  `chore: ignore X file in .gitignore`
-
-- `revert`: Reverts a previous commit
-
-  `revert: reverts a1s2d3f4g5 commit`
-
-- `wip`: Changes to commit that haven't yet finished
-
-  `wip: Xyz class refactor`
 
 ### Authentication
 
@@ -275,6 +158,20 @@ Private endpoints: Authorization header with a valid token is required to get a 
 - put http://localhost:5001/v1/users/:id
 - delete http://localhost:5001/v1/users/:id
 ```
+
+### Local services
+
+`make launch-local-dev` starts the full development stack. Host ports below match the defaults in `.env.public` (`MS_PORT` for the API, `UNLEASH_DB_PORT` for the Unleash SSO gateway).
+
+| Service | Port | Description |
+| :------ | :--- | :---------- |
+| **api** | 5002 | Conference Manager REST API in development mode. |
+| **mongodb** | 27017 | MongoDB for events, users, and related data. |
+| **unleash-app** | 4242 | Unleash feature-toggle server (internal only; reached through oauth2-proxy SSO gateway). |
+| **unleash-db** | 5433 | PostgreSQL database used by Unleash. |
+| **keycloak** | 8080 | Keycloak identity provider (SSO for Grafana and Unleash). |
+| **ob-prometheus** | 9090 | Prometheus metrics scraper and store. |
+| **ob-grafana** | 3000 | Grafana dashboards, authenticated via Keycloak SSO. |
 
 ### Troubleshooting
 

@@ -10,15 +10,15 @@
 - Cloud
   - [ ] aws
   - [ ] azure
-- Microservices Templates
+- Services Templates
   - [ ] FastApi template (fastapi-rest-tpl)
   - [ ] Nestjs REST template (nestjs-rest-tpl)
   - [ ] Nestjs BFF GQL (nestjs-gql-tpl)
 - Conference Manager
-  - [ ] conference-manager-tools (conference-manager)
-  - [ ] ms-conference-webapp (conference-webapp)
-  - [ ] ms-conference-admin (conference-admin)
-  - [ ] ms-conference-api (conference-api)
+  - [ ] conference-manager-tools (cm-tools)
+  - [ ] ms-conference-webapp (cm-webapp)
+  - [ ] ms-conference-admin (cm-admin)
+  - [ ] ms-conference-api (cm-api)
   - [ ] status-aggregator (status-aggregator)
 
 ## Issue ticket number and link
