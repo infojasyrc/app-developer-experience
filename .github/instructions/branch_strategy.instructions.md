@@ -2,6 +2,8 @@
 
 This document defines the branching strategy used in this monorepo and how it integrates with CI/CD workflows.
 
+Conference Manager branch prefixes and commit scopes use project aliases (`cm-api`, `cm-webapp`, `cm-admin`, `cm-tools`). They translate to `ms-conference-*` folders — see `agents/shared/context/monorepo-paths.md`. GitHub Actions **job IDs** (`conference-api-verify`, `conference-webapp-verify`) are unchanged. Some workflow `github.head_ref` filters may still match older `conference-api/` / `conference-webapp/` prefixes until a later pipeline change; new branches should use `cm-*`.
+
 ## Branch Strategy Overview
 
 ### Main Branch
@@ -16,11 +18,12 @@ Branches follow a **component-based naming convention**:
 ```
 
 #### Examples:
-- `conference-api/feat` – New feature for Conference API
-- `conference-api/fix` – Bug fix for Conference API
-- `conference-webapp/feat` – New feature for Conference Webapp
-- `conference-webapp/fix` – Bug fix for Conference Webapp
-- `conference-admin/refactor` – Refactoring for Conference Admin
+- `cm-api/feat` – New feature for Conference API
+- `cm-api/fix` – Bug fix for Conference API
+- `cm-webapp/feat` – New feature for Conference Webapp
+- `cm-webapp/fix` – Bug fix for Conference Webapp
+- `cm-admin/refactor` – Refactoring for Conference Admin
+- `cm-tools/feat` – Observability/tools under the API package (Keycloak, Unleash, Grafana)
 - `fastapi-rest-tpl/feat` – New feature in backend template: fastapi-rest-tpl
 - `nestjs-rest-tpl/fix` – Bug fix in backend template: nestjs-rest-tpl
 
@@ -50,28 +53,14 @@ The workflow (`pull_request_conference_manager.yml`) operates as follows:
 - Outputs a list of changed packages (e.g., `conference-manager/ms-conference-api`)
 
 #### 2. **Component-specific verification jobs** (conditional)
+
 Each job runs only if its component was changed:
 
 | Job | Condition | Runs When |
 |-----|-----------|-----------|
-| `conference-webapp-verify` | Changes in `conference-manager/ms-conference-webapp` AND branch matches pattern | PR modifies webapp files |
-| `conference-api-verify` | Changes in `conference-manager/ms-conference-api` AND branch matches pattern | PR modifies API files |
-| `conference-admin-verify` | Changes in `conference-manager/ms-conference-admin` AND branch matches pattern | PR modifies admin files |
-
-#### 3. **Branch Name Filtering**
-Each job also checks `github.head_ref` to ensure the branch follows the component-based naming:
-
-```yaml
-if: startsWith(github.head_ref, 'conference-api/feat/') || 
-    startsWith(github.head_ref, 'conference-api/fix/') || 
-    startsWith(github.head_ref, 'conference-api/hotfix/') || 
-    startsWith(github.head_ref, 'conference-api/refactor/')
-```
-
-This ensures:
-- Only feature/fix/refactor branches trigger CI
-- Branch name aligns with the component being modified
-- Optimizes CI resources by skipping no feature branches
+| `conference-webapp-verify` | Changes in `conference-manager/ms-conference-webapp` AND PR modifies webapp files |
+| `conference-api-verify` | Changes in `conference-manager/ms-conference-api` AND PR modifies API files |
+| `conference-admin-verify` | Changes in `conference-manager/ms-conference-admin` AND PR modifies admin files |
 
 ## Changed Packages Detection
 
@@ -85,7 +74,7 @@ The `get-changed-packages` action uses fallback logic to detect changes:
 
 3. **Tertiary (Hardcoded fallback)**: Uses `GITHUB_HEAD_REF` environment variable
    - Maps branch name to component for testing with `act`
-   - Example: `conference-api/feat` → `conference-manager/ms-conference-api`
+   - Example: `cm-api/feat` → `conference-manager/ms-conference-api`
 
 ## Testing Workflows Locally with `act`
 
@@ -98,7 +87,7 @@ Use `devops/tests/events_simulate_pull_request_conference_api.json` to test the 
   "number": 1,
   "pull_request": {
     "head": {
-      "ref": "conference-api/feat",
+      "ref": "cm-api/feat",
       "sha": "1111111111111111111111111111111111111111"
     },
     "base": {
@@ -147,11 +136,11 @@ act pull_request -e devops/tests/events_simulate_pull_request_conference_api.jso
 ### Scenario 1: New Conference API Feature
 ```bash
 # Branch name
-conference-api/feat/add-new-endpoint
+cm-api/feat/add-new-endpoint
 
 # Commits (conventional format)
-git commit -m "feat(conference-api): add new endpoint"
-git commit -m "test(conference-api): add tests for endpoint"
+git commit -m "feat(cm-api): add new endpoint"
+git commit -m "test(cm-api): add tests for endpoint"
 
 # PR targets: main
 # Job triggered: conference-api-verify
@@ -161,10 +150,10 @@ git commit -m "test(conference-api): add tests for endpoint"
 ### Scenario 2: Webapp Bug Fix
 ```bash
 # Branch name
-conference-webapp/fix/resolve-layout-issue
+cm-webapp/fix/resolve-layout-issue
 
 # Commits
-git commit -m "fix(conference-webapp): resolve layout issue"
+git commit -m "fix(cm-webapp): resolve layout issue"
 
 # PR targets: main
 # Job triggered: conference-webapp-verify
@@ -174,8 +163,8 @@ git commit -m "fix(conference-webapp): resolve layout issue"
 ### Scenario 3: Multiple Components (NOT ALLOWED)
 ❌ Creating a single PR that changes both API and Webapp files is discouraged.
 ✅ Instead, create separate PRs:
-- `conference-api/feat/add-new-endpoint` → changes only `conference-manager/ms-conference-api`
-- `conference-webapp/fix/resolve-layout-issue` → changes only `conference-manager/ms-conference-webapp`
+- `cm-api/feat/add-new-endpoint` → changes only `conference-manager/ms-conference-api`
+- `cm-webapp/fix/resolve-layout-issue` → changes only `conference-manager/ms-conference-webapp`
 
 ## Related Files
 - Workflow definition: [.github/workflows/pull_request_conference_manager.yml](../workflows/pull_request_conference_manager.yml)

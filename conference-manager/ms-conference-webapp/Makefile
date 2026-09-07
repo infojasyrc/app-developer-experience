@@ -67,14 +67,14 @@ launch: ## 🚀 Launch webapp in dev container (only nextjs)
 	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		-p "8080:3000" \
+		-p "8090:3000" \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run dev"
 
 launch-detached: ## 🚀 Launch webapp in dev container (detached, no TTY — for CI/scripts)
 	docker run -d --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		-p "8080:3000" \
+		-p "8090:3000" \
 		--name $(COMPOSE_PROJECT_NAME)-webapp-dev \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run dev"
 

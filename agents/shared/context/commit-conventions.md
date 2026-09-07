@@ -7,7 +7,7 @@ description: >
   category, scope conventions, and PR structure requirements.
 metadata:
   author: app-dev-exp
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Commit Conventions — ADE Monorepo
@@ -54,11 +54,14 @@ Rules:
 
 ## Scopes by domain
 
-| Scope | Domain | Used by |
+Conference Manager scopes are **git aliases**, not folder names. Translate before editing files (see `agents/shared/context/monorepo-paths.md`).
+
+| Scope | Translates to | Used by |
 |---|---|---|
-| `webapp` | `ms-conference-webapp` | frontend-planner, frontend-developer |
-| `api` | `ms-conference-api` | backend agents (future) |
-| `admin` | `ms-conference-admin` | backend agents (future) |
+| `cm-webapp` | `conference-manager/ms-conference-webapp/` | frontend-planner, frontend-developer |
+| `cm-api` | `conference-manager/ms-conference-api/` | backend agents (future) |
+| `cm-admin` | `conference-manager/ms-conference-admin/` | backend agents (future) |
+| `cm-tools` | observability files under `conference-manager/ms-conference-api/` (compose + `tools/`) | any agent touching Keycloak, Unleash, Prometheus, Grafana |
 | `ecs` | ECS Fargate resources | infra-developer |
 | `iam` | IAM roles and policies | infra-developer |
 | `ecr` | ECR repositories | infra-developer |
@@ -74,12 +77,12 @@ Rules:
 
 ### frontend-planner
 ```
-docs(webapp): add migration plan for React 19 to Next.js 16
+docs(cm-webapp): add migration plan for React 19 to Next.js 16
 ```
 
 ### frontend-developer — Phase A
 ```
-refactor(webapp): migrate React Router routes to App Router
+refactor(cm-webapp): migrate React Router routes to App Router
 
 - Replace createBrowserRouter with file-system routing
 - Add app/layout.tsx as root layout
@@ -90,7 +93,7 @@ Refs: MIGRATION_PLAN.md Phase A
 
 ### frontend-developer — Phase B
 ```
-refactor(webapp): convert components to RSC and RCC
+refactor(cm-webapp): convert components to RSC and RCC
 
 - Add 'use client' to 12 interactive components
 - Extract ConferenceProvider to providers/conference-provider.tsx
@@ -101,7 +104,7 @@ Refs: MIGRATION_PLAN.md Phase B
 
 ### frontend-developer — Phase C
 ```
-refactor(webapp): migrate data fetching to RSC async pattern
+refactor(cm-webapp): migrate data fetching to RSC async pattern
 
 - Convert 5 useEffect+fetch components to async RSC
 - Rename REACT_APP_* env vars to NEXT_PUBLIC_*
@@ -156,7 +159,7 @@ Each agent phase = one PR. Never mix phases in a single PR.
 
 | PR title format | Example |
 |---|---|
-| `<type>(<scope>): <description>` | `refactor(webapp): Phase A — App Router migration` |
+| `<type>(<scope>): <description>` | `refactor(cm-webapp): Phase A — App Router migration` |
 
 PR description must include:
 1. **What changed** — list of files created/modified
@@ -179,11 +182,11 @@ Then include in your completion report:
 ```
 ## Suggested commits for this phase
 
-feat(webapp): ...
-refactor(webapp): ...
+feat(cm-webapp): ...
+refactor(cm-webapp): ...
 
 ## Suggested PR title
-refactor(webapp): Phase A — App Router routing migration
+refactor(cm-webapp): Phase A — App Router routing migration
 ```
 
 ---
@@ -193,7 +196,7 @@ refactor(webapp): Phase A — App Router routing migration
 Use when a change requires action from other developers:
 
 ```
-refactor(webapp): replace React Router with Next.js App Router
+refactor(cm-webapp): replace React Router with Next.js App Router
 
 BREAKING CHANGE: All useNavigate() calls replaced with useRouter() from
 next/navigation. Developers must update any custom hooks that wrap
