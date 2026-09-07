@@ -38,7 +38,7 @@ TODO: Add here the evolution of our architecture.
 
 We are using the following dependencies:
 
-- nodejs v18.xx according Dockerfile
+- Node 20.18.1 according Dockerfile
 
 ## Getting started
 

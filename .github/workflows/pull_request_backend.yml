@@ -42,6 +42,9 @@ jobs:
     needs: get-changed-packages
     if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-nestjs-rest') }}
     runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./backend/ms-nestjs-rest-tpl
     steps:
       - uses: actions/checkout@v4
 
@@ -56,25 +59,22 @@ jobs:
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
           [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-          node_version=$(cat backend/ms-nestjs-rest-tpl/.nvmrc)
+          node_version=$(cat .nvmrc)
           nvm install $node_version
           nvm use $node_version
         shell: bash
 
       - name: Install dependencies
         run: |
-          cd backend/ms-nestjs-rest-tpl
           npm install
 
       - name: Run Linting
         run: |
-          cd backend/project
           npm run lint
 
       - name: Run Unit Tests
         run: |
-          cd backend/ms-nestjs-rest-tpl
-          npm run test:unit-tests
+          npm run test:unit:coverage
   
   fastapi-rest-tpl-unit-tests:
     name: running fastapi rest template lint and unit tests
