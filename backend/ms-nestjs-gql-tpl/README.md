@@ -38,7 +38,7 @@ TODO: Add here the evolution of our architecture.
 
 We are using the following dependencies:
 
-- nodejs v18.xx according Dockerfile
+- Node 20.18.1 according Dockerfile
 
 ## Getting started
 
@@ -101,71 +101,6 @@ The structure of commit messages should be like:
 
 [optional footer(s)]
 ```
-
-### Proposals Type Commits
-
-- `feat`: Introduces a new feature to the codebase (this correlates with MINOR in [SemVer](https://semver.org/)).
-
-  `feat: add new implementation to Xyz`
-
-- `fix`: Patches a bug in the codebase (this correlates with PATCH in [SemVer](https://semver.org/)).
-
-  `fix: change constant value CONSTANT_XYZ in Xyz class`
-
-- `build`: Changes that affect the build system or dependencies (npm, gradle, etc)
-
-  `build: change database driver version`
-
-- `ci`: Continuous Integration configuration changes in files/scripts (GitLab CI, GitHub Actions)
-
-  `ci: change config in .circleci adding a code-lint job `
-
-- `docs`: Documentation files changes (Readme.md)
-
-  `docs: change Readme.md adding info to local deploy`
-
-- `perf`: Improves the performance
-
-  `perf: delete boilerplate implementation in Xyz`
-
-- `refactor`: Code that neither fixes a bug/feature
-
-  `refactor: delete boilerplate implementation in Xyz`
-
-- `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
-
-  `style: change the tabulation format in Xyz`
-
-- `test`: Adding missing tests or correcting existing ones
-
-  `test: add missing test to Xyz implementation`
-
-- `chore`: Other changes that don't modify src or test files
-
-  `chore: ignore X file in .gitignore `
-
-- `revert`: Reverts a previous commit
-
-  `revert: reverts a1s2d3f4g5 commit `
-
-- `wip`: Changes to commit that haven't yet finished
-
-  `wip: Xyz class refactor `
-
-### Usage
-
-The following steps should be selected according to the type of commit.
-
-- `git add [path/to/file.extension]`
-- `git cz ` this will open a console to select:
-- `type`
-- `scope/context`
-- `shor description of commits do (80 character permited) `
-- `large description of commits do `
-- `BREAKING CHANGES`
-- `open issues affected`
-
-Note: This library is disabled temporaly
 
 ### Working and link Jira/Trello cards
 

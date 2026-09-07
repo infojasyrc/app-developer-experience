@@ -1,7 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import { Test, TestingModule } from '@nestjs/testing';
+import request from 'supertest';
 import { AppModule } from './../src/app.module';
+
+const GLOBAL_PREFIX = 'ms-nestjs-template/v1';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -12,13 +14,18 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.setGlobalPrefix(GLOBAL_PREFIX);
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  afterEach(async () => {
+    await app.close();
+  });
+
+  it('/ms-nestjs-template/v1/health (GET)', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get(`/${GLOBAL_PREFIX}/health`)
       .expect(200)
-      .expect('Hello World!');
+      .expect('ok');
   });
 });
