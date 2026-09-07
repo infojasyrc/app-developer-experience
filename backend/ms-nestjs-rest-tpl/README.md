@@ -8,16 +8,14 @@ This is microservice built with nodejs and nestjs
 
 ## Contents
 
-- [Microservice Nestjs Template](#microservice-nestjs-template)
+- [Microservice Nestjs REST Template](#microservice-nestjs-rest-template)
   - [What is it?](#what-is-it)
 - [Contents](#contents)
 - [Application Architecture](#application-architecture)
 - [Project Dependencies](#project-dependencies)
 - [Getting started](#getting-started)
-  - [Installation](#installation)
-  - [Configuration](#configuration)
-  - [Running the app](#running-the-app)
-  - [Test execution](#test-execution)
+  - [Environment Configuration](#environment-configuration)
+  - [Launch application using containers](#launch-application-using-containers)
 - [Conventional commits](#conventional-commits)
   - [Structural Elements](#structural-elements)
   - [Proposals Type Commits](#proposals-type-commit)
@@ -36,52 +34,56 @@ TODO: Add here the evolution of our architecture.
 
 ## Project Dependencies
 
-We are using the following dependencies:
+Host tools only:
 
-- Node 20.18.1 according Dockerfile
+- Docker
+- Make
+
+Do not install Node, nvm, or npm on the host. The container image uses Node 20.18.1 (`ARG NODE_VERSION` in the Dockerfile).
 
 ## Getting started
 
-### Installation
+All install, lint, test, and run work happens inside Docker via Make.
+
+### Environment Configuration
+
+The Makefile loads `.env` if it exists, otherwise `.env.public`. To override defaults locally, copy `.env.public` to `.env` and edit the copy.
+
+| Variable                             | Description                                                                 | Required | Default Value        |
+| ------------------------------------ | --------------------------------------------------------------------------- | -------- | -------------------- |
+| HTTP_PORT                            | HTTP server listening port                                                  | No       | 4000                 |
+| INTEGRATION_ENVIRONMENT_URL_LIVENESS | Liveness URL for downstream integrations                                    | No       |                      |
+| INTEGRATION_API_TOKEN                | Token for downstream integrations                                           | No       |                      |
+| UNLEASH_API_URL                      | Unleash feature-toggle API URL                                              | No       |                      |
+| UNLEASH_API_TOKEN                    | Unleash API token                                                           | No       |                      |
+| COMPOSE_PROJECT_NAME                 | Docker Compose project name                                                 | Yes      | ms-nestjs-rest-tpl   |
+| PLATFORM                             | Docker platform. Allowed: `linux/amd64`, `linux/arm64`, `linux/x86_64`      | Yes      | linux/amd64          |
+
+On Apple Silicon you may set `PLATFORM=linux/arm64` in a local `.env` for faster builds. The default `linux/amd64` matches CI and cloud.
+
+### Launch application using containers
+
+`make create-volumes` is required on first run (and after deleting Docker volumes). `make lint` and `make unit-tests` need a prior `make install-dependencies` so the named volume has packages.
 
 ```bash
-$ npm install
+make create-volumes          # once
+make build-dev
+make install-dependencies
+make launch-local
+make lint
+make unit-tests
+make stop-local
 ```
 
-### Configuration
-
-Create a file called **.env** based on template file **.env.example**, filled with the right values
-
-| Variable                         | Description                            | Required | Default Value |
-| -------------------------------- | -------------------------------------- | -------- | ------------- |
-| HTTP_PORT                        | HTTP server listening port             | No       | 3000          |
-
-
-### Running the app
+Other useful targets:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+make help            # list all targets
+make interactive     # shell inside the container
+make build-prod      # production image
 ```
 
-### Test execution
-
-```bash
-# unit tests
-$ npm run test:unit
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
+The local stack publishes the app on port 8080 (`docker-compose/docker-compose.local.yml`).
 
 ## Conventional commits
 
@@ -210,4 +212,3 @@ To maximize the visibility of our progress, as a team, we can use two options:
 TODO: As a team, we need to:
 
 - Look for a way to automate this process using github-cli
-

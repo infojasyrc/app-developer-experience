@@ -1,12 +1,12 @@
 ARG NODE_VERSION=20.18.1
 
-# base stage
-FROM node:${NODE_VERSION}-alpine AS base
+# development stage (no node_modules baked in)
+FROM node:${NODE_VERSION}-alpine AS development
 
 WORKDIR /app
 
 # build stage
-FROM base AS build
+FROM development AS build
 
 COPY package*.json ./
 
@@ -18,7 +18,7 @@ COPY . .
 RUN npm run build --quiet
 
 # release stage
-FROM base AS release
+FROM development AS release
 
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist

@@ -6,7 +6,7 @@ description: >
   what to do (and what never to do) in each component.
 metadata:
   author: app-dev-exp
-  version: "1.3"
+  version: "1.4"
 ---
 
 # Development Guidance — ADE Monorepo
@@ -174,15 +174,15 @@ Observability and local tooling (Keycloak, Unleash, Prometheus, Grafana) ship wi
 
 ---
 
-### Backend Templates
+### Backend Templates — FastAPI (`MS_FASTAPI`)
 
-All templates: FastAPI REST Template (`backend/ms-fastapi-rest-tpl/`), NestJS GraphQL Template (`backend/ms-nestjs-gql-tpl/`), NestJS REST Template (`backend/ms-nestjs-rest-tpl/`) has the following structure:
+FastAPI REST template. Paths: `agents/shared/context/monorepo-paths.md`.
 
 | Target | Purpose |
 |---|---|
 | `make build-dev` | Build the dev container image |
 | `make build-prod` | Build the production image |
-| `make install-dependencies` | Install packages based on the package manager |
+| `make install-dependencies` | Install packages from the Pipfile |
 | `make create-volume` | Create the database volume (run once before first use) |
 | `make launch-local` | Start API + database for local development |
 | `make stop-local` | Stop local services |
@@ -190,6 +190,30 @@ All templates: FastAPI REST Template (`backend/ms-fastapi-rest-tpl/`), NestJS Gr
 | `make interactive` | Open a bash shell inside the container |
 | `make docker-clean` | Kill all containers and prune images |
 | `make help` | List all targets |
+
+---
+
+### Backend Templates — NestJS REST + GraphQL (`MS_NESTJS_REST`, `MS_NESTJS_GQL`)
+
+Container-first NestJS templates. Paths: `agents/shared/context/monorepo-paths.md`. Never run host `npm`, `node`, or `nvm` in these packages — `make help` from the template directory, then only Make targets.
+
+| Target | Purpose |
+|---|---|
+| `make build-dev` | Build the dev container image |
+| `make build-prod` | Build the production image |
+| `make create-volumes` | Create named Docker volume for node_modules — **run once before first use** |
+| `make install-dependencies` | Install npm packages into the container volume |
+| `make launch-local` | Start API + database for local development |
+| `make stop-local` | Stop local services |
+| `make lint` | Run ESLint inside container |
+| `make unit-tests` | Run Jest tests with coverage inside container |
+| `make interactive` | Open a shell inside the container |
+| `make docker-clean` | Kill all containers and prune images |
+| `make help` | List all targets |
+
+**Troubleshooting tips:**
+- If `npm install` errors appear, run `make create-volumes` first (named volume may be missing).
+- `make unit-tests` without a prior `make install-dependencies` fails because the named volume is empty.
 
 ---
 
@@ -239,7 +263,9 @@ Full detail on how this layer relates to `module/iam` (Terraform-native, the one
 
 ## Docker Platform
 
-All Makefile targets that invoke Docker pass `--platform linux/amd64`. This is already set in each package's `.env.public` or `.env` file via the `PLATFORM` variable. Do not override it unless explicitly required.
+Makefile targets that invoke Docker pass `--platform $(PLATFORM)`. `PLATFORM` is read from the package's `.env.public` (or `.env` if present) — do not hardcode it in the Makefile.
+
+Allowed values: `linux/amd64 | linux/arm64 | linux/x86_64`. Default: `linux/amd64` (CI/cloud parity). Developers may set `PLATFORM=linux/arm64` in a local `.env` on Apple Silicon. Do not use `linux/arm64/v8` or `linux/arm/v7`.
 
 ## What Never To Do
 
