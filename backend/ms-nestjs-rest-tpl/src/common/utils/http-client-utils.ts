@@ -1,9 +1,10 @@
 import { ConfigService } from '@nestjs/config';
-import { EnvironmentVariables } from './../../infrastructure/environment-variables';
 import { AxiosRequestHeaders } from 'axios';
+import { EnvironmentVariables } from './../../infrastructure/environment-variables';
 
 export const getAPIRequestHeaders = (
   config: ConfigService<EnvironmentVariables>,
-): AxiosRequestHeaders => (
-  config.get('INTEGRATION_API_TOKEN')
-);
+): AxiosRequestHeaders =>
+  ({
+    Authorization: `Bearer ${config.get('INTEGRATION_API_TOKEN')}`,
+  }) as AxiosRequestHeaders;
