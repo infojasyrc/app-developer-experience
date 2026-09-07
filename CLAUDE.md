@@ -68,3 +68,11 @@ Before running any agent task, read:
 ```bash
 cat agents/shared/context/monorepo-paths.md
 ```
+
+NestJS backend templates (`MS_NESTJS_REST`, `MS_NESTJS_GQL`) are container-first. From the template directory:
+
+```bash
+cd backend/ms-nestjs-*-tpl && make help
+```
+
+Use only Make targets (`build-dev`, `create-volumes`, `install-dependencies`, `launch-local`, `lint`, `unit-tests`, `build-prod`). Never run host `npm`, `node`, or `nvm` in those packages.

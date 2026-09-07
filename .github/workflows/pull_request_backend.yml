@@ -38,7 +38,7 @@ jobs:
           echo "Summary: ${{ steps.changed-packages.outputs.summary }}"
 
   nestjs-rest-tpl-unit-tests:
-    name: run unit tests
+    name: running lint and unit tests for nestjs rest template
     needs: get-changed-packages
     if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-nestjs-rest') }}
     runs-on: ubuntu-24.04
@@ -46,36 +46,55 @@ jobs:
       run:
         working-directory: ./backend/ms-nestjs-rest-tpl
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          check-latest: true
-        id: nvm
+          fetch-depth: 2
 
-      - name: Set up Node.js using .nvmrc
-        run: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-          node_version=$(cat .nvmrc)
-          nvm install $node_version
-          nvm use $node_version
-        shell: bash
+      - name: Build container for development
+        run: make build-dev
 
       - name: Install dependencies
-        run: |
-          npm install
+        run: make install-dependencies
 
       - name: Run Linting
-        run: |
-          npm run lint
+        run: make lint
 
       - name: Run Unit Tests
-        run: |
-          npm run test:unit:coverage
-  
+        run: make unit-tests
+
+      - name: Build container for production
+        run: make build-prod
+
+  nestjs-gql-tpl-unit-tests:
+    name: running lint and unit tests for nestjs graphql template
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-nestjs-gql') }}
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./backend/ms-nestjs-gql-tpl
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Build container for development
+        run: make build-dev
+
+      - name: Install dependencies
+        run: make install-dependencies
+
+      - name: Run Linting
+        run: make lint
+
+      - name: Run Unit Tests
+        run: make unit-tests
+
+      - name: Build container for production
+        run: make build-prod
+
   fastapi-rest-tpl-unit-tests:
     name: running fastapi rest template lint and unit tests
     needs: get-changed-packages

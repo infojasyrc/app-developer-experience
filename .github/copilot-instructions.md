@@ -11,20 +11,23 @@ This monorepo provides microservice and application templates plus a sample prod
 - `devops/` contains commented Azure CI examples – placeholders (not active) for container build & push.
 
 ## 2. Core Development Workflows
-- Prefer `make` targets over raw commands. Each service template and product component defines a Makefile with consistent verbs: `build-dev*`, `install-dependencies*`, `launch-*`, `stop-*`, `run-tests`.
-- FastAPI template (`backend/ms-fastapi-rest-tpl`): Typical flow:
+- Prefer `make` targets over raw commands. Each service template and product component defines a Makefile with consistent verbs: `build-dev*`, `install-dependencies*`, `launch-*`, `stop-*`, `lint`, `unit-tests`, `run-tests`.
+- FastAPI template (`MS_FASTAPI`): Typical flow:
   ```bash
   make build-dev
   make install-dependencies
   make launch-local   # multi-container (API + DB)
   make run-tests
   ```
-- NestJS REST template: Use npm scripts:
+- NestJS REST and GraphQL templates (`MS_NESTJS_REST`, `MS_NESTJS_GQL`): container-first only — never host `npm`/`node`/`nvm`. Paths in `agents/shared/context/monorepo-paths.md`. Typical flow:
   ```bash
-  npm run start:dev   # watch
-  npm run test:unit
-  npm run test:e2e
-  npm run test:cov
+  make create-volumes          # once
+  make build-dev
+  make install-dependencies
+  make launch-local
+  make lint
+  make unit-tests
+  make stop-local
   ```
 - Conference Manager API (`ms-conference-api`): This is a legacy development `make build-dev && make install-dependencies && make launch-local-dev`
 - Conference Manager Admin (`ms-conference-admin`): `make build-dev && make install-dependencies && make launch-local`.
@@ -33,14 +36,13 @@ This monorepo provides microservice and application templates plus a sample prod
 - Changelog generation scripts (root `package.json`): `yarn changelog:backend:fastapi-rest-tpl` / `yarn changelog:backend:nestjs-rest-tpl` (Angular preset, tag prefixes). Use after material feature/fix merges.
 
 ## 3. Environment & Configuration Patterns
-- Node versions: Templates and API use Node 18 (check `.nvmrc` or Dockerfile). Root conventional commit tooling requires Node 22.15.0 (see root README). Switch via:
+- Node versions: NestJS templates use the Dockerfile `ARG NODE_VERSION` inside the container — do not install or switch Node on the host for those packages. Root conventional commit tooling requires Node 22.15.0 (see root README). Switch via:
   ```bash
-  nvm use 22.15.0   # for commit tooling at root
-  nvm use           # inside service directory to respect local .nvmrc (API)
+  nvm use 22.15.0   # for commit tooling at root only
   ```
 - API `.env` values control DB host. Container mode uses `mongodb` host; standalone uses `localhost`. Agents modifying env-sensitive code must preserve dual-mode compatibility.
 - FastAPI template structure (primary source directories): `api/` (routes), `core/` (config), `schemas/`, `infrastructure/` (db, adapters), `use-cases/` (business logic), `main.py` entrypoint. Respect this layering when adding endpoints (DTO in `schemas`, persistence adapter in `infrastructure`, logic in `use-cases`, route wiring in `api`).
-- NestJS templates (hexagonal intent): Keep business logic isolated from transport (controllers). Add env variables via `.env.example` pattern; do not hardcode ports.
+- NestJS templates (hexagonal intent): Keep business logic isolated from transport (controllers). Add env variables via `.env.public`; do not hardcode ports. `PLATFORM` defaults to `linux/amd64`; allowed values: `linux/amd64 | linux/arm64 | linux/x86_64`.
 - Authentication (Conference Manager API): Firebase integration lives under `providers` and `.env` keys (`AUTH_*`). New auth-related features should extend provider abstractions, not bypass them.
 
 ### 3.1 Legacy Hybrid API (ms-conference-api)
@@ -78,12 +80,12 @@ Quick identification heuristic: any `.js` file inside `controllers/v1` requiring
 - Do not mutate husky or commitlint config unless explicitly requested; they enforce consistency across heterogeneous tech stacks.
 
 ## 5. Testing & Quality Signals
-- Use existing test runners per tech: `yarn test:ci` (Conference API); `npm run test:*` (NestJS templates); `make run-tests` (FastAPI template). Add tests into existing `tests/` directory maintaining folder mirroring source domain (e.g., service/use-case pairs).
+- Use existing test runners per tech: `yarn test:ci` (Conference API); `make lint` / `make unit-tests` (NestJS templates, inside Docker); `make run-tests` (FastAPI template). Add tests into existing `tests/` directory maintaining folder mirroring source domain (e.g., service/use-case pairs).
 - Prefer unit tests in templates; integration tests may require container orchestration (`launch-local`). Avoid altering CI YAML placeholders unless enabling actual pipelines.
 
 ## 6. Extending Templates vs Product Code
 - When enhancing `conference-manager` services, reference templates for structure but modify only product directories (`ms-conference-*`). Do not push product-specific changes back into template archetypes.
-- New microservice? Derive from a template by copying its directory; update README & Makefile accordingly. Keep FastAPI layering & NestJS scripts intact.
+- New microservice? Derive from a template by copying its directory; update README & Makefile accordingly. Keep FastAPI layering and the NestJS Make/container contract intact.
 
 ## 7. Infrastructure & Deployment Notes
 - Active deployment pipelines are located in `.github/workflows`. Agents should avoid speculative refactors; only implement concrete requested changes.
@@ -103,7 +105,7 @@ Quick identification heuristic: any `.js` file inside `controllers/v1` requiring
 ## 10. Quick Reference
 - Switch to commit tooling Node: `nvm use v22.15.0` → `make setup-commit-validation`.
 - FastAPI new route pattern: schema → use-case → api router include → add test.
-- NestJS new feature: create module + service + controller; wire in module; add unit test via `test:unit`.
+- NestJS new feature: create module + service + controller; wire in module; add a unit test and run `make unit-tests`.
 - Conference API endpoint addition: update `controllers`, optionally `services` + `models`, expose under `/v1` path, add test in `tests`.
 
 If any section lacks clarity (e.g., hexagonal details, missing architecture evolution), request refinement with specific examples you need.

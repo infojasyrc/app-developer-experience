@@ -8,8 +8,8 @@ include $(ENV_FILE)
 COMPOSE_PROJECT_NAME = ms-nestjs-rest-tpl
 CONTAINER_APP_FOLDER = /app
 
-# available platforms linux/amd64 | linux/arm64/v8 | linux/x86_64
-PLATFORM = linux/arm64/v8
+# Available platforms: linux/amd64 | linux/arm64 | linux/x86_64
+PLATFORM := $(PLATFORM)
 
 ifeq ($(OS),Windows_NT)
 	USER_HOME := $(shell echo %USERPROFILE%)
@@ -40,24 +40,49 @@ endif
 
 .PHONY: build-dev
 build-dev: ## build docker image for local development
-	docker build --platform $(PLATFORM) --target base \
+	docker build --platform $(PLATFORM) --target development \
 		-t $(COMPOSE_PROJECT_NAME) .
 
 .PHONY: build-dev-with-npmrc
 build-dev-with-npmrc: ## build docker image for local development with .npmrc
-	docker build --platform $(PLATFORM) --target base \
+	docker build --platform $(PLATFORM) --target development \
 		--build-arg NPMRC="$$(cat $(USER_NPMRC))" \
+		-t $(COMPOSE_PROJECT_NAME) .
+
+.PHONY: build-prod
+build-prod: ## build production docker image
+	docker build --platform $(PLATFORM) --target release \
 		-t $(COMPOSE_PROJECT_NAME) .
 
 .PHONY: build-stable
 build-stable: ## build docker image stable version
 	docker build -t $(COMPOSE_PROJECT_NAME):1.0.0 .
 
+.PHONY: create-volumes
+create-volumes: ## create external container volumes if they do not exist
+	@echo "Checking and creating external volumes..."
+	@docker volume inspect $(COMPOSE_PROJECT_NAME)-packages >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-packages" && docker volume create $(COMPOSE_PROJECT_NAME)-packages)
+
 .PHONY: install-dependencies
 install-dependencies: ## install dependencies for dev image
-	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" $(DEV_VOLUME) \
+	docker run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" $(DEV_VOLUME) \
 		--platform $(PLATFORM) \
 		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "npm i"
+
+.PHONY: lint
+lint: ## run lint checks
+	docker run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "npm run lint"
+
+.PHONY: unit-tests
+unit-tests: ## run unit tests with coverage
+	docker run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "npm run test:unit:coverage"
 
 .PHONY: interactive
 interactive: ## get a bash shell in the container
