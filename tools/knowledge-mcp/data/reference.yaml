@@ -1,0 +1,83 @@
+# Gap-analysis reference set for new ADE projects.
+# Owner: CODEOWNERS of tools/knowledge-mcp/
+# Cadence: quarterly review, or a plan doc when a new pattern is adopted.
+# This file is curated manually (PRs). It is not auto-generated.
+
+categories:
+  commits:
+    required: conventional-commits
+    file_signals:
+      - commitlint.config.js
+      - commitlint.config.cjs
+      - commitlint.config.mjs
+      - .commitlintrc
+      - .commitlintrc.json
+      - .husky/commit-msg
+    tool_signals:
+      - conventional-commits
+      - commitlint
+      - husky
+  build-tooling:
+    required: makefile
+    makefile_names:
+      - makefile
+      - gnumakefile
+    targets:
+      required:
+        - build-dev
+        - install-dependencies
+        - lint
+        - help
+      required_one_of:
+        launch:
+          - launch
+          - launch-local
+          - launch-local-dev
+        stop:
+          - stop
+          - stop-local
+          - stop-local-dev
+        test:
+          - unit-tests
+          - run-tests
+      recommended:
+        - build-prod
+        - interactive
+  containerization:
+    required:
+      - dockerfile
+    dockerfile_names:
+      - dockerfile
+    rule: make-targets-wrap-docker
+  iac:
+    optional_unless_expected: true
+    tool_signals:
+      - terraform
+      - bicep
+      - aws-sam
+      - aws-cdk
+    file_suffixes:
+      - .tf
+      - .bicep
+
+documented_exceptions:
+  conference-manager:
+    match_paths:
+      - conference-manager
+      - conference-manager/
+    match_aliases:
+      - conference-manager
+      - cm
+      - conf-root
+    suppress:
+      - stack-mismatch-django-vs-backend-templates
+    note: >
+      Known accepted mismatch: Django admin + REST predates the FastAPI/NestJS
+      backend templates. Do not report it as a gap.
+      See .cursor/rules/000-core.mdc and .cursor/rules/conference-manager.mdc.
+
+aligned_backend_stacks:
+  - fastapi
+  - nestjs
+  - nestjs-rest
+  - nestjs-gql

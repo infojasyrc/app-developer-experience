@@ -1,0 +1,27 @@
+{
+  "name": "knowledge-mcp",
+  "sourceRoot": "tools/knowledge-mcp",
+  "targets": {
+    "sync": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make sync",
+        "cwd": "tools/knowledge-mcp"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make unit-tests",
+        "cwd": "tools/knowledge-mcp"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make lint",
+        "cwd": "tools/knowledge-mcp"
+      }
+    }
+  }
+}

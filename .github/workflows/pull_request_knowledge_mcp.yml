@@ -1,0 +1,58 @@
+name: Pull Request Verification for knowledge MCP
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - tools/knowledge-mcp/**
+
+permissions:
+  contents: read
+
+env:
+  PLATFORM: linux/amd64
+
+jobs:
+  get-changed-packages:
+    name: Get list of changed packages
+    runs-on: ubuntu-24.04
+    outputs:
+      changed_packages: ${{ steps.changed-packages.outputs.changed_packages }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: changed-packages
+        uses: ./.github/actions/get-changed-packages
+
+  knowledge-mcp-unit-tests:
+    name: lint and unit tests for knowledge MCP
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'knowledge-mcp') }}
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./tools/knowledge-mcp
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Build container for development
+        run: make build-dev
+
+      - name: Install dependencies
+        run: make install-dependencies
+
+      - name: Run Linting
+        run: make lint
+
+      - name: Run Unit Tests
+        run: make unit-tests
+
+      - name: Build container for production
+        run: make build-prod

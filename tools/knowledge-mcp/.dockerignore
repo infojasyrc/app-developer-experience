@@ -1,0 +1,8 @@
+# Exclude everything
+*
+
+# include only source files
+!pyproject.toml
+!poetry.lock
+!src/
+!data/

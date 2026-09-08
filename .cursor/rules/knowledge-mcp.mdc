@@ -1,0 +1,19 @@
+---
+description: Conventions for tools/knowledge-mcp/ — runtime Knowledge MCP service
+globs:
+  - "tools/knowledge-mcp/**"
+alwaysApply: false
+---
+
+# tools/knowledge-mcp/
+
+Runtime MCP server that exposes ADE conventions and reports gaps. This is a **service**, not a bootstrap template — do not place it under `backend/` or treat it as something to copy into other repos.
+
+Path alias: `KNOWLEDGE_MCP` in `agents/shared/context/monorepo-paths.md`. Commit scope: `knowledge-mcp` (never `cm-tools` or `tools`).
+
+- **Container-first**: `cd` into `tools/knowledge-mcp/`, run `make help`, and use only Make targets (`build-dev`, `install-dependencies`, `lint`, `unit-tests`, `build-prod`, `launch`/`stop` as implemented). Never run host `python`, `pip`, `poetry`, or `npm`.
+- **PLATFORM**: read from `.env.public` (do not hardcode in the Makefile). Allowed values: `linux/amd64 | linux/arm64 | linux/x86_64`. Default: `linux/amd64`.
+- **Coverage**: 80% minimum.
+- **Knowledge source**: parse existing ADE files (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/*.mdc`, `development-guidance.md`, template READMEs). Do not duplicate them into a second source of truth.
+- **Feedback loop**: real gaps become a human PR to those knowledge files (or `data/reference.yaml` / `documented_exceptions`). The server does not auto-fix.
+- **Non-goals**: do not auto-fix consumer repos; do not write ADE knowledge files from the server.
