@@ -1,5 +1,5 @@
 ---
-description: Conventions for backend/ (reusable platform component — microservices)
+description: Conventions for backend/ (reusable platform component — services)
 globs:
   - "backend/**"
 alwaysApply: false
@@ -7,11 +7,11 @@ alwaysApply: false
 
 # backend/
 
-Microservices templates: RESTful (FastAPI, NestJS) and GraphQL (NestJS). This is a **bootstrap template** — new services across the org are generated/aligned from it, not imported from it at runtime. Any change to its structure or conventions must be logged in the plan along with which existing solutions (e.g. future services in `conference-manager/`) it should propagate to.
+Services templates: RESTful (FastAPI, NestJS) and GraphQL (NestJS). This is a **bootstrap template** — new services across the org are generated/aligned from it, not imported from it at runtime. Any change to its structure or conventions must be logged in the plan along with which existing solutions (e.g. future services in `conference-manager/`) it should propagate to.
 
 - **Architecture**: Domain Driven Design (DDD) with Clean Architecture — keep domain, application, and infrastructure layers separated per service.
 - **Container-first**: every service ships as an optimized Docker image with source only, no dev dependencies. Don't introduce dev-only deps into the runtime image.
-- **No host Node for NestJS templates**: never run `npm`, `node`, or `nvm` on the host in `MS_NESTJS_REST` / `MS_NESTJS_GQL`. `cd` into the template, run `make help`, and use Make targets (`build-dev`, `create-volumes`, `install-dependencies`, `launch-local`, `lint`, `unit-tests`, `build-prod`). Paths: `agents/shared/context/monorepo-paths.md`.
+- **No host Node for NestJS templates**: never run `npm`, `node`, or `nvm` on the host in `NESTJS_REST` / `NESTJS_GQL`. `cd` into the template, run `make help`, and use Make targets (`build-dev`, `create-volumes`, `install-dependencies`, `launch-local`, `lint`, `unit-tests`, `build-prod`). Paths: `agents/shared/context/monorepo-paths.md`.
 - **PLATFORM**: read from `.env.public` (do not hardcode in the Makefile). Allowed values: `linux/amd64 | linux/arm64 | linux/x86_64`. Default: `linux/amd64`.
 - **Coverage**: 80% minimum for any service you touch.
 - **Templates**: when adding a new service, check whether it should follow the existing FastAPI (REST), NestJS (REST), or NestJS (GraphQL) template rather than introducing a new pattern. FastAPI keeps `make run-tests` / `make create-volume`; NestJS uses `make lint` / `make unit-tests` / `make create-volumes`.

@@ -19,7 +19,7 @@ This monorepo provides microservice and application templates plus a sample prod
   make launch-local   # multi-container (API + DB)
   make run-tests
   ```
-- NestJS REST and GraphQL templates (`MS_NESTJS_REST`, `MS_NESTJS_GQL`): container-first only — never host `npm`/`node`/`nvm`. Paths in `agents/shared/context/monorepo-paths.md`. Typical flow:
+- NestJS REST and GraphQL templates (`NESTJS_REST`, `NESTJS_GQL`): container-first only — never host `npm`/`node`/`nvm`. Paths in `agents/shared/context/monorepo-paths.md`. Typical flow:
   ```bash
   make create-volumes          # once
   make build-dev

@@ -3,7 +3,7 @@
 services:
   nestgqlapp:
     image: ${COMPOSE_PROJECT_NAME}:latest
-    container_name: ms-gql-tpl
+    container_name: nestjs-gql-tpl
     working_dir: /app
     command: /bin/ash -ci "npm run start:dev"
     restart: unless-stopped

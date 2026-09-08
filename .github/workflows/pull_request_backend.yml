@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-24.04
     defaults:
       run:
-        working-directory: ./backend/ms-nestjs-rest-tpl
+        working-directory: ./backend/nestjs-rest-tpl
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-24.04
     defaults:
       run:
-        working-directory: ./backend/ms-nestjs-gql-tpl
+        working-directory: ./backend/nestjs-gql-tpl
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
