@@ -6,7 +6,7 @@ description: >
   what to do (and what never to do) in each component.
 metadata:
   author: app-dev-exp
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Development Guidance — ADE Monorepo
@@ -214,6 +214,28 @@ Container-first NestJS templates. Paths: `agents/shared/context/monorepo-paths.m
 **Troubleshooting tips:**
 - If `npm install` errors appear, run `make create-volumes` first (named volume may be missing).
 - `make unit-tests` without a prior `make install-dependencies` fails because the named volume is empty.
+
+---
+
+### Knowledge MCP (`KNOWLEDGE_MCP` → `tools/knowledge-mcp/`)
+
+Runtime service (not a bootstrap template) that exposes ADE conventions over MCP. Container-first. Path: `agents/shared/context/monorepo-paths.md`. Never run host `python`, `pip`, `poetry`, or `npm` — `make help` from the package directory, then only Make targets.
+
+| Target | Purpose |
+|---|---|
+| `make build-dev` | Build the dev container image |
+| `make build-prod` | Build the production image |
+| `make install-dependencies` | Install packages into the container volume |
+| `make launch` / `make launch-local` | Start the MCP server (stdio and/or SSE) |
+| `make stop` / `make stop-local` | Stop the local server |
+| `make lint` | Run the linter inside container |
+| `make unit-tests` | Run tests with coverage inside container |
+| `make interactive` | Open a shell inside the container |
+| `make help` | List all targets |
+
+**Troubleshooting tips:**
+- After a Dockerfile change, run `make build-dev` before `make launch`.
+- If packages are missing at runtime, run `make install-dependencies`.
 
 ---
 

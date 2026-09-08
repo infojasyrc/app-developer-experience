@@ -1,0 +1,140 @@
+# Curated bootstrap map. Paths come from monorepo-paths.md aliases — do not
+# treat this file as a second source of truth for filesystem locations.
+# conference-manager is a reference solution, not a template (see not_templates).
+
+lifecycle:
+  required:
+    - build-dev
+    - install-dependencies
+    - lint
+    - help
+  required_one_of:
+    launch:
+      - launch
+      - launch-local
+      - launch-local-dev
+    stop:
+      - stop
+      - stop-local
+      - stop-local-dev
+    test:
+      - unit-tests
+      - run-tests
+  recommended:
+    - build-prod
+    - interactive
+  must_keep:
+    - Makefile
+    - Dockerfile
+  host_forbidden:
+    - npm
+    - node
+    - nvm
+    - python
+    - pip
+    - poetry
+  how:
+    - Copy the matching template directory into the new package. Do not treat root Makefile create-* targets as the product contract.
+    - cd into the new package directory.
+    - Run make help and use only Make targets.
+    - Keep a Makefile and Dockerfile. Make targets must wrap Docker (Where You Build, You Run).
+    - Never call npm, node, python, pip, or poetry on the host.
+
+not_templates:
+  conference-manager:
+    aliases:
+      - conference-manager
+      - conf-root
+      - cm
+    reason: >
+      conference-manager is the reference solution, not a bootstrap template.
+      New services should start from MS_FASTAPI, NESTJS_REST, or NESTJS_GQL.
+      A mobile client should start from MOBILE_RN or MOBILE_EXPO.
+
+components:
+  nestjs-rest:
+    aliases:
+      - nestjs-rest
+      - nestjs
+      - NESTJS_REST
+    path_alias: NESTJS_REST
+    path: backend/nestjs-rest-tpl/
+    description: NestJS RESTful service template
+  nestjs-gql:
+    aliases:
+      - nestjs-gql
+      - graphql
+      - NESTJS_GQL
+    path_alias: NESTJS_GQL
+    path: backend/nestjs-gql-tpl/
+    description: NestJS GraphQL service template
+  fastapi-rest:
+    aliases:
+      - fastapi
+      - fastapi-rest
+      - MS_FASTAPI
+    path_alias: MS_FASTAPI
+    path: backend/ms-fastapi-rest-tpl/
+    description: FastAPI RESTful service template
+  ci-aws-backend:
+    aliases:
+      - ci-aws-backend
+      - CI_AWS_BACKEND
+    path_alias: CI_AWS_BACKEND
+    path: devops/ci-aws-backend/
+    description: CI pipeline template for backend microservices to AWS ECR
+  ci-aws-webapp:
+    aliases:
+      - ci-aws-webapp
+      - CI_AWS_WEBAPP
+    path_alias: CI_AWS_WEBAPP
+    path: devops/ci-aws-webapp/
+    description: CI pipeline template for webapp to AWS ECR
+  deploy-infra:
+    aliases:
+      - deploy-infra
+      - DEPLOY_INFRA
+    path_alias: DEPLOY_INFRA
+    path: devops/deploy_infrastructure/
+    description: Terraform plan/apply/destroy pipeline template
+  mobile-rn:
+    aliases:
+      - mobile-rn
+      - react-native
+      - MOBILE_RN
+      - whitewalker
+    path_alias: MOBILE_RN
+    path: mobile-app/whitewalker/
+    description: React Native mobile template
+  mobile-expo:
+    aliases:
+      - mobile-expo
+      - expo
+      - MOBILE_EXPO
+      - whitewolf-rn
+    path_alias: MOBILE_EXPO
+    path: mobile-app/whitewolf-rn/
+    description: Expo mobile template
+  cli:
+    aliases:
+      - cli
+      - CLI_ROOT
+    path_alias: CLI_ROOT
+    path: cli/
+    description: Interactive conventional commits CLI
+  terraform-aws:
+    aliases:
+      - terraform-aws
+      - TERRAFORM_AWS
+      - aws
+    path_alias: TERRAFORM_AWS
+    path: cloud/terraform/aws/
+    description: AWS Terraform infrastructure template
+  terraform-azure:
+    aliases:
+      - terraform-azure
+      - TERRAFORM_AZURE
+      - azure
+    path_alias: TERRAFORM_AZURE
+    path: cloud/terraform/azure/
+    description: Azure infrastructure template

@@ -16,6 +16,7 @@ infrastructure as code, and a conference management solution.
 3. **Mobile App Templates** — React Native and Expo templates using TypeScript
 4. **DevOps Pipelines** — CI/CD pipelines for containers and IaC (Terraform, Bicep)
 5. **Infrastructure as Code** — AWS (Terraform) and Azure (Bicep) deployments
+6. **Knowledge MCP** — runtime service that exposes ADE conventions to other repos/agents (`tools/knowledge-mcp/`)
 
 ---
 
@@ -33,6 +34,7 @@ See `agents/shared/context/monorepo-paths.md` for canonical paths.
 | Infrastructure (Azure) | `cloud/terraform/azure` |
 | GitHub Actions | `.github/workflows/` |
 | AI Agents | `agents/` |
+| Knowledge MCP | `tools/knowledge-mcp/` |
 
 ### Conference Manager project aliases
 

@@ -70,6 +70,7 @@ Conference Manager scopes are **git aliases**, not folder names. Translate befor
 | `gha` | GitHub Actions workflows | pipeline-debugger |
 | `agents` | Agent definitions and skills | any agent |
 | `deps` | Dependency changes | any agent |
+| `knowledge-mcp` | `tools/knowledge-mcp/` | Knowledge MCP server. Do not use `cm-tools` or `tools` for this package. |
 
 ---
 

@@ -1,0 +1,4 @@
+# Runtime Knowledge MCP service (not a bootstrap template).
+# data/reference.yaml is curated manually. Review quarterly, or when a plan
+# doc adopts a new org pattern.
+*

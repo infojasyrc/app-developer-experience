@@ -77,6 +77,12 @@ Use git aliases in branch names (`cm-api/feat/...`), commit scopes (`feat(cm-api
 |---|---|---|
 | `CLI_ROOT` | `cli/` | Interactive conventional commits CLI (Python) |
 
+## Runtime tools
+
+| Alias | Resolved Path | Description |
+|---|---|---|
+| `KNOWLEDGE_MCP` | `tools/knowledge-mcp/` | Knowledge MCP server (runtime service, not a bootstrap template) |
+
 ## Agent Outputs
 
 | Alias | Resolved Path | Description |
