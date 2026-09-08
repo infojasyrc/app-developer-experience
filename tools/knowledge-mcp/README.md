@@ -14,12 +14,12 @@ Container-first. From this directory:
 make help
 ```
 
-Use only Make targets. Never run host `python`, `pip`, `poetry`, or `npm`.
+Use only Make targets. Never run host `python`, `pip`, `uv`, or `npm`.
 
 | Target | Purpose |
 |---|---|
 | `make build-dev` | Build the dev image |
-| `make install-dependencies` | Install Poetry deps into the volume |
+| `make install-dependencies` | Install uv deps into the volume (`uv.lock`) |
 | `make lint` | Black, isort, flake8 inside the container |
 | `make unit-tests` | Pytest + coverage (80% minimum) |
 | `make launch` / `make launch-local` | HTTP/SSE server on port 8000 |
@@ -29,6 +29,65 @@ Use only Make targets. Never run host `python`, `pip`, `poetry`, or `npm`.
 | `make interactive` | Shell inside the container |
 
 `PLATFORM` comes from `.env.public` (default `linux/amd64`). Override in a local `.env`.
+
+## Environment variables
+
+Make loads `.env` when that file exists, otherwise `.env.public`. Do not commit
+`.env` (it is gitignored). The application also reads `.env` via
+`pydantic-settings`.
+
+### Make / Docker
+
+| Variable | Default (`.env.public`) | Purpose |
+|---|---|---|
+| `COMPOSE_PROJECT_NAME` | `knowledge-mcp` | Image and container name prefix (`knowledge-mcp-dev`, `knowledge-mcp`) |
+| `PLATFORM` | `linux/amd64` | Docker `--platform`. Allowed: `linux/amd64`, `linux/arm64`, `linux/x86_64` |
+| `HTTP_PORT` | `8000` | Host port mapped to container `8000` for `make launch` |
+| `ADE_ROOT` | `/repo` | ADE monorepo root **inside the container** (the host clone is mounted at `/repo`) |
+| `INDEX_PATH` | `/app/dist/knowledge.json` | Written by `make sync`; read at runtime if the file exists |
+
+### Application runtime
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `ADE_ROOT` | unset (walks parents for `CLAUDE.md` + `AGENTS.md`) | Path to the ADE clone the server ingests |
+| `INDEX_PATH` | `dist/knowledge.json` | Optional pre-built knowledge index |
+| `PYTHONPATH` | `/app/src` | Set by the image and Make so `stdio_main` / `main` import |
+| `DEBUG` | `true` | FastAPI debug flag |
+| `ENVIRONMENT` | `development` | `development`, `testing`, or `production` |
+| `HOST` | `0.0.0.0` | Bind address for the HTTP server |
+| `API_PORT` | `8000` | In-container listen port (keep `8000`; change the host mapping with `HTTP_PORT`) |
+| `APP_NAME` | `knowledge-mcp` | FastAPI title |
+| `APP_VERSION` | `0.1.0` | FastAPI version |
+
+### Examples
+
+Local override on Apple Silicon (`tools/knowledge-mcp/.env`, not committed):
+
+```bash
+COMPOSE_PROJECT_NAME=knowledge-mcp
+PLATFORM=linux/arm64
+HTTP_PORT=8000
+ADE_ROOT=/repo
+INDEX_PATH=/app/dist/knowledge.json
+```
+
+HTTP server on a different host port:
+
+```bash
+HTTP_PORT=18000
+```
+
+Then `make launch` publishes `http://localhost:18000` and the healthcheck is
+`GET http://localhost:18000/healthcheck/`.
+
+Stdio / Cursor (values passed with `-e`; `ADE_ROOT` is the in-container mount):
+
+```bash
+-e ADE_ROOT=/repo
+-e PYTHONPATH=/app/src
+-e INDEX_PATH=/app/dist/knowledge.json
+```
 
 ## MCP surface (v1)
 
@@ -83,12 +142,13 @@ After `make build-dev` and `make install-dependencies`, point Cursor at:
         "-v", "<absolute-path-to-ade>/tools/knowledge-mcp:/app",
         "-v", "knowledge-mcp-packages:/app/.venv",
         "knowledge-mcp-dev",
-        "poetry", "run", "python", "-m", "stdio_main"
+        "uv", "run", "python", "-m", "stdio_main"
       ]
     }
   }
 }
 ```
 
-SSE/HTTP is optional on `http://localhost:8000/mcp` after `make launch`.
+Match `--platform` with `PLATFORM` in `.env` / `.env.public`. SSE/HTTP is optional
+on `http://localhost:8000/mcp` after `make launch`.
 Healthcheck: `GET /healthcheck/`.

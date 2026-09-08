@@ -219,7 +219,7 @@ Container-first NestJS templates. Paths: `agents/shared/context/monorepo-paths.m
 
 ### Knowledge MCP (`KNOWLEDGE_MCP` → `tools/knowledge-mcp/`)
 
-Runtime service (not a bootstrap template) that exposes ADE conventions over MCP. Container-first. Path: `agents/shared/context/monorepo-paths.md`. Never run host `python`, `pip`, `poetry`, or `npm` — `make help` from the package directory, then only Make targets.
+Runtime service (not a bootstrap template) that exposes ADE conventions over MCP. Container-first. Path: `agents/shared/context/monorepo-paths.md`. Never run host `python`, `pip`, `uv`, `poetry`, or `npm` — `make help` from the package directory, then only Make targets.
 
 | Target | Purpose |
 |---|---|

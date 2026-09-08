@@ -2,32 +2,29 @@
 
 FROM python:3.13-alpine AS dev
 
-RUN apk add --no-cache build-base curl
+COPY --from=ghcr.io/astral-sh/uv:0.12.9 /uv /uvx /bin/
 
-RUN curl -sSL https://install.python-poetry.org | python3 - \
-    && ln -s ~/.local/bin/poetry /usr/local/bin/poetry
+RUN apk add --no-cache build-base
 
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONFAULTHANDLER=1 \
     PYTHONPATH=/app/src \
-    PIP_NO_CACHE_DIR=true \
-    POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PROJECT_ENVIRONMENT=/app/.venv
 
 WORKDIR /app
-
-RUN poetry config virtualenvs.in-project true
 
 FROM dev AS build
 
 WORKDIR /app
 
 COPY pyproject.toml /app/pyproject.toml
-COPY poetry.lock /app/poetry.lock
+COPY uv.lock /app/uv.lock
 
-RUN poetry install --no-root --only main
+RUN uv sync --frozen --no-dev --no-install-project
 
 FROM python:3.13-alpine AS prod
 

@@ -15,7 +15,7 @@ You need a local clone of `app-developer-experience` so the server can read
 | Resource | `conventions://tech-stack` | You need the ADE stack map |
 | Resource | `conventions://ddd-clean-architecture` | You need DDD / Clean Architecture rules |
 | Resource | `conventions://plan-template` | You are writing a plan |
-| Resource | `conventions://container-first` | You need Makefile + Docker lifecycle |
+| Resource | `conventions://container-first` | You need Makefile + Container lifecycle |
 | Resource | `conventions://component/{name}` | You need a specific area (`backend`, `cli`, …) |
 | Tool | `get_convention(topic)` | You want excerpts + `source_path` |
 | Tool | `scaffold_guidance(component_type)` | You are starting a new service/pipeline/app |
@@ -53,7 +53,7 @@ mounts `<ADE_ROOT>` read-only to ingest conventions.
 
 ## Step 3 — Build the MCP image once
 
-From ADE, use only Make (no host `python` / `poetry`):
+From ADE, use only Make (no host `python` / `uv` / `poetry`):
 
 ```bash
 cd <ADE_ROOT>/tools/knowledge-mcp
@@ -114,7 +114,7 @@ Create or edit `<consumer-repo>/.cursor/mcp.json`:
         "-v",
         "knowledge-mcp-packages:/app/.venv",
         "knowledge-mcp-dev",
-        "poetry",
+        "uv",
         "run",
         "python",
         "-m",
@@ -259,6 +259,5 @@ False positives belong under `documented_exceptions` in `reference.yaml`.
 
 ## Related
 
-- Package README and Make targets: [`tools/knowledge-mcp/README.md`](../tools/knowledge-mcp/README.md)
-- Implementation plan: [`docs/plans/20260908-knowledge-mcp-server.md`](./plans/20260908-knowledge-mcp-server.md)
+- Package README, Make targets, and environment variables: [`tools/knowledge-mcp/README.md`](../tools/knowledge-mcp/README.md)
 - Path alias: `KNOWLEDGE_MCP` in [`agents/shared/context/monorepo-paths.md`](../agents/shared/context/monorepo-paths.md)
