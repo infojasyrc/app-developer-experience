@@ -1,10 +1,10 @@
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
-NODEJS_GQL_FOLDER_TEMPLATE = ms-nestjs-gql-tpl
-NODEJS_NEW_GQL_SERVICE ?= ms-nodejs-gql-example
+NODEJS_GQL_FOLDER_TEMPLATE = nestjs-gql-tpl
+NODEJS_NEW_GQL_SERVICE ?= nodejs-gql-example
 
-NODEJS_REST_FOLDER_TEMPLATE = ms-nestjs-rest-tpl
-NODEJS_NEW_REST_SERVICE ?= ms-nodejs-rest-example
+NODEJS_REST_FOLDER_TEMPLATE = nestjs-rest-tpl
+NODEJS_NEW_REST_SERVICE ?= nodejs-rest-example
 
 PY_FASTAPI_FOLDER_TEMPLATE = ms-fastapi-rest-tpl
 PY_NEW_FASTAPI_SERVICE ?= ms-fastapi-example
