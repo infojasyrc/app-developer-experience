@@ -1,6 +1,6 @@
 {
   "name": "nestjs-rest-tpl",
-  "sourceRoot": "backend/ms-nestjs-rest-tpl",
+  "sourceRoot": "backend/nestjs-rest-tpl",
   "targets": {
     "build": {
       "executor": "nx:run-commands",

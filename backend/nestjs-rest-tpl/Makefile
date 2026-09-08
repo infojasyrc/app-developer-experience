@@ -5,7 +5,7 @@ include $(ENV_FILE)
 
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
-COMPOSE_PROJECT_NAME = ms-nestjs-gql-tpl
+COMPOSE_PROJECT_NAME = nestjs-rest-tpl
 CONTAINER_APP_FOLDER = /app
 
 # Available platforms: linux/amd64 | linux/arm64 | linux/x86_64
@@ -89,7 +89,6 @@ interactive: ## get a bash shell in the container
 	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		-p "8080:3000" \
 		$(COMPOSE_PROJECT_NAME) /bin/ash
 
 .PHONY: launch-unleash

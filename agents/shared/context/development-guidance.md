@@ -193,7 +193,7 @@ FastAPI REST template. Paths: `agents/shared/context/monorepo-paths.md`.
 
 ---
 
-### Backend Templates — NestJS REST + GraphQL (`MS_NESTJS_REST`, `MS_NESTJS_GQL`)
+### Backend Templates — NestJS REST + GraphQL (`NESTJS_REST`, `NESTJS_GQL`)
 
 Container-first NestJS templates. Paths: `agents/shared/context/monorepo-paths.md`. Never run host `npm`, `node`, or `nvm` in these packages — `make help` from the template directory, then only Make targets.
 

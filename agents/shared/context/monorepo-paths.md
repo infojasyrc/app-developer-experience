@@ -43,14 +43,14 @@ Short names used in git history. They are **not** directory names. When a plan, 
 
 Use git aliases in branch names (`cm-api/feat/...`), commit scopes (`feat(cm-api):`), PR checkboxes, and agent suggested commits. Use the resolved path in `cd`, Makefiles, and filesystem commands.
 
-## Backend Microservice Templates
+## Backend service Templates
 
 | Alias | Resolved Path | Description |
 |---|---|---|
-| `BACKEND_ROOT` | `backend/` | All microservice templates |
+| `BACKEND_ROOT` | `backend/` | All service templates |
 | `MS_FASTAPI` | `backend/ms-fastapi-rest-tpl/` | FastAPI RESTful template |
-| `MS_NESTJS_REST` | `backend/ms-nestjs-rest-tpl/` | NestJS RESTful template |
-| `MS_NESTJS_GQL` | `backend/ms-nestjs-gql-tpl/` | NestJS GraphQL template |
+| `NESTJS_REST` | `backend/nestjs-rest-tpl/` | NestJS RESTful template |
+| `NESTJS_GQL` | `backend/nestjs-gql-tpl/` | NestJS GraphQL template |
 
 ## DevOps Pipeline Templates
 

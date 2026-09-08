@@ -3,7 +3,7 @@
 services:
   nestapp:
     image: ${COMPOSE_PROJECT_NAME}:latest
-    container_name: ms-rest-tpl
+    container_name: nestjs-rest-tpl
     working_dir: /app
     command: /bin/ash -ci "npm run start:dev"
     restart: unless-stopped

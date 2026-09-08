@@ -56,7 +56,7 @@ The Makefile loads `.env` if it exists, otherwise `.env.public`. To override def
 | INTEGRATION_API_TOKEN                | Token for downstream integrations                                           | No       |                      |
 | UNLEASH_API_URL                      | Unleash feature-toggle API URL                                              | No       |                      |
 | UNLEASH_API_TOKEN                    | Unleash API token                                                           | No       |                      |
-| COMPOSE_PROJECT_NAME                 | Docker Compose project name                                                 | Yes      | ms-nestjs-rest-tpl   |
+| COMPOSE_PROJECT_NAME                 | Docker Compose project name                                                 | Yes      | nestjs-rest-tpl      |
 | PLATFORM                             | Docker platform. Allowed: `linux/amd64`, `linux/arm64`, `linux/x86_64`      | Yes      | linux/amd64          |
 
 On Apple Silicon you may set `PLATFORM=linux/arm64` in a local `.env` for faster builds. The default `linux/amd64` matches CI and cloud.
