@@ -60,6 +60,11 @@ When a gap is real (not a documented exception like Conference Manager's Django 
 
 False positives belong in `data/reference.yaml` under `documented_exceptions`, with a pointer to the rule that accepts them — not as silent skips in consumer repos.
 
+## Use from another repository
+
+Step-by-step consumer guide (clone ADE, build the image, configure the client,
+call tools, send gaps back): [docs/KnowledgeMCP.md](../../docs/KnowledgeMCP.md).
+
 ## Cursor (stdio)
 
 After `make build-dev` and `make install-dependencies`, point Cursor at:

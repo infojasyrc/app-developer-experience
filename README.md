@@ -208,6 +208,7 @@ enforcement tool — both work across any tech stack.
 | Testing strategy | [docs/Testing.md](./docs/Testing.md) |
 | Security guidelines | [docs/Security.md](./docs/Security.md) |
 | Tooling overview | [docs/Tooling.md](./docs/Tooling.md) |
+| Knowledge MCP (other repos) | [docs/KnowledgeMCP.md](./docs/KnowledgeMCP.md) |
 | Code review guidelines | [docs/CodeReview.md](./docs/CodeReview.md) |
 | AI Agents index | [AGENTS.md](./AGENTS.md) |
 | Cloud deployment | [cloud/README.md](./cloud/README.md) |
