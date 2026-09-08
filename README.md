@@ -1,7 +1,7 @@
 # App Developer Experience (ADE)
 
 A learning-focused monorepo that demonstrates the full breadth of modern software
-development: microservices, mobile apps, CI/CD pipelines, cloud infrastructure,
+development: services, mobile apps, CI/CD pipelines, cloud infrastructure,
 and AI-assisted development — all living in a single repository.
 
 The goal is to show how a monorepo gives an engineering organization **shared
@@ -62,7 +62,7 @@ within a single `git log`.
 | Domain | Path | Stack |
 |---|---|---|
 | Conference Manager (full solution) | `conference-manager/` | Django, FastAPI, Next.js |
-| Backend microservice templates | `backend/` | NestJS, FastAPI |
+| Backend service templates | `backend/` | NestJS, FastAPI |
 | Mobile app templates | `mobile-app/` | React Native, Expo |
 | DevOps pipeline templates | `devops/` | GitHub Actions, Docker |
 | Cloud infrastructure | `cloud/terraform/` | Terraform (AWS + Azure) |
@@ -81,9 +81,9 @@ app-developer-experience/
 │   ├── ms-conference-admin/     #   Admin dashboard (Django)
 │   ├── ms-conference-webapp/    #   Web frontend (Next.js)
 │   └── docker-compose/          #   Local orchestration
-├── backend/                     # Microservice templates
-│   ├── ms-nestjs-rest-tpl/      #   NestJS REST
-│   ├── ms-nestjs-gql-tpl/       #   NestJS GraphQL
+├── backend/                     # Service templates
+│   ├── nestjs-rest-tpl/         #   NestJS REST
+│   ├── nestjs-gql-tpl/          #   NestJS GraphQL
 │   └── ms-fastapi-rest-tpl/     #   FastAPI REST
 ├── mobile-app/                  # Mobile templates
 │   ├── whitewalker/             #   React Native (standalone)
@@ -114,7 +114,7 @@ app-developer-experience/
 ## Key Learning Concepts
 
 ### Domain Driven Design (DDD)
-Every microservice organizes its code around the business domain, not technical
+Every service organizes its code around the business domain, not technical
 layers. `domain/`, `application/`, and `infrastructure/` are the three mandatory
 layers. See any service under `backend/` for a concrete example.
 
@@ -124,7 +124,7 @@ layers (infrastructure). This makes unit-testing business logic trivial and
 keeps framework concerns at the edges.
 
 ### Container-First
-Every service ships as a Docker image built with multi-stage Dockerfiles — only
+Every service ships as a container image built with multi-stage Dockerfiles — only
 production dependencies in the final image, no dev tooling. See the `Dockerfile`
 in each service directory.
 
@@ -160,7 +160,7 @@ observability is built from day one — not added later.
 - Python 3.11+
 - Act
 
-### Scaffold a new microservice
+### Scaffold a microservice
 
 ```bash
 make create-nodejs-rest   # NestJS REST template
@@ -192,7 +192,7 @@ via Husky + Commitlint. Format: `type(scope): description`
 | `docs` | Documentation only |
 | `test` | Tests only |
 
-Scopes should match the affected package. For Conference Manager use project aliases that translate to folders: `cm-api` → `ms-conference-api`, `cm-webapp` → `ms-conference-webapp`, `cm-admin` → `ms-conference-admin`, `cm-tools` → observability files under `ms-conference-api`. Other packages use their own short names (`ms-nestjs-rest`, etc.).
+Scopes should match the affected package. For Conference Manager use project aliases that translate to folders: `cm-api` → `ms-conference-api`, `cm-webapp` → `ms-conference-webapp`, `cm-admin` → `ms-conference-admin`, `cm-tools` → observability files under `ms-conference-api`. Other packages use their own short names (`nestjs-rest-tpl`, etc.).
 
 Node tooling is used for commit hooks regardless of the service's language because
 Husky is the most mature Git hook manager and Commitlint is the most flexible
