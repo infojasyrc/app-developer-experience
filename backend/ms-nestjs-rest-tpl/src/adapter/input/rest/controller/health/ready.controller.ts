@@ -1,14 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Controller, Get } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import {
   HealthCheckService,
   HttpHealthIndicator,
   HealthCheck,
-} from '@nestjs/terminus';
+} from "@nestjs/terminus";
 
-import { EnvironmentVariables } from './../../../../../infrastructure/environment-variables';
+import { EnvironmentVariables } from "./../../../../../infrastructure/environment-variables";
 
-@Controller('ready')
+@Controller("ready")
 export class ReadyController {
   constructor(
     private health: HealthCheckService,
@@ -22,12 +22,12 @@ export class ReadyController {
     return this.health.check([
       () =>
         this.http.pingCheck(
-          'healthcheck-integration',
-          this.config.get('INTEGRATION_ENVIRONMENT_URL_LIVENESS'),
+          "healthcheck-integration",
+          this.config.get("INTEGRATION_ENVIRONMENT_URL_LIVENESS"),
           {
             headers: {
               Authorization: `Bearer ${this.config.get(
-                'INTEGRATION_API_TOKEN',
+                "INTEGRATION_API_TOKEN",
               )}`,
             },
           },

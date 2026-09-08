@@ -1,7 +1,7 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { startUnleash, Unleash, destroy, Context } from 'unleash-client';
-import { EnvironmentVariables } from '../environment-variables';
+import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { startUnleash, Unleash, destroy, Context } from "unleash-client";
+import { EnvironmentVariables } from "../environment-variables";
 
 type ToggleFeatureName = `ms-toggle-${string}`;
 type UserFeatureName = `ms-user-${string}`;
@@ -13,10 +13,10 @@ export class UnleashService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleInit(): Promise<void> {
     this.unleash = await startUnleash({
-      appName: 'ms-nestjs-template',
-      url: this.config.get('UNLEASH_API_URL'),
+      appName: "ms-nestjs-template",
+      url: this.config.get("UNLEASH_API_URL"),
       customHeaders: {
-        Authorization: this.config.get('UNLEASH_API_TOKEN'),
+        Authorization: this.config.get("UNLEASH_API_TOKEN"),
       },
     });
   }
