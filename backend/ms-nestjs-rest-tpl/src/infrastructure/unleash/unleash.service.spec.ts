@@ -8,13 +8,13 @@ const mockUnleashClientModule = {
   destroy: jest.fn(),
 };
 
-jest.mock("unleash-client", () => mockUnleashClientModule);
+jest.mock('unleash-client', () => mockUnleashClientModule);
 
-import { ConfigService } from "@nestjs/config";
-import { Test, TestingModule } from "@nestjs/testing";
-import { UnleashService } from "./unleash.service";
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UnleashService } from './unleash.service';
 
-describe("UnleashService", () => {
+describe('UnleashService', () => {
   let unleashService: UnleashService;
   let mockConfigService: {
     get: jest.Mock;
@@ -38,23 +38,23 @@ describe("UnleashService", () => {
     unleashService = app.get<UnleashService>(UnleashService);
   });
 
-  test("should be defined", async () => {
+  test('should be defined', async () => {
     expect(unleashService).toBeDefined();
     await unleashService.onModuleInit();
     expect(mockUnleashClientModule.startUnleash).toHaveBeenCalled();
     expect(mockConfigService.get).toHaveBeenCalledTimes(2);
   });
 
-  test("should check if given flag is enabled", async () => {
+  test('should check if given flag is enabled', async () => {
     await unleashService.onModuleInit();
 
     mockUnleashClient.isEnabled.mockReturnValue(false);
 
-    const result = unleashService.isEnabled("ms-toggle-test-flag");
+    const result = unleashService.isEnabled('ms-toggle-test-flag');
 
     expect(mockUnleashClientModule.startUnleash).toHaveBeenCalled();
     expect(mockUnleashClient.isEnabled).toHaveBeenCalledWith(
-      "ms-toggle-test-flag",
+      'ms-toggle-test-flag',
       {
         userId: undefined,
       },
@@ -62,74 +62,74 @@ describe("UnleashService", () => {
     expect(result).toBeFalsy();
   });
 
-  test("should check if given flag is enabled for the given user", async () => {
+  test('should check if given flag is enabled for the given user', async () => {
     await unleashService.onModuleInit();
 
     mockUnleashClient.isEnabled.mockReturnValue(false);
 
-    const result = unleashService.isEnabled("ms-toggle-test-flag");
+    const result = unleashService.isEnabled('ms-toggle-test-flag');
 
     expect(mockUnleashClientModule.startUnleash).toHaveBeenCalled();
     expect(mockUnleashClient.isEnabled).toHaveBeenCalledWith(
-      "ms-toggle-test-flag",
+      'ms-toggle-test-flag',
       {},
     );
     expect(result).toBeFalsy();
   });
 
-  test("should get a variant value for an anonymous user", async () => {
+  test('should get a variant value for an anonymous user', async () => {
     await unleashService.onModuleInit();
     mockUnleashClient.getVariant.mockReturnValue({
       payload: {
-        value: "red",
+        value: 'red',
       },
     });
 
-    const result = unleashService.getVariant("ms-variant-test");
+    const result = unleashService.getVariant('ms-variant-test');
 
     expect(mockUnleashClientModule.startUnleash).toHaveBeenCalled();
     expect(mockUnleashClient.getVariant).toHaveBeenCalledWith(
-      "ms-variant-test",
+      'ms-variant-test',
       {
         userId: undefined,
       },
     );
-    expect(result).toEqual("red");
+    expect(result).toEqual('red');
   });
 
-  test("should get a variant value for the given user", async () => {
+  test('should get a variant value for the given user', async () => {
     await unleashService.onModuleInit();
     mockUnleashClient.getVariant.mockReturnValue({
       payload: {
-        value: "red",
+        value: 'red',
       },
     });
 
-    const result = unleashService.getVariant("ms-variant-test");
+    const result = unleashService.getVariant('ms-variant-test');
 
     expect(mockUnleashClientModule.startUnleash).toHaveBeenCalled();
     expect(mockUnleashClient.getVariant).toHaveBeenCalledWith(
-      "ms-variant-test",
+      'ms-variant-test',
       {},
     );
-    expect(result).toEqual("red");
+    expect(result).toEqual('red');
   });
 
-  test("should return undefined when a variant is not defined", async () => {
+  test('should return undefined when a variant is not defined', async () => {
     await unleashService.onModuleInit();
     mockUnleashClient.getVariant.mockReturnValue({});
 
-    const result = unleashService.getVariant("ms-variant-test");
+    const result = unleashService.getVariant('ms-variant-test');
 
     expect(mockUnleashClientModule.startUnleash).toHaveBeenCalled();
     expect(mockUnleashClient.getVariant).toHaveBeenCalledWith(
-      "ms-variant-test",
+      'ms-variant-test',
       {},
     );
     expect(result).toBeUndefined();
   });
 
-  test("should call destroy function calling onDestroy", () => {
+  test('should call destroy function calling onDestroy', () => {
     unleashService.onModuleDestroy();
     expect(mockUnleashClientModule.destroy).toHaveBeenCalled();
   });
