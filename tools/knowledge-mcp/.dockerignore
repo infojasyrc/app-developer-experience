@@ -3,6 +3,6 @@
 
 # include only source files
 !pyproject.toml
-!poetry.lock
+!uv.lock
 !src/
 !data/

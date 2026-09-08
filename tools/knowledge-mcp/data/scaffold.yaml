@@ -33,12 +33,13 @@ lifecycle:
     - python
     - pip
     - poetry
+    - uv
   how:
     - Copy the matching template directory into the new package. Do not treat root Makefile create-* targets as the product contract.
     - cd into the new package directory.
     - Run make help and use only Make targets.
     - Keep a Makefile and Dockerfile. Make targets must wrap Docker (Where You Build, You Run).
-    - Never call npm, node, python, pip, or poetry on the host.
+    - Never call npm, node, python, pip, poetry, or uv on the host.
 
 not_templates:
   conference-manager:

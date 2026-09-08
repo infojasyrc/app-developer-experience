@@ -54,21 +54,21 @@ install-dependencies: ## install packages into the container volume
 	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(IMAGE_DEV) /bin/ash -c "poetry lock && poetry install --with dev --no-root"
+		$(IMAGE_DEV) /bin/ash -c "uv lock && uv sync --group dev"
 
 lint: ## run linters inside the container
 	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(DEV_ENV) \
-		$(IMAGE_DEV) /bin/ash -c "poetry run black --check src tests && poetry run isort --check-only src tests && poetry run flake8 src tests"
+		$(IMAGE_DEV) /bin/ash -c "uv run black --check src tests && uv run isort --check-only src tests && uv run flake8 src tests"
 
 unit-tests: ## run unit tests with coverage inside the container
 	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(DEV_ENV) \
-		$(IMAGE_DEV) /bin/ash -c "poetry run pytest"
+		$(IMAGE_DEV) /bin/ash -c "uv run pytest"
 
 launch launch-local: ## start the MCP HTTP/SSE server
 	docker run -d --name $(CONTAINER_NAME) \
@@ -76,7 +76,7 @@ launch launch-local: ## start the MCP HTTP/SSE server
 		-p $(HTTP_PORT):8000 \
 		$(DEV_VOLUME) \
 		$(DEV_ENV) \
-		$(IMAGE_DEV) /bin/ash -c "poetry run uvicorn main:app --host 0.0.0.0 --port 8000"
+		$(IMAGE_DEV) /bin/ash -c "uv run uvicorn main:app --host 0.0.0.0 --port 8000"
 
 stop stop-local: ## stop the local MCP server
 	-docker rm -f $(CONTAINER_NAME)
@@ -86,7 +86,7 @@ sync: ## rebuild the knowledge index (nx run knowledge-mcp:sync)
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(DEV_ENV) \
-		$(IMAGE_DEV) /bin/ash -c "mkdir -p dist && poetry run python -m knowledge.sync"
+		$(IMAGE_DEV) /bin/ash -c "mkdir -p dist && uv run python -m knowledge.sync"
 
 interactive: ## open a shell inside the container
 	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
