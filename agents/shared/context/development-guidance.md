@@ -218,7 +218,7 @@ FastAPI REST template. Paths: `agents/shared/context/monorepo-paths.md`. Contain
 | `make build-dev` | Build the dev container image |
 | `make build-prod` | Build the production image |
 | `make install-dependencies` | Install packages from `uv.lock` into the container volume |
-| `make create-volumes` | Create named Docker volumes for the database and packages (`.venv`) — **run once before first use** |
+| `make create-volumes` | Create named container volumes for the database and packages (`.venv`) — **run once before first use** |
 | `make launch-local` | Start API + database for local development |
 | `make stop-local` | Stop local services |
 | `make lint` | Run black, isort, and flake8 inside container |
@@ -237,7 +237,7 @@ Container-first NestJS templates. Paths: `agents/shared/context/monorepo-paths.m
 |---|---|
 | `make build-dev` | Build the dev container image |
 | `make build-prod` | Build the production image |
-| `make create-volumes` | Create named Docker volumes for node_modules, the app database, and Unleash database — **run once before first use** |
+| `make create-volumes` | Create named container volumes for node_modules, the app database, and Unleash database — **run once before first use** |
 | `make install-dependencies` | Install npm packages into the container volume |
 | `make launch-local` | Start API + database for local development |
 | `make stop-local` | Stop local services |

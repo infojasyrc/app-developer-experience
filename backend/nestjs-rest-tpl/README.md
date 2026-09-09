@@ -69,7 +69,7 @@ On Apple Silicon you may set `PLATFORM=linux/arm64` in a local `.env` for faster
 
 ### Launch application using containers
 
-`make create-volumes` is required on first run (and after deleting Docker volumes). It creates the packages volume plus external Postgres 18 volumes for the app DB (`…-db-data`) and Unleash (`…-unleash-db-data`). Run it before `make launch-db` or `make launch-unleash`. Old compose-managed `ms_db` / `unleash_db` volumes are not reused — remove them if they exist. `make lint` and `make unit-tests` need a prior `make install-dependencies` so the named volume has packages.
+`make create-volumes` is required on first run (and after deleting container volumes). It creates the packages volume plus external Postgres 18 volumes for the app DB (`…-db-data`) and Unleash (`…-unleash-db-data`). Run it before `make launch-db` or `make launch-unleash`. Old compose-managed `ms_db` / `unleash_db` volumes are not reused — remove them if they exist. `make lint` and `make unit-tests` need a prior `make install-dependencies` so the named volume has packages.
 
 ```bash
 make create-volumes          # once (packages + app DB + Unleash DB)
