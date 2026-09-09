@@ -1,0 +1,27 @@
+{
+  "name": "fastapi-rest-tpl",
+  "sourceRoot": "backend/fastapi-rest-tpl",
+  "targets": {
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make lint",
+        "cwd": "backend/fastapi-rest-tpl"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make run-tests",
+        "cwd": "backend/fastapi-rest-tpl"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make build-prod",
+        "cwd": "backend/fastapi-rest-tpl"
+      }
+    }
+  }
+}

@@ -8,7 +8,6 @@
     "example": "examples"
   },
   "scripts": {
-    "changelog:backend:fastapi-rest-tpl": "conventional-changelog -p angular -i backend/ms-fastapi-rest-tpl/CHANGELOG.md -s --commit-path backend/ms-fastapi-rest-tpl --tag-prefix fastapi-rest-tpl-v",
     "changelog:backend:nestjs-rest-tpl": "conventional-changelog -p angular -i backend/ms-nestjs-rest-tpl/CHANGELOG.md -s --commit-path backend/ms-nestjs-rest-tpl --tag-prefix nestjs-rest-tpl-v",
     "prepare": "husky",
     "test": "echo \"Error: no test specified\" && exit 1"

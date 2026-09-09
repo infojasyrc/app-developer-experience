@@ -1,8 +1,8 @@
 from functools import lru_cache
-from pydantic_settings import BaseSettings
-from starlette.middleware.cors import ALL_METHODS
 
 from core.constants import Environment
+from pydantic_settings import BaseSettings
+from starlette.middleware.cors import ALL_METHODS
 
 
 class Settings(BaseSettings):
@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     disable_write_endpoints: bool = False
 
     # The name of the application
-    APP_NAME: str = "ms-fastapi-rest-tpl"
+    APP_NAME: str = "fastapi-rest-tpl"
     # The version of the application
     APP_VERSION: str = "0.1.0"
     # The environment the application is running in
@@ -68,6 +68,7 @@ class Settings(BaseSettings):
             "root_path": self.api_prefix,
             "disable_write_endpoints": self.disable_write_endpoints,
         }
+
 
 @lru_cache()
 def get_settings() -> Settings:

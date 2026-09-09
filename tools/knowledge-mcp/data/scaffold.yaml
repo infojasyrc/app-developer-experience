@@ -49,7 +49,7 @@ not_templates:
       - cm
     reason: >
       conference-manager is the reference solution, not a bootstrap template.
-      New services should start from MS_FASTAPI, NESTJS_REST, or NESTJS_GQL.
+      New services should start from FASTAPI_REST, NESTJS_REST, or NESTJS_GQL.
       A mobile client should start from MOBILE_RN or MOBILE_EXPO.
 
 components:
@@ -73,9 +73,9 @@ components:
     aliases:
       - fastapi
       - fastapi-rest
-      - MS_FASTAPI
-    path_alias: MS_FASTAPI
-    path: backend/ms-fastapi-rest-tpl/
+      - FASTAPI_REST
+    path_alias: FASTAPI_REST
+    path: backend/fastapi-rest-tpl/
     description: FastAPI RESTful service template
   ci-aws-backend:
     aliases:

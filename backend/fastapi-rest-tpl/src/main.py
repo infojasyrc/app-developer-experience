@@ -1,8 +1,8 @@
 import logging
-from fastapi.logger import logger
 
 from application import get_application
 from core.constants import Environment
+from fastapi.logger import logger
 from infrastructure.settings import get_settings
 
 

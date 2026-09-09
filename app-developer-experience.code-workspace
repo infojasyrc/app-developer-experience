@@ -22,7 +22,7 @@
         },
         {
             "name": "fastapi-rest-template",
-            "path": "./backend/ms-fastapi-rest-tpl"
+            "path": "./backend/fastapi-rest-tpl"
         },
         {
             "name": "whitewalker",

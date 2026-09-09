@@ -12,11 +12,12 @@ This monorepo provides microservice and application templates plus a sample prod
 
 ## 2. Core Development Workflows
 - Prefer `make` targets over raw commands. Each service template and product component defines a Makefile with consistent verbs: `build-dev*`, `install-dependencies*`, `launch-*`, `stop-*`, `lint`, `unit-tests`, `run-tests`.
-- FastAPI template (`MS_FASTAPI`): Typical flow:
+- FastAPI template (`FASTAPI_REST`): container-first, uv via Make (never host `python` / `uv` / `poetry`). Typical flow:
   ```bash
   make build-dev
   make install-dependencies
   make launch-local   # multi-container (API + DB)
+  make lint
   make run-tests
   ```
 - NestJS REST and GraphQL templates (`NESTJS_REST`, `NESTJS_GQL`): container-first only — never host `npm`/`node`/`nvm`. Paths in `agents/shared/context/monorepo-paths.md`. Typical flow:
@@ -33,7 +34,7 @@ This monorepo provides microservice and application templates plus a sample prod
 - Conference Manager Admin (`ms-conference-admin`): `make build-dev && make install-dependencies && make launch-local`.
 - Conference Manager Webapp (`ms-conference-webapp`): `make build-dev && make install-dependencies`.
 - Stop flows: use matching `make stop-*` target.
-- Changelog generation scripts (root `package.json`): `yarn changelog:backend:fastapi-rest-tpl` / `yarn changelog:backend:nestjs-rest-tpl` (Angular preset, tag prefixes). Use after material feature/fix merges.
+- Changelog generation scripts (root `package.json`): `yarn changelog:backend:nestjs-rest-tpl` (Angular preset, tag prefixes). Use after material feature/fix merges.
 
 ## 3. Environment & Configuration Patterns
 - Node versions: NestJS templates use the Dockerfile `ARG NODE_VERSION` inside the container — do not install or switch Node on the host for those packages. Root conventional commit tooling requires Node 22.15.0 (see root README). Switch via:
@@ -80,7 +81,7 @@ Quick identification heuristic: any `.js` file inside `controllers/v1` requiring
 - Do not mutate husky or commitlint config unless explicitly requested; they enforce consistency across heterogeneous tech stacks.
 
 ## 5. Testing & Quality Signals
-- Use existing test runners per tech: `yarn test:ci` (Conference API); `make lint` / `make unit-tests` (NestJS templates, inside Docker); `make run-tests` (FastAPI template). Add tests into existing `tests/` directory maintaining folder mirroring source domain (e.g., service/use-case pairs).
+- Use existing test runners per tech: `yarn test:ci` (Conference API); `make lint` / `make unit-tests` (NestJS templates, inside Docker); `make lint` / `make run-tests` (FastAPI template, inside Docker). Add tests into existing `tests/` directory maintaining folder mirroring source domain (e.g., service/use-case pairs).
 - Prefer unit tests in templates; integration tests may require container orchestration (`launch-local`). Avoid altering CI YAML placeholders unless enabling actual pipelines.
 
 ## 6. Extending Templates vs Product Code

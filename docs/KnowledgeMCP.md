@@ -285,8 +285,10 @@ In the consumer repo, ask the agent (or call the tool) with a topic:
 | Which template to copy | `scaffold_guidance("nestjs-rest")` |
 | Plan format | Read resource `conventions://plan-template` |
 
-`scaffold_guidance` accepts aliases such as `NESTJS_REST`, `MS_FASTAPI`,
+`scaffold_guidance` accepts aliases such as `NESTJS_REST`, `FASTAPI_REST`,
 `nestjs-gql`, `ci-aws-backend`, `mobile-rn`, `terraform-aws`.
+The FastAPI template alias is `FASTAPI_REST` (also `fastapi`, `fastapi-rest`).
+`MS_FASTAPI` is retired and returns unknown-type.
 
 `conference-manager` is **not** a template. The tool returns an error and points
 you at the backend or mobile templates instead.

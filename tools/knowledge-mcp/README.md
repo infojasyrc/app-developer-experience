@@ -102,7 +102,7 @@ Resources:
 Tools:
 
 - `get_convention(topic)` — excerpts + `source_path`. Aliases: `make` / `make-targets` / `unified-cli-facade` / `cli-facade` → `makefile`; `container` → `container-first`; `terraform` / `infrastructure` → `iac`. The `makefile` topic is the Unified CLI Facade (`docs/adr/0001-makefile-unified-cli-facade.md`).
-- `scaffold_guidance(component_type)` — which template alias to copy (`NESTJS_REST`, `MS_FASTAPI`, …) plus the required Makefile lifecycle. Services keep Docker; `terraform-aws` is host Terraform via Make. `conference-manager` is not a template.
+- `scaffold_guidance(component_type)` — which template alias to copy (`NESTJS_REST`, `FASTAPI_REST`, `NESTJS_GQL`) plus the required Makefile lifecycle. Services keep Docker; `terraform-aws` is host Terraform via Make. `conference-manager` is not a template.
 - `compare_gaps(target_repo_manifest)` — missing Makefile/Dockerfile/Make targets for services; IaC packages (`package_kind: iac` or terraform stack) require a Makefile that wraps host Terraform, not a Dockerfile. Conference Manager Django vs FastAPI/NestJS is a documented exception, not a gap.
 
 Reference dataset: `data/reference.yaml` (manual PRs; review quarterly or when a plan adopts a new pattern). Owner: `CODEOWNERS`.

@@ -84,7 +84,7 @@ app-developer-experience/
 ├── backend/                     # Service templates
 │   ├── nestjs-rest-tpl/         #   NestJS REST
 │   ├── nestjs-gql-tpl/          #   NestJS GraphQL
-│   └── ms-fastapi-rest-tpl/     #   FastAPI REST
+│   └── fastapi-rest-tpl/        #   FastAPI REST
 ├── mobile-app/                  # Mobile templates
 │   ├── whitewalker/             #   React Native (standalone)
 │   └── whitewolf-rn/            #   Expo

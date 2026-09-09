@@ -28,7 +28,7 @@ Example:
 
 ```yml
     if: always()
-    # if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-fastapi-rest-tpl') }}
+    # if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-fastapi-rest') }}
 ```
 
 ### Commands
@@ -40,11 +40,6 @@ Example:
 ```bash
 # run to validate changed packages
 act -e devops/tests/events_simulate_changed_packages_conference_api.json -j get-changed-packages
-```
-
-```bash
-# run to validate release and changelog for fastapi rest template
-act -e devops/tests/events_simulate_release_fastapi_tpl.json -j changelog-fastapi-rest-tpl
 ```
 
 ```bash

@@ -48,7 +48,7 @@ Use git aliases in branch names (`cm-api/feat/...`), commit scopes (`feat(cm-api
 | Alias | Resolved Path | Description |
 |---|---|---|
 | `BACKEND_ROOT` | `backend/` | All service templates |
-| `MS_FASTAPI` | `backend/ms-fastapi-rest-tpl/` | FastAPI RESTful template |
+| `FASTAPI_REST` | `backend/fastapi-rest-tpl/` | FastAPI RESTful template |
 | `NESTJS_REST` | `backend/nestjs-rest-tpl/` | NestJS RESTful template |
 | `NESTJS_GQL` | `backend/nestjs-gql-tpl/` | NestJS GraphQL template |
 
