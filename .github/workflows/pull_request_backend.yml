@@ -11,10 +11,7 @@ permissions:
   contents: read
 
 env:
-  # common variables
   PLATFORM: linux/amd64
-  # variables for fastapi rest template
-  FASTAPI_REST_TPL_IMAGE_NAME: fastapi-rest-tpl
 
 jobs:
   get-changed-packages:
@@ -96,41 +93,30 @@ jobs:
         run: make build-prod
 
   fastapi-rest-tpl-unit-tests:
-    name: running fastapi rest template lint and unit tests
+    name: running lint and unit tests for fastapi rest template
     needs: get-changed-packages
     if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-fastapi-rest') }}
     runs-on: ubuntu-24.04
     defaults:
       run:
-        working-directory: ./backend/ms-fastapi-rest-tpl
+        working-directory: ./backend/fastapi-rest-tpl
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker registry
-        uses: docker/login-action@v3
-
-      - name: Build container image
-        run: |
-          docker build --target dev -t ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }} -f Dockerfile .
+      - name: Build container for development
+        run: make build-dev
 
       - name: Install dependencies
-        run: |
-          docker run --rm --workdir=/app \
-            --platform ${{ env.PLATFORM }} \
-            -v $(pwd):/app \
-            -v /app/.venv \
-            -v ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }}-packages:/app/.venv \
-            ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }} bash -c "poetry lock && poetry install --with dev"
+        run: make install-dependencies
 
-      - name: Run tests
-        run: |
-          docker run --rm --workdir=/app \
-            --platform ${{ env.PLATFORM }} \
-            -v $(pwd):/app \
-            -v /app/.venv \
-            -v ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }}-packages:/app/.venv \
-            ${{ env.FASTAPI_REST_TPL_IMAGE_NAME }} bash -c "poetry run pytest"
+      - name: Run Linting
+        run: make lint
+
+      - name: Run Unit Tests
+        run: make run-tests
+
+      - name: Build container for production
+        run: make build-prod

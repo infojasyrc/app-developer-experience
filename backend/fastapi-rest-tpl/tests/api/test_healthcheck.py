@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import patch
 
 
 @pytest.mark.healthcheck
@@ -12,7 +11,9 @@ def test_healthcheck_success_response(test_client):
     assert response.json() == {"status": "ok"}
 
 
-@pytest.mark.skip(reason="Cannot patch route handler after test_client is initialized; refactor app for better testability.")
+@pytest.mark.skip(
+    reason="Cannot patch route handler after test_client is initialized; refactor app for better testability."
+)
 @pytest.mark.healthcheck
 def test_healthcheck_failure_response(test_client):
     """

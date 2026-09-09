@@ -18,10 +18,19 @@ def test_scaffold_guidance_nestjs_rest_uses_path_alias():
 
 
 def test_scaffold_guidance_alias_fastapi():
-    result = scaffold_guidance("MS_FASTAPI")
+    result = scaffold_guidance("FASTAPI_REST")
     assert result["ok"] is True
     assert result["component_type"] == "fastapi-rest"
-    assert result["path_alias"] == "MS_FASTAPI"
+    assert result["path_alias"] == "FASTAPI_REST"
+    assert result["path"] == "backend/fastapi-rest-tpl/"
+
+
+def test_scaffold_guidance_retired_ms_fastapi_alias_is_unknown():
+    result = scaffold_guidance("MS_FASTAPI")
+    assert result["ok"] is False
+    assert "Unknown component_type" in result["error"]
+    assert "fastapi-rest" in result["known_types"]
+    assert "MS_FASTAPI" not in result["known_types"]
 
 
 def test_scaffold_guidance_unknown_type():
@@ -36,7 +45,7 @@ def test_scaffold_guidance_conference_manager_is_not_a_template():
     assert result["ok"] is False
     assert result["is_template"] is False
     assert "not a bootstrap template" in result["error"]
-    assert "NESTJS_REST" in result["error"] or "MS_FASTAPI" in result["error"]
+    assert "NESTJS_REST" in result["error"] or "FASTAPI_REST" in result["error"]
 
 
 def test_scaffold_guidance_cm_alias_rejected():

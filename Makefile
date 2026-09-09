@@ -6,8 +6,8 @@ NODEJS_NEW_GQL_SERVICE ?= nodejs-gql-example
 NODEJS_REST_FOLDER_TEMPLATE = nestjs-rest-tpl
 NODEJS_NEW_REST_SERVICE ?= nodejs-rest-example
 
-PY_FASTAPI_FOLDER_TEMPLATE = ms-fastapi-rest-tpl
-PY_NEW_FASTAPI_SERVICE ?= ms-fastapi-example
+PY_FASTAPI_FOLDER_TEMPLATE = fastapi-rest-tpl
+PY_NEW_FASTAPI_SERVICE ?= fastapi-example
 
 OUT_FOLDER = examples
 
@@ -20,7 +20,7 @@ endif
 .PHONY: create-nodejs-gql create-nodejs-rest create-py-rest clean-examples \
 	install-dependencies init-husky install-hooks lint-commit setup-commit-validation \
 	devops-pr-cm-infra-verify devops-ci-cm-build-and-deploy \
-	devops-pr-cm-changed-packages devops-release-backend-fastapi devops-all-tests help
+	devops-pr-cm-changed-packages devops-all-tests help
 
 create-nodejs-gql: clean-examples ## create a microservice with nodejs and graphql
 	@if [ -z "$(NODEJS_NEW_GQL_SERVICE)" ]; then \
@@ -92,11 +92,6 @@ devops-ci-cm-build-and-deploy: ## validate github actions for ci_conference_mana
 		-j conference-webapp-build-and-deploy \
 		--var ENABLE_WEBAPP_DEPLOY=true
 	@echo "✅ GitHub Actions workflow for ci_conference_manager is valid."
-
-devops-release-backend-fastapi: ## validate github actions for release backend fastapi
-	@echo "Validating GitHub Actions workflow for release backend fastapi..."
-	act -e devops/tests/events_simulate_release_fastapi_tpl.json -j release-fastapi-rest-tpl
-	@echo "✅ GitHub Actions workflow for release backend fastapi is valid."
 
 # Runs as 'pull_request' for all conference manager infrastructure
 devops-pr-cm-infra-verify: ## validate github actions for conference-infra-verify pull request workflow

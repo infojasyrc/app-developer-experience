@@ -1,29 +1,34 @@
-# use an environment file to use standard configuration
 ENV_FILE = $(shell [ -e ".env" ] && echo ".env" || echo ".env.public")
 
 include $(ENV_FILE)
 
-.DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
+.DEFAULT_GOAL := help
 
-COMPOSE_PROJECT_NAME = ms-fastapi-rest-tpl
+COMPOSE_PROJECT_NAME ?= fastapi-rest-tpl
 CONTAINER_APP_FOLDER = /app
+PLATFORM := $(PLATFORM)
+IMAGE_DEV = $(COMPOSE_PROJECT_NAME)-dev
+IMAGE_PROD = $(COMPOSE_PROJECT_NAME)
 
-# available platforms linux/amd64 | linux/arm64/v8 | linux/x86_64
-PLATFORM = linux/arm64/v8
+PACKAGE_DIR := $(abspath .)
 
 ifeq ($(OS),Windows_NT)
 	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
 else
-	DIR := "$$(pwd)"
+	DIR := $(PACKAGE_DIR)
 endif
 
-# include codebase and dependencies to run the container in development mode
 DEV_VOLUME = \
 	-v $(DIR):$(CONTAINER_APP_FOLDER) \
 	-v $(CONTAINER_APP_FOLDER)/.venv \
 	-v $(COMPOSE_PROJECT_NAME)-packages:$(CONTAINER_APP_FOLDER)/.venv
 
-.PHONY: docker-clean
+DEV_ENV = \
+	-e PYTHONPATH=$(CONTAINER_APP_FOLDER)/src
+
+.PHONY: docker-clean build-dev build-prod install-dependencies lint run-tests \
+	create-volume launch-local stop-local interactive help
+
 docker-clean: ## stop and kill all running containers
 ifeq ($(OS),Windows_NT)
 	powershell "docker ps -qa | foreach object {docker kill $$_}; docker container prune --force; docker system prune --force;"
@@ -31,54 +36,54 @@ else
 	docker ps -qa | xargs docker kill; docker container prune --force; docker system prune --force;
 endif
 
-.PHONY: build-dev
 build-dev: ## build docker image for local development
 	docker build --platform $(PLATFORM) --target dev \
-		-t $(COMPOSE_PROJECT_NAME)-dev .
+		-t $(IMAGE_DEV) .
 
-.PHONY: build-prod
-build-prod: ## build docker image for local development
-	docker build --platform $(PLATFORM) \
-		-t $(COMPOSE_PROJECT_NAME) .
+build-prod: ## build docker image for production
+	docker build --platform $(PLATFORM) --target prod \
+		-t $(IMAGE_PROD) .
 
-.PHONY: interactive
-interactive: ## get a bash shell in the container
-	docker run -it --rm --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
+install-dependencies: ## install uv packages into the container volume
+	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-dev /bin/ash -ci "source .venv/bin/activate && exec ash"
+		$(IMAGE_DEV) /bin/ash -c "uv lock && uv sync --group dev"
 
-.PHONY: install-dependencies
-install-dependencies: ## install packages from pipfile
-	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+lint: ## run linters inside the container
+	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-dev /bin/ash -ci "poetry lock && poetry install --with dev --no-root"
+		$(DEV_ENV) \
+		$(IMAGE_DEV) /bin/ash -c "uv run black --check src tests && uv run isort --check-only src tests && uv run flake8 src tests"
 
-.PHONY: run-tests
-run-tests: ## run tests
-	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+run-tests: ## run pytest inside the container
+	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-dev /bin/ash -ci "poetry run pytest"
+		$(DEV_ENV) \
+		$(IMAGE_DEV) /bin/ash -c "uv run pytest"
 
-.PHONY: create-volume
 create-volume: ## create a volume for the database
 	@echo "Creating container volume for database..."
 	docker volume create --name $(COMPOSE_PROJECT_NAME)-db-data
 
-.PHONY: launch-local
 launch-local: ## launch application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.local.yml up
 
-.PHONY: stop-local
 stop-local: ## stop application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.local.yml down
 
-.PHONY: help
-help:  ## show all make commands
+interactive: ## open a shell inside the container
+	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(DEV_ENV) \
+		$(IMAGE_DEV) /bin/ash -c "source .venv/bin/activate && exec ash"
+
+help: ## show all make commands
 ifeq ($(OS),Windows_NT)
 	powershell "((type Makefile) -match '##') -notmatch 'grep'"
 else

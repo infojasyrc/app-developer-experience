@@ -11,7 +11,7 @@ This is a template to build rest api using fastapi.
 
 ### Requirements
 
-Install a container tech: Docker
+Host tools only: Docker and Make. Never run `python`, `pip`, `uv`, or `poetry` on the host.
 
 ```bash
 brew install --cask docker-desktop
@@ -19,27 +19,27 @@ brew install --cask docker-desktop
 
 ### Local Development
 
+The Makefile is the Unified CLI Facade. It loads `.env` if that file exists, otherwise `.env.public`. Lockfile is `uv.lock` — install only through `make install-dependencies`.
+
+`PLATFORM` comes from `.env.public` (default `linux/amd64`). On Apple Silicon you may set `PLATFORM=linux/arm64` in a local `.env`. Do not use `linux/arm64/v8`.
+
 ```bash
-# run all commands available
-make
-# build dev container for local
+make help
+make create-volume          # once (database volume)
 make build-dev
-# install dependencies
 make install-dependencies
-# get inside the container
-make interactive
-# run all unit tests
+make lint
 make run-tests
-# launch api using multi containers
 make launch-local
-# stop containers
 make stop-local
+make build-prod
+make interactive
 ```
 
 ## Project structure
 
 ```
-ms-fastapi-rest-tpl/
+fastapi-rest-tpl/
 ├── src/                    # Main application code
 │   ├── api/                # API route definitions
 │   ├── core/               # Core settings, config, and utilities
@@ -51,20 +51,21 @@ ms-fastapi-rest-tpl/
 ├── Dockerfile              # Docker configuration for deployment
 ├── Makefile                # Automation commands for development
 ├── pyproject.toml          # Python dependencies
-├── poetry.lock             # Python lock for dependencies
+├── uv.lock                 # Python lock for dependencies
 └── README.md               # Project documentation
 ```
 
 **Description:**
 
-- **app/**: Contains all application source code.
-  - **api/**: Defines API endpoints and routes.
+- **src/**: Application source code.
+  - **api/**: API endpoints and routes.
   - **core/**: Application configuration, settings, and shared utilities.
-  - **models/**: Pydantic and ORM models for data validation and persistence.
-  - **services/**: Business logic, reusable services, and integrations.
-  - **main.py**: Application entrypoint, creates FastAPI app instance.
+  - **schemas/**: DTO definitions for responses.
+  - **infrastructure/**: Integrations such as the database.
+  - **use-cases/**: Business logic.
+  - **main.py**: FastAPI entrypoint.
 - **tests/**: Test suite for the application.
 - **Dockerfile**: Instructions to build the application container.
-- **Makefile**: Common development commands for building, testing, and running the app.
-- **requirements.txt**: List of Python dependencies.
+- **Makefile**: Unified CLI Facade — build, test, lint, and run only through Make.
+- **pyproject.toml** / **uv.lock**: Python dependencies. Install only through `make install-dependencies`.
 - **README.md**: Project overview and documentation.

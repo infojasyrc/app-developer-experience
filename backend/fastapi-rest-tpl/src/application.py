@@ -1,9 +1,8 @@
-from fastapi import FastAPI
-from starlette.middleware.cors import CORSMiddleware
-
-from infrastructure.settings import get_settings
-from api.routes import router as api_router
 from api.healthcheck import router as healthcheck_router
+from api.routes import router as api_router
+from fastapi import FastAPI
+from infrastructure.settings import get_settings
+from starlette.middleware.cors import CORSMiddleware
 
 
 def get_application() -> FastAPI:
@@ -11,7 +10,7 @@ def get_application() -> FastAPI:
     settings = get_settings()
     app = FastAPI(**settings.fastapi_kwargs)
     app.include_router(api_router)
-    
+
     # Add CORS middleware
     app.add_middleware(
         CORSMiddleware,

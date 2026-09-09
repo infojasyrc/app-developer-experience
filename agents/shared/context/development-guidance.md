@@ -6,7 +6,7 @@ description: >
   workflow for services, the host-CLI workflow for IaC, and what never to do.
 metadata:
   author: app-dev-exp
-  version: "1.7"
+  version: "1.8"
 ---
 
 # Development Guidance — ADE Monorepo
@@ -209,18 +209,19 @@ Observability and local tooling (Keycloak, Unleash, Prometheus, Grafana) ship wi
 
 ---
 
-### Backend Templates — FastAPI (`MS_FASTAPI`)
+### Backend Templates — FastAPI (`FASTAPI_REST`)
 
-FastAPI REST template. Paths: `agents/shared/context/monorepo-paths.md`.
+FastAPI REST template. Paths: `agents/shared/context/monorepo-paths.md`. Container-first; lockfile is `uv.lock`. `PLATFORM` comes from `.env.public` (default `linux/amd64`). Never run host `python`, `uv`, or `poetry` — `make help` from the template directory, then only Make targets.
 
 | Target | Purpose |
 |---|---|
 | `make build-dev` | Build the dev container image |
 | `make build-prod` | Build the production image |
-| `make install-dependencies` | Install packages from the Pipfile |
+| `make install-dependencies` | Install packages from `uv.lock` into the container volume |
 | `make create-volume` | Create the database volume (run once before first use) |
 | `make launch-local` | Start API + database for local development |
 | `make stop-local` | Stop local services |
+| `make lint` | Run black, isort, and flake8 inside container |
 | `make run-tests` | Run pytest inside container |
 | `make interactive` | Open a bash shell inside the container |
 | `make docker-clean` | Kill all containers and prune images |

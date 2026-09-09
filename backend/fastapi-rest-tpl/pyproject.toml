@@ -1,5 +1,5 @@
 [project]
-name = "ms-fastapi-rest-tpl"
+name = "fastapi-rest-tpl"
 version = "0.1.1"
 description = "FastAPI Restful template with PostgreSQL, Alembic, and JWT authentication"
 authors = [
@@ -8,15 +8,16 @@ authors = [
 requires-python = ">=3.13,<3.14"
 
 dependencies = [
-  "fastapi==0.115.6",
-  "pydantic==2.10.0",
-  "pydantic-settings==2.0.3",
-  "python-dotenv==1.0.0",
+  "fastapi>=0.135.3",
+  "starlette>=1.3.1",
+  "pydantic>=2.11.0,<3.0.0",
+  "pydantic-settings>=2.5.2,<3.0.0",
+  "python-dotenv>=1.2.2",
   "gunicorn==23.0.0",
-  "python-multipart==0.0.20",
-  "requests==2.32.3",
-  "sse-starlette==1.6.1",
-  "starlette-context==0.3.6",
+  "python-multipart>=0.0.31",
+  "requests>=2.33.0",
+  "sse-starlette>=2.0.0",
+  "starlette-context>=0.5.1",
   "uvicorn==0.34.0",
   "aioodbc==0.5.0",
   "alembic==1.10.3",
@@ -24,23 +25,51 @@ dependencies = [
   "pyodbc==5.2.0",
   "sqlalchemy[asyncio]==2.0.25",
   "sqlalchemy-utils==0.41.1",
-  "pyjwt==2.8.0",
-  "passlib[bcrypt]==1.7.4",
+  "pyjwt>=2.13.0",
+  "bcrypt>=4.2.0",
   "apscheduler==3.10.4",
   "async-lru==2.0.4",
-  "tzdata==2023.3"
+  "tzdata==2023.3",
 ]
 
-[tool.poetry.group.dev.dependencies]
-  black = "*"
-  flake8 = "4.0.1"
-  isort = "5.13.2"
-  pre-commit = "2.15.0"
-  pytest = "8.3.4"
-  pytest-cov = "6.0.0"
-  pytest-mock = "3.14.0"
-  pytest-asyncio = "0.25.0"
-  httpx = "0.28.1"
+[dependency-groups]
+dev = [
+  "black>=26.3.1",
+  "flake8==7.1.1",
+  "isort==5.13.2",
+  "pre-commit>=4.3.0",
+  "pytest>=9.0.3",
+  "pytest-cov>=6.0.0",
+  "pytest-mock==3.14.0",
+  "pytest-asyncio>=0.25.0",
+  "httpx==0.28.1",
+]
+
+[tool.uv]
+package = false
+constraint-dependencies = [
+  "idna>=3.15",
+  "urllib3>=2.7.0",
+  "mako>=1.3.12",
+  "filelock>=3.20.3",
+  "virtualenv>=20.36.1",
+]
+
+[tool.black]
+line-length = 120
+target-version = ["py313"]
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "--cov=src --cov-fail-under=80 --cov-report=term-missing"
+markers = [
+  "healthcheck: healthcheck endpoint tests",
+]
 
 [tool.flake8]
 allowed-domain-names = "data,params"

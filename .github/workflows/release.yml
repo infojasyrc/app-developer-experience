@@ -26,27 +26,6 @@ jobs:
         run: |
           echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
 
-  release-fastapi-rest-tpl:
-    name: Create a release and publish changelog for backend/ms-fastapi-rest-tpl
-    needs: get-changed-packages
-    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'backend/ms-fastapi-rest-tpl') }}
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-          fetch-depth: 2
-      
-      - name: Generate release and changelog for backend/ms-fastapi-rest-tpl
-        uses: ./.github/actions/generate-release-changelog
-        with:
-          working-directory: ./backend/ms-fastapi-rest-tpl
-          npm-script: changelog:backend:fastapi-rest-tpl
-          project-name: fastapi-rest-tpl
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-
   release-nestjs-rest-tpl:
     name: Create a release and publish changelog for backend/ms-nestjs-rest-tpl
     needs: get-changed-packages

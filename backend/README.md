@@ -17,4 +17,4 @@ Service archectype are using [Nestjs](https://nestjs.com/)
 
 Service archectype are using [FastAPI](https://fastapi.tiangolo.com/)
 
-- Rest: ms-fastapi-rest-tpl
+- Rest: fastapi-rest-tpl

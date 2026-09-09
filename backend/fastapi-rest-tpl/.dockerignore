@@ -3,5 +3,5 @@
 
 # include only application files
 !pyproject.toml
-!poetry.lock
+!uv.lock
 !src/
