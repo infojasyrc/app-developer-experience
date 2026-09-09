@@ -24,7 +24,7 @@ dependencies = [
   "asyncpg==0.30.0",
   "pyodbc==5.2.0",
   "sqlalchemy[asyncio]==2.0.25",
-  "sqlalchemy-utils==0.41.1",
+  "sqlalchemy-utils==0.42.1",
   "pyjwt>=2.13.0",
   "bcrypt>=4.2.0",
   "apscheduler==3.10.4",
