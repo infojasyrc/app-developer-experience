@@ -69,7 +69,7 @@
     "express": "^5.0.0",
     "firebase-admin": "^13.10.0",
     "mongodb-memory-server": "^9.1.6",
-    "mongoose": "^8.22.1",
+    "mongoose": "^9.9.5",
     "multer": "^2.1.1",
     "passport": "^0.7.0",
     "passport-custom": "^1.1.1",
