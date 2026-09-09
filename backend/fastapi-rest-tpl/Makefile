@@ -26,8 +26,8 @@ DEV_VOLUME = \
 DEV_ENV = \
 	-e PYTHONPATH=$(CONTAINER_APP_FOLDER)/src
 
-.PHONY: docker-clean build-dev build-prod install-dependencies lint run-tests \
-	create-volume launch-local stop-local interactive help
+.PHONY: docker-clean build-dev build-prod install-dependencies lint unit-tests \
+	create-volumes launch-local stop-local interactive help
 
 docker-clean: ## stop and kill all running containers
 ifeq ($(OS),Windows_NT)
@@ -57,16 +57,19 @@ lint: ## run linters inside the container
 		$(DEV_ENV) \
 		$(IMAGE_DEV) /bin/ash -c "uv run black --check src tests && uv run isort --check-only src tests && uv run flake8 src tests"
 
-run-tests: ## run pytest inside the container
+unit-tests: ## run unit tests with coverage
 	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(DEV_ENV) \
 		$(IMAGE_DEV) /bin/ash -c "uv run pytest"
 
-create-volume: ## create a volume for the database
-	@echo "Creating container volume for database..."
-	docker volume create --name $(COMPOSE_PROJECT_NAME)-db-data
+create-volumes: ## create external container volumes if they do not exist
+	@echo "Checking and creating external volumes..."
+	@docker volume inspect $(COMPOSE_PROJECT_NAME)-db-data >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-db-data" && docker volume create $(COMPOSE_PROJECT_NAME)-db-data)
+	@docker volume inspect $(COMPOSE_PROJECT_NAME)-packages >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-packages" && docker volume create $(COMPOSE_PROJECT_NAME)-packages)
 
 launch-local: ## launch application for local development
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
