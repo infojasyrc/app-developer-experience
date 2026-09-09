@@ -39,10 +39,10 @@ categories:
           - stop-local-dev
         test:
           - unit-tests
-          - run-tests
       recommended:
         - build-prod
         - interactive
+        - create-volumes
   containerization:
     required:
       - dockerfile

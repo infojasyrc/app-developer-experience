@@ -19,10 +19,10 @@ lifecycle:
       - stop-local-dev
     test:
       - unit-tests
-      - run-tests
   recommended:
     - build-prod
     - interactive
+    - create-volumes
   must_keep:
     - Makefile
     - Dockerfile

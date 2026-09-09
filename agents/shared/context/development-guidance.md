@@ -218,11 +218,11 @@ FastAPI REST template. Paths: `agents/shared/context/monorepo-paths.md`. Contain
 | `make build-dev` | Build the dev container image |
 | `make build-prod` | Build the production image |
 | `make install-dependencies` | Install packages from `uv.lock` into the container volume |
-| `make create-volume` | Create the database volume (run once before first use) |
+| `make create-volumes` | Create named Docker volumes for the database and packages (`.venv`) — **run once before first use** |
 | `make launch-local` | Start API + database for local development |
 | `make stop-local` | Stop local services |
 | `make lint` | Run black, isort, and flake8 inside container |
-| `make run-tests` | Run pytest inside container |
+| `make unit-tests` | Run pytest with coverage inside container |
 | `make interactive` | Open a bash shell inside the container |
 | `make docker-clean` | Kill all containers and prune images |
 | `make help` | List all targets |

@@ -25,11 +25,11 @@ The Makefile is the Unified CLI Facade. It loads `.env` if that file exists, oth
 
 ```bash
 make help
-make create-volume          # once (database volume)
+make create-volumes         # once (database + packages volumes)
 make build-dev
 make install-dependencies
 make lint
-make run-tests
+make unit-tests
 make launch-local
 make stop-local
 make build-prod

@@ -73,10 +73,10 @@ Before running any agent task, read:
 cat agents/shared/context/monorepo-paths.md
 ```
 
-NestJS backend templates (`NESTJS_REST`, `NESTJS_GQL`) are container-first. From the template directory:
+Backend templates (`FASTAPI_REST`, `NESTJS_REST`, `NESTJS_GQL`) are container-first. From the template directory:
 
 ```bash
-cd backend/nestjs-*-tpl && make help
+cd backend/<template> && make help
 ```
 
-Use only Make targets (`build-dev`, `create-volumes`, `install-dependencies`, `launch-local`, `lint`, `unit-tests`, `build-prod`). Never run host `npm`, `node`, or `nvm` in those packages.
+Shared Make targets: `build-dev`, `create-volumes`, `install-dependencies`, `launch-local`, `lint`, `unit-tests`, `build-prod`. FastAPI `create-volumes` creates the external DB volume plus the packages volume; NestJS `create-volumes` creates the node_modules volume. Never run host `npm`, `node`, or `nvm` (NestJS) or `python`, `uv`, or `poetry` (FastAPI).

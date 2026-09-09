@@ -11,14 +11,15 @@ This monorepo provides microservice and application templates plus a sample prod
 - `devops/` contains commented Azure CI examples – placeholders (not active) for container build & push.
 
 ## 2. Core Development Workflows
-- Prefer `make` targets over raw commands. Each service template and product component defines a Makefile with consistent verbs: `build-dev*`, `install-dependencies*`, `launch-*`, `stop-*`, `lint`, `unit-tests`, `run-tests`.
+- Prefer `make` targets over raw commands. Each service template and product component defines a Makefile with consistent verbs: `build-dev*`, `create-volumes`, `install-dependencies*`, `launch-*`, `stop-*`, `lint`, `unit-tests`.
 - FastAPI template (`FASTAPI_REST`): container-first, uv via Make (never host `python` / `uv` / `poetry`). Typical flow:
   ```bash
+  make create-volumes         # once (DB + packages)
   make build-dev
   make install-dependencies
   make launch-local   # multi-container (API + DB)
   make lint
-  make run-tests
+  make unit-tests
   ```
 - NestJS REST and GraphQL templates (`NESTJS_REST`, `NESTJS_GQL`): container-first only — never host `npm`/`node`/`nvm`. Paths in `agents/shared/context/monorepo-paths.md`. Typical flow:
   ```bash
@@ -81,7 +82,7 @@ Quick identification heuristic: any `.js` file inside `controllers/v1` requiring
 - Do not mutate husky or commitlint config unless explicitly requested; they enforce consistency across heterogeneous tech stacks.
 
 ## 5. Testing & Quality Signals
-- Use existing test runners per tech: `yarn test:ci` (Conference API); `make lint` / `make unit-tests` (NestJS templates, inside Docker); `make lint` / `make run-tests` (FastAPI template, inside Docker). Add tests into existing `tests/` directory maintaining folder mirroring source domain (e.g., service/use-case pairs).
+- Use existing test runners per tech: `yarn test:ci` (Conference API); `make lint` / `make unit-tests` (backend templates — FastAPI and NestJS — inside Docker). Add tests into existing `tests/` directory maintaining folder mirroring source domain (e.g., service/use-case pairs).
 - Prefer unit tests in templates; integration tests may require container orchestration (`launch-local`). Avoid altering CI YAML placeholders unless enabling actual pipelines.
 
 ## 6. Extending Templates vs Product Code

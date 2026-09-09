@@ -12,7 +12,7 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "make run-tests",
+        "command": "make unit-tests",
         "cwd": "backend/fastapi-rest-tpl"
       }
     },
