@@ -10,7 +10,13 @@ from knowledge.sync import sync_index
 
 
 def test_canonicalize_aliases():
-    assert canonicalize_topic("Make_Targets") == "container-first"
+    assert canonicalize_topic("Make_Targets") == "makefile"
+    assert canonicalize_topic("makefile") == "makefile"
+    assert canonicalize_topic("unified-cli-facade") == "makefile"
+    assert canonicalize_topic("cli-facade") == "makefile"
+    assert canonicalize_topic("container") == "container-first"
+    assert canonicalize_topic("terraform") == "iac"
+    assert canonicalize_topic("infrastructure") == "iac"
     assert canonicalize_topic("ddd") == "ddd-clean-architecture"
     assert canonicalize_topic("plan") == "plan-template"
 

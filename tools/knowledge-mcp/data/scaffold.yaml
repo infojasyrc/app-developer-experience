@@ -131,6 +131,23 @@ components:
     path_alias: TERRAFORM_AWS
     path: cloud/terraform/aws/
     description: AWS Terraform infrastructure template
+    lifecycle:
+      required:
+        - init
+        - plan
+        - help
+      required_one_of: {}
+      recommended:
+        - apply
+      must_keep:
+        - Makefile
+      host_forbidden: []
+      how:
+        - Copy the matching template directory into the new package. Do not treat root Makefile create-* targets as the product contract.
+        - cd into the new package directory.
+        - Run make help and use only Make targets.
+        - Keep a Makefile. Do not add a Dockerfile to develop IaC.
+        - Never call terraform or aws on the host except through Make. Host Terraform CLI is required.
   terraform-azure:
     aliases:
       - terraform-azure
@@ -139,3 +156,17 @@ components:
     path_alias: TERRAFORM_AZURE
     path: cloud/terraform/azure/
     description: Azure infrastructure template
+    lifecycle:
+      required:
+        - help
+      required_one_of: {}
+      recommended: []
+      must_keep:
+        - Makefile
+      host_forbidden: []
+      how:
+        - Copy the matching template directory into the new package. Do not treat root Makefile create-* targets as the product contract.
+        - cd into the new package directory.
+        - Run make help and use only Make targets.
+        - Keep a Makefile. Do not add a Dockerfile to develop IaC.
+        - Never call provider CLIs on the host except through Make.

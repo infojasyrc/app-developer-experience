@@ -27,7 +27,8 @@ Mandatory context, do not duplicate it here: always read @AGENTS.md and @CLAUDE.
 
 - **DDD** — backend services are organized around Domain Driven Design.
 - **Clean Architecture** — separation of domain, application, and infrastructure layers.
-- **Container-first** — every service ships as an optimized Docker image (source only, no dev dependencies).
+- **Makefile is the Unified CLI Facade** — every package is driven through `make help` / `make <target>`. Never call the underlying CLI by hand. See `docs/adr/0001-makefile-unified-cli-facade.md`.
+- **Container-first** — services, websites, and runtime tools ship as an optimized Docker image (source only, no dev dependencies). Do not run `npm`, `node`, `python`, or other language runtimes on the host. This does **not** apply to IaC under `cloud/` (host Terraform via Make).
 - **Coverage** — 80% minimum per component.
 
 ## Workflow: Plan → Implement
@@ -41,7 +42,7 @@ Do not implement directly if the task touches more than one file or changes the 
 
 ## Platform packages are bootstrap templates, not runtime dependencies
 
-`backend/`, `cli/`, `cloud/`, `devops/`, `mobile-app/` are templates the org uses to bootstrap new work — services, pipelines, infra, mobile apps — instead of starting from scratch (manually or via generic AI scaffolding). Reuse here means "new work is generated/aligned from these templates and their conventions (DDD, Clean Architecture, container-first, CI/CD, IaC patterns)", not "imports code from them at runtime".
+`backend/`, `cli/`, `cloud/`, `devops/`, `mobile-app/` are templates the org uses to bootstrap new work — services, pipelines, infra, mobile apps — instead of starting from scratch (manually or via generic AI scaffolding). Reuse here means "new work is generated/aligned from these templates and their conventions (DDD, Clean Architecture, Makefile as Unified CLI Facade, container-first for services, host Terraform via Make for IaC, CI/CD)", not "imports code from them at runtime".
 
 `conference-manager/` is the reference example proving these templates work in a real solution. Its current backend (Django admin + REST API) predates/differs from the `backend/` templates (FastAPI/NestJS) — that's a known, accepted mismatch, not something to silently "fix". Any *new* microservice added to `conference-manager/` (or any other solution) should be bootstrapped from the matching template going forward.
 

@@ -2,35 +2,65 @@
 name: development-guidance
 description: >
   Team rules for running, developing, and troubleshooting every package in the
-  ADE monorepo. Covers the container-first workflow, Makefile conventions, and
-  what to do (and what never to do) in each component.
+  ADE monorepo. Covers the Makefile as Unified CLI Facade, the container-first
+  workflow for services, the host-CLI workflow for IaC, and what never to do.
 metadata:
   author: app-dev-exp
-  version: "1.5"
+  version: "1.7"
 ---
 
 # Development Guidance — ADE Monorepo
 
-## Core Rule: Where You Build, You Run
+## Core Rule: Makefile Is the Unified CLI Facade
 
-> **Never call `npm`, `node`, `python`, `pip`, `pipenv`, `terraform`, or any
-> other runtime directly from the host OS.**
+Never call the underlying CLI by hand. `cd` into the package, run `make help`,
+then only `make <target>`. The Makefile is the Unified CLI Facade — the only
+supported entry point. Callers talk to Make; they do not need to know whether
+a target wraps Docker or a host CLI.
 
-Every package ships a `Makefile` whose targets wrap Docker commands. All
-development, testing, linting, and builds happen **inside containers**. This
-guarantees that every developer (and every CI/CD run) uses the exact same
-runtime — no "works on my machine" problems.
+What the facade wraps depends on the package type.
 
-Before working on any package:
-1. `cd` into the package directory.
-2. Run `make help` to see all available targets for that package.
-3. Use only `make <target>` to interact with the package.
+Decision record: `docs/adr/0001-makefile-unified-cli-facade.md`.
+
+### Where You Build, You Run
+
+Services, websites, and runtime tools are **container-first**.
+
+Applies to: `backend/` (FastAPI, NestJS REST, NestJS GraphQL), Conference
+Manager API / webapp / admin, `mobile-app/`, `cli/`, and
+`tools/knowledge-mcp/`.
+
+Never run `npm`, `node`, `python`, `pip`, `pipenv`, `uv`, `poetry`, or other
+language runtimes on the host. Makefile targets wrap Docker. Development,
+testing, linting, and builds happen **inside containers**. That keeps every
+developer and every CI/CD run on the same runtime.
+
+### Infrastructure as Code
+
+Do **not** develop IaC inside containers.
+
+Applies to: `cloud/terraform/aws/` (and Azure when a Makefile exists).
+
+Makefile targets wrap the **host** Terraform and AWS CLIs so nobody types
+`terraform` or `aws` directly. Host Terraform and AWS CLI are required — see
+`cloud/terraform/aws/docs/ADMIN_SETUP.md`.
+
+### Shared
+
+- `make help` is the discovery step for every package — the facade's catalog.
+- Forbidden: host `npm` / `node` / `python` in service packages; raw
+  `terraform init|plan|apply|destroy` in IaC packages.
+- Allowed in IaC: host Terraform **only through the Makefile facade**.
 
 ---
 
 ## General Workflow Pattern
 
-Every package follows the same lifecycle:
+Every package starts the same way: `cd` into the directory, run `make help`,
+then only `make <target>` (the Unified CLI Facade).
+
+Service, website, and runtime-tool packages (container-first) share this
+lifecycle:
 
 ```
 make build-dev          # build the dev image (once, or after Dockerfile change)
@@ -41,19 +71,24 @@ make unit-tests         # run tests inside container
 make stop / make stop-local / make stop-local-dev              # stop the service
 ```
 
-When something breaks, open a shell first — never guess:
+When a container-first package breaks, open a shell first — never guess:
 
 ```
 make interactive        # drops you into /bin/ash or /bin/bash inside the container
 ```
 
-After completing all changes and before propose commit changes, the following command MUST run successfully:
+After completing all changes on a container-first package and before proposing
+a commit, the following commands MUST run successfully:
 
 ```
 make lint
 make unit-tests
 make build-prod
 ```
+
+IaC packages do not use `build-dev`, Docker volumes, or `make interactive`.
+Use `make init`, `make plan`, and (only with explicit confirmation)
+`make apply` / `make destroy`.
 
 ---
 
@@ -260,7 +295,10 @@ Internal CLI tool built and packaged inside a container.
 
 ### Infrastructure — Terraform AWS (`cloud/terraform/aws/`)
 
-AWS infrastructure managed with Terraform. All Terraform commands run inside a container via the Makefile — never call `terraform` directly.
+AWS infrastructure managed with Terraform. The Makefile is the Unified CLI
+Facade over the **host** Terraform CLI — never call `terraform` directly, and
+do not develop IaC inside containers. Host Terraform (>= 1.13) and AWS CLI v2
+are required; see `cloud/terraform/aws/docs/ADMIN_SETUP.md`.
 
 | Target | Purpose |
 |---|---|
@@ -291,13 +329,17 @@ Allowed values: `linux/amd64 | linux/arm64 | linux/x86_64`. Default: `linux/amd6
 
 ## What Never To Do
 
-| Forbidden | Reason |
-|---|---|
-| `npm install` | Installs to host filesystem; diverges from container environment |
-| `npm run lint` / `npm test` | Runs with host Node version; may differ from container |
-| `node server.js` | Skips the container runtime contract |
-| `python manage.py` / `pip install` | Host Python version may conflict; breaks reproducibility |
-| `terraform init/plan/apply` | Must run inside the container to pick up backend config and correct provider versions |
-| `npx` / `bunx` / `pnpm` | Same reason as `npm`; use `make interactive` if you need a one-off command |
+| Forbidden | Applies to | Reason |
+|---|---|---|
+| `npm install` | Services / websites | Installs to host filesystem; diverges from container environment |
+| `npm run lint` / `npm test` | Services / websites | Runs with host Node version; may differ from container |
+| `node server.js` | Services / websites | Skips the container runtime contract |
+| `python manage.py` / `pip install` | Services / websites | Host Python version may conflict; breaks reproducibility |
+| `npx` / `bunx` / `pnpm` | Services / websites | Same reason as `npm`; use `make interactive` for a one-off command |
+| `terraform init/plan/apply/destroy` | IaC | Must run through the Makefile facade on the host; never call `terraform` directly |
 
-If you need to run a command not covered by a Makefile target, use `make interactive` to get a shell inside the running container and execute it there.
+On a container-first package, if you need a command not covered by a Makefile
+target, use `make interactive` and run it inside the container.
+
+On an IaC package, add or use a Makefile target. Do not open a Docker shell
+and do not run `terraform` on the host outside the Unified CLI Facade.

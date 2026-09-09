@@ -35,6 +35,7 @@ See `agents/shared/context/monorepo-paths.md` for canonical paths.
 | GitHub Actions | `.github/workflows/` |
 | AI Agents | `agents/` |
 | Knowledge MCP | `tools/knowledge-mcp/` |
+| Architecture decisions | `docs/adr/` |
 
 ### Conference Manager project aliases
 
@@ -54,6 +55,7 @@ Short names for branches, commits, PR checkboxes, and agent plans. They are **no
 - **DDD** — All services use Domain Driven Design to organize features
 - **Clean Architecture** — Separation of domain, application, and infrastructure layers
 - **Container-first** — Every service ships as an optimized Docker image (source only)
+- **Makefile is the Unified CLI Facade** — every package is driven through Make. Container-first (no host `npm` / `node` / `python`) applies to services and websites; IaC under `cloud/` uses the host Terraform CLI via Make, not containers. See `docs/adr/0001-makefile-unified-cli-facade.md`.
 
 ---
 

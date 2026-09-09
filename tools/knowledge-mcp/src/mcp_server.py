@@ -9,17 +9,17 @@ from knowledge.store import KnowledgeStore
 def build_mcp(store: KnowledgeStore) -> FastMCP:
     mcp = FastMCP("knowledge-mcp")
 
-    @mcp.tool()
+    @mcp.tool(name="get_convention")
     def get_convention_tool(topic: str) -> dict:
         """Return convention excerpts and their source_path for a topic."""
         return get_convention(store, topic)
 
-    @mcp.tool()
+    @mcp.tool(name="scaffold_guidance")
     def scaffold_guidance_tool(component_type: str) -> dict:
         """Return which ADE template to copy and the required Make/Docker lifecycle."""
         return scaffold_guidance(component_type)
 
-    @mcp.tool()
+    @mcp.tool(name="compare_gaps")
     def compare_gaps_tool(target_repo_manifest: dict) -> dict:
         """Report missing or outdated ADE conventions for a target repo manifest."""
         return compare_gaps(target_repo_manifest)

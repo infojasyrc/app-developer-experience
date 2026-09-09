@@ -11,7 +11,7 @@ Runtime MCP server that exposes ADE conventions and reports gaps. This is a **se
 
 Path alias: `KNOWLEDGE_MCP` in `agents/shared/context/monorepo-paths.md`. Commit scope: `knowledge-mcp` (never `cm-tools` or `tools`).
 
-- **Container-first**: `cd` into `tools/knowledge-mcp/`, run `make help`, and use only Make targets (`build-dev`, `install-dependencies`, `lint`, `unit-tests`, `build-prod`, `launch`/`stop` as implemented). Never run host `python`, `pip`, `uv`, `poetry`, or `npm`.
+- **Unified CLI Facade + container-first**: `cd` into `tools/knowledge-mcp/`, run `make help`, and use only Make targets (`build-dev`, `install-dependencies`, `lint`, `unit-tests`, `build-prod`, `launch`/`stop` as implemented). Never run host `python`, `pip`, `uv`, `poetry`, or `npm`.
 - **PLATFORM**: read from `.env.public` (do not hardcode in the Makefile). Allowed values: `linux/amd64 | linux/arm64 | linux/x86_64`. Default: `linux/amd64`.
 - **Coverage**: 80% minimum.
 - **Knowledge source**: parse existing ADE files (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/*.mdc`, `development-guidance.md`, template READMEs). Do not duplicate them into a second source of truth.
