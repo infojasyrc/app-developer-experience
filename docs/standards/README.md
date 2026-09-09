@@ -2,9 +2,7 @@
 
 Shared process and convention standards for every component in this monorepo —
 Conference Manager, backend service templates, mobile app templates, DevOps
-pipelines, and cloud infrastructure. These are team agreements, not
-architecture decisions — architecture decisions live in
-[`docs/adr/`](../adr/).
+pipelines, and cloud infrastructure. These are team agreements, not architecture decisions.
 
 ## Format
 

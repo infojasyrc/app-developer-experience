@@ -5,12 +5,7 @@
 As part of our definition of done and team agreements, when a developer
 submits changes and creates a pull request, it should follow:
 
-```
-title: [TEAM_ACRONYM-Number] User story title
-description: Summarize all the changes within a detailed list.
-
-Choose a label for each pull request: enhancement, bug
-```
+# TODO: Implement this
 
 ## Work In Progress
 

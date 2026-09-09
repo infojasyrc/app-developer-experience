@@ -52,7 +52,7 @@ Additionally, we have:
 
 ## Team Standards
 
-This service follows the ADE-wide team standards instead of its own copy:
+This template follows the following standards:
 
 - [Commit types](../../docs/standards/commit-types.md)
 - [Branch naming](../../docs/standards/branching.md)

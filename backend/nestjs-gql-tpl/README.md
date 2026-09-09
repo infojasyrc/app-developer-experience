@@ -117,7 +117,7 @@ To trace our work with the git commit history, we can link our commits with Trel
 
 ## Team Standards
 
-This template follows the ADE-wide team standards instead of its own copy:
+This template follows the following standards:
 
 - [Commit types](../../docs/standards/commit-types.md)
 - [Branch naming](../../docs/standards/branching.md)
