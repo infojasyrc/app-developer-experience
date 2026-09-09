@@ -237,7 +237,7 @@ Container-first NestJS templates. Paths: `agents/shared/context/monorepo-paths.m
 |---|---|
 | `make build-dev` | Build the dev container image |
 | `make build-prod` | Build the production image |
-| `make create-volumes` | Create named Docker volume for node_modules — **run once before first use** |
+| `make create-volumes` | Create named Docker volumes for node_modules, the app database, and Unleash database — **run once before first use** |
 | `make install-dependencies` | Install npm packages into the container volume |
 | `make launch-local` | Start API + database for local development |
 | `make stop-local` | Stop local services |
@@ -250,6 +250,7 @@ Container-first NestJS templates. Paths: `agents/shared/context/monorepo-paths.m
 **Troubleshooting tips:**
 - If `npm install` errors appear, run `make create-volumes` first (named volume may be missing).
 - `make unit-tests` without a prior `make install-dependencies` fails because the named volume is empty.
+- `make launch-db` and `make launch-unleash` fail if `…-db-data` / `…-unleash-db-data` were never created — run `make create-volumes`. Postgres 18 cannot reuse old `ms_db` / `unleash_db` volumes.
 
 ---
 

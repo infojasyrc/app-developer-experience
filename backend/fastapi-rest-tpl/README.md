@@ -23,6 +23,8 @@ The Makefile is the Unified CLI Facade. It loads `.env` if that file exists, oth
 
 `PLATFORM` comes from `.env.public` (default `linux/amd64`). On Apple Silicon you may set `PLATFORM=linux/arm64` in a local `.env`. Do not use `linux/arm64/v8`.
 
+Local Postgres credentials also come from `.env.public`: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` (defaults `postgres` / `some_password` / `postgres`). Override them in a local `.env`. Local Postgres is `postgres:18-alpine`. If you previously ran this template on Postgres 16, remove the old `$(COMPOSE_PROJECT_NAME)-db-data` volume and run `make create-volumes` again.
+
 ```bash
 make help
 make create-volumes         # once (database + packages volumes)

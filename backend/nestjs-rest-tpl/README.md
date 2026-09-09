@@ -58,15 +58,21 @@ The Makefile loads `.env` if it exists, otherwise `.env.public`. To override def
 | UNLEASH_API_TOKEN                    | Unleash API token                                                           | No       |                      |
 | COMPOSE_PROJECT_NAME                 | Docker Compose project name                                                 | Yes      | nestjs-rest-tpl      |
 | PLATFORM                             | Docker platform. Allowed: `linux/amd64`, `linux/arm64`, `linux/x86_64`      | Yes      | linux/amd64          |
+| POSTGRES_USER                        | App Postgres user (`docker-compose.db.yml`)                                 | Yes      | postgres             |
+| POSTGRES_PASSWORD                    | App Postgres password                                                       | Yes      | some_password        |
+| POSTGRES_DB                          | App Postgres database name                                                  | Yes      | postgres             |
+| UNLEASH_DB_NAME                      | Unleash Postgres database name                                              | Yes      | unleash              |
+| UNLEASH_DB_USERNAME                  | Unleash Postgres user                                                       | Yes      | unleash_user         |
+| UNLEASH_DB_PASSWORD                  | Unleash Postgres password                                                   | Yes      | some_password        |
 
 On Apple Silicon you may set `PLATFORM=linux/arm64` in a local `.env` for faster builds. The default `linux/amd64` matches CI and cloud.
 
 ### Launch application using containers
 
-`make create-volumes` is required on first run (and after deleting Docker volumes). `make lint` and `make unit-tests` need a prior `make install-dependencies` so the named volume has packages.
+`make create-volumes` is required on first run (and after deleting Docker volumes). It creates the packages volume plus external Postgres 18 volumes for the app DB (`…-db-data`) and Unleash (`…-unleash-db-data`). Run it before `make launch-db` or `make launch-unleash`. Old compose-managed `ms_db` / `unleash_db` volumes are not reused — remove them if they exist. `make lint` and `make unit-tests` need a prior `make install-dependencies` so the named volume has packages.
 
 ```bash
-make create-volumes          # once
+make create-volumes          # once (packages + app DB + Unleash DB)
 make build-dev
 make install-dependencies
 make launch-local
@@ -81,6 +87,10 @@ Other useful targets:
 make help            # list all targets
 make interactive     # shell inside the container
 make build-prod      # production image
+make launch-db       # app Postgres only
+make stop-db
+make launch-unleash  # Unleash + Unleash Postgres
+make stop-unleash
 ```
 
 The local stack publishes the app on port 8080 (`docker-compose/docker-compose.local.yml`).
