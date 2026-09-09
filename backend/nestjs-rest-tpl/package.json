@@ -59,7 +59,7 @@
     "@typescript-eslint/eslint-plugin": "^8.16.0",
     "@typescript-eslint/parser": "^8.16.0",
     "commitizen": "^4.3.1",
-    "commitlint": "^19.8.1",
+    "commitlint": "^21.2.2",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.15.0",
     "eslint-config-prettier": "^9.1.0",
