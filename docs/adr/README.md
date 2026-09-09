@@ -1,8 +1,7 @@
 # Architecture Decision Records
 
 ADRs record a single architectural choice, the options considered, and the
-consequences. They do not replace operational rules — those stay in
-`agents/shared/context/` and `.cursor/rules/`.
+consequences. this folder is architecture decisions only.
 
 ## Format
 

@@ -6,6 +6,7 @@ This is a template to build rest api using fastapi.
 
 - [Content](#content)
 - [Getting started](#getting-started)
+- [Team Standards](#team-standards)
 
 ## Getting started
 
@@ -37,6 +38,14 @@ make stop-local
 make build-prod
 make interactive
 ```
+
+## Team Standards
+
+This template follows the following standards:
+
+- [Commit types](../../docs/standards/commit-types.md)
+- [Branch naming](../../docs/standards/branching.md)
+- [Pull request process](../../docs/standards/pull-requests.md)
 
 ## Project structure
 

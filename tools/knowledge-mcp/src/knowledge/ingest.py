@@ -16,6 +16,9 @@ SOURCE_FILES = (
     "docs/plans/TEMPLATE.md",
     "agents/shared/context/development-guidance.md",
     "backend/README.md",
+    "docs/standards/commit-types.md",
+    "docs/standards/branching.md",
+    "docs/standards/pull-requests.md",
 )
 
 RULES_GLOB = ".cursor/rules/*.mdc"

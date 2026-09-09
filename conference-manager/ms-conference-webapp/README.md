@@ -21,3 +21,11 @@ Stop the execution and remove stopped containers
 # stop the execution
 make stop-webapp-dev
 ```
+
+## Team Standards
+
+This template follows the following standards:
+
+- [Commit types](../../docs/standards/commit-types.md)
+- [Branch naming](../../docs/standards/branching.md)
+- [Pull request process](../../docs/standards/pull-requests.md)

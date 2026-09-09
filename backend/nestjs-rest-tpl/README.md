@@ -18,15 +18,9 @@ This is microservice built with nodejs and nestjs
   - [Launch application using containers](#launch-application-using-containers)
 - [Conventional commits](#conventional-commits)
   - [Structural Elements](#structural-elements)
-  - [Proposals Type Commits](#proposals-type-commit)
   - [Usage](#usage)
   - [Working and link Jira/Trello cards](#working-and-link-jira/trello-cards)
-- [Team agreements](#team-agreements)
-  - [Branch Naming](#branch-naming)
-- [Pull Request Process](#pull-request-process)
-  - [PR Structure](#pr-structure)
-  - [Work In Progress](#work-in-progress)
-  - [PR Automation](#pr-automation)
+- [Team Standards](#team-standards)
 
 ## Application Architecture
 
@@ -114,56 +108,6 @@ The structure of commit messages should be like:
 [optional footer(s)]
 ```
 
-### Proposals Type Commits
-
-- `feat`: Introduces a new feature to the codebase (this correlates with MINOR in [SemVer](https://semver.org/)).
-
-  `feat: add new implementation to Xyz`
-
-- `fix`: Patches a bug in the codebase (this correlates with PATCH in [SemVer](https://semver.org/)).
-
-  `fix: change constant value CONSTANT_XYZ in Xyz class`
-
-- `build`: Changes that affect the build system or dependencies (npm, gradle, etc)
-
-  `build: change database driver version`
-
-- `ci`: Continuous Integration configuration changes in files/scripts (GitLab CI, GitHub Actions)
-
-  `ci: change config in .circleci adding a code-lint job `
-
-- `docs`: Documentation files changes (Readme.md)
-
-  `docs: change Readme.md adding info to local deploy`
-
-- `perf`: Improves the performance
-
-  `perf: delete boilerplate implementation in Xyz`
-
-- `refactor`: Code that neither fixes a bug/feature
-
-  `refactor: delete boilerplate implementation in Xyz`
-
-- `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
-
-  `style: change the tabulation format in Xyz`
-
-- `test`: Adding missing tests or correcting existing ones
-
-  `test: add missing test to Xyz implementation`
-
-- `chore`: Other changes that don't modify src or test files
-
-  `chore: ignore X file in .gitignore `
-
-- `revert`: Reverts a previous commit
-
-  `revert: reverts a1s2d3f4g5 commit `
-
-- `wip`: Changes to commit that haven't yet finished
-
-  `wip: Xyz class refactor `
-
 ### Usage
 
 The following steps should be selected according to the type of commit.
@@ -187,38 +131,10 @@ To trace our work with the git commit history, we can link our commits with Trel
 
 `feat: add new implementation to Xyz (123)` being `123` Trello card
 
-## Team Agreements
+## Team Standards
 
-### Branch Naming
+This template follows the following standards:
 
-According to our branch strategy: trunk based development, each developer will create a feature branch will the following pattern:
-
-user/typeoftask/task-name
-
-As an example: jose/feat/add-team-agreements-in-docs
-
-## Pull Request Process
-
-### PR Structure
-
-As part of our definition of DONE and our team agreements, when a development submit all changes and create a pull request, this should follow:
-
-```
-title: [TEAM_ACRONYM-Number] User story title
-description: Summarize all the changes within a detail list.
-
-Choose a label for each pull request: enhancement, bug
-```
-
-### Work In Progress
-
-To maximize the visibility of our progress, as a team, we can use two options:
-
-- Use WIP prefix on the pull request, which means: Work in progress
-- Use draft pull request when it is created
-
-### PR Automation
-
-TODO: As a team, we need to:
-
-- Look for a way to automate this process using github-cli
+- [Commit types](../../docs/standards/commit-types.md)
+- [Branch naming](../../docs/standards/branching.md)
+- [Pull request process](../../docs/standards/pull-requests.md)

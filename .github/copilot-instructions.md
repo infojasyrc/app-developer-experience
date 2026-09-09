@@ -1,6 +1,6 @@
 # App Developer Experience – AI Coding Agent Guide
 
-This monorepo provides microservice and application templates plus a sample product (Conference Manager). Use these instructions to work efficiently and consistently.
+This monorepo provides backendservices and application templates plus a sample product (Conference Manager). Use these instructions to work efficiently and consistently.
 
 ## 1. Monorepo Layout & Intent
 - Root uses `nx.json` only for directory layout (not full Nx targets): `appsDir=conference-manager`, `libsDir=backend` (template archetypes), `infrastructureDir=cloud`.
@@ -76,18 +76,18 @@ Pitfalls:
 Quick identification heuristic: any `.js` file inside `controllers/v1` requiring `express` is legacy; any `.ts` file importing `@nestjs/*` under `interfaces` or `modules` is new.
 
 ## 4. Branching, Commits & Conventional Usage
-- Branch naming (trunk-based): `user/type/task-name` (example: `jose/feat/add-team-agreements-in-docs`). Agents creating branches should follow this format.
-- Commit types allowed: `feat|fix|build|ci|docs|perf|refactor|style|test|chore|revert|wip`. Avoid introducing new types.
+- Branch naming (trunk-based): `component/user/type/task-name` (example: `cm-api/jose/feat/add-team-agreements-in-docs`). See `docs/standards/branching.md`. Agents creating branches should follow this format.
+- Commit types allowed: `feat|fix|build|ci|docs|perf|refactor|style|test|chore|revert`. Avoid introducing new types.
 - Use root make helpers when available (`make basic-commit`, `make interactive-commit`) to ensure commitlint + husky gates run.
 - Do not mutate husky or commitlint config unless explicitly requested; they enforce consistency across heterogeneous tech stacks.
 
 ## 5. Testing & Quality Signals
-- Use existing test runners per tech: `yarn test:ci` (Conference API); `make lint` / `make unit-tests` (backend templates — FastAPI and NestJS — inside Docker). Add tests into existing `tests/` directory maintaining folder mirroring source domain (e.g., service/use-case pairs).
+- Use `make lint` and `make unit-tests` in Conference Manager components: ms-conference-api, ms-conference-webapp; `make lint` / `make unit-tests` (backend templates — FastAPI and NestJS — inside Container). Add tests into existing `tests/` directory maintaining folder mirroring source domain (e.g., service/use-case pairs).
 - Prefer unit tests in templates; integration tests may require container orchestration (`launch-local`). Avoid altering CI YAML placeholders unless enabling actual pipelines.
 
 ## 6. Extending Templates vs Product Code
 - When enhancing `conference-manager` services, reference templates for structure but modify only product directories (`ms-conference-*`). Do not push product-specific changes back into template archetypes.
-- New microservice? Derive from a template by copying its directory; update README & Makefile accordingly. Keep FastAPI layering and the NestJS Make/container contract intact.
+- New service? Derive from a template by copying its directory; update README & Makefile accordingly. Keep FastAPI layering and the NestJS Make/container contract intact.
 
 ## 7. Infrastructure & Deployment Notes
 - Active deployment pipelines are located in `.github/workflows`. Agents should avoid speculative refactors; only implement concrete requested changes.

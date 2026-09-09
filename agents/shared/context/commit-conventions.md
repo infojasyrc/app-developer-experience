@@ -13,7 +13,10 @@ metadata:
 # Commit Conventions — ADE Monorepo
 
 All agent-generated changes MUST follow [Conventional Commits 1.0](https://www.conventionalcommits.org/).
-This file is the single source of truth for commit rules across all agents.
+The canonical type list, message format, and rules live in
+[`docs/standards/commit-types.md`](../../../docs/standards/commit-types.md) —
+this file only adds what's specific to AI agents: one extra type, scopes by
+domain, and per-agent examples.
 
 ---
 
@@ -35,20 +38,15 @@ Rules:
 
 ---
 
-## Types by change category
+## Types
+
+Use every type from [`docs/standards/commit-types.md`](../../../docs/standards/commit-types.md)
+(`feat`, `fix`, `build`, `ci`, `docs`, `perf`, `refactor`, `style`, `test`, `chore`, `revert`),
+plus one agent-only addition:
 
 | Type | When to use | Examples |
 |---|---|---|
-| `feat` | New functionality added to the codebase | New route, new component, new Terraform resource |
-| `fix` | Bug fix or correction of a misconfiguration | Fix IAM policy, fix broken route, fix security group rule |
-| `chore` | Maintenance — no production code change | Add `.gitkeep`, update `.gitignore`, rename folder |
-| `docs` | Documentation only | Update `CLAUDE.md`, `AGENTS.md`, `MIGRATION_PLAN.md`, `INFRA_PLAN.md` |
-| `refactor` | Code restructure without behavior change | Convert component to RSC, reorganize Terraform modules |
-| `ci` | CI/CD pipeline changes | Fix GitHub Actions workflow, update deploy steps |
 | `infra` | Infrastructure-as-code changes | Terraform modules, IAM roles, security groups |
-| `style` | Formatting, no logic change | Prettier fixes, whitespace |
-| `test` | Tests only | Add Playwright test, add Vitest spec |
-| `revert` | Reverting a previous commit | — |
 
 ---
 

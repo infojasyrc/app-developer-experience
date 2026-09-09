@@ -1,9 +1,10 @@
 # Commit Types
 
-Team guide for writing commit messages in this service. Messages follow
+Team guide for writing commit messages across every component in this
+monorepo. Messages follow
 [Conventional Commits 1.0](https://www.conventionalcommits.org/) and are
-validated by the `commit-msg` hook (`yarn commitlint`). A message that does
-not match this format will be rejected.
+validated by each component's `commit-msg` hook (`commitlint`). A message
+that does not match this format will be rejected.
 
 ## Message format
 
@@ -53,6 +54,8 @@ touched.
 | `chore` | Maintenance that is not `build`, `ci`, `docs`, or `test` (ignore files, repo housekeeping). | `chore: ignore local Unleash dumps in gitignore` |
 | `revert` | Undo a previous commit. Reference the original hash in the description. | `revert: revert feat(events) a1s2d3f` |
 
+> AI agents: see [`agents/shared/context/commit-conventions.md`](../../agents/shared/context/commit-conventions.md) for one additional agent-only type (`infra`) and Conference Manager scope aliases.
+
 ## How to choose a type
 
 Walk this list top to bottom and stop at the first match:
@@ -77,7 +80,7 @@ or `test` instead).
 
 | Type | Why it is rejected |
 | --- | --- |
-| `wip` | Not in Conventional Commits. The hook will reject it. Keep unfinished work in a branch or draft pull request. |
+| `wip` | Not in Conventional Commits. The hook will reject it. Keep unfinished work in a branch or draft pull request — see [pull-requests.md](./pull-requests.md). |
 | Any other label (`update`, `changes`, `misc`, …) | Only the types in the table above pass `commitlint`. |
 
 ## Breaking changes

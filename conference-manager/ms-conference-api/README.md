@@ -13,7 +13,7 @@ removal, and listing of events. It utilizes Firebase service for Authentication.
   - [Environment Configuration](#environment-configuration)
   - [Launch application using containers](#launch-application-using-containers)
   - [Launch application standalone](./docs/development/Local_Development.md)
-- [Commit Types](./docs/development/Commit_Types.md)
+- [Team Standards](#team-standards)
 - [Authentication](#authentication)
 - [Features](#features)
   - [Examples of available endpoints](#examples-of-available-endpoints)
@@ -49,6 +49,14 @@ Additionally, we have:
 `tests`: this folder group all unit tests
 `scripts`: this folder will handle different scripts for simulate authentication or populate database with dummy data
 `.github`: this folder will handle pipelines for CI/CD
+
+## Team Standards
+
+This template follows the following standards:
+
+- [Commit types](../../docs/standards/commit-types.md)
+- [Branch naming](../../docs/standards/branching.md)
+- [Pull request process](../../docs/standards/pull-requests.md)
 
 ## Local Development
 
