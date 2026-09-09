@@ -51,6 +51,30 @@ def test_known_component_types_are_templates_only():
     assert "conference-manager" not in types
 
 
+def test_scaffold_guidance_terraform_aws_is_host_cli():
+    result = scaffold_guidance("terraform-aws")
+    assert result["ok"] is True
+    assert result["path_alias"] == "TERRAFORM_AWS"
+    assert result["must_keep"] == ["Makefile"]
+    assert "Dockerfile" not in result["must_keep"]
+    assert "init" in result["lifecycle"]["required"]
+    assert "plan" in result["lifecycle"]["required"]
+    assert "build-dev" not in result["lifecycle"]["required"]
+    assert result["lifecycle"]["host_forbidden"] == []
+    how = " ".join(result["how"]).lower()
+    assert "makefile" in how
+    assert "dockerfile" in how
+    assert "terraform" in how
+    assert "docker" not in how or "do not add a dockerfile" in how
+
+
+def test_scaffold_guidance_terraform_azure_does_not_require_dockerfile():
+    result = scaffold_guidance("terraform-azure")
+    assert result["ok"] is True
+    assert result["must_keep"] == ["Makefile"]
+    assert "Dockerfile" not in result["must_keep"]
+
+
 def test_mcp_exposes_scaffold_guidance(knowledge_store):
     mcp = build_mcp(knowledge_store)
     result = scaffold_guidance("nestjs-gql")

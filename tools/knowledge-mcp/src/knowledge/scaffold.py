@@ -67,7 +67,7 @@ def scaffold_guidance(component_type: str, catalog_path: Path | None = None) -> 
         }
 
     name, spec = match
-    lifecycle = catalog.get("lifecycle") or {}
+    lifecycle = {**(catalog.get("lifecycle") or {}), **(spec.get("lifecycle") or {})}
     return {
         "ok": True,
         "is_template": True,

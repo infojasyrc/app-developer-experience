@@ -8,7 +8,7 @@ This is a **service**, not a bootstrap template. Path alias: `KNOWLEDGE_MCP`
 
 ## Conventions
 
-Container-first. From this directory:
+Unified CLI Facade (container-first for this service). From this directory:
 
 ```bash
 make help
@@ -81,7 +81,7 @@ HTTP_PORT=18000
 Then `make launch` publishes `http://localhost:18000` and the healthcheck is
 `GET http://localhost:18000/healthcheck/`.
 
-Stdio / Cursor (values passed with `-e`; `ADE_ROOT` is the in-container mount):
+Stdio / MCP clients (values passed with `-e`; `ADE_ROOT` is the in-container mount):
 
 ```bash
 -e ADE_ROOT=/repo
@@ -101,9 +101,9 @@ Resources:
 
 Tools:
 
-- `get_convention(topic)` — excerpts + `source_path`. Aliases: `makefile`, `make-targets` → `container-first`.
-- `scaffold_guidance(component_type)` — which template alias to copy (`NESTJS_REST`, `MS_FASTAPI`, …) plus the required Makefile/Docker lifecycle. `conference-manager` is not a template.
-- `compare_gaps(target_repo_manifest)` — missing Makefile/Dockerfile/Make targets, conventional commits, host-runtime Makefiles, and optional IaC. Conference Manager Django vs FastAPI/NestJS is a documented exception, not a gap.
+- `get_convention(topic)` — excerpts + `source_path`. Aliases: `make` / `make-targets` / `unified-cli-facade` / `cli-facade` → `makefile`; `container` → `container-first`; `terraform` / `infrastructure` → `iac`. The `makefile` topic is the Unified CLI Facade (`docs/adr/0001-makefile-unified-cli-facade.md`).
+- `scaffold_guidance(component_type)` — which template alias to copy (`NESTJS_REST`, `MS_FASTAPI`, …) plus the required Makefile lifecycle. Services keep Docker; `terraform-aws` is host Terraform via Make. `conference-manager` is not a template.
+- `compare_gaps(target_repo_manifest)` — missing Makefile/Dockerfile/Make targets for services; IaC packages (`package_kind: iac` or terraform stack) require a Makefile that wraps host Terraform, not a Dockerfile. Conference Manager Django vs FastAPI/NestJS is a documented exception, not a gap.
 
 Reference dataset: `data/reference.yaml` (manual PRs; review quarterly or when a plan adopts a new pattern). Owner: `CODEOWNERS`.
 
@@ -124,9 +124,17 @@ False positives belong in `data/reference.yaml` under `documented_exceptions`, w
 Step-by-step consumer guide (clone ADE, build the image, configure the client,
 call tools, send gaps back): [docs/KnowledgeMCP.md](../../docs/KnowledgeMCP.md).
 
-## Cursor (stdio)
+## Client stdio
 
-After `make build-dev` and `make install-dependencies`, point Cursor at:
+After `make build-dev` and `make install-dependencies`, reuse the same Docker
+`command` + `args` in the consumer client. The file path and JSON wrapper are
+not interchangeable:
+
+| Client | Project file | Wrapper |
+|---|---|---|
+| Cursor | `.cursor/mcp.json` | `mcpServers` |
+| Antigravity IDE | `.agents/mcp_config.json` | `mcpServers` (same object as Cursor) |
+| Visual Studio Code | `.vscode/mcp.json` | `servers` + `"type": "stdio"` |
 
 ```json
 {
@@ -149,6 +157,14 @@ After `make build-dev` and `make install-dependencies`, point Cursor at:
 }
 ```
 
+To test from **this** ADE clone, copy `.cursor/mcp.json.example` to
+`.cursor/mcp.json` (gitignored) and replace `<ADE_ROOT>`. Steps:
+[docs/KnowledgeMCP.md](../../docs/KnowledgeMCP.md) (“Test from this ADE clone”).
+
+For VS Code, put that launch under `servers` and add `"type": "stdio"`. Full
+wrappers and user-wide paths: [docs/KnowledgeMCP.md](../../docs/KnowledgeMCP.md).
+
 Match `--platform` with `PLATFORM` in `.env` / `.env.public`. SSE/HTTP is optional
-on `http://localhost:8000/mcp` after `make launch`.
+on `http://localhost:8000/mcp` after `make launch` (`url` in Cursor/VS Code,
+`serverUrl` in Antigravity).
 Healthcheck: `GET /healthcheck/`.

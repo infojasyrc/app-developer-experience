@@ -13,6 +13,7 @@ alwaysApply: false
 
 Changes here can be destructive (resources, permissions) — the plan must explicitly state which resources are created/modified/deleted and the blast radius.
 
-- Never apply/deploy changes (`terraform apply`, `az deployment ...`) without explicit user confirmation.
+- **Unified CLI Facade (host CLI)** — develop IaC through `make help` / `make <target>` (`init`, `plan`, `apply`). Do not develop IaC inside containers. Never call `terraform` or `aws` directly. Host Terraform and AWS CLI are required (`cloud/terraform/aws/docs/ADMIN_SETUP.md`). See `docs/adr/0001-makefile-unified-cli-facade.md`.
+- Never apply/deploy changes (`make apply`, `az deployment ...`) without explicit user confirmation.
 - Keep AWS (Terraform) and Azure (Bicep) changes in their respective folders — don't mix tooling across providers.
-- Container images consumed by this infra follow the container-first convention from `backend/` (optimized, source only).
+- Container images **consumed** by this infra follow the container-first convention from `backend/` (optimized, source only). That applies to runtime images, not to how you author Terraform.

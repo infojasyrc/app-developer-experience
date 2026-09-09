@@ -8,6 +8,16 @@ from typing import Any
 import yaml
 
 STACK_MISMATCH = "stack-mismatch-django-vs-backend-templates"
+SERVICE_STACKS = frozenset(
+    {
+        "nestjs",
+        "fastapi",
+        "django",
+        "django-admin",
+        "nestjs-rest",
+        "nestjs-gql",
+    }
+)
 
 
 def _default_reference_path() -> Path:
@@ -42,6 +52,13 @@ def _file_names(files: list[str]) -> set[str]:
 def _has_any(haystack: set[str], needles: list[str]) -> bool:
     wanted = {_norm(item) for item in needles}
     return bool(haystack.intersection(wanted))
+
+
+def _is_iac_package(manifest: dict, stacks: set[str], iac: dict) -> bool:
+    if _norm(str(manifest.get("package_kind") or "")) == "iac":
+        return True
+    package_stacks = {_norm(item) for item in iac.get("package_stacks") or []}
+    return bool(stacks.intersection(package_stacks) and not stacks.intersection(SERVICE_STACKS))
 
 
 def _is_conference_manager(manifest: dict, spec: dict) -> bool:
@@ -87,13 +104,16 @@ def compare_gaps(
             )
         )
 
+    iac = categories.get("iac") or {}
+    is_iac_package = _is_iac_package(manifest, stacks, iac)
+
     build = categories.get("build-tooling") or {}
     makefile_names = [_norm(item) for item in build.get("makefile_names") or ["makefile"]]
     has_makefile = _has_any(files, makefile_names)
     if not has_makefile:
         gaps.append(_gap("build-tooling", "missing-makefile", "New packages must ship a Makefile."))
     else:
-        target_spec = build.get("targets") or {}
+        target_spec = (iac.get("targets") if is_iac_package else build.get("targets")) or {}
         for required in target_spec.get("required") or []:
             if _norm(required) not in targets:
                 gaps.append(
@@ -114,24 +134,24 @@ def compare_gaps(
                     )
                 )
 
-    container = categories.get("containerization") or {}
-    dockerfiles = [_norm(item) for item in container.get("dockerfile_names") or ["dockerfile"]]
-    if not _has_any(files, dockerfiles):
-        gaps.append(_gap("containerization", "missing-dockerfile", "New packages must ship a Dockerfile."))
+    if not is_iac_package:
+        container = categories.get("containerization") or {}
+        dockerfiles = [_norm(item) for item in container.get("dockerfile_names") or ["dockerfile"]]
+        if not _has_any(files, dockerfiles):
+            gaps.append(_gap("containerization", "missing-dockerfile", "New packages must ship a Dockerfile."))
 
-    wraps_host = bool(manifest.get("makefile_wraps_host_runtime"))
-    wraps_docker = manifest.get("makefile_wraps_docker")
-    if has_makefile and (wraps_host or wraps_docker is False):
-        gaps.append(
-            _gap(
-                "containerization",
-                "makefile-wraps-host-runtime",
-                "Makefile wraps host npm/python instead of Docker (Where You Build, You Run).",
+        wraps_host = bool(manifest.get("makefile_wraps_host_runtime"))
+        wraps_docker = manifest.get("makefile_wraps_docker")
+        if has_makefile and (wraps_host or wraps_docker is False):
+            gaps.append(
+                _gap(
+                    "containerization",
+                    "makefile-wraps-host-runtime",
+                    "Makefile wraps host npm/python instead of Docker (Where You Build, You Run).",
+                )
             )
-        )
 
-    iac = categories.get("iac") or {}
-    if manifest.get("expect_iac"):
+    if not is_iac_package and manifest.get("expect_iac"):
         iac_tools = {_norm(item) for item in iac.get("tool_signals") or []}
         suffixes = [_norm(item) for item in iac.get("file_suffixes") or []]
         has_iac_file = any(name.endswith(tuple(suffixes)) for name in files)

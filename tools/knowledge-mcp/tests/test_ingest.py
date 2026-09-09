@@ -52,6 +52,17 @@ def test_ingest_real_ade_sources(ade_root: Path):
     assert "agents/shared/context/development-guidance.md" in sources
     assert any(source.startswith(".cursor/rules/") for source in sources)
     assert any("container-first" in record.tags for record in records)
+    assert any("iac" in record.tags for record in records)
+    container_first = [record for record in records if "container-first" in record.tags]
+    joined = "\n".join(record.content for record in container_first).lower()
+    assert "run inside a container via the makefile" not in joined
+    terraform_aws = [
+        record
+        for record in records
+        if record.source_path.endswith("development-guidance.md") and "terraform aws" in record.topic.replace("-", " ")
+    ]
+    assert terraform_aws
+    assert all("container-first" not in record.tags for record in terraform_aws)
 
 
 def test_store_roundtrip(tmp_path: Path):

@@ -51,6 +51,17 @@ categories:
     rule: make-targets-wrap-docker
   iac:
     optional_unless_expected: true
+    package_stacks:
+      - terraform
+      - bicep
+      - iac
+      - terraform-aws
+      - terraform-azure
+    targets:
+      required:
+        - help
+        - init
+        - plan
     tool_signals:
       - terraform
       - bicep

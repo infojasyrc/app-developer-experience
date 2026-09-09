@@ -22,9 +22,9 @@ RULES_GLOB = ".cursor/rules/*.mdc"
 
 FORCE_TAGS: dict[str, tuple[str, ...]] = {
     "agents/shared/context/development-guidance.md": (
-        "container-first",
         "makefile",
         "make-targets",
+        "unified-cli-facade",
     ),
     "docs/plans/TEMPLATE.md": ("plan-template",),
     "CLAUDE.md": ("tech-stack",),
@@ -34,9 +34,14 @@ HEADING_TOPIC_TAGS: dict[str, tuple[str, ...]] = {
     "key architectural concepts": ("ddd-clean-architecture", "tech-stack"),
     "solutions": ("tech-stack",),
     "key project locations": ("tech-stack",),
-    "core rule: where you build, you run": ("container-first", "makefile", "make-targets"),
+    "core rule: makefile is the unified cli facade": ("makefile", "make-targets", "unified-cli-facade"),
+    "where you build, you run": ("container-first",),
+    "infrastructure as code": ("iac", "terraform"),
     "general workflow pattern": ("container-first", "makefile", "make-targets"),
-    "what never to do": ("container-first", "makefile"),
+    "what never to do": ("container-first", "makefile", "iac"),
+    "infrastructure — terraform aws": ("iac", "terraform"),
+    "terraform aws": ("iac", "terraform"),
+    "docker platform": ("container-first",),
     "goal": ("plan-template",),
     "implementation steps": ("plan-template",),
     "acceptance criteria": ("plan-template",),
@@ -127,6 +132,8 @@ def parse_mdc(ade_root: Path, path: Path, text: str) -> list[ConventionRecord]:
     extra = (topic,)
     if topic in {"000-core", "backend", "conference-manager"}:
         extra = extra + ("ddd-clean-architecture",)
+    if topic == "cloud":
+        extra = extra + ("iac", "terraform")
     return parse_markdown_sections(ade_root, path, body, topic, extra) or [
         ConventionRecord(
             topic=topic,

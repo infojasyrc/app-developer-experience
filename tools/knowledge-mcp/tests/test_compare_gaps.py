@@ -94,3 +94,43 @@ def test_compare_gaps_accepts_json_string():
 
     result = compare_gaps(json.dumps(_complete_manifest()))
     assert result["gaps"] == []
+
+
+def _iac_manifest(**overrides) -> dict:
+    manifest = {
+        "files": ["Makefile", "main.tf", ".husky/commit-msg", "commitlint.config.js"],
+        "makefile_targets": ["init", "plan", "apply", "destroy", "help"],
+        "makefile_wraps_docker": False,
+        "makefile_wraps_host_runtime": True,
+        "tools": ["commitlint", "terraform"],
+        "stack": ["terraform"],
+        "package_kind": "iac",
+    }
+    manifest.update(overrides)
+    return manifest
+
+
+def test_iac_package_host_terraform_is_not_a_gap():
+    result = compare_gaps(_iac_manifest())
+    assert result["gaps"] == []
+    assert result["gap_count"] == 0
+
+
+def test_iac_package_does_not_require_dockerfile():
+    result = compare_gaps(_iac_manifest(files=["Makefile", "main.tf", "commitlint.config.js"]))
+    codes = {gap["code"] for gap in result["gaps"]}
+    assert "missing-dockerfile" not in codes
+    assert "makefile-wraps-host-runtime" not in codes
+
+
+def test_iac_package_still_requires_makefile():
+    result = compare_gaps(_iac_manifest(files=["main.tf", "commitlint.config.js"]))
+    assert any(gap["code"] == "missing-makefile" for gap in result["gaps"])
+
+
+def test_iac_package_requires_init_plan_help():
+    result = compare_gaps(_iac_manifest(makefile_targets=["help"]))
+    details = " ".join(gap["detail"] for gap in result["gaps"])
+    assert "init" in details
+    assert "plan" in details
+    assert {gap["code"] for gap in result["gaps"]} == {"missing-make-target"}

@@ -48,7 +48,7 @@ cat agents/shared/context/development-guidance.md
 
 - `monorepo-paths.md` — single source of truth for all filesystem paths, including Conference Manager project aliases (`cm-api` → `ms-conference-api`, and the rest)
 - `commit-conventions.md` — conventional commits rules for all agent-generated changes; Conference Manager scopes are those git aliases
-- `development-guidance.md` - team rules for running, developing, and troubleshooting for developing frontend and backend packages
+- `development-guidance.md` — team rules: Makefile is the Unified CLI Facade; containers for services and websites; host Terraform via Make for IaC (`docs/adr/0001-makefile-unified-cli-facade.md`)
 
 ---
 
@@ -61,7 +61,7 @@ agents/
 │   └── context/
 │       ├── monorepo-paths.md         ← filesystem paths — read first, always
 │       └── commit-conventions.md     ← conventional commits rules — read always
-│       └── development-guidance.md   ← team rules to implement frontend + backend
+│       └── development-guidance.md   ← Unified CLI Facade, container-first services, host-CLI IaC
 |       └── aws-infrastructure-map.md ← dual IAM system, provider-alias chain, failure taxonomy
 ├── frontend/
 │   ├── frontend-planner/          → AGENT.md + skills/

@@ -3,10 +3,13 @@ from __future__ import annotations
 from knowledge.store import KnowledgeStore
 
 TOPIC_ALIASES = {
-    "makefile": "container-first",
-    "make-targets": "container-first",
-    "make": "container-first",
+    "make-targets": "makefile",
+    "make": "makefile",
+    "unified-cli-facade": "makefile",
+    "cli-facade": "makefile",
     "container": "container-first",
+    "terraform": "iac",
+    "infrastructure": "iac",
     "ddd": "ddd-clean-architecture",
     "clean-architecture": "ddd-clean-architecture",
     "architecture": "ddd-clean-architecture",
