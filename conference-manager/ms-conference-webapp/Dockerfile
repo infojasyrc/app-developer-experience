@@ -9,7 +9,7 @@
 #   Node modules are never baked in — they live in a
 #   named Docker volume managed by the Makefile.
 # ─────────────────────────────────────────────
-FROM node:20-alpine AS development
+FROM node:26-alpine AS development
 
 WORKDIR /app
 
@@ -70,7 +70,7 @@ RUN npm run build
 #   Node File Tracing (NFT) ensures only the
 #   modules actually required at runtime are present.
 # ─────────────────────────────────────────────
-FROM node:20-alpine AS runtime
+FROM node:26-alpine AS runtime
 
 WORKDIR /app
 
