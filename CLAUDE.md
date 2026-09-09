@@ -79,4 +79,4 @@ Backend templates (`FASTAPI_REST`, `NESTJS_REST`, `NESTJS_GQL`) are container-fi
 cd backend/<template> && make help
 ```
 
-Shared Make targets: `build-dev`, `create-volumes`, `install-dependencies`, `launch-local`, `lint`, `unit-tests`, `build-prod`. FastAPI `create-volumes` creates the external DB volume plus the packages volume; NestJS `create-volumes` creates the node_modules volume. Never run host `npm`, `node`, or `nvm` (NestJS) or `python`, `uv`, or `poetry` (FastAPI).
+Shared Make targets: `build-dev`, `create-volumes`, `install-dependencies`, `launch-local`, `lint`, `unit-tests`, `build-prod`. FastAPI `create-volumes` creates the external DB volume plus the packages volume. NestJS `create-volumes` creates the packages volume plus external app DB and Unleash DB volumes. Never run host `npm`, `node`, or `nvm` (NestJS) or `python`, `uv`, or `poetry` (FastAPI).

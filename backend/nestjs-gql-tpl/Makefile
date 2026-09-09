@@ -63,6 +63,10 @@ create-volumes: ## create external container volumes if they do not exist
 	@echo "Checking and creating external volumes..."
 	@docker volume inspect $(COMPOSE_PROJECT_NAME)-packages >/dev/null 2>&1 || \
 		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-packages" && docker volume create $(COMPOSE_PROJECT_NAME)-packages)
+	@docker volume inspect $(COMPOSE_PROJECT_NAME)-db-data >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-db-data" && docker volume create $(COMPOSE_PROJECT_NAME)-db-data)
+	@docker volume inspect $(COMPOSE_PROJECT_NAME)-unleash-db-data >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-unleash-db-data" && docker volume create $(COMPOSE_PROJECT_NAME)-unleash-db-data)
 
 .PHONY: install-dependencies
 install-dependencies: ## install dependencies for dev image
