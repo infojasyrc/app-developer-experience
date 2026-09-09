@@ -181,16 +181,10 @@ make basic-commit         # non-interactive commit
 ## Commit Convention
 
 This repo enforces [Conventional Commits](https://www.conventionalcommits.org/)
-via Husky + Commitlint. Format: `type(scope): description`
-
-| Type | Use for |
-|---|---|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `chore` | Tooling, deps, config |
-| `refactor` | Code restructuring (no behavior change) |
-| `docs` | Documentation only |
-| `test` | Tests only |
+via Husky + Commitlint. Format: `type(scope): description`. The full type list,
+message format, and rules live in
+[docs/standards/commit-types.md](./docs/standards/commit-types.md) — every
+component links there instead of keeping its own copy.
 
 Scopes should match the affected package. For Conference Manager use project aliases that translate to folders: `cm-api` → `ms-conference-api`, `cm-webapp` → `ms-conference-webapp`, `cm-admin` → `ms-conference-admin`, `cm-tools` → observability files under `ms-conference-api`. Other packages use their own short names (`nestjs-rest-tpl`, etc.).
 
@@ -204,6 +198,8 @@ enforcement tool — both work across any tech stack.
 
 | Topic | Link |
 |---|---|
+| Architecture decisions (ADRs) | [docs/adr/](./docs/adr/) |
+| Team & platform standards | [docs/standards/](./docs/standards/) |
 | DevOps pipelines | [docs/DevOps.md](./docs/DevOps.md) |
 | Testing strategy | [docs/Testing.md](./docs/Testing.md) |
 | Security guidelines | [docs/Security.md](./docs/Security.md) |

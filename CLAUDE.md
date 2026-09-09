@@ -36,6 +36,7 @@ See `agents/shared/context/monorepo-paths.md` for canonical paths.
 | AI Agents | `agents/` |
 | Knowledge MCP | `tools/knowledge-mcp/` |
 | Architecture decisions | `docs/adr/` |
+| Team/process standards | `docs/standards/` |
 
 ### Conference Manager project aliases
 

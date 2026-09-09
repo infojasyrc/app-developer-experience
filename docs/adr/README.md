@@ -2,7 +2,10 @@
 
 ADRs record a single architectural choice, the options considered, and the
 consequences. They do not replace operational rules — those stay in
-`agents/shared/context/` and `.cursor/rules/`.
+`agents/shared/context/` and `.cursor/rules/`. Team/process standards
+(commit types, branching, PR process, release strategy) live in
+[`docs/standards/`](../standards/) — this folder is architecture decisions
+only.
 
 ## Format
 

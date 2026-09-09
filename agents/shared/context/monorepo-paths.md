@@ -83,6 +83,13 @@ Use git aliases in branch names (`cm-api/feat/...`), commit scopes (`feat(cm-api
 |---|---|---|
 | `KNOWLEDGE_MCP` | `tools/knowledge-mcp/` | Knowledge MCP server (runtime service, not a bootstrap template) |
 
+## Shared Documentation
+
+| Alias | Resolved Path | Description |
+|---|---|---|
+| `ADR_ROOT` | `docs/adr/` | Architecture Decision Records |
+| `TEAM_STANDARDS` | `docs/standards/` | Team/process standards — commit types, branching, PR process, release strategy |
+
 ## Agent Outputs
 
 | Alias | Resolved Path | Description |
