@@ -35,7 +35,7 @@
 
 ## Pull request type
 
-<!-- Please do not submit updates to dependencies unless it fixes an issue. -->
+<!-- Please do not submit hand-written dependency updates unless they fix an issue or CVE. Dependabot version and security PRs are expected and do not need a separate issue. -->
 
 <!-- Please try to limit your pull request to one type, submit multiple pull requests if needed. -->
 

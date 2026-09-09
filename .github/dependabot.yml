@@ -5,7 +5,104 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
   - package-ecosystem: "docker"
     directory: "/backend/fastapi-rest-tpl"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Conference Manager webapp (npm)
+  - package-ecosystem: "npm"
+    directory: "/conference-manager/ms-conference-webapp"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      production-minor-patch:
+        dependency-type: production
+        update-types: ["minor", "patch"]
+      development-minor-patch:
+        dependency-type: development
+        update-types: ["minor", "patch"]
+  - package-ecosystem: "docker"
+    directory: "/conference-manager/ms-conference-webapp"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Conference Manager API (Yarn Classic — still the npm ecosystem)
+  - package-ecosystem: "npm"
+    directory: "/conference-manager/ms-conference-api"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      production-minor-patch:
+        dependency-type: production
+        update-types: ["minor", "patch"]
+      development-minor-patch:
+        dependency-type: development
+        update-types: ["minor", "patch"]
+  - package-ecosystem: "docker"
+    directory: "/conference-manager/ms-conference-api"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
+  # NestJS REST template
+  - package-ecosystem: "npm"
+    directory: "/backend/nestjs-rest-tpl"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      production-minor-patch:
+        dependency-type: production
+        update-types: ["minor", "patch"]
+      development-minor-patch:
+        dependency-type: development
+        update-types: ["minor", "patch"]
+  - package-ecosystem: "docker"
+    directory: "/backend/nestjs-rest-tpl"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
+  # NestJS GraphQL template
+  - package-ecosystem: "npm"
+    directory: "/backend/nestjs-gql-tpl"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      production-minor-patch:
+        dependency-type: production
+        update-types: ["minor", "patch"]
+      development-minor-patch:
+        dependency-type: development
+        update-types: ["minor", "patch"]
+  - package-ecosystem: "docker"
+    directory: "/backend/nestjs-gql-tpl"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
