@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.13-alpine AS dev
+FROM python:3.14-alpine AS dev
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.9 /uv /uvx /bin/
 
@@ -28,7 +28,7 @@ COPY uv.lock /app/uv.lock
 
 RUN uv sync --frozen --no-dev --no-install-project
 
-FROM python:3.13-alpine AS prod
+FROM python:3.14-alpine AS prod
 
 RUN apk add --no-cache unixodbc
 
