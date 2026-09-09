@@ -27,7 +27,7 @@ dependencies = [
   "sqlalchemy-utils==0.42.1",
   "pyjwt>=2.13.0",
   "bcrypt>=4.2.0",
-  "apscheduler==3.10.4",
+  "apscheduler==3.11.3",
   "async-lru==2.0.4",
   "tzdata==2023.3",
 ]
