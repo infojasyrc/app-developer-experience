@@ -5,7 +5,9 @@
 As part of our definition of done and team agreements, when a developer
 submits changes and creates a pull request, it should follow:
 
-# TODO: Implement this
+Manual process: complete the pull request description using the fields in
+[.github/pull_request_template.md](../../.github/pull_request_template.md).
+Description of all changes must be short and concise.
 
 ## Work In Progress
 
