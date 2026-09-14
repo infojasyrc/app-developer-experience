@@ -46,7 +46,7 @@ include makefiles/aws-ecr.mk
 include makefiles/aws-secrets.mk
 
 # --- Phony Targets ---
-.PHONY: all help init plan apply destroy
+.PHONY: all help init plan apply destroy validate fmt
 
 init: ## 🏁 Initialize Terraform with the backend
 	@echo "Initializing Terraform..."
@@ -60,6 +60,12 @@ apply: ## 🚀 Create or update infrastructure (as TF USER)
 
 destroy: ## 💥 Destroy all infrastructure in this state (as TF USER)
 	terraform destroy --auto-approve
+
+validate: ## 🔍 Validate Terraform configuration syntax and internal consistency
+	terraform validate
+
+fmt: ## 🧹 Check Terraform files are formatted correctly (fails on drift)
+	terraform fmt -check -recursive
 
 .PHONY: help
 help:  ## ✨ show all make commands

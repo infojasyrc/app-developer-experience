@@ -6,14 +6,14 @@
     "init": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "terraform init -backend-config=backend.conf",
+        "command": "make init",
         "cwd": "cloud/terraform/aws"
       }
     },
     "plan": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "terraform plan",
+        "command": "make plan",
         "cwd": "cloud/terraform/aws"
       },
       "dependsOn": ["init"]
@@ -21,7 +21,7 @@
     "apply": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "terraform apply",
+        "command": "make apply",
         "cwd": "cloud/terraform/aws"
       },
       "dependsOn": ["plan"]
@@ -29,21 +29,21 @@
     "destroy": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "terraform destroy",
+        "command": "make destroy",
         "cwd": "cloud/terraform/aws"
       }
     },
     "validate": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "terraform validate",
+        "command": "make validate",
         "cwd": "cloud/terraform/aws"
       }
     },
     "fmt": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "terraform fmt -check",
+        "command": "make fmt",
         "cwd": "cloud/terraform/aws"
       }
     }
