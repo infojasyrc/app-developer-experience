@@ -1,22 +1,33 @@
 {
   "name": "nestjs-gql-tpl",
+  "sourceRoot": "backend/nestjs-gql-tpl",
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run build"
+        "command": "make build-dev",
+        "cwd": "backend/nestjs-gql-tpl"
       }
     },
-    "serve": {
+    "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm start"
+        "command": "make lint",
+        "cwd": "backend/nestjs-gql-tpl"
       }
     },
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run test:unit:coverage"
+        "command": "make unit-tests",
+        "cwd": "backend/nestjs-gql-tpl"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make launch-local",
+        "cwd": "backend/nestjs-gql-tpl"
       }
     }
   }
