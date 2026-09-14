@@ -8,7 +8,7 @@
     "example": "examples"
   },
   "scripts": {
-    "changelog:backend:nestjs-rest-tpl": "conventional-changelog -p angular -i backend/ms-nestjs-rest-tpl/CHANGELOG.md -s --commit-path backend/ms-nestjs-rest-tpl --tag-prefix nestjs-rest-tpl-v",
+    "changelog:backend:nestjs-rest-tpl": "conventional-changelog -p angular -i backend/nestjs-rest-tpl/CHANGELOG.md -s --commit-path backend/nestjs-rest-tpl --tag-prefix nestjs-rest-tpl-v",
     "prepare": "husky",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -69,7 +69,7 @@ Use git aliases in branch names (`cm-api/feat/...`), commit scopes (`feat(cm-api
 |---|---|---|
 | `MOBILE_ROOT` | `mobile-app/` | All mobile templates |
 | `MOBILE_RN` | `mobile-app/whitewalker/` | React Native template |
-| `MOBILE_EXPO` | `mobile-app/whitewolf-rn/` | Expo template |
+| `MOBILE_EXPO` | `mobile-app/caraxes/` | Expo template |
 
 ## CLI Tooling
 

@@ -9,7 +9,7 @@
     "id": "1111111111111111111111111111111111111111",
     "message": "feat(nestjs-rest-tpl): initial commit",
     "modified": [
-      "backend/ms-nestjs-rest-tpl/src/main.py"
+      "backend/nestjs-rest-tpl/src/main.py"
     ]
   }
 }
