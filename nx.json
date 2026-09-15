@@ -1,10 +1,5 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "workspaceLayout": {
-    "appsDir": "conference-manager",
-    "libsDir": "backend",
-    "infrastructureDir": "cloud"
-  },
   "targetDefaults": {
     "build": {
       "outputs": [

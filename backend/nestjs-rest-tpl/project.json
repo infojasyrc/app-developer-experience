@@ -5,20 +5,29 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run build",
-        "outputs": ["{projectRoot}/dist"]
+        "command": "make build-dev",
+        "cwd": "backend/nestjs-rest-tpl"
       }
     },
-    "serve": {
+    "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm start"
+        "command": "make lint",
+        "cwd": "backend/nestjs-rest-tpl"
       }
     },
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run test:unit:coverage"
+        "command": "make unit-tests",
+        "cwd": "backend/nestjs-rest-tpl"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make launch-local",
+        "cwd": "backend/nestjs-rest-tpl"
       }
     }
   }

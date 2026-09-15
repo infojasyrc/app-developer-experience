@@ -87,7 +87,7 @@ app-developer-experience/
 │   └── fastapi-rest-tpl/        #   FastAPI REST
 ├── mobile-app/                  # Mobile templates
 │   ├── whitewalker/             #   React Native (standalone)
-│   └── whitewolf-rn/            #   Expo
+│   └── caraxes/                 #   Expo
 ├── cloud/                       # Infrastructure as Code
 │   └── terraform/
 │       ├── aws/                 #   AWS (ECS, ECR, VPC)

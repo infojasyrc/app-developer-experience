@@ -40,7 +40,7 @@ get_changed_packages() {
     "backend/nestjs-rest-tpl/|tpl-nestjs-rest|NestJS REST service template"
     "backend/nestjs-gql-tpl/|tpl-nestjs-gql|NestJS GraphQL service template"
     "mobile-app/whitewalker/|mobile-rn|React Native mobile template"
-    "mobile-app/whitewolf/|mobile-expo|Expo mobile template"
+    "mobile-app/caraxes/|mobile-expo|Expo mobile template"
     "tools/knowledge-mcp/|knowledge-mcp|knowledge MCP server"
   )
 

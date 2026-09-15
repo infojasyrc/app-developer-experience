@@ -16,6 +16,7 @@ terraform.production.tfvars
 
 backend.conf
 *.json
+!project.json
 
 # environment files
 .env
