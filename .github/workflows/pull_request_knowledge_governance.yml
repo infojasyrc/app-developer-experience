@@ -1,0 +1,52 @@
+name: Pull Request Verification for AI-agent knowledge sources
+
+# Guards the sources tools/knowledge-mcp ingests into its knowledge index
+# (knowledge/ingest.py SOURCE_FILES + .cursor/rules/*.mdc). A PR that edits
+# any of them must still produce a parseable index — this does not check
+# that CLAUDE.md / AGENTS.md / .cursor/rules say the same thing (no tool
+# does that yet), only that ingestion doesn't break. See
+# docs/analysis/genai-vendor-config-governance.md.
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - CLAUDE.md
+      - AGENTS.md
+      - .cursor/rules/**
+      - agents/shared/context/**
+      - docs/standards/commit-types.md
+      - docs/standards/branching.md
+      - docs/standards/pull-requests.md
+      - docs/plans/TEMPLATE.md
+      - backend/README.md
+      - tools/knowledge-mcp/src/knowledge/ingest.py
+      - tools/knowledge-mcp/src/knowledge/catalog.py
+      - tools/knowledge-mcp/data/reference.yaml
+
+permissions:
+  contents: read
+
+env:
+  PLATFORM: linux/amd64
+
+jobs:
+  knowledge-index-builds:
+    name: knowledge-mcp ingestion stays parseable
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./tools/knowledge-mcp
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build container for development
+        run: make build-dev
+
+      - name: Install dependencies
+        run: make install-dependencies
+
+      - name: Rebuild the knowledge index (fails if any source is unparseable)
+        run: make sync

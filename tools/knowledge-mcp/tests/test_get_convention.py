@@ -58,6 +58,19 @@ def test_get_convention_iac_and_terraform_alias(knowledge_store):
         assert "all terraform commands run inside" not in joined
 
 
+def test_get_convention_tool_policy_and_aliases(knowledge_store):
+    for topic in ("tool-policy", "permissions", "guardrails", "policy"):
+        result = get_convention(knowledge_store, topic)
+        assert result["topic"] == "tool-policy"
+        assert result["excerpts"]
+        sources = {item["source_path"] for item in result["excerpts"]}
+        assert "agents/shared/context/tool-policy.md" in sources
+    joined = _joined(get_convention(knowledge_store, "tool-policy")).lower()
+    assert "terraform apply" in joined
+    assert "make destroy" in joined
+    assert ".claude/settings.json" in joined
+
+
 def test_get_convention_from_claude(knowledge_store):
     result = get_convention(knowledge_store, "tech-stack")
     assert any(item["source_path"] == "CLAUDE.md" for item in result["excerpts"])
