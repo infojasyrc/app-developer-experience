@@ -21,6 +21,7 @@ appdevexp
 .nx/workspace-data
 .cursor/rules/nx-rules.mdc
 .cursor/mcp.json
+.mcp.json
 .github/instructions/nx.instructions.md
 
 .github/debug-reports/*.md

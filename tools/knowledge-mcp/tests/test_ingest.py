@@ -50,6 +50,7 @@ def test_ingest_real_ade_sources(ade_root: Path):
     sources = {record.source_path for record in records}
     assert "CLAUDE.md" in sources
     assert "agents/shared/context/development-guidance.md" in sources
+    assert "agents/shared/context/tool-policy.md" in sources
     assert any(source.startswith(".cursor/rules/") for source in sources)
     assert any("container-first" in record.tags for record in records)
     assert any("iac" in record.tags for record in records)

@@ -133,6 +133,7 @@ not interchangeable:
 | Client | Project file | Wrapper |
 |---|---|---|
 | Cursor | `.cursor/mcp.json` | `mcpServers` |
+| Claude Code | `.mcp.json` (repo root) | `mcpServers` (same object as Cursor) |
 | Antigravity IDE | `.agents/mcp_config.json` | `mcpServers` (same object as Cursor) |
 | Visual Studio Code | `.vscode/mcp.json` | `servers` + `"type": "stdio"` |
 
@@ -160,6 +161,8 @@ not interchangeable:
 To test from **this** ADE clone, copy `.cursor/mcp.json.example` to
 `.cursor/mcp.json` (gitignored) and replace `<ADE_ROOT>`. Steps:
 [docs/KnowledgeMCP.md](../../docs/KnowledgeMCP.md) (“Test from this ADE clone”).
+Claude Code users: copy the root `.mcp.json.example` to `.mcp.json` (also
+gitignored) the same way.
 
 For VS Code, put that launch under `servers` and add `"type": "stdio"`. Full
 wrappers and user-wide paths: [docs/KnowledgeMCP.md](../../docs/KnowledgeMCP.md).

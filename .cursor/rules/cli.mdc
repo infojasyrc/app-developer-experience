@@ -7,9 +7,12 @@ alwaysApply: false
 
 # cli/
 
-Command-line interface for the platform. Changes to flags, subcommands, or output format are a public contract — log them in the plan.
+Internal CLI (`appdevexp`) for conventional commits across the monorepo. Container-first, built and packaged inside container like the rest of the platform — see `agents/shared/context/monorepo-paths.md` (`CLI_ROOT`) and `agents/shared/context/development-guidance.md` (CLI target reference). Changes to flags, subcommands, or output format are a public contract — log them in the plan.
 
-<!-- TODO: fill in with your actual conventions -->
-- CLI framework/library:
-- Command and flag conventions:
-- How commands are documented (help text, docs/):
+- **Framework/library**: Python + [`click`](https://click.palletsprojects.com/) for the command group/options, [`inquirer`](https://python-inquirer.readthedocs.io/) for interactive prompts, `GitPython` for repo state. Dependencies are managed with Pipenv (`Pipfile`/`Pipfile.lock`), installed only inside the container via `make install-dependencies` — never `pip install` on the host.
+- **Command and flag conventions**: one `click` group (`cli`) per `cli/src/main.py`, subcommands as `@cli.command()`. Flags stay short and explicit (`-m/--message`, `--dry-run`); no new global flags without updating this file and the plan.
+- **Commit types are a shared contract, not local to this package**: `cli/src/constants.py`'s `CONVENTIONAL_TYPES` must stay in sync with `docs/standards/commit-types.md`. If you add or rename a type in one, update the other in the same PR — do not let the CLI silently accept a type the docs don't list, or reject one they do.
+- **Entry points**: run through Make, not `python main.py` or `pipenv run` on the host — `make cli` (basic invocation), `make basic-commit m="..."` / `make interactive-commit` (conventional commit flow), `make build-local-package` (PyInstaller one-file build, output name `appdevexp` — see the root `.gitignore` entry for the built binary).
+- **Tests**: `make run-unit-tests`, pytest under `cli/tests/`.
+- **CI**: `.github/workflows/pull_request_cli.yml` builds the dev image on every PR touching `cli/**`; install/test steps only run on `feat/`, `fix/`, `hotfix/`, or `refactor/` branch prefixes (see `docs/standards/branching.md` for the `component/user/type/task-name` pattern this depends on).
+- How commands are documented: `cli/README.md` usage section — keep it in sync with the actual `make` targets above when either changes.
