@@ -1,11 +1,6 @@
 name: Pull Request Verification for AI-agent knowledge sources
 
 # Guards the sources tools/knowledge-mcp ingests into its knowledge index
-# (knowledge/ingest.py SOURCE_FILES + .cursor/rules/*.mdc). A PR that edits
-# any of them must still produce a parseable index — this does not check
-# that CLAUDE.md / AGENTS.md / .cursor/rules say the same thing (no tool
-# does that yet), only that ingestion doesn't break. See
-# docs/analysis/genai-vendor-config-governance.md.
 
 on:
   pull_request:

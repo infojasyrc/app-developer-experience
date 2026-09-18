@@ -7,7 +7,7 @@ alwaysApply: false
 
 # cli/
 
-Internal CLI (`appdevexp`) for conventional commits across the monorepo. Container-first, built and packaged inside Docker like the rest of the platform — see `agents/shared/context/monorepo-paths.md` (`CLI_ROOT`) and `agents/shared/context/development-guidance.md` (CLI target reference). Changes to flags, subcommands, or output format are a public contract — log them in the plan.
+Internal CLI (`appdevexp`) for conventional commits across the monorepo. Container-first, built and packaged inside container like the rest of the platform — see `agents/shared/context/monorepo-paths.md` (`CLI_ROOT`) and `agents/shared/context/development-guidance.md` (CLI target reference). Changes to flags, subcommands, or output format are a public contract — log them in the plan.
 
 - **Framework/library**: Python + [`click`](https://click.palletsprojects.com/) for the command group/options, [`inquirer`](https://python-inquirer.readthedocs.io/) for interactive prompts, `GitPython` for repo state. Dependencies are managed with Pipenv (`Pipfile`/`Pipfile.lock`), installed only inside the container via `make install-dependencies` — never `pip install` on the host.
 - **Command and flag conventions**: one `click` group (`cli`) per `cli/src/main.py`, subcommands as `@cli.command()`. Flags stay short and explicit (`-m/--message`, `--dry-run`); no new global flags without updating this file and the plan.
