@@ -8,26 +8,33 @@
 ## Context
 
 This monorepo is read by more than one AI coding tool: Claude Code
-(`CLAUDE.md`, `.claude/`) and Cursor (`.cursor/rules/*.mdc`, `.cursor/mcp.json`),
-plus a vendor-neutral `AGENTS.md`. Each reads a different, tool-specific
-config format, so the same underlying convention (a path, a Make target, a
-coverage threshold, a permission) risks being written down more than once and
-drifting — one vendor's file gets updated, the other doesn't, and an agent
-reading the stale one acts on outdated information.
+(`CLAUDE.md`, `.claude/`) and Cursor (`.cursor/`), plus a vendor-neutral
+`AGENTS.md`. Each reads a different, tool-specific config format, so the same
+convention (a path, a Make target, a coverage threshold, a permission) can be
+written down more than once and drift — one vendor's file gets updated, the
+other doesn't, and an agent reading the stale one acts on outdated
+information.
 
-`docs/analysis/genai-vendor-config-governance.md` audited the actual state of
-these files and found the repo had already half-solved this: content
-conventions live in `agents/shared/context/*.md` and are pointed to (not
-copied) by `CLAUDE.md`, `AGENTS.md`, and `.cursor/rules/000-core.mdc`, and
-`tools/knowledge-mcp` ingests those same sources to answer `get_convention`.
-Two things were not solved: **agent tool permissions** (Claude Code's
-`.claude/settings.json` allow/deny list had no Cursor equivalent and no
-shared source of truth) and **MCP client parity** (Cursor had a committed
-`.cursor/mcp.json.example`; Claude Code had no equivalent `.mcp.json.example`).
+Two concrete instances of this existed at the time of this decision:
 
-We needed a durable decision record — not just an analysis doc — so the
-pattern survives beyond the PR that introduced it, the same reason ADR 0001
-exists for the Makefile-facade term.
+- **Tool permissions had no shared source or cross-vendor parity.**
+  `.claude/settings.json` enforces a Bash allow/deny list — it blocks
+  `terraform apply/destroy`, `make destroy*`, and `make bootstrap-all*`
+  outright, before the harness runs them. Cursor had no equivalent, and
+  nothing recorded that gap; a reviewer had no way to tell, from the repo,
+  whether that guardrail applied when an agent worked through Cursor instead
+  of Claude Code.
+- **MCP client bootstrapping was not at parity.** Cursor had a committed
+  `.cursor/mcp.json.example` for the `ade-knowledge` server. Claude Code had
+  no equivalent, so a Claude Code user had to hand-build the config from
+  documentation instead of copying a ready file.
+
+Content conventions already had a working pattern for this problem: facts
+live once in `agents/shared/context/*.md`, and `CLAUDE.md`, `AGENTS.md`, and
+`.cursor/rules/000-core.mdc` point to them instead of copying them, with
+`tools/knowledge-mcp` ingesting those same sources to answer
+`get_convention`. That pattern had never been extended to permissions or to
+MCP client config, and nothing enforced it in CI.
 
 ## Decision
 
@@ -44,7 +51,7 @@ exists for the Makefile-facade term.
    `docs/standards/pull-requests.md` ("Changing a shared AI-agent
    convention").
 3. **Tool permissions get the same treatment as content.** The autonomy
-   boundary — what an agent may run without asking — is now written once in
+   boundary — what an agent may run without asking — is written once in
    `agents/shared/context/tool-policy.md`, including an explicit enforcement
    matrix per vendor. `.claude/settings.json` is the only vendor with real,
    harness-enforced permissions today; Cursor's equivalent is advisory text
@@ -53,15 +60,38 @@ exists for the Makefile-facade term.
    (existing) and `.mcp.json.example` (new, root) both wrap the same
    `ade-knowledge` Docker command; only the file location and wrapper key
    differ, per `tools/knowledge-mcp/README.md`'s client table.
-5. **`knowledge-mcp` ingestion is a CI gate, not just an on-demand tool.**
-   `.github/workflows/pull_request_knowledge_governance.yml` runs `make sync`
-   on any PR touching a knowledge source, so a file that breaks ingestion
-   (bad frontmatter, malformed headings) fails CI instead of silently
-   degrading `get_convention`. This does **not** check that `CLAUDE.md` and
-   `.cursor/rules/000-core.mdc` agree semantically — no tool does that yet;
-   `compare_gaps` diffs an external consumer repo's manifest against
-   `data/reference.yaml`, it does not diff ADE's own adapter files against
-   each other. That remains a manual review step (the PR checklist).
+5. **`knowledge-mcp` ingestion runs in CI on every PR that touches a
+   knowledge source.** `.github/workflows/pull_request_knowledge_governance.yml`
+   runs `make sync`, so a file that breaks ingestion (bad frontmatter,
+   malformed headings) fails CI instead of silently degrading
+   `get_convention`. This checks that the sources still parse — it does not
+   check that `CLAUDE.md` and `.cursor/rules/000-core.mdc` still agree with
+   each other semantically. No tool in this repo does that today (see
+   Follow-up).
+
+## Alternatives considered
+
+### Extend the existing shared-context pattern to permissions (chosen)
+
+Reuses a pattern already proven for content conventions. One new file
+(`tool-policy.md`) plus a documented enforcement matrix, instead of a new
+mechanism.
+
+### Duplicate the permission rule independently in each vendor's file
+
+Rejected: this is the exact failure mode the shared-context pattern exists to
+prevent. Two independently-maintained copies of "never run `terraform
+destroy` unattended" drift the same way two independently-maintained copies
+of a path or a Make target would.
+
+### Wait for Cursor to ship an enforced, version-controlled command
+allow/deny mechanism before addressing this at all
+
+Rejected: the asymmetry is a live gap today — undocumented, it is
+indistinguishable from an oversight. Documenting it now (§3, the enforcement
+matrix) costs one file and gives reviewers something concrete to check;
+waiting leaves the gap silent indefinitely with no forcing function to close
+it later.
 
 ## Consequences
 
@@ -73,10 +103,31 @@ exists for the Makefile-facade term.
   `tool-policy.md` are expected to move together in the same PR, so a
   reviewer can catch a denial that was loosened without the rationale
   changing.
-- The gap this ADR does **not** close: Cursor still has no committed,
-  harness-enforced command allow/deny mechanism in this repo. If Cursor's
-  plan later adds one, extend `tool-policy.md`'s enforcement matrix and wire
-  it the same way `.claude/settings.json` is wired — do not assume parity
-  exists before that mechanism is confirmed.
 - `pull_request_knowledge_governance.yml` adds a small CI job to knowledge-
   source PRs (git-gated by `paths:`, so it does not run on unrelated PRs).
+
+## Follow-up — not yet decided
+
+- **Cursor has no committed, harness-enforced command allow/deny mechanism
+  in this repo.** This ADR documents that gap; it does not close it. If
+  Cursor's plan or version later adds one, extend `tool-policy.md`'s
+  enforcement matrix and wire it the same way `.claude/settings.json` is
+  wired — do not assume parity exists before that mechanism is confirmed.
+- **No tool checks semantic agreement between adapters.** `compare_gaps`
+  (`tools/knowledge-mcp/src/knowledge/gaps.py`) diffs an external consumer
+  repo's manifest against `data/reference.yaml` — it has no capability to
+  diff `CLAUDE.md` against `.cursor/rules/000-core.mdc`. Until such a check
+  exists (or is deliberately ruled out as not worth building), semantic
+  agreement stays a human review step via the PR checklist in
+  `docs/standards/pull-requests.md`.
+
+## References
+
+- `agents/shared/context/tool-policy.md`
+- `.claude/settings.json`
+- `.cursor/rules/000-core.mdc`
+- `docs/standards/pull-requests.md` ("Changing a shared AI-agent convention")
+- `.github/workflows/pull_request_knowledge_governance.yml`
+- `docs/adr/0001-makefile-unified-cli-facade.md` — same pattern (name a
+  shared convention once, point every adapter at it) applied earlier to the
+  Makefile facade
