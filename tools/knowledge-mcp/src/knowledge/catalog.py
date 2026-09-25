@@ -15,6 +15,9 @@ TOPIC_ALIASES = {
     "architecture": "ddd-clean-architecture",
     "plan": "plan-template",
     "stack": "tech-stack",
+    "permissions": "tool-policy",
+    "guardrails": "tool-policy",
+    "policy": "tool-policy",
 }
 
 STATIC_RESOURCES = (

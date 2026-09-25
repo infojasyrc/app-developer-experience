@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "ade-knowledge": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "--platform",
+        "linux/amd64",
+        "-e",
+        "ADE_ROOT=/repo",
+        "-e",
+        "PYTHONPATH=/app/src",
+        "-v",
+        "<ADE_ROOT>:/repo:ro",
+        "-v",
+        "<ADE_ROOT>/tools/knowledge-mcp:/app",
+        "-v",
+        "knowledge-mcp-packages:/app/.venv",
+        "knowledge-mcp-dev",
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "stdio_main"
+      ]
+    }
+  }
+}

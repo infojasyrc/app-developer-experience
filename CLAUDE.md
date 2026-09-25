@@ -65,6 +65,18 @@ Short names for branches, commits, PR checkboxes, and agent plans. They are **no
 - **Coverage:** 80% minimum per component
 - **Container image size:** Optimized — only source code, no dev dependencies
 
+## Agent Execution Guardrails
+
+This session's actual allow/deny list is `.claude/settings.json` (enforced by
+the harness). Its source of truth — the *why* and the matching state of this
+rule in Cursor — is `agents/shared/context/tool-policy.md`. Read-only
+inspection and routine `make lint`/`make unit-tests`/`make build-*` run
+without asking; `terraform apply`/`destroy`, `make destroy*`,
+`make bootstrap-all*`, and the AWS bootstrap `.mk` files always require an
+explicit human go-ahead in the same turn, even if a prior similar command was
+approved. If you ever need a permission `settings.json` doesn't grant, treat
+that as a signal to ask, not to route around it.
+
 ---
 
 ## Common Tasks

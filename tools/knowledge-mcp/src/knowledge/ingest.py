@@ -15,6 +15,7 @@ SOURCE_FILES = (
     "AGENTS.md",
     "docs/plans/TEMPLATE.md",
     "agents/shared/context/development-guidance.md",
+    "agents/shared/context/tool-policy.md",
     "backend/README.md",
     "docs/standards/commit-types.md",
     "docs/standards/branching.md",

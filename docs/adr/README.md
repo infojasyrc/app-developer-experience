@@ -19,3 +19,4 @@ Status values: `Proposed` | `Accepted` | `Superseded by ADR-NNNN` | `Deprecated`
 | ID | Title | Status |
 |---|---|---|
 | [0001](./0001-makefile-unified-cli-facade.md) | Makefile as Unified CLI Facade | Accepted |
+| [0002](./0002-ai-agent-configuration-governance.md) | AI Agent Configuration Governance | Accepted |

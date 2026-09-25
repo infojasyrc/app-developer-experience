@@ -89,6 +89,7 @@ Use git aliases in branch names (`cm-api/feat/...`), commit scopes (`feat(cm-api
 |---|---|---|
 | `ADR_ROOT` | `docs/adr/` | Architecture Decision Records |
 | `TEAM_STANDARDS` | `docs/standards/` | Team/process standards — commit types, branching, PR process, release strategy |
+| `TOOL_POLICY` | `agents/shared/context/tool-policy.md` | Agent execution guardrails (what agents may run autonomously) and the per-vendor enforcement matrix |
 
 ## Agent Outputs
 

@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(aws:iam get-role *)",
+      "Shell(aws:iam get-role-policy *)",
+      "Shell(aws:iam list-roles*)",
+      "Shell(aws:iam list-attached-role-policies *)",
+      "Shell(aws:iam list-role-policies *)",
+      "Shell(aws:iam list-open-id-connect-providers*)",
+      "Shell(aws:iam list-policies*)",
+      "Shell(aws:s3api head-bucket *)",
+      "Shell(aws:s3api head-object *)",
+      "Shell(aws:s3api list-buckets*)",
+      "Shell(aws:s3api list-objects-v2 *)",
+      "Shell(aws:s3api get-bucket-policy *)",
+      "Shell(aws:s3api get-bucket-encryption *)",
+      "Shell(aws:s3api get-public-access-block *)",
+      "Shell(aws:s3api get-bucket-ownership-controls *)",
+      "Shell(aws:organizations describe-organization*)",
+      "Shell(terraform:validate)",
+      "Shell(gh:secret list)",
+      "Shell(gh:variable list*)",
+      "Shell(gh:pr list*)",
+      "Shell(gh:pr view*)",
+      "Shell(gh:run list*)",
+      "Shell(gh:run view*)",
+      "Shell(make:lint)",
+      "Shell(make:unit-tests)",
+      "Shell(make:build-dev)",
+      "Shell(make:build-prod)",
+      "Shell(make:install-dependencies)",
+      "Shell(make:launch)",
+      "Shell(make:launch-detached)",
+      "Shell(make:stop)",
+      "Shell(make:run-storybook)",
+      "Shell(make:interactive)"
+    ],
+    "deny": [
+      "Shell(terraform:*apply*)",
+      "Shell(terraform:*destroy*)",
+      "Shell(make:*destroy*)",
+      "Shell(make:*bootstrap-all*)"
+    ]
+  }
+}
