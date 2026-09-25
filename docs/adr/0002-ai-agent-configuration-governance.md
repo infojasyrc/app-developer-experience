@@ -3,7 +3,7 @@
 - Status: Accepted
 - Date: 2026-09-18
 - Deciders: ADE platform
-- Tags: claude-code, cursor, knowledge-mcp, conventions, permissions
+- Tags: claude-code, cursor, permissions, conventions, knowledge-mcp
 
 ## Context
 

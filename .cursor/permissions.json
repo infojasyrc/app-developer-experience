@@ -1,0 +1,44 @@
+{
+  // Prefix-matched; read-only / local-dev commands only
+  "terminalAllowlist": [
+    "aws iam get-role",
+    "aws iam get-role-policy",
+    "aws iam list-roles",
+    "aws iam list-attached-role-policies",
+    "aws iam list-role-policies",
+    "aws iam list-open-id-connect-providers",
+    "aws iam list-policies",
+    "aws s3api head-bucket",
+    "aws s3api head-object",
+    "aws s3api list-buckets",
+    "aws s3api list-objects-v2",
+    "aws s3api get-bucket-policy",
+    "aws s3api get-bucket-encryption",
+    "aws s3api get-public-access-block",
+    "aws s3api get-bucket-ownership-controls",
+    "aws organizations describe-organization",
+    "terraform validate",
+    "gh secret list",
+    "gh variable list",
+    "gh pr list",
+    "gh pr view",
+    "gh run list",
+    "gh run view",
+    "make lint",
+    "make unit-tests",
+    "make build-dev",
+    "make build-prod",
+    "make install-dependencies",
+    "make launch",
+    "make launch-detached",
+    "make stop",
+    "make run-storybook",
+    "make interactive"
+  ],
+  "autoRun": {
+    "block_instructions": [
+      "Block any terraform apply or terraform destroy, including with -chdir or other flags.",
+      "Block make destroy* and make bootstrap-all* targets."
+    ]
+  }
+}
