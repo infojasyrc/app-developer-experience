@@ -2,12 +2,12 @@
 name: tool-policy
 description: >
   Vendor-neutral statement of what AI coding agents may execute autonomously
-  in this monorepo, and which vendor config currently enforces it. Source of
-  truth for .claude/settings.json's Bash allow/deny list and for the
-  equivalent guidance in .cursor/rules/000-core.mdc.
+  in this monorepo, and how each vendor enforces it. Source of truth for
+  .claude/settings.json, .cursor/cli.json, and .cursor/permissions.json, and
+  for the prose reinforcement in CLAUDE.md and .cursor/rules/000-core.mdc.
 metadata:
   author: app-dev-exp
-  version: "1.0"
+  version: "2.0"
 ---
 
 # Tool Policy — Agent Execution Guardrails
@@ -64,28 +64,50 @@ agent may do unattended, and vice versa.
 
 ## Enforcement matrix — where this rule actually lives per vendor
 
-| Vendor | Mechanism | Enforced or advisory | Source file |
-|---|---|---|---|
-| Claude Code | `permissions.deny` / `permissions.allow` glob patterns in `.claude/settings.json`, evaluated by the harness before any tool call | **Enforced** — a denied pattern is blocked before execution, not just discouraged | `.claude/settings.json` |
-| Cursor | Instruction text in `.cursor/rules/000-core.mdc` (`alwaysApply: true`) | **Advisory only** — Cursor in this repo has no committed, harness-enforced command allow/deny file; the agent is told the rule but a jailbreak or a large context window pushing the rule out of attention is not mechanically blocked the way Claude Code's `settings.json` blocks it | `.cursor/rules/000-core.mdc` |
-| Knowledge MCP | Not applicable — it is a read-only conventions server (`get_convention`, `scaffold_guidance`, `compare_gaps`); it does not execute commands in a consumer repo, so it has nothing to enforce here | N/A | `tools/knowledge-mcp/README.md` ("Non-goals") |
+Each vendor expresses this same rule in its own syntax, in its own folder.
+All three files below are committed and reviewed together; none of them is
+allowed to define a rule this file doesn't state.
 
-**This asymmetry is a known, accepted gap, not an oversight.** If Cursor's
-plan/version in use later adds a project-level, version-controllable command
-allow/deny mechanism, add its row here and wire it the same way
-`.claude/settings.json` is wired — do not silently assume parity exists
-before that mechanism is confirmed.
+| Vendor surface | Mechanism | Enforcement strength | Source file |
+|---|---|---|---|
+| Claude Code | `permissions.allow` / `permissions.deny` patterns evaluated by the harness before any tool call | **Mechanical** — a denied pattern is blocked before execution | `.claude/settings.json` (plus `settings.local.json` for personal additions, gitignored) |
+| Cursor CLI (`cursor-agent`) | `permissions.allow` / `permissions.deny` with `Shell(<tool>:<args>)` patterns | **Mechanical** — same model as Claude Code, different pattern syntax | `.cursor/cli.json` |
+| Cursor IDE | `terminalAllowlist` (prefix-matched commands eligible for auto-run) plus `autoRun.block_instructions` | **Mixed** — the allowlist is mechanical; `block_instructions` are natural-language and therefore model-mediated, so treat them as reinforcement for the allowlist, never as the only barrier | `.cursor/permissions.json` |
+| Both vendors, prose reinforcement | Instruction text an agent reads as context | Advisory — redundant with the files above by design, so a model that never consults a config file still sees the rule | `CLAUDE.md`, `.cursor/rules/000-core.mdc` |
+| Knowledge MCP | Not applicable — read-only conventions server (`get_convention`, `scaffold_guidance`, `compare_gaps`); it does not execute commands, so it has nothing to enforce | N/A | `tools/knowledge-mcp/README.md` ("Non-goals") |
+
+### Known coverage difference between the vendor files
+
+The deny lists are equivalent in intent but not in matching power, because
+the two pattern syntaxes differ:
+
+- `.cursor/cli.json` uses leading wildcards (`Shell(terraform:*apply*)`), so
+  it also catches flag-prefixed forms such as
+  `terraform -chdir=cloud/terraform/aws apply`.
+- `.claude/settings.json` uses prefix patterns (`Bash(terraform apply*)`),
+  which match a command that *begins* with `terraform apply`. The
+  `-chdir=… apply` form is not matched by that pattern.
+
+Until the Claude Code patterns are widened to match, `.cursor/cli.json` is
+the stricter of the two. Treat rule 3 above as binding regardless of what any
+one pattern happens to catch: the config files are a safety net for the rule,
+not a definition of it.
 
 ## Change protocol
 
 1. Update **only this file** when the autonomy boundary changes (a target
    moves between "routine" and "requires confirmation", or a new domain is
    allow-listed).
-2. Update `.claude/settings.json`'s `allow`/`deny` arrays to match — this is
-   the only vendor with real enforcement today, so it must never drift from
-   this file.
-3. Update the note in `.cursor/rules/000-core.mdc` if the advisory text
-   would otherwise contradict this file.
+2. Update every vendor file in the same PR so they cannot drift:
+   `.claude/settings.json`, `.cursor/cli.json`, and `.cursor/permissions.json`.
+   A rule added to one and forgotten in the others is the failure mode this
+   file exists to prevent.
+3. Update the prose reinforcement in `CLAUDE.md` and
+   `.cursor/rules/000-core.mdc` only if it would otherwise contradict this
+   file — they summarize, they do not redefine.
 4. Do not add a second, differently-worded copy of the rule anywhere else —
    point to this file instead (see `docs/standards/pull-requests.md`,
    "Changing a shared AI-agent convention").
+5. When a new AI vendor is adopted, add a row to the matrix above and wire
+   its config file the same way. Do not assume a vendor enforces anything
+   until its mechanism is confirmed and committed.

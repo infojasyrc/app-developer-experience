@@ -53,10 +53,12 @@ Summary: read-only inspection and routine `make lint`/`make unit-tests`/`make bu
 are fine unattended; `terraform apply`/`destroy`, `make destroy*`,
 `make bootstrap-all*`, and the AWS IAM/OIDC bootstrap `.mk` files always need an
 explicit human go-ahead in the same turn — do not chain them into a plan.
-**This rule is advisory in Cursor** — unlike `.claude/settings.json` for Claude
-Code, this repo has no committed, harness-enforced command allow/deny file for
-Cursor, so treat it as a hard instruction to follow, not a mechanically blocked
-action.
+In Cursor this rule is backed by two config files — `.cursor/cli.json`
+(CLI agent `permissions.allow`/`deny`) and `.cursor/permissions.json` (IDE
+`terminalAllowlist` + `autoRun.block_instructions`) — which mirror
+`.claude/settings.json` for Claude Code. Treat this section as the rule and
+those files as the safety net, not the other way round: a command the patterns
+happen not to catch is still forbidden if `tool-policy.md` forbids it.
 
 ## General rules
 
