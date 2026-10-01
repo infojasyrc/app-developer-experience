@@ -79,6 +79,15 @@ that as a signal to ask, not to route around it.
 
 ---
 
+## Pull Requests
+
+When an implementation plan requires opening a pull request, the PR body MUST be
+built from `.github/pull_request_template.md` (all headings kept, applicable
+boxes ticked, sections filled) — never a custom body. Rule and details:
+`docs/standards/pull-requests.md`. Never push to `main`; branch → PR.
+
+---
+
 ## Common Tasks
 
 Before running any agent task, read:

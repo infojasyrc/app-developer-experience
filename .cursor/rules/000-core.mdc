@@ -39,6 +39,7 @@ Do not implement directly if the task touches more than one file or changes the 
 2. Wait for explicit user confirmation before moving to implementation.
 3. **Implement** — implement one step of the plan at a time. After each step: show the diff, run relevant lint/tests (respect the 80% coverage minimum), and do not move to the next step without confirmation if the previous step changed the original plan.
 4. If something doesn't add up during implementation, go back to plan mode before continuing (update the `.md`, don't improvise silently).
+5. **Pull request** — if the plan requires opening a PR, build the body from `.github/pull_request_template.md` (keep all headings, tick applicable boxes, fill the sections); never write a custom body. Never push to `main`; branch → PR. See `docs/standards/pull-requests.md`.
 
 ## Platform packages are bootstrap templates, not runtime dependencies
 

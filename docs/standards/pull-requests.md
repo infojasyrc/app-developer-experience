@@ -9,6 +9,15 @@ Manual process: complete the pull request description using the fields in
 [.github/pull_request_template.md](../../.github/pull_request_template.md).
 Description of all changes must be short and concise.
 
+Agents (Claude Code, Cursor, others) MUST build every PR body from
+[.github/pull_request_template.md](../../.github/pull_request_template.md):
+keep all its headings in order, tick the applicable checkboxes, and fill the
+`What is the current module?` / `What is the new behavior?` sections. Never
+replace it with a custom body (e.g. `Summary` / `Test plan`). This applies
+whenever an implementation plan includes opening a pull request. Put the plan
+file link under `Issue ticket number and link`, and add any attribution line
+at the end of the body.
+
 ## Work In Progress
 
 To maximize visibility of progress as a team, use one of:
