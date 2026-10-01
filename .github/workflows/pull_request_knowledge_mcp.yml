@@ -4,8 +4,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - tools/knowledge-mcp/**
 
 permissions:
   contents: read
@@ -56,3 +54,22 @@ jobs:
 
       - name: Build container for production
         run: make build-prod
+
+  pr-gate-knowledge-mcp:
+    name: pr-gate-knowledge-mcp
+    needs: [get-changed-packages, knowledge-mcp-unit-tests]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Enforce results
+        env:
+          DETECT: ${{ needs.get-changed-packages.result }}
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          # Detection must succeed, otherwise skipped jobs would be false passes
+          [[ "$DETECT" == "success" ]] || { echo "Detection: $DETECT"; exit 1; }
+
+          # Each verify job must be success or skipped (not changed), never failure/cancelled
+          for r in $RESULTS; do
+            [[ "$r" == "success" || "$r" == "skipped" ]] || { echo "Job result: $r"; exit 1; }
+          done

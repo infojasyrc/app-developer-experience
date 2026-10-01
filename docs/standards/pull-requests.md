@@ -53,3 +53,22 @@ before requesting review, in addition to the standard PR structure above:
       (rebuilds the `knowledge-mcp` index from the changed sources — catches
       a source file that no longer parses, not semantic disagreement between
       files).
+
+## Required status checks
+
+The `main` ruleset requires these checks before a pull request can merge:
+
+| Check | Workflow |
+| --- | --- |
+| `pr-gate-templates` | `pull_request_backend.yml` |
+| `pr-gate-cm-components` | `pull_request_cm_components.yml` |
+| `pr-gate-knowledge-mcp` | `pull_request_knowledge_mcp.yml` |
+
+Each gate runs `if: always()` after change detection and its verify jobs. It
+fails if detection did not succeed or if any verify job failed or was
+cancelled; verify jobs skipped because their package did not change count as
+a pass. These workflows have no `paths:` filter, so the gate always reports.
+
+When you add a verify job to one of these workflows, add it to the gate's
+`needs` list, otherwise it is not enforced. Job names must stay unique across
+workflows because required checks match by job name.
