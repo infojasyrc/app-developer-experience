@@ -16,6 +16,9 @@
 2.
 3.
 
+## Pull request
+<if the plan ends in a PR: the body MUST use `.github/pull_request_template.md`; list branch name and which template sections the plan feeds>
+
 ## Risks
 -
 
