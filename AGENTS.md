@@ -12,7 +12,7 @@ and which agent is appropriate for the task.
 
 - **Always run a planner before a developer** — never implement without a plan artifact
 - Plans are stored in the target app root as `MIGRATION_PLAN.md`
-- **Pull requests** — when a plan requires opening a PR, build the body from `.github/pull_request_template.md`, never a custom body (`docs/standards/pull-requests.md`)
+- **Pull requests** — when a plan requires opening a PR, build the body from `.github/pull_request_template.md`, never a custom body (`docs/standards/pull-requests.md`); no AI-tool attribution in the PR body (no "Generated with …", "Made by …", robot emoji, or `Co-Authored-By` lines)
 - Each agent documents its expected inputs and outputs in its own `AGENT.md`
 - Skills live inside the agent that owns them — never share skills between agents directly; use `agents/shared/` for that
 

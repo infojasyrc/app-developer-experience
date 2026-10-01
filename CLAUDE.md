@@ -85,6 +85,8 @@ When an implementation plan requires opening a pull request, the PR body MUST be
 built from `.github/pull_request_template.md` (all headings kept, applicable
 boxes ticked, sections filled) — never a custom body. Rule and details:
 `docs/standards/pull-requests.md`. Never push to `main`; branch → PR.
+Do not add AI-tool attribution to the PR body (no "Generated with …",
+"Made by …", robot emoji, or `Co-Authored-By` lines).
 
 ---
 

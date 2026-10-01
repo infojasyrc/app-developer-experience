@@ -162,10 +162,12 @@ Each agent phase = one PR. Never mix phases in a single PR.
 
 The PR description MUST follow `.github/pull_request_template.md` (see
 `docs/standards/pull-requests.md`) — never a custom body. Map the content to its sections:
-1. **What changed** — list of files created/modified → `What is the new behavior?`
-2. **Why** — reference to the plan artifact (`MIGRATION_PLAN.md`, `INFRA_PLAN.md`, etc.) → `Issue ticket number and link`
+1. **What changed** — one concise sentence describing the change → `What is the new behavior?`
+2. **Why** — if this was part of a plan implementation, use the plan title → `Issue ticket number and link`
 3. **Verification** — output of `tsc --noEmit`, `terraform validate`, or `gh run view` → `What is the new behavior?` (or `Screenshots`)
-4. **Refs** — link to the plan file in the repo → `Issue ticket number and link`
+
+Do not add AI-tool attribution to the PR body (no "Generated with …",
+"Made by …", robot emoji, or `Co-Authored-By` lines).
 
 ---
 

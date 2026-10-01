@@ -15,8 +15,9 @@ keep all its headings in order, tick the applicable checkboxes, and fill the
 `What is the current module?` / `What is the new behavior?` sections. Never
 replace it with a custom body (e.g. `Summary` / `Test plan`). This applies
 whenever an implementation plan includes opening a pull request. Put the plan
-file link under `Issue ticket number and link`, and add any attribution line
-at the end of the body.
+file link under `Issue ticket number and link`.
+Do not add AI-tool attribution to the PR body (no "Generated with …",
+"Made by …", robot emoji, or `Co-Authored-By` lines).
 
 ## Work In Progress
 
