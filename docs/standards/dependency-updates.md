@@ -2,7 +2,7 @@
 
 ## Node.js base images
 
-Docker images that use Node.js track the **LTS line only** (currently **24**,
+Container images that use Node.js track the **LTS line only** (currently **24**,
 `node:24-alpine`). Non-LTS (odd-numbered) releases such as 25 must not be adopted.
 
 - `.github/dependabot.yml` ignores `node` versions `>= 25` for the Node-based
