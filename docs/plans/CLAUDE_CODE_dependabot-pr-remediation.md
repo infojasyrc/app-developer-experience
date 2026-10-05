@@ -15,7 +15,7 @@ shared cause that fails most of them, then working through each component's real
 
 | Phase | Component | PRs covered | Status | Branch / PR |
 |---|---|---|---|---|
-| 0 | CI (commitlint + Node LTS policy) | all Dependabot PRs, #251, #252 | Implemented (PR open) | `ci/dependabot-commitlint-node-lts` (PR_LINK) |
+| 0 | CI (commitlint + Node LTS policy) | all Dependabot PRs, #251, #252 | Implemented (PR open) | `ci/dependabot-commitlint-node-lts` ([#263](https://github.com/infojasyrc/app-developer-experience/pull/263)) |
 | 1 | nestjs-rest-tpl | 257, 239, 258, 259, 260 | Not started | |
 | 2 | nestjs-gql-tpl | 261, 232, 233, 234, 236 | Not started | |
 | 3 | fastapi-rest-tpl | 218, 224, 225, 226, 227, 213 | Not started | |
