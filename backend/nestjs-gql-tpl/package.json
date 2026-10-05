@@ -64,7 +64,7 @@
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.2"
+    "typescript": "^7.0.2"
   },
   "overrides": {
     "brace-expansion@1": "1.1.18",
