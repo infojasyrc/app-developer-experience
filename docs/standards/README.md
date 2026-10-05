@@ -16,6 +16,7 @@ links here instead of duplicating the content.
 | Commit types | [commit-types.md](./commit-types.md) | Conventional Commits type list, message format, how to choose a type |
 | Branching | [branching.md](./branching.md) | Trunk-based branch naming convention |
 | Pull requests | [pull-requests.md](./pull-requests.md) | PR structure, work-in-progress, automation |
+| Dependency updates | [dependency-updates.md](./dependency-updates.md) | Node LTS policy, Dependabot and commitlint |
 | Release strategy | [release-strategy.md](./release-strategy.md) | How and when releases are cut (TODO) |
 | Versioning | [versioning.md](./versioning.md) | SemVer application across components (TODO) |
 | Changelog | [changelog.md](./changelog.md) | Changelog generation and format (TODO) |
