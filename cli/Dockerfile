@@ -1,21 +1,21 @@
 # Use a minimal Python base image
-FROM python:3.11-slim AS dev
+FROM python:3.11-slim-bullseye AS dev
 
-# Install binutils
-RUN apt-get update && apt-get install -y binutils
+# Install os dependencies
+RUN apt-get update && apt-get install -y curl build-essential binutils \
+    && curl -sSL https://install.python-poetry.org | python3 - \
+    && ln -s ~/.local/bin/poetry /usr/local/bin/poetry
 
-# disable pipenv cache
-ENV PIP_NO_CACHE_DIR=true
-# create or use .venv in pipfile directory
-ENV PIPENV_VENV_IN_PROJECT=1
-# more detailed logs
-ENV PIPENV_VERBOSE=1
+# Set environment variables
+ENV PIP_NO_CACHE_DIR=true \
+    PIPENV_VENV_IN_PROJECT=1 \
+    PIPENV_VERBOSE=1 \
+    POETRY_NO_INTERACTION=1
 
 WORKDIR /app
 
 # install pipenv and python
-RUN pip install --no-cache-dir pipenv==2024.4.1 && \
-    pipenv install --python 3.11
+RUN poetry config virtualenvs.in-project true
 
 FROM dev AS dependencies
 
