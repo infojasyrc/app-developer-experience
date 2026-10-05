@@ -37,6 +37,10 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(deps)"
+    ignore:
+      # Node policy: Docker images track the LTS line only (currently 24).
+      - dependency-name: "node"
+        versions: [">= 25"]
 
   # Conference Manager API (Yarn Classic — still the npm ecosystem)
   - package-ecosystem: "npm"
@@ -60,6 +64,10 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(deps)"
+    ignore:
+      # Node policy: Docker images track the LTS line only (currently 24).
+      - dependency-name: "node"
+        versions: [">= 25"]
 
   # NestJS REST template
   - package-ecosystem: "npm"
@@ -83,6 +91,10 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(deps)"
+    ignore:
+      # Node policy: Docker images track the LTS line only (currently 24).
+      - dependency-name: "node"
+        versions: [">= 25"]
 
   # NestJS GraphQL template
   - package-ecosystem: "npm"
@@ -106,3 +118,7 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(deps)"
+    ignore:
+      # Node policy: Docker images track the LTS line only (currently 24).
+      - dependency-name: "node"
+        versions: [">= 25"]
