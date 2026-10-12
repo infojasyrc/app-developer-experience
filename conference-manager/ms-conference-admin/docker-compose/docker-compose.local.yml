@@ -16,11 +16,6 @@ services:
       - DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
       - DEFAULT_DB=${DEFAULT_DB}
       - MS_PORT=${MS_PORT}
-    depends_on:
-      mongodb:
-        condition: service_healthy
-    links:
-      - mongodb
     volumes:
       - ../:/app:rw
       - backend-packages:/app/.venv:rw
@@ -53,6 +48,7 @@ services:
 networks:
   default:
     name: ${COMPOSE_PROJECT_NAME}-network
+    external: true
 
 volumes:
   backend-packages:
