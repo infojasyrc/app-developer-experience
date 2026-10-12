@@ -190,13 +190,15 @@ Next.js 14 App Router frontend. Node dependencies live in a Docker volume — no
 
 ### Conference Manager Admin (`cm-admin` → `conference-manager/ms-conference-admin/`)
 
-Django admin panel. Managed via the Conference Manager root Makefile.
+Django admin panel. Python dependencies are managed with `uv` (lockfile `uv.lock`) and installed only through `make install-dependencies`.
 
 | Target (from `conference-manager/`) | Purpose |
 |---|---|
 | `make build-dev` | Build the dev image for the admin panel |
 | `make build-prod` | Build the production admin image |
-| `make install-dependencies` | Install Python packages from Pipfile |
+| `make install-dependencies` | Install Python packages from `pyproject.toml` / `uv.lock` |
+| `make lint` | Run black, isort and flake8 |
+| `make unit-tests` | Run pytest with coverage (80% minimum) |
 | `make launch-local` | Start admin for local development |
 | `make stop-local` | Stop local admin service |
 | `make interactive` | Open a bash shell in the admin container |
