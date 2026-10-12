@@ -58,7 +58,8 @@ make seed-data
 make clear-data
 ```
 
-Seeded headquarters are also visible from the Django admin (`ms-conference-admin`).
+Seeded headquarters land in the same `headquarters` collection read by the Django admin
+(`ms-conference-admin`); field names still differ between both services.
 
 ## Run unit tests
 
