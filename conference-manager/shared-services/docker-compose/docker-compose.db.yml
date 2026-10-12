@@ -1,11 +1,13 @@
 ---
 # Shared MongoDB for ms-conference-api (cm-api) and ms-conference-admin (cm-admin).
-# Runs as its own compose project (${COMPOSE_PROJECT_NAME}-db) so stopping one
+# Runs as its own compose project (${SHARED_RESOURCE_PREFIX:?run this file through make}-db) so stopping one
 # service never stops the database the other one is using. Drive it via Make.
+# SHARED_RESOURCE_PREFIX is exported by the Makefile from COMPOSE_PROJECT_NAME
+# (the -p flag overrides COMPOSE_PROJECT_NAME inside this file).
 
 services:
   mongodb:
-    container_name: ${COMPOSE_PROJECT_NAME}-db
+    container_name: ${SHARED_RESOURCE_PREFIX:?run this file through make}-db
     image: mongo:8.0-noble
     platform: ${PLATFORM}
     restart: unless-stopped
@@ -30,10 +32,10 @@ services:
 
 networks:
   default:
-    name: ${COMPOSE_PROJECT_NAME}-network
+    name: ${SHARED_RESOURCE_PREFIX:?run this file through make}-network
     external: true
 
 volumes:
   dev-db:
-    name: ${COMPOSE_PROJECT_NAME}-dev-db
+    name: ${SHARED_RESOURCE_PREFIX:?run this file through make}-dev-db
     external: true

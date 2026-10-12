@@ -10,6 +10,8 @@ include $(ENV_FILE)
 COMPOSE_PROJECT_NAME     := $(COMPOSE_PROJECT_NAME)
 PLATFORM                 := $(PLATFORM)
 DOCKER_COMPOSE           = docker compose
+# Resource names stay <COMPOSE_PROJECT_NAME>-*; the DB itself runs in project <COMPOSE_PROJECT_NAME>-db
+export SHARED_RESOURCE_PREFIX := $(COMPOSE_PROJECT_NAME)
 NETWORK_NAME             = $(COMPOSE_PROJECT_NAME)-network
 DB_VOLUME_NAME           = $(COMPOSE_PROJECT_NAME)-dev-db
 DB_COMPOSE               = $(DOCKER_COMPOSE) --env-file $(ENV_FILE) -p $(COMPOSE_PROJECT_NAME)-db \
