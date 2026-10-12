@@ -5,13 +5,6 @@ import re
 from core.repo import validate_git_repo
 from constants import CONVENTIONAL_TYPES
 
-questions = [
-    inquirer.List("choice", message="Select an option", choices=["test", "test2"])
-]
-answers = inquirer.prompt(questions)
-print(answers["choice"])
-# repo = validate_git_repo()
-
 @click.group()
 def cli():
     """Monorepo Commit CLI - A tool for handling commits in a monorepo"""
@@ -34,6 +27,7 @@ def commit(message, dry_run):
             click.echo(f"[Dry Run] Commit message: {commit_msg}")
             return
 
+        repo = validate_git_repo()
         repo.git.add(A=True)  # Add all changes
         repo.git.commit(m=commit_msg)
         click.echo("✅ Commit successful!")
@@ -41,6 +35,7 @@ def commit(message, dry_run):
 @cli.command()
 def status():
     """Show changed files in the monorepo."""
+    repo = validate_git_repo()
     changes = [item.a_path for item in repo.index.diff(None)]
     if changes:
         click.echo("🔄 Modified files:")

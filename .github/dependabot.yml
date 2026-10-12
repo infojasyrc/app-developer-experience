@@ -15,6 +15,22 @@ updates:
     commit-message:
       prefix: "chore(deps)"
 
+  # CLI (uv + docker)
+  - package-ecosystem: "uv"
+    directory: "/cli"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+  - package-ecosystem: "docker"
+    directory: "/cli"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
   # Conference Manager webapp (npm)
   - package-ecosystem: "npm"
     directory: "/conference-manager/ms-conference-webapp"
