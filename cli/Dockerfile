@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.12-slim AS dev
+FROM python:3.14-slim AS dev
 
 # Copy uv binary
 COPY --from=ghcr.io/astral-sh/uv:0.12.9 /uv /uvx /bin/
