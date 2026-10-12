@@ -9,21 +9,15 @@ services:
     working_dir: /usr/src/app
     platform: ${PLATFORM}
     depends_on:
-      mongodb:
-        condition: service_started
       unleash-app:
         condition: service_started
     env_file:
       - ../.env
     tty: true
     links:
-      - mongodb
       - unleash-app
 
 networks:
   default:
     name: ${COMPOSE_PROJECT_NAME}-network
-
-volumes:
-  dev-db:
-    name: ${COMPOSE_PROJECT_NAME}-dev-db
+    external: true

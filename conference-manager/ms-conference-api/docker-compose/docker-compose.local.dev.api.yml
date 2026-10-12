@@ -11,15 +11,12 @@ services:
     platform: ${PLATFORM}
     pull_policy: never
     depends_on:
-      mongodb:
-        condition: service_started
       unleash-app:
         condition: service_started
     env_file:
       - ../.env
     tty: true
     links:
-      - mongodb
       - unleash-app
     volumes:
       - ../:/usr/src/app:rw
@@ -28,10 +25,9 @@ services:
 networks:
   default:
     name: ${COMPOSE_PROJECT_NAME}-network
+    external: true
 
 volumes:
-  dev-db:
-    name: ${COMPOSE_PROJECT_NAME}-dev-db
   backend-packages:
     name: ${COMPOSE_PROJECT_NAME}-api-packages
     external: true
