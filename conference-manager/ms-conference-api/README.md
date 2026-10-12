@@ -114,21 +114,35 @@ Use the following command:
 ```bash
 # build container for development
 make build-dev
+# create external volumes and the shared network/database volume
+make create-volumes
 # install dependencies
 make install-dependencies
-# launch service in development mode
+# launch service in development mode (starts the shared database first)
 make launch-local-dev
 # run unit tests
 make unit-tests
-# stop all services
+# stop all services (the shared database keeps running)
 make stop-local-dev
 ```
 
 To simulate production environment, use:
 
 ```bash
-make launch-prod
+make build-prod
+make launch-local-prod
 ```
+
+### Shared database
+
+MongoDB is shared with `ms-conference-admin` and is defined once in
+[`../shared-services`](../shared-services/README.md). `make launch-db`, `make stop-db` and
+`make reset-db` delegate to it:
+
+- `make launch-db` is idempotent and reuses the database if `ms-conference-admin` already started it.
+- `make stop-local-dev` / `make stop-local-prod` do not stop the database.
+- `make stop-db` and `make reset-db` affect **both** services.
+- `DB_*` and `DEFAULT_DB` in `.env` must match `shared-services` and `ms-conference-admin`.
 
 ### Authentication
 
@@ -174,7 +188,7 @@ Private endpoints: Authorization header with a valid token is required to get a 
 | Service | Port | Description |
 | :------ | :--- | :---------- |
 | **api** | 5002 | Conference Manager REST API in development mode. |
-| **mongodb** | 27017 | MongoDB for events, users, and related data. |
+| **mongodb** | 27017 | Shared MongoDB (`../shared-services`) for events, users, and related data; also used by `ms-conference-admin`. |
 | **unleash-app** | 4242 | Unleash feature-toggle server (internal only; reached through oauth2-proxy SSO gateway). |
 | **unleash-db** | 5433 | PostgreSQL database used by Unleash. |
 | **keycloak** | 8080 | Keycloak identity provider (SSO for Grafana and Unleash). |
@@ -185,4 +199,9 @@ Private endpoints: Authorization header with a valid token is required to get a 
 
 Collection in Mongo are not created:
 
-There is a possible error when collections are not created in mongo, so, you need to remove the volumen of the application for the database, stop the database service and start the command again.
+There is a possible error when collections are not created in mongo. Wipe the shared database volume and start again (this also resets the data used by `ms-conference-admin`):
+
+```bash
+make reset-db
+make launch-local-dev
+```

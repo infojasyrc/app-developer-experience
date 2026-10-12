@@ -1,69 +1,67 @@
 # Launch application standalone
 
-This way of development requires to launch each component individually: API and DATABASE
+This way of development launches each component individually: DATABASE and API. Everything runs in
+containers through Make; no host Node.js, `nvm` or `yarn` is required.
 
 ## Database
 
-To store and retrieve event information, ensure that the database is up and running. You can launch ONLY the database with the following command:
+The MongoDB database is shared with `ms-conference-admin` and lives in
+[`../shared-services`](../../../shared-services/README.md). Create the shared network and volumes, then
+launch ONLY the database:
 
 ```bash
+make create-volumes
 make launch-db
 ```
 
-This command will initialize a service for the database, load collections, and preload admin and user credentials for testing purposes. Remember to customize the configurations based on your environment:
+`make launch-db` delegates to `shared-services` and is idempotent: if `ms-conference-admin` already
+started the database, it keeps using the running instance. Remember to customize the `DB_*` values in
+`.env`; they must match `shared-services` and `ms-conference-admin`.
+
+- `make stop-db` stops the database for **both** services.
+- `make reset-db` wipes the shared data volume for **both** services (dev only).
 
 ## API
 
-Ensure you have the required Node.js version installed according the dependencies. If not, you can set it up using Node Version Manager [NVM](https://github.com/nvm-sh/nvm), which should already be installed and configure it.
-To select the appropriate Node.js version, use the following command:
+Build the development image and install dependencies into the packages volume:
 
 ```bash
-nvm use
+make build-dev
+make install-dependencies
 ```
 
-Then, install project dependencies with:
+- To run the full development stack with auto-reloading (API, Unleash, Keycloak, observability tools):
 
 ```bash
-yarn install
+make launch-local-dev
 ```
 
-- If you prefer to run the application with auto-reloading during development, use the following command:
+- To run the production image locally:
 
 ```bash
-yarn dev
+make build-prod
+make launch-local-prod
 ```
 
-- If you prefer not to auto-reload on each change and run the application, use the following command:
+- To get a shell inside the development container (for example to run a one-off `yarn` script):
 
 ```bash
-yarn start
+make interactive
 ```
 
-These steps will help you set up your local development environment for the Event Manager Backend.
+## Seed data
 
-## Debugging
-
-This way of execution allows you debugging the applciation using Visual Studio Code.
-On MacOS, if you use nvm within a specific version,
-please add the following in launch.json:
+With the database running, seed or clear users, headquarters and conferences:
 
 ```bash
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/index.js",
-      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/{Specific version}/bin/node"
-    }
-  ]
-}
+make seed-data
+make clear-data
 ```
+
+Seeded headquarters are also visible from the Django admin (`ms-conference-admin`).
 
 ## Run unit tests
 
 ```bash
-yarn test:unit-tests
+make unit-tests
 ```
