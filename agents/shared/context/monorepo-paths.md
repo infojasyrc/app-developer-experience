@@ -27,6 +27,7 @@ Never hardcode paths in AGENT.md or SKILL.md — always derive from here.
 | `WEBAPP_APP` | `conference-manager/ms-conference-webapp/src/app/` | Next.js App Router routes |
 | `CONF_API` | `conference-manager/ms-conference-api/` | RESTful API service |
 | `CONF_ADMIN` | `conference-manager/ms-conference-admin/` | Django admin service |
+| `CONF_SHARED` | `conference-manager/shared-services/` | Local resources shared by cm-api and cm-admin (MongoDB) |
 | `FRONTEND_PLANS` | `conference-manager/ms-conference-webapp/plans/` | MIGRATION_PLAN.md lives here |
 
 ### Project aliases (branches, commits, PRs, agent plans)
@@ -38,7 +39,7 @@ Short names used in git history. They are **not** directory names. When a plan, 
 | `cm-api` | `conference-manager/ms-conference-api/` | Same as `CONF_API` |
 | `cm-webapp` | `conference-manager/ms-conference-webapp/` | Same as `WEBAPP_ROOT` |
 | `cm-admin` | `conference-manager/ms-conference-admin/` | Same as `CONF_ADMIN` |
-| `cm-tools` | `conference-manager/ms-conference-api/` compose + `tools/` | Observability (Keycloak, Unleash, Prometheus, Grafana). No `conference-manager-tools/` folder. |
+| `cm-tools` | `conference-manager/ms-conference-api/` compose + `tools/`, `conference-manager/shared-services/` | Observability (Keycloak, Unleash, Prometheus, Grafana) and the shared MongoDB (`CONF_SHARED`). No `conference-manager-tools/` folder. |
 | `status-aggregator` | — | Planned. Listed in the PR template only; no path yet. |
 
 Use git aliases in branch names (`cm-api/feat/...`), commit scopes (`feat(cm-api):`), PR checkboxes, and agent suggested commits. Use the resolved path in `cd`, Makefiles, and filesystem commands.
