@@ -52,7 +52,8 @@ MongoDB is shared with `ms-conference-api` and is defined once in
 - `make stop-db` and `make reset-db` affect **both** services.
 - `DB_*` and `DEFAULT_DB` in `.env` must match `shared-services` and `ms-conference-api`.
   Use `DB_HOST=mongodb` when running in containers.
-- Headquarters seeded from the API (`make -C ../ms-conference-api seed-data`) are visible in the admin.
+- Headquarters seeded from the API (`make -C ../ms-conference-api seed-data`) land in the same
+  `headquarters` collection the admin reads; field names still differ between both services.
 
 ## Project structure
 
