@@ -6,7 +6,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-admin-migrations
     image: ${COMPOSE_PROJECT_NAME}-admin:latest
     working_dir: /app/src
-    command: /bin/ash -ci "pipenv run python manage.py migrate"
+    command: /bin/ash -ci "python manage.py migrate"
     platform: ${PLATFORM}
     tty: true
     environment:

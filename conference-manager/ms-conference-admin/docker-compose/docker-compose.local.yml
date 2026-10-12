@@ -5,7 +5,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-admin-migrations
     image: ${COMPOSE_PROJECT_NAME}-admin-dev:latest
     working_dir: /app/src
-    command: /bin/ash -ci "pipenv run python manage.py migrate"
+    command: /bin/ash -ci "uv run --no-sync python manage.py migrate"
     platform: ${PLATFORM}
     tty: true
     environment:
@@ -24,7 +24,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-admin-dev
     image: ${COMPOSE_PROJECT_NAME}-admin-dev:latest
     working_dir: /app/src
-    command: /bin/ash -ci "pipenv run python manage.py runserver 0.0.0.0:3000"
+    command: /bin/ash -ci "uv run --no-sync python manage.py runserver 0.0.0.0:3000"
     restart: unless-stopped
     platform: ${PLATFORM}
     tty: true

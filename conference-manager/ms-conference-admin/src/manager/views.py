@@ -10,4 +10,4 @@ def index(request):
 
 def headquarter_list(request):
     headquarters = Headquarter.objects.all()
-    return render(request, 'headquarter_list.html', {'headquarters': headquarters})
+    return render(request, "headquarter_list.html", {"headquarters": headquarters})

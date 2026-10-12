@@ -6,6 +6,7 @@ This is a microservice to handle all data with django admin and mongodb
 
 - [Content](#content)
 - [Getting started](#getting-started)
+- [Dependency management](#dependency-management)
 - [Shared database](#shared-database)
 - [Project structure](#project-structure)
 - [Team Standards](#team-standards)
@@ -13,7 +14,8 @@ This is a microservice to handle all data with django admin and mongodb
 
 ## Getting started
 
-Everything runs in containers through Make; no host Python or `pipenv` is required.
+Everything runs in containers through Make; no host Python or `uv` is required.
+Dependencies are managed with `uv` (`pyproject.toml` + `uv.lock`) and installed only inside the container.
 
 ```bash
 # list available targets
@@ -26,6 +28,9 @@ make create-volumes
 make install-dependencies
 # launch the shared database, run migrations and start the admin on http://localhost:3001
 make launch-local
+# lint and unit tests (80% minimum coverage)
+make lint
+make unit-tests
 # tail logs
 make logs
 # stop the admin (the shared database keeps running)
@@ -39,6 +44,32 @@ make build-prod
 make launch-prod
 make stop-prod
 ```
+
+### Make targets
+
+| Target | Purpose |
+|---|---|
+| `make build-dev` | build the `dev` image (uv + dev tooling) |
+| `make build-prod` | build the `prod` image (runtime venv + source only) |
+| `make create-volumes` | create the packages volume and the shared network/database volume |
+| `make install-dependencies` | `uv lock && uv sync --group dev` inside the container volume |
+| `make lint` | `black`, `isort` and `flake8` checks |
+| `make format` | apply `black` and `isort` |
+| `make unit-tests` | `pytest` with coverage (fails under 80%) |
+| `make launch-local` / `make stop-local` | run migrations and the admin with source mounted |
+| `make launch-prod` / `make stop-prod` | run the production image locally |
+| `make interactive` | shell inside the dev container with the venv activated |
+| `make logs` | tail local logs |
+| `make launch-db` / `make stop-db` / `make reset-db` | shared MongoDB |
+| `make docker-clean` | kill containers and prune images |
+
+## Dependency management
+
+- Edit dependencies in [`pyproject.toml`](pyproject.toml); `make install-dependencies` regenerates
+  [`uv.lock`](uv.lock). Commit both files.
+- `constraint-dependencies` pins minimum versions of transitive packages that had security advisories.
+- After changing Python or dependencies, rebuild with `make build-dev` and, if the old virtualenv
+  misbehaves, recreate the packages volume: `docker volume rm <COMPOSE_PROJECT_NAME>-admin-packages && make create-volumes`.
 
 ## Shared database
 
@@ -56,6 +87,19 @@ MongoDB is shared with `ms-conference-api` and is defined once in
   `headquarters` collection the admin reads; field names still differ between both services.
 
 ## Project structure
+
+```text
+ms-conference-admin/
+├── pyproject.toml      # Python dependencies and tool config
+├── uv.lock             # Python lock for dependencies
+├── Dockerfile          # multi-stage: dev, build, prod
+├── docker-compose/     # local and prod compose files
+└── src/
+    ├── manage.py
+    ├── quickstart/     # Django project: settings, urls, environment
+    ├── manager/        # app: models, admin, views
+    └── mongo_migrations/  # MongoDB-specific migrations for admin, auth, contenttypes
+```
 
 ## Team Standards
 
