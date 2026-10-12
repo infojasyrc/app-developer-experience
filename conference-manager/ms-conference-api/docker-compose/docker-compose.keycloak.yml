@@ -28,3 +28,4 @@ services:
 networks:
   default:
     name: ${COMPOSE_PROJECT_NAME}-network
+    external: true

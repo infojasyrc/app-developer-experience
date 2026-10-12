@@ -16,6 +16,8 @@ TOKEN_SCRIPT_FILE        = ./scripts/get-token.sh
 PROJECT_NAME             := $(PROJECT_NAME)
 COMPOSE_PROJECT_NAME     := $(COMPOSE_PROJECT_NAME)
 DOCKER_COMPOSE           = docker compose
+# Shared MongoDB lives in ../shared-services (shared with ms-conference-admin)
+SHARED_SERVICES          = ../shared-services
 PLATFORM                 := $(PLATFORM)
 # For CI
 IMAGE_NAME               ?= $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api
@@ -34,7 +36,7 @@ DEV_VOLUME_API = \
 	-v $(COMPOSE_PROJECT_NAME)-api-packages:$(LOCAL_APP_FOLDER)/node_modules
 
 # Centralized phony target list (discovery + reduces duplication)
-.PHONY: help docker-clean build-dev build-prod get-token interactive create-volumes install-dependencies \
+.PHONY: help docker-clean build-dev build-prod get-token interactive create-network create-volumes install-dependencies \
 	audit-fix-dependencies lint unit-tests unit-tests-v2 watch-unit-tests-v2 \
 	launch-db stop-db launch-local-dev stop-local-dev launch-local-prod stop-local-prod \
 	launch-unleash stop-unleash reset-unleash seed-data clear-data reset-db \
@@ -88,7 +90,11 @@ interactive: ## 🚀 Run API standalone (healthcheck only, no DB)
 		-p "${MS_PORT}:${MS_PORT}" \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash
 
-create-volumes: ## 📦 Create external container volume if they do not exist
+create-network: ## 🌐 Create shared container network if it does not exist
+	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) create-network
+
+create-volumes: ## 📦 Create external container volumes (incl. shared network + DB volume) if they do not exist
+	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) create-volumes
 	@echo "Checking and creating external volumes..."
 	@docker volume inspect $(COMPOSE_PROJECT_NAME)-api-packages >/dev/null 2>&1 || \
 		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-api-packages" && docker volume create $(COMPOSE_PROJECT_NAME)-api-packages)
@@ -136,7 +142,7 @@ watch-unit-tests-v2: ## 🧪 Run Jest unit tests in watch mode (v2 NestJS)
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:watch:v2"
 
-launch-unleash: ## 🚀 Launch feature toggles with unleash
+launch-unleash: create-network ## 🚀 Launch feature toggles with unleash
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml up
 
 stop-unleash: ## 🛑 Stop feature toggle service
@@ -145,42 +151,42 @@ stop-unleash: ## 🛑 Stop feature toggle service
 reset-unleash: ## 🗑️ Stop unleash and remove its volume (required after upgrading postgres major version)
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml down -v
 
-launch-db: ## 🗄️ Launch MongoDB container locally
-	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml up
+launch-db: ## 🗄️ Launch shared MongoDB (idempotent, shared with ms-conference-admin)
+	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) launch-db
 
-stop-db: ## 🛑 Stop local MongoDB container
-	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml down
+stop-db: ## 🛑 Stop shared MongoDB (also affects ms-conference-admin)
+	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) stop-db
 
-reset-db: ## 🗑️ Stop MongoDB and wipe its data volume — clears stale indexes (dev only)
-	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml down -v
+reset-db: ## 🗑️ Stop shared MongoDB and wipe its data volume — clears stale indexes (dev only, also affects ms-conference-admin)
+	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) reset-db
 
-launch-local-dev: ## 🚀 Launch full dev stack (API + DB + Unleash + Keycloak SSO + Grafana SSO)
+launch-local-dev: launch-db ## 🚀 Launch full dev stack (API + shared DB + Unleash + Keycloak SSO + Grafana SSO)
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) \
-		-f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.keycloak.yml \
 		-f docker-compose/docker-compose.oauth2-proxy.yml \
 		-f docker-compose/docker-compose.tools.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml up -d
 
-stop-local-dev: ## 🛑 Stop full dev stack
+stop-local-dev: ## 🛑 Stop full dev stack (shared DB keeps running, see stop-db)
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) \
-		-f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.keycloak.yml \
 		-f docker-compose/docker-compose.oauth2-proxy.yml \
 		-f docker-compose/docker-compose.tools.yml \
 		-f docker-compose/docker-compose.local.dev.api.yml down
 
-launch-local-prod: ## 🚀 Launch production-like stack locally
-	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+launch-local-prod: launch-db ## 🚀 Launch production-like stack locally (with shared DB)
+	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) \
+		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.local.api.yml up
 
-stop-local-prod: ## 🛑 Stop production-like local stack
-	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+stop-local-prod: ## 🛑 Stop production-like local stack (shared DB keeps running)
+	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) \
+		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.local.api.yml down
 
-launch-oauth2-proxy: ## 🔐 Launch oauth2-proxy SSO gateway for Unleash (requires Keycloak + Unleash running)
+launch-oauth2-proxy: create-network ## 🔐 Launch oauth2-proxy SSO gateway for Unleash (requires Keycloak + Unleash running)
 	docker compose --env-file $(ENV_FILE) \
 		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.keycloak.yml \
@@ -189,7 +195,7 @@ launch-oauth2-proxy: ## 🔐 Launch oauth2-proxy SSO gateway for Unleash (requir
 stop-oauth2-proxy: ## 🛑 Stop oauth2-proxy SSO gateway
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.oauth2-proxy.yml down
 
-launch-keycloak: ## 🔐 Launch Keycloak IdP standalone
+launch-keycloak: create-network ## 🔐 Launch Keycloak IdP standalone
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml up
 
 stop-keycloak: ## 🛑 Stop Keycloak IdP
