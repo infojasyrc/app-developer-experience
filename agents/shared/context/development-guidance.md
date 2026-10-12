@@ -278,18 +278,20 @@ Runtime service (not a bootstrap template) that exposes ADE conventions over MCP
 
 ### CLI (`cli/`)
 
-Internal CLI tool built and packaged inside a container.
+Internal CLI tool built and packaged inside a container. Lockfile is `uv.lock`. Never run host `python`, `pip`, or `uv` — `make help` from `cli/`, then only Make targets.
 
 | Target | Purpose |
 |---|---|
 | `make build-dev` | Build the CLI dev image |
 | `make build-prod` | Build the CLI production image |
-| `make install-dependencies` | Install all CLI dependencies inside the container |
+| `make create-volumes` | Create named container volumes (`app-dev-xp-cli-packages`) — **run before first use** |
+| `make install-dependencies` | Install packages from `uv.lock` into the container volume |
 | `make run-unit-tests` | Run unit tests inside container |
 | `make build-local-package` | Build the distributable package inside container |
 | `make basic-commit` | Run a basic commit workflow inside container |
 | `make interactive-commit` | Interactive commit prompt inside container |
 | `make cli` | Run the CLI entrypoint |
+| `make docker-clean` | Stop running containers and prune unused images |
 | `make interactive` | Open a shell inside the container |
 | `make help` | List all targets |
 

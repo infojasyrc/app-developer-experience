@@ -12,43 +12,34 @@ on:
 
 env:
   PLATFORM: linux/amd64
-  IMAGE_NAME: appdevexp-cli-dev
 
 jobs:
   test:
-    name: run unit tests
-    runs-on: ubuntu-22.04
+    name: run unit tests for cli
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./cli
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build container image
-        run: |
-          cd cli
-          docker build --target dev -t ${{ env.IMAGE_NAME }} .
+      - name: Create volumes
+        run: make create-volumes
+
+      - name: Build container for development
+        run: make build-dev
 
       - name: Install dependencies
-        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
-        run: |
-          cd cli
-          docker run --workdir=/app \
-            --platform ${{ env.PLATFORM }} \
-            -v $(pwd):/app \
-            -v /app/.venv \
-            -v ${{ env.IMAGE_NAME }}-packages:/app/.venv \
-            ${{ env.IMAGE_NAME }} /bin/sh -ci "pipenv install --dev"
+        run: make install-dependencies
 
-      - name: Run unit tests
-        if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'refactor/')
-        continue-on-error: true
-        run: |
-          cd cli
-          docker run --workdir=/app \
-            --platform ${{ env.PLATFORM }} \
-            -v $(pwd):/app \
-            -v /app/.venv \
-            -v ${{ env.IMAGE_NAME }}-packages:/app/.venv \
-            ${{ env.IMAGE_NAME }} /bin/sh -ci "pipenv run python -m pytest tests/"
+      - name: Run Unit Tests
+        run: make run-unit-tests
+
+      - name: Build container for production
+        run: make build-prod

@@ -1,54 +1,45 @@
-# Use a minimal Python base image
-FROM python:3.11-slim AS dev
+# syntax=docker/dockerfile:1
 
-# Install binutils
-RUN apt-get update && apt-get install -y binutils
+FROM python:3.12-slim AS dev
 
-# disable pipenv cache
-ENV PIP_NO_CACHE_DIR=true
-# create or use .venv in pipfile directory
-ENV PIPENV_VENV_IN_PROJECT=1
-# more detailed logs
-ENV PIPENV_VERBOSE=1
+# Copy uv binary
+COPY --from=ghcr.io/astral-sh/uv:0.12.9 /uv /uvx /bin/
+
+# Install system dependencies for git and pyinstaller
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    binutils \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONFAULTHANDLER=1 \
+    PYTHONPATH=/app/src \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PROJECT_ENVIRONMENT=/app/.venv
 
 WORKDIR /app
 
-# install pipenv and python
-RUN pip install --no-cache-dir pipenv==2024.4.1 && \
-    pipenv install --python 3.11
+FROM dev AS build
 
-FROM dev AS dependencies
-
-# Set work directory inside the container
 WORKDIR /app
 
-# Copy Pipfile and Pipfile.lock
-COPY Pipfile Pipfile.lock ./
+COPY pyproject.toml uv.lock ./
 
-# Install only production dependencies
-RUN pipenv install --deploy --ignore-pipfile
+RUN uv sync --frozen --no-dev --no-install-project
 
-# Copy the rest of the application
-COPY ./src .
+FROM build AS prod
 
-FROM dependencies AS prod
-
-# Set work directory inside the container
 WORKDIR /app
 
-# Copy the virtual environment from the dependencies stage
-COPY --from=dependencies /app/.venv /app/.venv
+COPY src ./src
 
-# Copy the rest of the application
-COPY ./src .
-
-# Set the PATH to use the virtual environment
 ENV PATH="/app/.venv/bin:$PATH"
-# Run pyinstaller to create a single executable
-RUN pipenv run pyinstaller --onefile --name=appexpdev src/main.py
 
-# Make the dist folder available as a volume
+RUN uv run pyinstaller --onefile --copy-metadata readchar --copy-metadata inquirer --name=appdevexp src/main.py
+
 VOLUME /app/dist
 
-# Set the entrypoint to execute the CLI
-ENTRYPOINT ["/app/dist/appexpdevcli"]
+ENTRYPOINT ["/app/dist/appdevexp"]
