@@ -30,6 +30,12 @@ DEV_VOLUME = \
 	-v $(CONTAINER_APP_FOLDER)/.venv \
 	-v $(COMPOSE_PROJECT_NAME)-admin-packages:$(CONTAINER_APP_FOLDER)/.venv
 
+DEV_ENV = \
+	-e PYTHONPATH=$(CONTAINER_APP_FOLDER)/src \
+	-e DB_HOST=localhost \
+	-e DB_PORT=$(DB_PORT) \
+	-e DEFAULT_DB=$(DEFAULT_DB)
+
 .PHONY: help
 help: ## ❓ Show Conference Manager root + component targets
 ifeq ($(OS),Windows_NT)
@@ -39,7 +45,7 @@ else
 endif
 
 .PHONY: docker-clean build-dev build-prod interactive create-network create-volumes install-dependencies \
-	launch-db stop-db reset-db launch-local stop-local launch-prod stop-prod logs help
+	lint format unit-tests launch-db stop-db reset-db launch-local stop-local launch-prod stop-prod logs help
 
 docker-clean: ## stop+kill all running containers. prune stopped containers. remove all untagged images
 ifeq ($(OS),Windows_NT)
@@ -49,25 +55,24 @@ else
 endif
 
 build-dev: ## build container image for local development
-	docker build --platform $(PLATFORM) --target build \
+	docker build --platform $(PLATFORM) --target dev \
 		-t $(COMPOSE_PROJECT_NAME)-admin-dev .
 
 build-prod: ## build container image for production
-	docker build --platform $(PLATFORM) \
+	docker build --platform $(PLATFORM) --target prod \
 		-t $(COMPOSE_PROJECT_NAME)-admin .
 
 interactive: ## get a bash shell in the container
 	docker run -it --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		--env PATH="/app/.venv/bin:$PATH" \
-		--env PIPENV_PIPFILE=/app/Pipfile \
+		--env PATH="/app/.venv/bin:$$PATH" \
 		--env DB_ROOT_USERNAME=$(DB_ROOT_USERNAME) \
 		--env DB_ROOT_PASSWORD=$(DB_ROOT_PASSWORD) \
 		--env DB_HOST=localhost \
 		--env DB_PORT=$(DB_PORT) \
 		--env DEFAULT_DB=$(DEFAULT_DB) \
-		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash
+		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash -c "source .venv/bin/activate && exec ash"
 
 create-network: ## create shared container network if it does not exist
 	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) create-network
@@ -86,11 +91,32 @@ stop-db: ## stop shared MongoDB (also affects ms-conference-api)
 reset-db: ## stop shared MongoDB and wipe its data volume (dev only, also affects ms-conference-api)
 	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) reset-db
 
-install-dependencies: ## install packages
-	docker run -it --workdir="$(CONTAINER_APP_FOLDER)" \
+install-dependencies: ## install uv packages into the container volume
+	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash -ci "pipenv install --dev"
+		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash -c "uv lock && uv sync --group dev"
+
+lint: ## run linters inside the container
+	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(DEV_ENV) \
+		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash -c "uv run black --check src && uv run isort --check-only src && uv run flake8 src"
+
+format: ## auto-format source with black and isort
+	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(DEV_ENV) \
+		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash -c "uv run black src && uv run isort src"
+
+unit-tests: ## run unit tests with coverage
+	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		$(DEV_VOLUME) \
+		$(DEV_ENV) \
+		$(COMPOSE_PROJECT_NAME)-admin-dev /bin/ash -c "uv run pytest"
 
 launch-local: launch-db ## launch application for local development (with shared DB)
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.local.yml up -d

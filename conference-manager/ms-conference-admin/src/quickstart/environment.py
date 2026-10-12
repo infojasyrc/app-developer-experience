@@ -4,7 +4,7 @@ from typing import Dict
 
 def get_environment_variables() -> Dict:
     """
-        Get environment variables
+    Get environment variables
     """
     db_host = os.environ.get("DB_HOST", "localhost")
     db_port = os.environ.get("DB_PORT", "27017")

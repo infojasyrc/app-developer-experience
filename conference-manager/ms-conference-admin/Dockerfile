@@ -1,48 +1,53 @@
-FROM python:3.10.13-alpine3.18 AS build
+# syntax=docker/dockerfile:1
 
-# update package registry
-RUN apk update --no-check-certificate && \
-    apk upgrade --no-check-certificate && \
-    apk add --no-check-certificate --upgrade apk-tools build-base wait4x
+FROM python:3.14-alpine AS dev
 
-# pipenv configuration
+COPY --from=ghcr.io/astral-sh/uv:0.12.9 /uv /uvx /bin/
 
-# disable pipenv cache
-ENV PIP_NO_CACHE_DIR=true
-# create or use .venv in pipfile directory
-ENV PIPENV_VENV_IN_PROJECT=1
-# more detailed logs
-ENV PIPENV_VERBOSE=1
+RUN apk add --no-cache \
+    build-base \
+    libffi-dev
 
-# install pipenv and python
-RUN pip install --no-cache-dir pipenv==2023.10.24 && \
-    pipenv install --python 3.10
-
-FROM build AS dependencies
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONFAULTHANDLER=1 \
+    PYTHONPATH=/app/src \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PROJECT_ENVIRONMENT=/app/.venv
 
 WORKDIR /app
 
-# copy only lock files to avoid source code
-COPY ./Pipfile /app/Pipfile
-COPY ./Pipfile.lock /app/Pipfile.lock
-
-# install dependencies
-RUN pipenv run pipenv install --deploy --ignore-pipfile && \
-    pipenv --clear
-
-FROM dependencies AS prod
+FROM dev AS build
 
 WORKDIR /app
 
-COPY ./src /app
+COPY pyproject.toml /app/pyproject.toml
+COPY uv.lock /app/uv.lock
 
-COPY --from=dependencies /app/.venv /app/.venv
+RUN uv sync --frozen --no-dev --no-install-project
 
-ENV PATH="/app/.venv/bin:$PATH"
-ENV PIPENV_PIPFILE=/app/Pipfile
+FROM python:3.14-alpine AS prod
+
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONFAULTHANDLER=1 \
+    PYTHONPATH=/app/src \
+    PATH="/app/.venv/bin:$PATH"
+
+WORKDIR /app/src
+
+COPY --from=build /app/.venv /app/.venv
+COPY src /app/src
+
+RUN adduser -D -u 10001 appuser
+USER appuser
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3000/admin/login/')"
 
 EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl -f http://localhost:3000/ || exit 1
-
-CMD [ "pipenv", "run", "python", "manage.py", "runserver", "0.0.0.0:3000" ]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:3000"]

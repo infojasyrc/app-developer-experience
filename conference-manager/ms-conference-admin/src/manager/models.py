@@ -1,9 +1,9 @@
 from django.db import models
-from django.conf import settings
 
 
 class Headquarter(models.Model):
-    """ Headquarter model """
+    """Headquarter model"""
+
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
@@ -14,12 +14,12 @@ class Headquarter(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    #created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    #updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name_plural = 'Headquarters'
-        db_table = 'headquarters'
+        verbose_name_plural = "Headquarters"
+        db_table = "headquarters"
         managed = False
 
     def __str__(self):
@@ -27,7 +27,8 @@ class Headquarter(models.Model):
 
 
 class Conference(models.Model):
-    """ Conference model """
+    """Conference model"""
+
     name = models.CharField(max_length=100)
     description = models.TextField()
     start_date = models.DateField()
@@ -37,12 +38,12 @@ class Conference(models.Model):
     status = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    #created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    #updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name_plural = 'Conferences'
-        db_table = 'events'
+        verbose_name_plural = "Conferences"
+        db_table = "events"
         managed = False
 
     def __str__(self):
