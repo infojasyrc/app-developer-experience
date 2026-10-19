@@ -29,7 +29,7 @@ make install-dependencies
 # launch the shared database, run migrations and start the admin on http://localhost:3001
 make launch-local
 # create the Django admin superuser (interactive; requires the admin to be running)
-make createsuperuser
+make create-super-user
 # lint and unit tests (80% minimum coverage)
 make lint
 make unit-tests

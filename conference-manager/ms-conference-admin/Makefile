@@ -45,7 +45,8 @@ else
 endif
 
 .PHONY: docker-clean build-dev build-prod interactive create-network create-volumes install-dependencies \
-	lint format unit-tests launch-db stop-db reset-db launch-local createsuperuser stop-local launch-prod stop-prod logs help
+	lint format unit-tests launch-db stop-db reset-db launch-local stop-local launch-prod stop-prod \
+	create-super-user logs help
 
 docker-clean: ## stop+kill all running containers. prune stopped containers. remove all untagged images
 ifeq ($(OS),Windows_NT)
@@ -121,7 +122,7 @@ unit-tests: ## run unit tests with coverage
 launch-local: launch-db ## launch application for local development (with shared DB)
 	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose/docker-compose.local.yml up -d
 
-createsuperuser: ## create a Django admin superuser (requires make launch-local)
+create-super-user: ## create a Django admin superuser (requires make launch-local)
 	docker exec -it -w $(CONTAINER_APP_FOLDER)/src $(COMPOSE_PROJECT_NAME)-admin-dev \
 		/bin/ash -c "uv run --no-sync python manage.py createsuperuser"
 
