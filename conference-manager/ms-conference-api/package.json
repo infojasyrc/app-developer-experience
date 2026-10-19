@@ -54,7 +54,7 @@
     "@nestjs/core": "^11.1.21",
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/mapped-types": "^2.0.6",
-    "@nestjs/mongoose": "^11.0.3",
+    "@nestjs/mongoose": "^12.0.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.21",
     "@nestjs/swagger": "^11.0.7",
