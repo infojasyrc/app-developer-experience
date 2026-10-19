@@ -3,7 +3,7 @@
 services:
   migrations:
     container_name: ${COMPOSE_PROJECT_NAME}-admin-migrations
-    image: ${COMPOSE_PROJECT_NAME}-admin-dev:latest
+    image: ${PROJECT_NAME}/${COMPOSE_PROJECT_NAME}-admin-dev:latest
     working_dir: /app/src
     command: /bin/ash -ci "uv run --no-sync python manage.py migrate"
     platform: ${PLATFORM}
@@ -22,7 +22,7 @@ services:
 
   admin:
     container_name: ${COMPOSE_PROJECT_NAME}-admin-dev
-    image: ${COMPOSE_PROJECT_NAME}-admin-dev:latest
+    image: ${PROJECT_NAME}/${COMPOSE_PROJECT_NAME}-admin-dev:latest
     working_dir: /app/src
     command: /bin/ash -ci "uv run --no-sync python manage.py runserver 0.0.0.0:3000"
     restart: unless-stopped

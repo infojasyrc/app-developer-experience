@@ -151,13 +151,13 @@ stop-unleash: ## 🛑 Stop feature toggle service
 reset-unleash: ## 🗑️ Stop unleash and remove its volume (required after upgrading postgres major version)
 	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml down -v
 
-launch-db: ## 🗄️ Launch shared MongoDB (idempotent, shared with ms-conference-admin)
+launch-db: ## 🗄️ Launch shared database
 	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) launch-db
 
-stop-db: ## 🛑 Stop shared MongoDB (also affects ms-conference-admin)
+stop-db: ## 🛑 Stop shared database
 	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) stop-db
 
-reset-db: ## 🗑️ Stop shared MongoDB and wipe its data volume — clears stale indexes (dev only, also affects ms-conference-admin)
+reset-db: ## 🗑️ Stop shared database and wipe its data volume
 	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) reset-db
 
 launch-local-dev: launch-db ## 🚀 Launch full dev stack (API + shared DB + Unleash + Keycloak SSO + Grafana SSO)
