@@ -48,7 +48,7 @@ categories:
       - dockerfile
     dockerfile_names:
       - dockerfile
-    rule: make-targets-wrap-docker
+    rule: make-targets-wrap-container-engine
   iac:
     optional_unless_expected: true
     package_stacks:

@@ -28,7 +28,7 @@ Mandatory context, do not duplicate it here: always read @AGENTS.md and @CLAUDE.
 - **DDD** — backend services are organized around Domain Driven Design.
 - **Clean Architecture** — separation of domain, application, and infrastructure layers.
 - **Makefile is the Unified CLI Facade** — every package is driven through `make help` / `make <target>`. Never call the underlying CLI by hand. See `docs/adr/0001-makefile-unified-cli-facade.md`.
-- **Container-first** — services, websites, and runtime tools ship as an optimized Docker image (source only, no dev dependencies). Do not run `npm`, `node`, `python`, or other language runtimes on the host. This does **not** apply to IaC under `cloud/` (host Terraform via Make).
+- **Container-first** — services, websites, and runtime tools ship as an optimized container image (source only, no dev dependencies). `CONTAINER_RUNTIME` in `.env.public` selects `docker`, `podman`, or `container` (default `docker`). Do not run `npm`, `node`, `python`, or the engine CLI on the host. Makefiles for these packages run on Linux or macOS. This does **not** apply to IaC under `cloud/` (host Terraform via Make).
 - **Coverage** — 80% minimum per component.
 
 ## Workflow: Plan → Implement

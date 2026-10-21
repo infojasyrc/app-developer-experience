@@ -12,11 +12,9 @@ This is a template to build rest api using fastapi.
 
 ### Requirements
 
-Host tools only: Docker and Make. Never run `python`, `pip`, `uv`, or `poetry` on the host.
+Host: Linux or macOS, with Make and one container engine (`docker`, `podman`, or `container`). Never run `python`, `pip`, `uv`, or `poetry` on the host.
 
-```bash
-brew install --cask docker-desktop
-```
+`.env.public` sets `CONTAINER_RUNTIME=docker`. To use another engine, copy `.env.public` to `.env` and set `CONTAINER_RUNTIME`, or pass it once: `make build-dev CONTAINER_RUNTIME=podman`.
 
 ### Local Development
 

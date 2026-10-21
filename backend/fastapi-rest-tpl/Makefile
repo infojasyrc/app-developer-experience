@@ -2,6 +2,11 @@ ENV_FILE = $(shell [ -e ".env" ] && echo ".env" || echo ".env.public")
 
 include $(ENV_FILE)
 
+CONTAINER_RUNTIME ?= docker
+ifeq ($(filter $(CONTAINER_RUNTIME),docker podman container),)
+$(error CONTAINER_RUNTIME must be docker, podman, or container)
+endif
+
 .DEFAULT_GOAL := help
 
 COMPOSE_PROJECT_NAME ?= fastapi-rest-tpl
@@ -12,11 +17,7 @@ IMAGE_PROD = $(COMPOSE_PROJECT_NAME)
 
 PACKAGE_DIR := $(abspath .)
 
-ifeq ($(OS),Windows_NT)
-	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
-else
-	DIR := $(PACKAGE_DIR)
-endif
+DIR := $(PACKAGE_DIR)
 
 DEV_VOLUME = \
 	-v $(DIR):$(CONTAINER_APP_FOLDER) \
@@ -30,35 +31,34 @@ DEV_ENV = \
 	create-volumes launch-local stop-local interactive help
 
 docker-clean: ## stop and kill all running containers
-ifeq ($(OS),Windows_NT)
-	powershell "docker ps -qa | foreach object {docker kill $$_}; docker container prune --force; docker system prune --force;"
-else
-	docker ps -qa | xargs docker kill; docker container prune --force; docker system prune --force;
-endif
+	@ids=$$($(CONTAINER_RUNTIME) ps -qa); \
+	if [ -n "$$ids" ]; then printf '%s\n' $$ids | xargs $(CONTAINER_RUNTIME) kill; fi; \
+	$(CONTAINER_RUNTIME) container prune --force; \
+	$(CONTAINER_RUNTIME) system prune --force
 
 build-dev: ## build docker image for local development
-	docker build --platform $(PLATFORM) --target dev \
+	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target dev \
 		-t $(IMAGE_DEV) .
 
 build-prod: ## build docker image for production
-	docker build --platform $(PLATFORM) --target prod \
+	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target prod \
 		-t $(IMAGE_PROD) .
 
 install-dependencies: ## install uv packages into the container volume
-	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(IMAGE_DEV) /bin/ash -c "uv lock && uv sync --group dev"
 
 lint: ## run linters inside the container
-	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(DEV_ENV) \
 		$(IMAGE_DEV) /bin/ash -c "uv run black --check src tests && uv run isort --check-only src tests && uv run flake8 src tests"
 
 unit-tests: ## run unit tests with coverage
-	docker run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(DEV_ENV) \
@@ -66,29 +66,25 @@ unit-tests: ## run unit tests with coverage
 
 create-volumes: ## create external container volumes if they do not exist
 	@echo "Checking and creating external volumes..."
-	@docker volume inspect $(COMPOSE_PROJECT_NAME)-db-data >/dev/null 2>&1 || \
-		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-db-data" && docker volume create $(COMPOSE_PROJECT_NAME)-db-data)
-	@docker volume inspect $(COMPOSE_PROJECT_NAME)-packages >/dev/null 2>&1 || \
-		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-packages" && docker volume create $(COMPOSE_PROJECT_NAME)-packages)
+	@$(CONTAINER_RUNTIME) volume inspect $(COMPOSE_PROJECT_NAME)-db-data >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-db-data" && $(CONTAINER_RUNTIME) volume create $(COMPOSE_PROJECT_NAME)-db-data)
+	@$(CONTAINER_RUNTIME) volume inspect $(COMPOSE_PROJECT_NAME)-packages >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-packages" && $(CONTAINER_RUNTIME) volume create $(COMPOSE_PROJECT_NAME)-packages)
 
 launch-local: ## launch application for local development
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.local.yml up
 
 stop-local: ## stop application for local development
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml \
 		-f docker-compose/docker-compose.local.yml down
 
 interactive: ## open a shell inside the container
-	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(DEV_ENV) \
 		$(IMAGE_DEV) /bin/ash -c "source .venv/bin/activate && exec ash"
 
 help: ## show all make commands
-ifeq ($(OS),Windows_NT)
-	powershell "((type Makefile) -match '##') -notmatch 'grep'"
-else
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-endif

@@ -28,16 +28,16 @@ TODO: Add here the evolution of our architecture.
 
 ## Project Dependencies
 
-Host tools only:
+Host: Linux or macOS, with:
 
-- Docker
 - Make
+- One container engine: `docker`, `podman`, or `container` (default `docker` in `.env.public`)
 
 Do not install Node, nvm, or npm on the host. The container image uses Node 20.18.1 (`ARG NODE_VERSION` in the Dockerfile).
 
 ## Getting started
 
-All install, lint, test, and run work happens inside Docker via Make.
+All install, lint, test, and run work happens inside the container via Make. Override the engine with `.env` or `make <target> CONTAINER_RUNTIME=podman`.
 
 ### Environment Configuration
 

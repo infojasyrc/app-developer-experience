@@ -38,7 +38,7 @@ lifecycle:
     - Copy the matching template directory into the new package. Do not treat root Makefile create-* targets as the product contract.
     - cd into the new package directory.
     - Run make help and use only Make targets.
-    - Keep a Makefile and Dockerfile. Make targets must wrap Docker (Where You Build, You Run).
+    - Keep a Makefile and Dockerfile. Make targets must wrap the container engine selected by CONTAINER_RUNTIME (docker, podman, or container; default docker).
     - Never call npm, node, python, pip, poetry, or uv on the host.
 
 not_templates:

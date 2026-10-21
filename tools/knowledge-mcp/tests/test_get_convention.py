@@ -29,13 +29,22 @@ def test_get_convention_makefile_alias(knowledge_store):
     assert "unified cli facade" in joined
     assert "inside containers" in joined
     assert "host" in joined and "terraform" in joined
+    assert "container_runtime" in joined
+    assert "podman" in joined
+    assert "macos" in joined
+    assert "linux" in joined
+    assert "default is `docker`" in joined or "default `docker`" in joined or "default: `docker`" in joined or ".env.public" in joined
 
 
 def test_get_convention_unified_cli_facade_alias(knowledge_store):
     result = get_convention(knowledge_store, "unified-cli-facade")
     assert result["topic"] == "makefile"
     assert result["excerpts"]
-    assert "unified cli facade" in _joined(result).lower()
+    joined = _joined(result).lower()
+    assert "unified cli facade" in joined
+    assert "container_runtime" in joined
+    assert "podman" in joined
+    assert "macos" in joined
 
 
 def test_get_convention_make_targets_alias(knowledge_store):
