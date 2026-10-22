@@ -33,7 +33,12 @@ def test_get_convention_makefile_alias(knowledge_store):
     assert "podman" in joined
     assert "macos" in joined
     assert "linux" in joined
-    assert "default is `docker`" in joined or "default `docker`" in joined or "default: `docker`" in joined or ".env.public" in joined
+    assert (
+        "default is `docker`" in joined
+        or "default `docker`" in joined
+        or "default: `docker`" in joined
+        or ".env.public" in joined
+    )
 
 
 def test_get_convention_unified_cli_facade_alias(knowledge_store):

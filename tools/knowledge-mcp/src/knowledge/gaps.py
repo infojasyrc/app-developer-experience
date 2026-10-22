@@ -147,7 +147,8 @@ def compare_gaps(
                 _gap(
                     "containerization",
                     "makefile-wraps-host-runtime",
-                    "Makefile wraps host npm/python instead of a container engine selected by CONTAINER_RUNTIME (Where You Build, You Run).",
+                    "Makefile wraps host npm/python instead of a container engine "
+                    "selected by CONTAINER_RUNTIME (Where You Build, You Run).",
                 )
             )
 
