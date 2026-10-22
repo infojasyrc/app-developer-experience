@@ -14,6 +14,8 @@ def test_canonicalize_aliases():
     assert canonicalize_topic("makefile") == "makefile"
     assert canonicalize_topic("unified-cli-facade") == "makefile"
     assert canonicalize_topic("cli-facade") == "makefile"
+    assert canonicalize_topic("container-runtime") == "makefile"
+    assert canonicalize_topic("container-engine") == "makefile"
     assert canonicalize_topic("container") == "container-first"
     assert canonicalize_topic("terraform") == "iac"
     assert canonicalize_topic("infrastructure") == "iac"

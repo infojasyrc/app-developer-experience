@@ -6,7 +6,7 @@ description: >
   workflow for services, the host-CLI workflow for IaC, and what never to do.
 metadata:
   author: app-dev-exp
-  version: "1.8"
+  version: "1.9"
 ---
 
 # Development Guidance — ADE Monorepo
@@ -15,12 +15,43 @@ metadata:
 
 Never call the underlying CLI by hand. `cd` into the package, run `make help`,
 then only `make <target>`. The Makefile is the Unified CLI Facade — the only
-supported entry point. Callers talk to Make; they do not need to know whether
-a target wraps Docker or a host CLI.
+supported entry point. Callers talk to Make; they do not need to know which
+container engine or host CLI a target wraps.
+
+These Makefiles run on Linux or macOS. Recipes use a Unix shell (`sh`, `grep`,
+`awk`, `xargs`). They do not include `Windows_NT` branches or PowerShell.
 
 What the facade wraps depends on the package type.
 
 Decision record: `docs/adr/0001-makefile-unified-cli-facade.md`.
+
+### Container engine
+
+Services, websites, and runtime tools select the container engine with
+`CONTAINER_RUNTIME`. Allowed values: `docker`, `podman`, `container` (Apple's
+container CLI). The committed default is `docker`.
+
+Each package `.env.public` opens with:
+
+```bash
+# Container engine. Allowed tools: docker | podman | container
+CONTAINER_RUNTIME=docker
+```
+
+Precedence:
+
+1. `make <target> CONTAINER_RUNTIME=podman` overrides the included file.
+2. If `.env` exists, Make includes that file and does not read `.env.public`.
+   A local override belongs in `.env`, and that file must set `CONTAINER_RUNTIME`.
+3. Otherwise `.env.public` sets `CONTAINER_RUNTIME=docker`.
+4. The Makefile uses `CONTAINER_RUNTIME ?= docker` only when the included file
+   omits the variable.
+
+A shell `export` does not override an assignment in the included file. GitHub
+Actions workflows that run these Make targets set `CONTAINER_RUNTIME: docker`.
+
+Do not invoke `docker`, `podman`, or `container` by hand. Make is the only
+supported entry point. Any other value fails Make with an explicit error.
 
 ### Where You Build, You Run
 
@@ -31,9 +62,10 @@ Manager API / webapp / admin, `mobile-app/`, `cli/`, and
 `tools/knowledge-mcp/`.
 
 Never run `npm`, `node`, `python`, `pip`, `pipenv`, `uv`, `poetry`, or other
-language runtimes on the host. Makefile targets wrap Docker. Development,
-testing, linting, and builds happen **inside containers**. That keeps every
-developer and every CI/CD run on the same runtime.
+language runtimes on the host. Makefile targets wrap the container engine
+selected by `CONTAINER_RUNTIME` (default `docker` from `.env.public`).
+Development, testing, linting, and builds happen **inside containers**. That
+keeps every developer and every CI/CD run on the same runtime.
 
 ### Infrastructure as Code
 
@@ -327,11 +359,13 @@ Full detail on how this layer relates to `module/iam` (Terraform-native, the one
 
 ---
 
-## Docker Platform
+## Container platform
 
-Makefile targets that invoke Docker pass `--platform $(PLATFORM)`. `PLATFORM` is read from the package's `.env.public` (or `.env` if present) — do not hardcode it in the Makefile.
+Makefile targets pass `--platform $(PLATFORM)` to `$(CONTAINER_RUNTIME)`. `PLATFORM` and `CONTAINER_RUNTIME` are read from the package's `.env.public` (or `.env` if present) — do not hardcode them in the Makefile.
 
-Allowed values: `linux/amd64 | linux/arm64 | linux/x86_64`. Default: `linux/amd64` (CI/cloud parity). Developers may set `PLATFORM=linux/arm64` in a local `.env` on Apple Silicon. Do not use `linux/arm64/v8` or `linux/arm/v7`.
+`CONTAINER_RUNTIME` allowed values: `docker | podman | container`. Default: `docker`.
+
+`PLATFORM` allowed values: `linux/amd64 | linux/arm64 | linux/x86_64`. Default: `linux/amd64` (CI/cloud parity). Developers may set `PLATFORM=linux/arm64` in a local `.env` on Apple Silicon. Do not use `linux/arm64/v8` or `linux/arm/v7`.
 
 ## What Never To Do
 
@@ -342,6 +376,7 @@ Allowed values: `linux/amd64 | linux/arm64 | linux/x86_64`. Default: `linux/amd6
 | `node server.js` | Services / websites | Skips the container runtime contract |
 | `python manage.py` / `pip install` | Services / websites | Host Python version may conflict; breaks reproducibility |
 | `npx` / `bunx` / `pnpm` | Services / websites | Same reason as `npm`; use `make interactive` for a one-off command |
+| `docker`, `podman`, or `container` by hand | Services / websites | The Makefile is the facade; `CONTAINER_RUNTIME` selects the engine |
 | `terraform init/plan/apply/destroy` | IaC | Must run through the Makefile facade on the host; never call `terraform` directly |
 
 On a container-first package, if you need a command not covered by a Makefile

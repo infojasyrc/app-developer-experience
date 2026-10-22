@@ -3,6 +3,11 @@ ENV_FILE = $(shell [ -e ".env" ] && echo ".env" || echo ".env.public")
 
 include $(ENV_FILE)
 
+CONTAINER_RUNTIME ?= docker
+ifeq ($(filter $(CONTAINER_RUNTIME),docker podman container),)
+$(error CONTAINER_RUNTIME must be docker, podman, or container)
+endif
+
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
 CONTAINER_APP_FOLDER = /app
@@ -15,11 +20,7 @@ PLATFORM                 := $(PLATFORM)
 IMAGE_NAME               ?= $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp
 IMAGE_TAG                ?= latest
 
-ifeq ($(OS),Windows_NT)
-	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
-else
-	DIR := "$$(pwd)"
-endif
+DIR := "$$(pwd)"
 
 DEV_VOLUME = \
 	-v $(DIR):$(CONTAINER_APP_FOLDER) \
@@ -32,18 +33,17 @@ DEV_VOLUME = \
 dev: build-dev install-dependencies launch ## 🚀 Build image, install deps, and launch webapp in dev container
 
 docker-clean: ## 🧹 Stop+kill containers, prune stopped, remove untagged images
-ifeq ($(OS),Windows_NT)
-	powershell "docker ps -qa | foreach-object {docker kill $$_}; docker container prune --force; docker system prune --force;"
-else
-	docker ps -qa | xargs docker kill; docker container prune --force; docker system prune --force;
-endif
+	@ids=$$($(CONTAINER_RUNTIME) ps -qa); \
+	if [ -n "$$ids" ]; then printf '%s\n' $$ids | xargs $(CONTAINER_RUNTIME) kill; fi; \
+	$(CONTAINER_RUNTIME) container prune --force; \
+	$(CONTAINER_RUNTIME) system prune --force
 
 build-dev: ## 🛠️ Build dev container image for webapp
-	docker build --platform $(PLATFORM) --target development \
+	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target development \
 		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev .
 
 build-prod: ## 🛠️ Build production container image for webapp (no layer cache)
-	docker build --no-cache \
+	$(CONTAINER_RUNTIME) build --no-cache \
 		--build-arg NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH} \
 		--build-arg NEXT_PUBLIC_VERSION=${NEXT_PUBLIC_VERSION} \
 		--build-arg NEXT_PUBLIC_API_KEY=${NEXT_PUBLIC_API_KEY} \
@@ -58,20 +58,20 @@ build-prod: ## 🛠️ Build production container image for webapp (no layer cac
 		-t $(IMAGE_NAME):$(IMAGE_TAG)
 
 interactive: ## 🧑‍💻 Open interactive shell in dev container
-	docker run -it --rm --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -it --rm --net=host --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash
 
 launch: ## 🚀 Launch webapp in dev container (only nextjs)
-	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		-p "8090:3000" \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run dev"
 
 launch-detached: ## 🚀 Launch webapp in dev container (detached, no TTY — for CI/scripts)
-	docker run -d --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -d --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		-p "8090:3000" \
@@ -79,58 +79,51 @@ launch-detached: ## 🚀 Launch webapp in dev container (detached, no TTY — fo
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run dev"
 
 stop: ## 🛑 Stop running webapp dev container
-ifeq ($(OS),Windows_NT)
-	powershell "docker ps -q --filter ancestor=$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev | foreach-object {docker stop $$_}"
-else
-	docker ps -q --filter ancestor=$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev | xargs -r docker stop
-endif
+	@ids=$$($(CONTAINER_RUNTIME) ps -q --filter ancestor=$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev); \
+	if [ -n "$$ids" ]; then printf '%s\n' $$ids | xargs $(CONTAINER_RUNTIME) stop; fi
 
 run-storybook: ## 📚 Run Storybook server (port 6006)
-	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		-p "6006:6006" \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run storybook -- --no-open --host 0.0.0.0"
 
 install-dependencies: ## 📦 Install Node dependencies into volume for dev
-	docker run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm install"
 
 lint: ## 🔍 Run linter
-	docker run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run lint"
 
 unit-tests-watch: ## 🧪 Run all unit tests in watch mode
-	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run test:watch"
 
 unit-tests: ## 🧪 Run all unit tests
-	docker run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run test:ci"
 
 commit: ## 📝 Conventional commit workflow
-	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm run commit"
 
 npm-audit: ## 🛡️ Run npm audit and attempt fixes
-	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev /bin/ash -ci "npm audit fix --force"
 
 help:  ## ❓ Show all make commands
-ifeq ($(OS),Windows_NT)
-	powershell "((type Makefile) -match '##') -notmatch 'grep'"
-else
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-endif

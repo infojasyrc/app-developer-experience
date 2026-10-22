@@ -10,6 +10,7 @@ permissions:
 
 env:
   PLATFORM: linux/amd64
+  CONTAINER_RUNTIME: docker
 
 jobs:
   get-changed-packages:

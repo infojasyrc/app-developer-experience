@@ -7,15 +7,8 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(deps)"
-  - package-ecosystem: "docker"
-    directory: "/backend/fastapi-rest-tpl"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "chore(deps)"
 
-  # CLI (uv + docker)
+  # CLI (uv)
   - package-ecosystem: "uv"
     directory: "/cli"
     schedule:
@@ -23,23 +16,9 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(deps)"
-  - package-ecosystem: "docker"
-    directory: "/cli"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "chore(deps)"
 
-  # Conference Manager admin (uv + docker)
+  # Conference Manager admin (uv)
   - package-ecosystem: "uv"
-    directory: "/conference-manager/ms-conference-admin"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "chore(deps)"
-  - package-ecosystem: "docker"
     directory: "/conference-manager/ms-conference-admin"
     schedule:
       interval: "weekly"
@@ -62,17 +41,6 @@ updates:
       development-minor-patch:
         dependency-type: development
         update-types: ["minor", "patch"]
-  - package-ecosystem: "docker"
-    directory: "/conference-manager/ms-conference-webapp"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "chore(deps)"
-    ignore:
-      # Node policy: Docker images track the LTS line only (currently 24).
-      - dependency-name: "node"
-        versions: [">= 25"]
 
   # Conference Manager API (Yarn Classic — still the npm ecosystem)
   - package-ecosystem: "npm"
@@ -89,17 +57,6 @@ updates:
       development-minor-patch:
         dependency-type: development
         update-types: ["minor", "patch"]
-  - package-ecosystem: "docker"
-    directory: "/conference-manager/ms-conference-api"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "chore(deps)"
-    ignore:
-      # Node policy: Docker images track the LTS line only (currently 24).
-      - dependency-name: "node"
-        versions: [">= 25"]
 
   # NestJS REST template
   - package-ecosystem: "npm"
@@ -116,17 +73,6 @@ updates:
       development-minor-patch:
         dependency-type: development
         update-types: ["minor", "patch"]
-  - package-ecosystem: "docker"
-    directory: "/backend/nestjs-rest-tpl"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "chore(deps)"
-    ignore:
-      # Node policy: Docker images track the LTS line only (currently 24).
-      - dependency-name: "node"
-        versions: [">= 25"]
 
   # NestJS GraphQL template
   - package-ecosystem: "npm"
@@ -143,14 +89,3 @@ updates:
       development-minor-patch:
         dependency-type: development
         update-types: ["minor", "patch"]
-  - package-ecosystem: "docker"
-    directory: "/backend/nestjs-gql-tpl"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "chore(deps)"
-    ignore:
-      # Node policy: Docker images track the LTS line only (currently 24).
-      - dependency-name: "node"
-        versions: [">= 25"]

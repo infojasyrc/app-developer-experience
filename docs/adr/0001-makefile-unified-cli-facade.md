@@ -11,7 +11,7 @@ Every ADE package is reached through `make help` / `make <target>`. Humans and
 agents must not call the underlying tool (`npm`, `python`, `terraform`, `aws`)
 by hand. What Make wraps is not the same in every package:
 
-- Services, websites, and runtime tools wrap **Docker** (container-first).
+- Services, websites, and runtime tools wrap a **container engine** selected by `CONTAINER_RUNTIME` (`docker`, `podman`, or `container`; default `docker`).
 - Infrastructure as Code wraps the **host** Terraform and AWS CLIs.
 
 We needed one name for that shared role. Informal language (“the bridge”) is
@@ -27,7 +27,8 @@ Use **Unified CLI Facade** as the standard term.
 - Human form: “The Makefile is the Unified CLI Facade.”
 - Core-rule heading: `Core Rule: Makefile Is the Unified CLI Facade`
 - Knowledge MCP topic stays `makefile` (stable lookup). Aliases:
-  `make`, `make-targets`, `unified-cli-facade`, `cli-facade`.
+  `make`, `make-targets`, `unified-cli-facade`, `cli-facade`,
+  `container-runtime`, `container-engine`.
 - Operational rules remain in `agents/shared/context/development-guidance.md`.
   This ADR is the decision record, not a second copy of those rules.
 
@@ -78,7 +79,9 @@ need to know which backend a target uses.
   return the same shared rule. `get_convention("container-first")` stays
   services-only. `get_convention("iac")` stays host Terraform via Make.
 - New packages still ship a Makefile. What the facade wraps is defined by
-  package type (Docker vs host CLI), not by a second entry point.
+  package type (container engine vs host CLI), not by a second entry point.
+  On Linux and macOS the engine comes from `CONTAINER_RUNTIME` in
+  `.env.public` (default `docker`). Callers still type only `make <target>`.
 - Informal “bridge” language in older chat or plans should be read as this
   term.
 

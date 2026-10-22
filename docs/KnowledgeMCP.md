@@ -333,11 +333,11 @@ Build a manifest of what the consumer repo already has, then call
 |---|---|
 | `files` | Paths or basenames the client detected |
 | `makefile_targets` | Target names from the consumer `Makefile` |
-| `makefile_wraps_docker` | `true` if Make runs Docker, not host `npm`/`python` |
+| `makefile_wraps_docker` | `true` if Make wraps a container engine (`CONTAINER_RUNTIME`: `docker`, `podman`, or `container`), not host `npm`/`python`. The field name stays `makefile_wraps_docker`. |
 | `makefile_wraps_host_runtime` | `true` if Make wraps a host runtime. Gap for services (`npm`/`python`). Not a gap for IaC (`terraform` via Make) |
 | `tools` | Detected tools (`commitlint`, `terraform`, …) |
 | `stack` | Detected stacks (`nestjs`, `fastapi`, `django`, `terraform`, …) |
-| `package_kind` | `iac` when the package *is* infrastructure (skips Dockerfile and Docker-wrap checks) |
+| `package_kind` | `iac` when the package *is* infrastructure (skips Dockerfile and container-engine checks) |
 | `identity` / `path` | Repo id. Use `conference-manager` only for that ADE solution |
 | `expect_iac` | `true` on a **service** repo to also require Terraform, Bicep, SAM, or CDK |
 

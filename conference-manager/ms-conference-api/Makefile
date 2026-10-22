@@ -5,6 +5,11 @@
 ENV_FILE                 = $(shell [ -e ".env" ] && echo ".env" || echo ".env.public")
 include $(ENV_FILE)
 
+CONTAINER_RUNTIME ?= docker
+ifeq ($(filter $(CONTAINER_RUNTIME),docker podman container),)
+$(error CONTAINER_RUNTIME must be docker, podman, or container)
+endif
+
 .DEFAULT_GOAL            := help
 
 LOCAL_APP_FOLDER         = /usr/src/app
@@ -15,7 +20,7 @@ TOKEN_SCRIPT_FILE        = ./scripts/get-token.sh
 
 PROJECT_NAME             := $(PROJECT_NAME)
 COMPOSE_PROJECT_NAME     := $(COMPOSE_PROJECT_NAME)
-DOCKER_COMPOSE           = docker compose
+CONTAINER_COMPOSE           = $(CONTAINER_RUNTIME) compose
 # Shared MongoDB lives in ../shared-services (shared with ms-conference-admin)
 SHARED_SERVICES          = ../shared-services
 PLATFORM                 := $(PLATFORM)
@@ -23,11 +28,7 @@ PLATFORM                 := $(PLATFORM)
 IMAGE_NAME               ?= $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api
 IMAGE_TAG                ?= latest
 
-ifeq ($(OS),Windows_NT)
-	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
-else
-	DIR := "$$(pwd)"
-endif
+DIR := "$$(pwd)"
 
 # include dependencies and codebase to a container excluding local dependencies that could conflict with one from volumes
 DEV_VOLUME_API = \
@@ -44,22 +45,21 @@ DEV_VOLUME_API = \
 	launch-oauth2-proxy stop-oauth2-proxy logs
 
 docker-clean: ## ❌ Stop & prune all containers/images (DANGEROUS)
-ifeq ($(OS),Windows_NT)
-	powershell "docker ps -qa | foreach-object {docker kill $$_}; docker container prune --force; docker system prune --force;"
-else
-	docker ps -qa | xargs docker kill || true; docker container prune --force; docker system prune --force;
-endif
+	@ids=$$($(CONTAINER_RUNTIME) ps -qa); \
+	if [ -n "$$ids" ]; then printf '%s\n' $$ids | xargs $(CONTAINER_RUNTIME) kill; fi; \
+	$(CONTAINER_RUNTIME) container prune --force; \
+	$(CONTAINER_RUNTIME) system prune --force
 
 build-dev: ## 🛠️ Build development container image for API
-	docker build --platform $(PLATFORM) --target development \
+	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target development \
 		-t $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev .
 
 build-prod: ## 🛠️ Build production container image for API
-	docker build --platform $(PLATFORM) \
+	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) \
 		-t $(IMAGE_NAME):$(IMAGE_TAG) .
 
 seed-data: ## 🌱 Seed users, headquarters and conferences directly via services (dev only)
-	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		--network $(COMPOSE_PROJECT_NAME)-network \
 		--env-file .env \
@@ -68,7 +68,7 @@ seed-data: ## 🌱 Seed users, headquarters and conferences directly via service
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn seed"
 
 clear-data: ## 🗑️ Remove all seeded users, headquarters and conferences (dev only)
-	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		--network $(COMPOSE_PROJECT_NAME)-network \
 		--env-file .env \
@@ -84,7 +84,7 @@ get-token: ## 🔐 Retrieve Firebase auth token (ROLE=admin|user) Usage: make ge
 	$(TOKEN_SCRIPT_FILE) $(EMAIL) $(PASSWORD)
 
 interactive: ## 🚀 Run API standalone (healthcheck only, no DB)
-	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		-p "${MS_PORT}:${MS_PORT}" \
@@ -96,27 +96,27 @@ create-network: ## 🌐 Create shared container network if it does not exist
 create-volumes: ## 📦 Create external container volumes (incl. shared network + DB volume) if they do not exist
 	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) create-volumes
 	@echo "Checking and creating external volumes..."
-	@docker volume inspect $(COMPOSE_PROJECT_NAME)-api-packages >/dev/null 2>&1 || \
-		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-api-packages" && docker volume create $(COMPOSE_PROJECT_NAME)-api-packages)
-	@docker volume inspect $(COMPOSE_PROJECT_NAME)-prometheus-data >/dev/null 2>&1 || \
-		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-prometheus-data" && docker volume create $(COMPOSE_PROJECT_NAME)-prometheus-data)
-	@docker volume inspect $(COMPOSE_PROJECT_NAME)-grafana-data >/dev/null 2>&1 || \
-		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-grafana-data" && docker volume create $(COMPOSE_PROJECT_NAME)-grafana-data)
+	@$(CONTAINER_RUNTIME) volume inspect $(COMPOSE_PROJECT_NAME)-api-packages >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-api-packages" && $(CONTAINER_RUNTIME) volume create $(COMPOSE_PROJECT_NAME)-api-packages)
+	@$(CONTAINER_RUNTIME) volume inspect $(COMPOSE_PROJECT_NAME)-prometheus-data >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-prometheus-data" && $(CONTAINER_RUNTIME) volume create $(COMPOSE_PROJECT_NAME)-prometheus-data)
+	@$(CONTAINER_RUNTIME) volume inspect $(COMPOSE_PROJECT_NAME)-grafana-data >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-grafana-data" && $(CONTAINER_RUNTIME) volume create $(COMPOSE_PROJECT_NAME)-grafana-data)
 
 install-dependencies: ## 📦 Install node packages into dev volume
-	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn install"
 
 audit-fix-dependencies: ## 🔍 Audit & fix critical/high vulnerabilities
-	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -c "yarn run security:audit && yarn run security:fix"
 
 lint: ## 🧹 Run lint checks
-	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run lint"
@@ -126,30 +126,30 @@ logs: ## 📜 Tail stack logs (all services, or app=<service> e.g. api, mongodb)
 		app="api"; \
 	fi
 	@echo "tailing logs for $(app)..."
-	docker compose logs -f $(app)
+	$(CONTAINER_RUNTIME) compose logs -f $(app)
 
 unit-tests: unit-tests-v2 ## 🧪 Run all unit tests (Jest)
 
 unit-tests-v2: ## 🧪 Run Jest unit tests (v2 NestJS)
-	docker run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:unit-tests:v2"
 
 watch-unit-tests-v2: ## 🧪 Run Jest unit tests in watch mode (v2 NestJS)
-	docker run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(LOCAL_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME_API) \
 		$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-api-dev /bin/ash -ci "yarn run test:watch:v2"
 
 launch-unleash: create-network ## 🚀 Launch feature toggles with unleash
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml up
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml up
 
 stop-unleash: ## 🛑 Stop feature toggle service
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml down
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml down
 
 reset-unleash: ## 🗑️ Stop unleash and remove its volume (required after upgrading postgres major version)
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml down -v
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml down -v
 
 launch-db: ## 🗄️ Launch shared database
 	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) launch-db
@@ -161,7 +161,7 @@ reset-db: ## 🗑️ Stop shared database and wipe its data volume
 	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) reset-db
 
 launch-local-dev: launch-db ## 🚀 Launch full dev stack (API + shared DB + Unleash + Keycloak SSO + Grafana SSO)
-	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) \
+	$(CONTAINER_COMPOSE) --env-file $(ENV_FILE) \
 		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.keycloak.yml \
 		-f docker-compose/docker-compose.oauth2-proxy.yml \
@@ -169,7 +169,7 @@ launch-local-dev: launch-db ## 🚀 Launch full dev stack (API + shared DB + Unl
 		-f docker-compose/docker-compose.local.dev.api.yml up -d
 
 stop-local-dev: ## 🛑 Stop full dev stack (shared DB keeps running, see stop-db)
-	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) \
+	$(CONTAINER_COMPOSE) --env-file $(ENV_FILE) \
 		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.keycloak.yml \
 		-f docker-compose/docker-compose.oauth2-proxy.yml \
@@ -177,36 +177,32 @@ stop-local-dev: ## 🛑 Stop full dev stack (shared DB keeps running, see stop-d
 		-f docker-compose/docker-compose.local.dev.api.yml down
 
 launch-local-prod: launch-db ## 🚀 Launch production-like stack locally (with shared DB)
-	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) \
+	$(CONTAINER_COMPOSE) --env-file $(ENV_FILE) \
 		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.local.api.yml up
 
 stop-local-prod: ## 🛑 Stop production-like local stack (shared DB keeps running)
-	$(DOCKER_COMPOSE) --env-file $(ENV_FILE) \
+	$(CONTAINER_COMPOSE) --env-file $(ENV_FILE) \
 		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.local.api.yml down
 
 launch-oauth2-proxy: create-network ## 🔐 Launch oauth2-proxy SSO gateway for Unleash (requires Keycloak + Unleash running)
-	docker compose --env-file $(ENV_FILE) \
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) \
 		-f docker-compose/docker-compose.unleash.yml \
 		-f docker-compose/docker-compose.keycloak.yml \
 		-f docker-compose/docker-compose.oauth2-proxy.yml up
 
 stop-oauth2-proxy: ## 🛑 Stop oauth2-proxy SSO gateway
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.oauth2-proxy.yml down
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.oauth2-proxy.yml down
 
 launch-keycloak: create-network ## 🔐 Launch Keycloak IdP standalone
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml up
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml up
 
 stop-keycloak: ## 🛑 Stop Keycloak IdP
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml down
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml down
 
 reset-keycloak: ## 🗑️ Stop Keycloak and remove its data (re-imports realm on next start)
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml down -v
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.keycloak.yml down -v
 
 help: ## List available make targets
-ifeq ($(OS),Windows_NT)
-	powershell "((type Makefile) -match '##') -notmatch 'grep'"
-else
 	@grep -hE '^[a-zA-Z0-9_.-]+:.*##' $(MAKEFILE_LIST) | awk -F':|##' '{printf "\033[36m%-30s\033[0m %s\n", $$1, $$3}' | sort
-endif

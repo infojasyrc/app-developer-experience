@@ -3,6 +3,11 @@ ENV_FILE = $(shell [ -e ".env" ] && echo ".env" || echo ".env.public")
 
 include $(ENV_FILE)
 
+CONTAINER_RUNTIME ?= docker
+ifeq ($(filter $(CONTAINER_RUNTIME),docker podman container),)
+$(error CONTAINER_RUNTIME must be docker, podman, or container)
+endif
+
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
 COMPOSE_PROJECT_NAME = nestjs-rest-tpl
@@ -11,18 +16,10 @@ CONTAINER_APP_FOLDER = /app
 # Available platforms: linux/amd64 | linux/arm64 | linux/x86_64
 PLATFORM := $(PLATFORM)
 
-ifeq ($(OS),Windows_NT)
-	USER_HOME := $(shell echo %USERPROFILE%)
-else
-	USER_HOME := $(shell echo $$HOME)
-endif
+USER_HOME := $(shell echo $$HOME)
 USER_NPMRC = $(USER_HOME)/.npmrc
 
-ifeq ($(OS),Windows_NT)
-	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
-else
-	DIR := "$$(pwd)"
-endif
+DIR := "$$(pwd)"
 
 # include codebase and dependencies to run the container in development mode
 DEV_VOLUME = \
@@ -32,97 +29,92 @@ DEV_VOLUME = \
 
 .PHONY: docker-clean
 docker-clean: ## stop and kill all running containers
-ifeq ($(OS),Windows_NT)
-	powershell "docker ps -qa | foreach object {docker kill $$_}; docker container prune --force; docker system prune --force;"
-else
-	docker ps -qa | xargs docker kill; docker container prune --force; docker system prune --force;
-endif
+	@ids=$$($(CONTAINER_RUNTIME) ps -qa); \
+	if [ -n "$$ids" ]; then printf '%s\n' $$ids | xargs $(CONTAINER_RUNTIME) kill; fi; \
+	$(CONTAINER_RUNTIME) container prune --force; \
+	$(CONTAINER_RUNTIME) system prune --force
 
 .PHONY: build-dev
 build-dev: ## build docker image for local development
-	docker build --platform $(PLATFORM) --target development \
+	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target development \
 		-t $(COMPOSE_PROJECT_NAME) .
 
 .PHONY: build-dev-with-npmrc
 build-dev-with-npmrc: ## build docker image for local development with .npmrc
-	docker build --platform $(PLATFORM) --target development \
+	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target development \
 		--build-arg NPMRC="$$(cat $(USER_NPMRC))" \
 		-t $(COMPOSE_PROJECT_NAME) .
 
 .PHONY: build-prod
 build-prod: ## build production docker image
-	docker build --platform $(PLATFORM) --target release \
+	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target release \
 		-t $(COMPOSE_PROJECT_NAME) .
 
 .PHONY: build-stable
 build-stable: ## build docker image stable version
-	docker build -t $(COMPOSE_PROJECT_NAME):1.0.0 .
+	$(CONTAINER_RUNTIME) build -t $(COMPOSE_PROJECT_NAME):1.0.0 .
 
 .PHONY: create-volumes
 create-volumes: ## create external container volumes if they do not exist
 	@echo "Checking and creating external volumes..."
-	@docker volume inspect $(COMPOSE_PROJECT_NAME)-packages >/dev/null 2>&1 || \
-		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-packages" && docker volume create $(COMPOSE_PROJECT_NAME)-packages)
-	@docker volume inspect $(COMPOSE_PROJECT_NAME)-db-data >/dev/null 2>&1 || \
-		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-db-data" && docker volume create $(COMPOSE_PROJECT_NAME)-db-data)
-	@docker volume inspect $(COMPOSE_PROJECT_NAME)-unleash-db-data >/dev/null 2>&1 || \
-		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-unleash-db-data" && docker volume create $(COMPOSE_PROJECT_NAME)-unleash-db-data)
+	@$(CONTAINER_RUNTIME) volume inspect $(COMPOSE_PROJECT_NAME)-packages >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-packages" && $(CONTAINER_RUNTIME) volume create $(COMPOSE_PROJECT_NAME)-packages)
+	@$(CONTAINER_RUNTIME) volume inspect $(COMPOSE_PROJECT_NAME)-db-data >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-db-data" && $(CONTAINER_RUNTIME) volume create $(COMPOSE_PROJECT_NAME)-db-data)
+	@$(CONTAINER_RUNTIME) volume inspect $(COMPOSE_PROJECT_NAME)-unleash-db-data >/dev/null 2>&1 || \
+		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-unleash-db-data" && $(CONTAINER_RUNTIME) volume create $(COMPOSE_PROJECT_NAME)-unleash-db-data)
 
 .PHONY: install-dependencies
 install-dependencies: ## install dependencies for dev image
-	docker run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" $(DEV_VOLUME) \
+	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" $(DEV_VOLUME) \
 		--platform $(PLATFORM) \
 		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "npm i"
 
 .PHONY: lint
 lint: ## run lint checks
-	docker run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "npm run lint"
 
 .PHONY: unit-tests
 unit-tests: ## run unit tests with coverage
-	docker run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "npm run test:unit:coverage"
 
 .PHONY: interactive
 interactive: ## get a bash shell in the container
-	docker run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(COMPOSE_PROJECT_NAME) /bin/ash
 
 .PHONY: launch-unleash
 launch-unleash: ## launch feature toggles with unleash
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml up
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml up
 
 .PHONY: stop-unleash
 stop-unleash: ## stop feature toogle service
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml down
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml down
 
 .PHONY: launch-local
 launch-local: ## launch application for local development
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml -f docker-compose/docker-compose.local.yml up
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml -f docker-compose/docker-compose.local.yml up
 
 .PHONY: stop-local
 stop-local: ## stop application for local development
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml -f docker-compose/docker-compose.local.yml down
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.unleash.yml -f docker-compose/docker-compose.local.yml down
 
 .PHONY: launch-db
 launch-db: ## launch database as a service
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml up
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml up
 
 .PHONY: stop-db
 stop-db: ## stop database service
-	docker compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml down
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f docker-compose/docker-compose.db.yml down
 
 .PHONY: help
 help:  ## show all make commands
-ifeq ($(OS),Windows_NT)
-	powershell "((type Makefile) -match '##') -notmatch 'grep'"
-else
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-endif
