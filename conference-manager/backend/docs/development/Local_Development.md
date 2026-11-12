@@ -5,7 +5,7 @@ containers through Make; no host Node.js, `nvm` or `yarn` is required.
 
 ## Database
 
-The MongoDB database is shared with `ms-conference-admin` and lives in
+The MongoDB database is shared with `admin` and lives in
 [`../shared-services`](../../../shared-services/README.md). Create the shared network and volumes, then
 launch ONLY the database:
 
@@ -14,9 +14,9 @@ make create-volumes
 make launch-db
 ```
 
-`make launch-db` delegates to `shared-services` and is idempotent: if `ms-conference-admin` already
+`make launch-db` delegates to `shared-services` and is idempotent: if `admin` already
 started the database, it keeps using the running instance. Remember to customize the `DB_*` values in
-`.env`; they must match `shared-services` and `ms-conference-admin`.
+`.env`; they must match `shared-services` and `admin`.
 
 - `make stop-db` stops the database for **both** services.
 - `make reset-db` wipes the shared data volume for **both** services (dev only).
@@ -59,7 +59,7 @@ make clear-data
 ```
 
 Seeded headquarters land in the same `headquarters` collection read by the Django admin
-(`ms-conference-admin`); field names still differ between both services.
+(`admin`); field names still differ between both services.
 
 ## Run unit tests
 

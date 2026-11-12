@@ -1,33 +1,33 @@
 {
-  "name": "ms-conference-api",
-  "sourceRoot": "conference-manager/ms-conference-api",
+  "name": "backend",
+  "sourceRoot": "conference-manager/backend",
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "options": {
         "command": "make build-dev",
-        "cwd": "conference-manager/ms-conference-api"
+        "cwd": "conference-manager/backend"
       }
     },
     "lint": {
       "executor": "nx:run-commands",
       "options": {
         "command": "make lint",
-        "cwd": "conference-manager/ms-conference-api"
+        "cwd": "conference-manager/backend"
       }
     },
     "test": {
       "executor": "nx:run-commands",
       "options": {
         "command": "make unit-tests",
-        "cwd": "conference-manager/ms-conference-api"
+        "cwd": "conference-manager/backend"
       }
     },
     "serve": {
       "executor": "nx:run-commands",
       "options": {
         "command": "make launch-local-dev",
-        "cwd": "conference-manager/ms-conference-api"
+        "cwd": "conference-manager/backend"
       }
     }
   }

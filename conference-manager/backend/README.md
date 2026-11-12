@@ -135,14 +135,14 @@ make launch-local-prod
 
 ### Shared database
 
-MongoDB is shared with `ms-conference-admin` and is defined once in
+MongoDB is shared with `admin` and is defined once in
 [`../shared-services`](../shared-services/README.md). `make launch-db`, `make stop-db` and
 `make reset-db` delegate to it:
 
-- `make launch-db` is idempotent and reuses the database if `ms-conference-admin` already started it.
+- `make launch-db` is idempotent and reuses the database if `admin` already started it.
 - `make stop-local-dev` / `make stop-local-prod` do not stop the database.
 - `make stop-db` and `make reset-db` affect **both** services.
-- `DB_*` and `DEFAULT_DB` in `.env` must match `shared-services` and `ms-conference-admin`.
+- `DB_*` and `DEFAULT_DB` in `.env` must match `shared-services` and `admin`.
 
 ### Authentication
 
@@ -188,7 +188,7 @@ Private endpoints: Authorization header with a valid token is required to get a 
 | Service | Port | Description |
 | :------ | :--- | :---------- |
 | **api** | 5002 | Conference Manager REST API in development mode. |
-| **mongodb** | 27017 | Shared MongoDB (`../shared-services`) for events, users, and related data; also used by `ms-conference-admin`. |
+| **mongodb** | 27017 | Shared MongoDB (`../shared-services`) for events, users, and related data; also used by `admin`. |
 | **unleash-app** | 4242 | Unleash feature-toggle server (internal only; reached through oauth2-proxy SSO gateway). |
 | **unleash-db** | 5433 | PostgreSQL database used by Unleash. |
 | **keycloak** | 8080 | Keycloak identity provider (SSO for Grafana and Unleash). |
@@ -199,7 +199,7 @@ Private endpoints: Authorization header with a valid token is required to get a 
 
 Collection in Mongo are not created:
 
-There is a possible error when collections are not created in mongo. Wipe the shared database volume and start again (this also resets the data used by `ms-conference-admin`):
+There is a possible error when collections are not created in mongo. Wipe the shared database volume and start again (this also resets the data used by `admin`):
 
 ```bash
 make reset-db

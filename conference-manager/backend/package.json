@@ -1,5 +1,5 @@
 {
-  "name": "@conference-manager/ms-conference-api",
+  "name": "@conference-manager/backend",
   "version": "1.0.0",
   "description": "Conference Manager API",
   "scripts": {

@@ -1,4 +1,4 @@
-## Makefile for ms-conference-api (API service tasks)
+## Makefile for backend (API service tasks)
 ## Conventions: targets use hyphenated verbs, documented with '##' for help discovery.
 
 # .env.public for common environment variables (fallback when .env absent)
@@ -21,7 +21,7 @@ TOKEN_SCRIPT_FILE        = ./scripts/get-token.sh
 PROJECT_NAME             := $(PROJECT_NAME)
 COMPOSE_PROJECT_NAME     := $(COMPOSE_PROJECT_NAME)
 CONTAINER_COMPOSE           = $(CONTAINER_RUNTIME) compose
-# Shared MongoDB lives in ../shared-services (shared with ms-conference-admin)
+# Shared MongoDB lives in ../shared-services (shared with admin)
 SHARED_SERVICES          = ../shared-services
 PLATFORM                 := $(PLATFORM)
 # For CI
