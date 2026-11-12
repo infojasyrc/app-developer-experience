@@ -40,7 +40,8 @@ Make loads `.env` when that file exists, otherwise `.env.public`. Do not commit
 
 | Variable | Default (`.env.public`) | Purpose |
 |---|---|---|
-| `COMPOSE_PROJECT_NAME` | `knowledge-mcp` | Image and container name prefix (`knowledge-mcp-dev`, `knowledge-mcp`) |
+| `PROJECT_NAME` | `app-dev-exp` | Image namespace. `make build-dev` tags `app-dev-exp/knowledge-mcp-dev:latest`. `make build-prod` tags `app-dev-exp/knowledge-mcp:latest` |
+| `COMPOSE_PROJECT_NAME` | `knowledge-mcp` | Compose project, container name, and packages volume (`knowledge-mcp`, `knowledge-mcp-packages`) |
 | `PLATFORM` | `linux/amd64` | Docker `--platform`. Allowed: `linux/amd64`, `linux/arm64`, `linux/x86_64` |
 | `HTTP_PORT` | `8000` | Host port mapped to container `8000` for `make launch` |
 | `ADE_ROOT` | `/repo` | ADE monorepo root **inside the container** (the host clone is mounted at `/repo`) |
@@ -65,11 +66,17 @@ Make loads `.env` when that file exists, otherwise `.env.public`. Do not commit
 Local override on Apple Silicon (`tools/knowledge-mcp/.env`, not committed):
 
 ```bash
-COMPOSE_PROJECT_NAME=knowledge-mcp
-PLATFORM=linux/arm64
 HTTP_PORT=8000
 ADE_ROOT=/repo
 INDEX_PATH=/app/dist/knowledge.json
+
+# containers env variables: not used for deployment
+PROJECT_NAME=app-dev-exp
+COMPOSE_PROJECT_NAME=knowledge-mcp
+# Available platforms: linux/amd64 | linux/arm64 | linux/x86_64
+PLATFORM=linux/arm64
+# Container engine. Allowed tools: docker | podman | container
+CONTAINER_RUNTIME=docker
 ```
 
 HTTP server on a different host port:
@@ -150,7 +157,7 @@ not interchangeable:
         "-v", "<absolute-path-to-ade>:/repo:ro",
         "-v", "<absolute-path-to-ade>/tools/knowledge-mcp:/app",
         "-v", "knowledge-mcp-packages:/app/.venv",
-        "knowledge-mcp-dev",
+        "app-dev-exp/knowledge-mcp-dev:latest",
         "uv", "run", "python", "-m", "stdio_main"
       ]
     }

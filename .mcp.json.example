@@ -18,7 +18,7 @@
         "<ADE_ROOT>/tools/knowledge-mcp:/app",
         "-v",
         "knowledge-mcp-packages:/app/.venv",
-        "knowledge-mcp-dev",
+        "app-dev-exp/knowledge-mcp-dev:latest",
         "uv",
         "run",
         "python",

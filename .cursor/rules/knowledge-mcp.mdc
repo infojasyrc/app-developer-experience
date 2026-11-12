@@ -13,6 +13,7 @@ Path alias: `KNOWLEDGE_MCP` in `agents/shared/context/monorepo-paths.md`. Commit
 
 - **Unified CLI Facade + container-first**: `cd` into `tools/knowledge-mcp/`, run `make help`, and use only Make targets (`build-dev`, `install-dependencies`, `lint`, `unit-tests`, `build-prod`, `launch`/`stop` as implemented). Never run host `python`, `pip`, `uv`, `poetry`, or `npm`.
 - **PLATFORM**: read from `.env.public` (do not hardcode in the Makefile). Allowed values: `linux/amd64 | linux/arm64 | linux/x86_64`. Default: `linux/amd64`.
+- **PROJECT_NAME** and **environment file order**: read `PROJECT_NAME` from `.env.public` (do not hardcode it). This service sets `PROJECT_NAME=app-dev-exp`. `build-dev` tags `app-dev-exp/knowledge-mcp-dev:latest`. `build-prod` tags `app-dev-exp/knowledge-mcp:latest`. Service variables sit at the top of `.env.public` with no blank line between them. After one blank line, development variables follow in this order: `PROJECT_NAME`, `COMPOSE_PROJECT_NAME`, `PLATFORM`, `CONTAINER_RUNTIME`. Full layout: `agents/shared/context/development-guidance.md`.
 - **Coverage**: 80% minimum.
 - **Knowledge source**: parse existing ADE files (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/*.mdc`, `development-guidance.md`, template READMEs). Do not duplicate them into a second source of truth.
 - **Feedback loop**: real gaps become a human PR to those knowledge files (or `data/reference.yaml` / `documented_exceptions`). The server does not auto-fix.

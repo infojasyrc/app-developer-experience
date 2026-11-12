@@ -47,7 +47,7 @@ PLATFORM=linux/amd64
 CONTAINER_RUNTIME=docker
 ```
 
-`PROJECT_NAME` is the image namespace. `COMPOSE_PROJECT_NAME` names the Compose project, volumes, and sidecar containers. Makefiles read both from the included env file and do not hardcode them. Backend templates commit `PROJECT_NAME=app-dev-exp`. `build-dev` tags `$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-dev:latest`. `build-prod` tags `$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME):latest`.
+`PROJECT_NAME` is the image namespace. `COMPOSE_PROJECT_NAME` names the Compose project, volumes, and sidecar containers. Makefiles read both from the included env file and do not hardcode them. Backend templates and knowledge-mcp commit `PROJECT_NAME=app-dev-exp`. `build-dev` tags `$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-dev:latest`. `build-prod` tags `$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME):latest`.
 
 Precedence:
 
@@ -372,7 +372,7 @@ Full detail on how this layer relates to `module/iam` (Terraform-native, the one
 
 ## Container platform
 
-Makefile targets pass `--platform $(PLATFORM)` to `$(CONTAINER_RUNTIME)`. `PROJECT_NAME`, `COMPOSE_PROJECT_NAME`, `PLATFORM`, and `CONTAINER_RUNTIME` are read from the package's `.env.public` (or `.env` if present) — do not hardcode them in the Makefile. `PROJECT_NAME` prefixes image tags as `$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-dev:latest` (development) and `$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME):latest` (`build-prod`). Backend templates set `PROJECT_NAME=app-dev-exp`.
+Makefile targets pass `--platform $(PLATFORM)` to `$(CONTAINER_RUNTIME)`. `PROJECT_NAME`, `COMPOSE_PROJECT_NAME`, `PLATFORM`, and `CONTAINER_RUNTIME` are read from the package's `.env.public` (or `.env` if present) — do not hardcode them in the Makefile. `PROJECT_NAME` prefixes image tags as `$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-dev:latest` (development) and `$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME):latest` (`build-prod`). Backend templates and knowledge-mcp set `PROJECT_NAME=app-dev-exp`.
 
 `CONTAINER_RUNTIME` allowed values: `docker | podman | container`. Default: `docker`.
 
