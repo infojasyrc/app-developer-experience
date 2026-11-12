@@ -63,28 +63,36 @@ From ADE, use only Make (no host `python` / `uv` / `poetry`):
 ```bash
 cd <ADE_ROOT>/tools/knowledge-mcp
 make help
-make build-dev
-make install-dependencies
+make build-prod
 ```
+
+> **Consumer projects must use the production image**
+> (`app-dev-exp/knowledge-mcp:latest`, built by `make build-prod`). The `-dev`
+> image (`app-dev-exp/knowledge-mcp-dev:latest`) is for ADE maintainers working
+> on the MCP itself — do not reference it from a consumer MCP config.
+
+The production image is self-contained: it ships its own virtualenv and source,
+so the client config only mounts `<ADE_ROOT>` read-only. Conventions are read
+from that mount when the server starts, so pulling the ADE clone is enough to
+pick up convention changes. Re-run `make build-prod` after pulling ADE when the
+MCP code (`tools/knowledge-mcp/`) changed.
 
 `PLATFORM` defaults to `linux/amd64` from `.env.public`. On Apple Silicon you may
 set `PLATFORM=linux/arm64` in a local `.env` under `tools/knowledge-mcp/`.
 
-Optional check:
+### Maintainers only
+
+Lint, tests, `make launch`, and `make sync` run on the dev image:
 
 ```bash
+make build-dev
+make install-dependencies
 make lint
 make unit-tests
 ```
 
 Rebuild `make build-dev` after a Dockerfile change. Re-run
 `make install-dependencies` if Python packages fail to import.
-
-Refresh the knowledge index after ADE convention files change:
-
-```bash
-make sync
-```
 
 ---
 
@@ -108,7 +116,9 @@ wrapper differ.
 Cursor and Antigravity can share the same `mcpServers` object. VS Code cannot
 load that key: wrap the same launch under `servers` and add `"type": "stdio"`.
 
-Replace **both** `<ADE_ROOT>` occurrences with the absolute path from Step 2.
+The launch runs the production image from Step 3
+(`app-dev-exp/knowledge-mcp:latest`). Replace `<ADE_ROOT>` with the absolute
+path from Step 2.
 JSON does not expand `~` or environment variables in these files — use a full
 path.
 
@@ -129,17 +139,9 @@ Create or edit `<consumer-repo>/.cursor/mcp.json`:
         "linux/amd64",
         "-e",
         "ADE_ROOT=/repo",
-        "-e",
-        "PYTHONPATH=/app/src",
         "-v",
         "<ADE_ROOT>:/repo:ro",
-        "-v",
-        "<ADE_ROOT>/tools/knowledge-mcp:/app",
-        "-v",
-        "knowledge-mcp-packages:/app/.venv",
-        "app-dev-exp/knowledge-mcp-dev:latest",
-        "uv",
-        "run",
+        "app-dev-exp/knowledge-mcp:latest",
         "python",
         "-m",
         "stdio_main"
@@ -181,17 +183,9 @@ wrapper (`servers`, not `mcpServers`):
         "linux/amd64",
         "-e",
         "ADE_ROOT=/repo",
-        "-e",
-        "PYTHONPATH=/app/src",
         "-v",
         "<ADE_ROOT>:/repo:ro",
-        "-v",
-        "<ADE_ROOT>/tools/knowledge-mcp:/app",
-        "-v",
-        "knowledge-mcp-packages:/app/.venv",
-        "app-dev-exp/knowledge-mcp-dev:latest",
-        "uv",
-        "run",
+        "app-dev-exp/knowledge-mcp:latest",
         "python",
         "-m",
         "stdio_main"
@@ -206,7 +200,8 @@ user-wide config, run **MCP: Open User Configuration**.
 
 ### Optional: HTTP / SSE instead of stdio
 
-If you prefer one long-lived process:
+Maintainer flow: `make launch` runs the dev image (see "Maintainers only" in
+Step 3). If you prefer one long-lived process:
 
 ```bash
 cd <ADE_ROOT>/tools/knowledge-mcp
@@ -234,13 +229,14 @@ editors.
 Consumer repos copy the stdio block above. To exercise `ade-knowledge` **inside
 this monorepo** (maintainers):
 
-1. From `tools/knowledge-mcp/`: `make build-dev`, `make install-dependencies`,
-   `make sync`.
+1. From `tools/knowledge-mcp/`: `make build-prod` (same production image
+   consumers use).
 2. Copy [`.cursor/mcp.json.example`](../.cursor/mcp.json.example) to
-   `.cursor/mcp.json` and replace both `<ADE_ROOT>` values with this clone’s
-   absolute path. `.cursor/mcp.json` is gitignored — do not commit a machine
-   path.
-3. Reload MCP servers in Cursor. Confirm tools `get_convention`,
+   `.cursor/mcp.json` and replace `<ADE_ROOT>` with this clone’s absolute
+   path. `.cursor/mcp.json` is gitignored — do not commit a machine path.
+   Claude Code: copy [`.mcp.json.example`](../.mcp.json.example) to `.mcp.json`
+   (also gitignored) the same way.
+3. Reload MCP servers in the client. Confirm tools `get_convention`,
    `scaffold_guidance`, and `compare_gaps`.
 4. In Agent chat:
    ```
@@ -265,9 +261,10 @@ If it fails:
 
 | Symptom | What to check |
 |---|---|
-| Server never starts | Docker is running; `docker images` lists `app-dev-exp/knowledge-mcp-dev:latest` |
+| Server never starts | Docker is running; `docker images` lists `app-dev-exp/knowledge-mcp:latest` (run `make build-prod`) |
+| `uv: not found` or missing `/app/.venv` | The config still uses the old dev launch; copy the Step 4 block (no `/app` or `knowledge-mcp-packages` mounts, `python -m stdio_main`) |
 | Volume errors | `<ADE_ROOT>` is absolute and the clone still exists |
-| Empty conventions | `<ADE_ROOT>/CLAUDE.md` exists; run `make sync` |
+| Empty conventions / `ADE_ROOT ... does not contain CLAUDE.md` | `<ADE_ROOT>/CLAUDE.md` exists and the `-v <ADE_ROOT>:/repo:ro` path is correct |
 | Apple Silicon / platform | Match `--platform` with `.env` / `.env.public` |
 
 ---
