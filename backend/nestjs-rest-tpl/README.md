@@ -33,7 +33,7 @@ Host: Linux or macOS, with:
 - Make
 - One container engine: `docker`, `podman`, or `container` (default `docker` in `.env.public`)
 
-Do not install Node, nvm, or npm on the host. The container image uses Node 20.18.1 (`ARG NODE_VERSION` in the Dockerfile).
+Do not install Node, nvm, or npm on the host. The container image uses Node 26.13 (`ARG NODE_VERSION` in the Dockerfile): Debian slim for the development and build stages, alpine for the production image.
 
 ## Getting started
 
