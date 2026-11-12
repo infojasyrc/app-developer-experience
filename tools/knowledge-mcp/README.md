@@ -25,7 +25,7 @@ Use only Make targets. Never run host `python`, `pip`, `uv`, or `npm`.
 | `make launch` / `make launch-local` | HTTP/SSE server on port 8000 |
 | `make stop` / `make stop-local` | Stop the local server |
 | `make sync` | Rebuild `dist/knowledge.json` (`nx run knowledge-mcp:sync`) |
-| `make build-prod` | Production image |
+| `make build-prod` | Production image (`app-dev-exp/knowledge-mcp:latest`) — the one MCP clients run |
 | `make interactive` | Shell inside the container |
 
 `PLATFORM` comes from `.env.public` (default `linux/amd64`). Override in a local `.env`.
@@ -88,13 +88,14 @@ HTTP_PORT=18000
 Then `make launch` publishes `http://localhost:18000` and the healthcheck is
 `GET http://localhost:18000/healthcheck/`.
 
-Stdio / MCP clients (values passed with `-e`; `ADE_ROOT` is the in-container mount):
+Stdio / MCP clients on the production image (`ADE_ROOT` is the in-container mount):
 
 ```bash
 -e ADE_ROOT=/repo
--e PYTHONPATH=/app/src
--e INDEX_PATH=/app/dist/knowledge.json
 ```
+
+The production image already sets `PYTHONPATH=/app/src` and ships no
+`dist/knowledge.json`, so it ingests conventions from `ADE_ROOT` at startup.
 
 ## MCP surface (v1)
 
@@ -133,8 +134,12 @@ call tools, send gaps back): [docs/KnowledgeMCP.md](../../docs/KnowledgeMCP.md).
 
 ## Client stdio
 
-After `make build-dev` and `make install-dependencies`, reuse the same Docker
-`command` + `args` in the consumer client. The file path and JSON wrapper are
+**Consumer projects must use the production image** built by `make build-prod`
+(`app-dev-exp/knowledge-mcp:latest`). The `-dev` image is only for developing
+this package (`lint`, `unit-tests`, `launch`, `sync`, `interactive`).
+
+After `make build-prod`, reuse the same Docker `command` + `args` in the
+consumer client. The file path and JSON wrapper are
 not interchangeable:
 
 | Client | Project file | Wrapper |
@@ -153,12 +158,9 @@ not interchangeable:
         "run", "-i", "--rm",
         "--platform", "linux/amd64",
         "-e", "ADE_ROOT=/repo",
-        "-e", "PYTHONPATH=/app/src",
         "-v", "<absolute-path-to-ade>:/repo:ro",
-        "-v", "<absolute-path-to-ade>/tools/knowledge-mcp:/app",
-        "-v", "knowledge-mcp-packages:/app/.venv",
-        "app-dev-exp/knowledge-mcp-dev:latest",
-        "uv", "run", "python", "-m", "stdio_main"
+        "app-dev-exp/knowledge-mcp:latest",
+        "python", "-m", "stdio_main"
       ]
     }
   }
@@ -166,7 +168,7 @@ not interchangeable:
 ```
 
 To test from **this** ADE clone, copy `.cursor/mcp.json.example` to
-`.cursor/mcp.json` (gitignored) and replace `<ADE_ROOT>`. Steps:
+`.cursor/mcp.json` (gitignored), replace `<ADE_ROOT>`, and run `make build-prod`. Steps:
 [docs/KnowledgeMCP.md](../../docs/KnowledgeMCP.md) (“Test from this ADE clone”).
 Claude Code users: copy the root `.mcp.json.example` to `.mcp.json` (also
 gitignored) the same way.
@@ -175,6 +177,6 @@ For VS Code, put that launch under `servers` and add `"type": "stdio"`. Full
 wrappers and user-wide paths: [docs/KnowledgeMCP.md](../../docs/KnowledgeMCP.md).
 
 Match `--platform` with `PLATFORM` in `.env` / `.env.public`. SSE/HTTP is optional
-on `http://localhost:8000/mcp` after `make launch` (`url` in Cursor/VS Code,
+(maintainer flow, dev image) on `http://localhost:8000/mcp` after `make launch` (`url` in Cursor/VS Code,
 `serverUrl` in Antigravity).
 Healthcheck: `GET /healthcheck/`.
