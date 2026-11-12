@@ -2,7 +2,7 @@
 
 This document defines the branching strategy used in this monorepo and how it integrates with CI/CD workflows.
 
-Conference Manager branch prefixes and commit scopes use project aliases (`cm-api`, `cm-webapp`, `cm-admin`, `cm-tools`). They translate to `ms-conference-*` folders — see `agents/shared/context/monorepo-paths.md`. GitHub Actions **job IDs** (`conference-api-verify`, `conference-webapp-verify`) are unchanged. Some workflow `github.head_ref` filters may still match older `conference-api/` / `conference-webapp/` prefixes until a later pipeline change; new branches should use `cm-*`.
+Conference Manager branch prefixes and commit scopes use project aliases (`cm-api`, `cm-webapp`, `cm-admin`, `cm-tools`). They translate to the `conference-manager/{backend,webapp,admin}` folders — see `agents/shared/context/monorepo-paths.md`. GitHub Actions **job IDs** (`conference-api-verify`, `conference-webapp-verify`) are unchanged. Some workflow `github.head_ref` filters may still match older `conference-api/` / `conference-webapp/` prefixes until a later pipeline change; new branches should use `cm-*`.
 
 ## Branch Strategy Overview
 
@@ -50,7 +50,7 @@ The workflow (`pull_request_conference_manager.yml`) operates as follows:
 #### 1. **Get list of changed packages** (always runs)
 - Detects which components were modified in the PR
 - Uses `get-changed-packages` composite action
-- Outputs a list of changed packages (e.g., `conference-manager/ms-conference-api`)
+- Outputs a list of changed packages (e.g., `conference-manager/backend`)
 
 #### 2. **Component-specific verification jobs** (conditional)
 
@@ -58,9 +58,9 @@ Each job runs only if its component was changed:
 
 | Job | Condition | Runs When |
 |-----|-----------|-----------|
-| `conference-webapp-verify` | Changes in `conference-manager/ms-conference-webapp` AND PR modifies webapp files |
-| `conference-api-verify` | Changes in `conference-manager/ms-conference-api` AND PR modifies API files |
-| `conference-admin-verify` | Changes in `conference-manager/ms-conference-admin` AND PR modifies admin files |
+| `conference-webapp-verify` | Changes in `conference-manager/webapp` AND PR modifies webapp files |
+| `conference-api-verify` | Changes in `conference-manager/backend` AND PR modifies API files |
+| `conference-admin-verify` | Changes in `conference-manager/admin` AND PR modifies admin files |
 
 ## Changed Packages Detection
 
@@ -74,7 +74,7 @@ The `get-changed-packages` action uses fallback logic to detect changes:
 
 3. **Tertiary (Hardcoded fallback)**: Uses `GITHUB_HEAD_REF` environment variable
    - Maps branch name to component for testing with `act`
-   - Example: `cm-api/feat` → `conference-manager/ms-conference-api`
+   - Example: `cm-api/feat` → `conference-manager/backend`
 
 ## Testing Workflows Locally with `act`
 
@@ -163,8 +163,8 @@ git commit -m "fix(cm-webapp): resolve layout issue"
 ### Scenario 3: Multiple Components (NOT ALLOWED)
 ❌ Creating a single PR that changes both API and Webapp files is discouraged.
 ✅ Instead, create separate PRs:
-- `cm-api/feat/add-new-endpoint` → changes only `conference-manager/ms-conference-api`
-- `cm-webapp/fix/resolve-layout-issue` → changes only `conference-manager/ms-conference-webapp`
+- `cm-api/feat/add-new-endpoint` → changes only `conference-manager/backend`
+- `cm-webapp/fix/resolve-layout-issue` → changes only `conference-manager/webapp`
 
 ## Related Files
 - Workflow definition: [.github/workflows/pull_request_conference_manager.yml](../workflows/pull_request_conference_manager.yml)

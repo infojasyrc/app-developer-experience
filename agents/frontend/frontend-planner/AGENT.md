@@ -17,7 +17,7 @@ artifact that the `frontend-developer` agent will consume.
 
 | Input | Description | Required |
 |---|---|---|
-| Source app path | Path to the React app being analyzed (e.g. `conference-manager/ms-conference-webapp`) | ✅ |
+| Source app path | Path to the React app being analyzed (e.g. `conference-manager/webapp`) | ✅ |
 | Target framework | Framework and version to migrate to (e.g. `Next.js 16 App Router`) | ✅ |
 | Scope | Which phases to plan: routing, components, data fetching, all | Optional — defaults to all |
 

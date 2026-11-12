@@ -19,7 +19,7 @@ Nx monorepo with multiple solutions:
 | AI Agents | `agents/` | — |
 | Knowledge MCP (runtime service) | `tools/knowledge-mcp/` | FastAPI MCP — conventions + gap reports |
 
-**Canonical source of paths**: `agents/shared/context/monorepo-paths.md`. Before any task that touches file paths, read it — don't assume a path from this file or from memory. Conference Manager project aliases (`cm-api`, `cm-webapp`, `cm-admin`, `cm-tools`) for branches, commits, and PRs are defined there and in `agents/shared/context/commit-conventions.md`; they translate to `ms-conference-*` folders and are not directory names.
+**Canonical source of paths**: `agents/shared/context/monorepo-paths.md`. Before any task that touches file paths, read it — don't assume a path from this file or from memory. Conference Manager project aliases (`cm-api`, `cm-webapp`, `cm-admin`, `cm-tools`) for branches, commits, and PRs are defined there and in `agents/shared/context/commit-conventions.md`; they translate to the `conference-manager/backend/`, `webapp/` and `admin/` folders and are not directory names.
 
 Mandatory context, do not duplicate it here: always read @AGENTS.md and @CLAUDE.md before proposing changes.
 

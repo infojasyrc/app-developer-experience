@@ -29,14 +29,14 @@ If `MIGRATION_PLAN.md` is missing → stop and invoke `frontend-planner` first.
 | Input | Description | Required |
 |---|---|---|
 | `MIGRATION_PLAN.md` | Plan produced by frontend-planner | ✅ |
-| Target app path | `conference-manager/ms-conference-webapp` | ✅ |
+| Target app path | `conference-manager/webapp` | ✅ |
 | Phase to implement | A (routing), B (components), C (data fetching), D (deps) | ✅ |
 
 ---
 
 ## Outputs
 
-All files are written directly into `ms-conference-webapp/`. After each phase:
+All files are written directly into `webapp/`. After each phase:
 - Update `MIGRATION_PLAN.md` marking completed items with ✅
 - Report a summary of files created/modified
 
@@ -87,7 +87,7 @@ If during implementation you find **anything not covered by the plan**:
 
 ## Constraints
 
-- ❌ Never modify files outside `ms-conference-webapp/`
+- ❌ Never modify files outside `webapp/`
 - ❌ Never delete source files — comment out or move to `_legacy/` folder
 - ❌ Never skip a phase to implement the next one
 - ❌ Never deviate from the plan without human approval

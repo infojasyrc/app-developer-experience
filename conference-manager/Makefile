@@ -18,7 +18,7 @@ COMPOSE_PROJECT_NAME := $(COMPOSE_PROJECT_NAME)
 # Available platforms: linux/amd64 | linux/arm64 | linux/x86_64
 PLATFORM := $(PLATFORM)
 
-# Shared MongoDB for ms-conference-api and ms-conference-admin
+# Shared MongoDB for backend and admin
 SHARED_SERVICES = shared-services
 
 DIR := "$$(pwd)"
@@ -39,11 +39,11 @@ build-all: webapp-build-prod api-build-prod ## build all component images for pr
 
 launch: docker-clean ## launch all components for local development (with shared DB)
 	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) launch-db
-	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f ms-conference-api/docker-compose/docker-compose.unleash.yml \
-		-f ms-conference-api/docker-compose/docker-compose.local.dev.api.yml \
-		-f docker-compose/docker-compose.local.dev.web.yml up
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f backend/docker-compose/docker-compose.unleash.yml \
+		-f backend/docker-compose/docker-compose.local.dev.api.yml \
+		-f webapp/docker-compose/docker-compose.local.dev.web.yml up
 
 stop: ## stop application for local development (shared DB keeps running, see shared-services stop-db)
-	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f ms-conference-api/docker-compose/docker-compose.unleash.yml \
-		-f ms-conference-api/docker-compose/docker-compose.local.dev.api.yml \
-		-f docker-compose/docker-compose.local.dev.web.yml down
+	$(CONTAINER_RUNTIME) compose --env-file $(ENV_FILE) -f backend/docker-compose/docker-compose.unleash.yml \
+		-f backend/docker-compose/docker-compose.local.dev.api.yml \
+		-f webapp/docker-compose/docker-compose.local.dev.web.yml down

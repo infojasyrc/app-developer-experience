@@ -1,0 +1,51 @@
+---
+
+services:
+  webapp:
+    container_name: ${COMPOSE_PROJECT_NAME}-webapp
+    image: ${PROJECT_NAME}/${COMPOSE_PROJECT_NAME}-webapp-dev:latest
+    ports:
+      - 8080:3000
+    working_dir: /app
+    command: /bin/ash -ci "npm run dev"
+    platform: ${PLATFORM}
+    pull_policy: never
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_started
+    # Load bulk vars from the .env file
+    env_file:
+      - ../../webapp/.env
+    tty: true
+    links:
+      - api
+    volumes:
+      - ../../webapp/:/app:rw
+      - frontend-packages:/app/node_modules
+
+  storybook:
+    container_name: ${COMPOSE_PROJECT_NAME}-webapp-storybook
+    image: ${PROJECT_NAME}/${COMPOSE_PROJECT_NAME}-webapp-dev:latest
+    ports:
+      - 6006:6006
+    working_dir: /app
+    command: /bin/ash -c "npm run storybook -- --no-open --host 0.0.0.0"
+    platform: ${PLATFORM}
+    restart: unless-stopped
+    env_file:
+      - ../../webapp/.env
+    tty: true
+    volumes:
+      - ../../webapp/:/app:rw
+      - frontend-packages:/app/node_modules
+
+networks:
+  default:
+    name: ${COMPOSE_PROJECT_NAME}-network
+    external: true
+
+volumes:
+  frontend-packages:
+    name: ${COMPOSE_PROJECT_NAME}-webapp-packages
+    external: true

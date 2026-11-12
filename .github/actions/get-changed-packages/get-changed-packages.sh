@@ -33,9 +33,9 @@ get_changed_packages() {
 
   # Package registry: "path_prefix|component_name|summary_label"
   local -a packages=(
-    "conference-manager/ms-conference-api/|cm-api|conference manager api"
-    "conference-manager/ms-conference-webapp/|cm-webapp|conference manager webapp"
-    "conference-manager/ms-conference-admin/|cm-admin|conference manager admin"
+    "conference-manager/backend/|cm-api|conference manager api"
+    "conference-manager/webapp/|cm-webapp|conference manager webapp"
+    "conference-manager/admin/|cm-admin|conference manager admin"
     "backend/fastapi-rest-tpl/|tpl-fastapi-rest|FastAPI REST service template"
     "backend/nestjs-rest-tpl/|tpl-nestjs-rest|NestJS REST service template"
     "backend/nestjs-gql-tpl/|tpl-nestjs-gql|NestJS GraphQL service template"

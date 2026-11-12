@@ -156,7 +156,7 @@ Orchestrates Conference Manager services together. Project aliases for child pac
 
 ---
 
-### Conference Manager API (`cm-api` → `conference-manager/ms-conference-api/`)
+### Conference Manager API (`cm-api` → `conference-manager/backend/`)
 
 NestJS REST API backed by MongoDB and Unleash feature flags.
 
@@ -190,7 +190,7 @@ NestJS REST API backed by MongoDB and Unleash feature flags.
 
 ---
 
-### Conference Manager Webapp (`cm-webapp` → `conference-manager/ms-conference-webapp/`)
+### Conference Manager Webapp (`cm-webapp` → `conference-manager/webapp/`)
 
 Next.js 14 App Router frontend. Node dependencies live in a Docker volume — not on the host.
 
@@ -220,7 +220,7 @@ Next.js 14 App Router frontend. Node dependencies live in a Docker volume — no
 
 ---
 
-### Conference Manager Admin (`cm-admin` → `conference-manager/ms-conference-admin/`)
+### Conference Manager Admin (`cm-admin` → `conference-manager/admin/`)
 
 Django admin panel. Python dependencies are managed with `uv` (lockfile `uv.lock`) and installed only through `make install-dependencies`.
 
@@ -237,9 +237,9 @@ Django admin panel. Python dependencies are managed with `uv` (lockfile `uv.lock
 
 ---
 
-### Conference Manager Tools (`cm-tools` → files under `conference-manager/ms-conference-api/`)
+### Conference Manager Tools (`cm-tools` → files under `conference-manager/backend/`)
 
-Observability and local tooling (Keycloak, Unleash, Prometheus, Grafana) ship with the API package (`docker-compose/` + `tools/`). There is no `conference-manager-tools/` directory. Use git alias `cm-tools` in branches, commits, and PRs when changing those files; `cd` into `conference-manager/ms-conference-api/` to run Makefile targets.
+Observability and local tooling (Keycloak, Unleash, Prometheus, Grafana) ship with the API package (`docker-compose/` + `tools/`). There is no `conference-manager-tools/` directory. Use git alias `cm-tools` in branches, commits, and PRs when changing those files; `cd` into `conference-manager/backend/` to run Makefile targets.
 
 ---
 

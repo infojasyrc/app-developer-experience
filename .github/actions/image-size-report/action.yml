@@ -3,7 +3,7 @@ description: Writes an image size report JSON file and uploads it as a GitHub Ac
 
 inputs:
   package:
-    description: Monorepo package identifier (e.g. conference-manager/ms-conference-webapp)
+    description: Monorepo package identifier (e.g. conference-manager/webapp)
     required: true
 
   image-name:

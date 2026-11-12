@@ -43,7 +43,7 @@ jobs:
       contains(needs.get-changed-packages.outputs.changed_packages, 'cm-webapp')
     defaults:
       run:
-        working-directory: ./conference-manager/ms-conference-webapp
+        working-directory: ./conference-manager/webapp
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -75,7 +75,7 @@ jobs:
       contains(needs.get-changed-packages.outputs.changed_packages, 'cm-api')
     defaults:
       run:
-        working-directory: ./conference-manager/ms-conference-api
+        working-directory: ./conference-manager/backend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -107,7 +107,7 @@ jobs:
       contains(needs.get-changed-packages.outputs.changed_packages, 'cm-admin')
     defaults:
       run:
-        working-directory: ./conference-manager/ms-conference-admin
+        working-directory: ./conference-manager/admin
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

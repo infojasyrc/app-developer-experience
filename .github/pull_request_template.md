@@ -17,9 +17,9 @@
   - [ ] Nestjs BFF GQL (nestjs-gql-tpl)
 - Conference Manager
   - [ ] conference-manager-tools (cm-tools)
-  - [ ] ms-conference-webapp (cm-webapp)
-  - [ ] ms-conference-admin (cm-admin)
-  - [ ] ms-conference-api (cm-api)
+  - [ ] webapp (cm-webapp)
+  - [ ] admin (cm-admin)
+  - [ ] backend (cm-api)
   - [ ] status-aggregator (status-aggregator)
 
 ## Issue ticket number and link

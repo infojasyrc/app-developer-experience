@@ -34,15 +34,15 @@
         },
         {
             "name": "conference-manager-webapp",
-            "path": "./conference-manager/ms-conference-webapp"
+            "path": "./conference-manager/webapp"
         },
         {
             "name": "conference-manager-admin",
-            "path": "./conference-manager/ms-conference-admin"
+            "path": "./conference-manager/admin"
         },
         {
             "name": "conference-manager-api",
-            "path": "./conference-manager/ms-conference-api"
+            "path": "./conference-manager/backend"
         },
         {
             "name": "terraform-aws",

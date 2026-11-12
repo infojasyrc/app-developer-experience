@@ -47,7 +47,7 @@ cat agents/shared/context/commit-conventions.md
 cat agents/shared/context/development-guidance.md
 ```
 
-- `monorepo-paths.md` — single source of truth for all filesystem paths, including Conference Manager project aliases (`cm-api` → `ms-conference-api`, and the rest)
+- `monorepo-paths.md` — single source of truth for all filesystem paths, including Conference Manager project aliases (`cm-api` → `conference-manager/backend`, and the rest)
 - `commit-conventions.md` — conventional commits rules for all agent-generated changes; Conference Manager scopes are those git aliases
 - `development-guidance.md` — team rules: Makefile is the Unified CLI Facade; containers for services and websites; host Terraform via Make for IaC (`docs/adr/0001-makefile-unified-cli-facade.md`)
 

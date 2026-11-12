@@ -1,5 +1,5 @@
 ---
-# Shared MongoDB for ms-conference-api (cm-api) and ms-conference-admin (cm-admin).
+# Shared MongoDB for backend (cm-api) and admin (cm-admin).
 # Runs as its own compose project (${SHARED_RESOURCE_PREFIX:?run this file through make}-db) so stopping one
 # service never stops the database the other one is using. Drive it via Make.
 # SHARED_RESOURCE_PREFIX is exported by the Makefile from COMPOSE_PROJECT_NAME

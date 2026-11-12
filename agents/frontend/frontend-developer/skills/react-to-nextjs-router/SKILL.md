@@ -25,10 +25,10 @@ migration. Paths resolved from `agents/shared/context/monorepo-paths.md`.
 ```bash
 # Always read paths first
 cat agents/shared/context/monorepo-paths.md
-WEBAPP_ROOT="conference-manager/ms-conference-webapp"
-WEBAPP_LEGACY="conference-manager/ms-conference-webapp/legacy"
-WEBAPP_APP="conference-manager/ms-conference-webapp/src/app"
-FRONTEND_PLANS="conference-manager/ms-conference-webapp/plans"
+WEBAPP_ROOT="conference-manager/webapp"
+WEBAPP_LEGACY="conference-manager/webapp/legacy"
+WEBAPP_APP="conference-manager/webapp/src/app"
+FRONTEND_PLANS="conference-manager/webapp/plans"
 
 # Verify plan exists
 cat $FRONTEND_PLANS/MIGRATION_PLAN.md
@@ -178,7 +178,7 @@ mv /router.tsx \
 ### A7 — Verify
 
 ```bash
-cd conference-manager/ms-conference-webapp
+cd conference-manager/webapp
 
 # TypeScript check
 npx tsc --noEmit

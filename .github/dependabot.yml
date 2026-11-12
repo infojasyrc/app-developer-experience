@@ -19,7 +19,7 @@ updates:
 
   # Conference Manager admin (uv)
   - package-ecosystem: "uv"
-    directory: "/conference-manager/ms-conference-admin"
+    directory: "/conference-manager/admin"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
@@ -28,7 +28,7 @@ updates:
 
   # Conference Manager webapp (npm)
   - package-ecosystem: "npm"
-    directory: "/conference-manager/ms-conference-webapp"
+    directory: "/conference-manager/webapp"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
@@ -44,7 +44,7 @@ updates:
 
   # Conference Manager API (Yarn Classic — still the npm ecosystem)
   - package-ecosystem: "npm"
-    directory: "/conference-manager/ms-conference-api"
+    directory: "/conference-manager/backend"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5

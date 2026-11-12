@@ -21,14 +21,16 @@ Never hardcode paths in AGENT.md or SKILL.md — always derive from here.
 | Alias | Resolved Path | Description |
 |---|---|---|
 | `CONF_ROOT` | `conference-manager/` | Conference Manager solution root |
-| `WEBAPP_ROOT` | `conference-manager/ms-conference-webapp/` | Next.js webapp (migration target) |
-| `WEBAPP_LEGACY` | `conference-manager/ms-conference-webapp/legacy/` | Legacy React source |
-| `WEBAPP_SRC` | `conference-manager/ms-conference-webapp/src/` | Next.js webapp source code |
-| `WEBAPP_APP` | `conference-manager/ms-conference-webapp/src/app/` | Next.js App Router routes |
-| `CONF_API` | `conference-manager/ms-conference-api/` | RESTful API service |
-| `CONF_ADMIN` | `conference-manager/ms-conference-admin/` | Django admin service |
+| `WEBAPP_ROOT` | `conference-manager/webapp/` | Next.js webapp (migration target) |
+| `WEBAPP_LEGACY` | `conference-manager/webapp/legacy/` | Legacy React source |
+| `WEBAPP_SRC` | `conference-manager/webapp/src/` | Next.js webapp source code |
+| `WEBAPP_APP` | `conference-manager/webapp/src/app/` | Next.js App Router routes |
+| `CONF_API` | `conference-manager/backend/` | RESTful API service |
+| `CONF_ADMIN` | `conference-manager/admin/` | Django admin service |
 | `CONF_SHARED` | `conference-manager/shared-services/` | Local resources shared by cm-api and cm-admin (MongoDB) |
-| `FRONTEND_PLANS` | `conference-manager/ms-conference-webapp/plans/` | MIGRATION_PLAN.md lives here |
+| `FRONTEND_PLANS` | `conference-manager/webapp/plans/` | MIGRATION_PLAN.md lives here |
+
+> `CONF_API` (`conference-manager/backend/`) is the Conference Manager API. Do not confuse it with `BACKEND_ROOT` (`backend/`), the service templates.
 
 ### Project aliases (branches, commits, PRs, agent plans)
 
@@ -36,10 +38,10 @@ Short names used in git history. They are **not** directory names. When a plan, 
 
 | Project alias | Resolves to | Notes |
 |---|---|---|
-| `cm-api` | `conference-manager/ms-conference-api/` | Same as `CONF_API` |
-| `cm-webapp` | `conference-manager/ms-conference-webapp/` | Same as `WEBAPP_ROOT` |
-| `cm-admin` | `conference-manager/ms-conference-admin/` | Same as `CONF_ADMIN` |
-| `cm-tools` | `conference-manager/ms-conference-api/` compose + `tools/`, `conference-manager/shared-services/` | Observability (Keycloak, Unleash, Prometheus, Grafana) and the shared MongoDB (`CONF_SHARED`). No `conference-manager-tools/` folder. |
+| `cm-api` | `conference-manager/backend/` | Same as `CONF_API` |
+| `cm-webapp` | `conference-manager/webapp/` | Same as `WEBAPP_ROOT` |
+| `cm-admin` | `conference-manager/admin/` | Same as `CONF_ADMIN` |
+| `cm-tools` | `conference-manager/backend/` compose + `tools/`, `conference-manager/shared-services/` | Observability (Keycloak, Unleash, Prometheus, Grafana) and the shared MongoDB (`CONF_SHARED`). No `conference-manager-tools/` folder. |
 | `status-aggregator` | — | Planned. Listed in the PR template only; no path yet. |
 
 Use git aliases in branch names (`cm-api/feat/...`), commit scopes (`feat(cm-api):`), PR checkboxes, and agent suggested commits. Use the resolved path in `cd`, Makefiles, and filesystem commands.
@@ -112,7 +114,7 @@ cat agents/shared/context/monorepo-paths.md
 
 # Step 2 — set the aliases you need
 TERRAFORM_AWS="cloud/terraform/aws"
-WEBAPP_ROOT="conference-manager/ms-conference-webapp"
+WEBAPP_ROOT="conference-manager/webapp"
 
 # Step 3 — use aliases in all commands
 find $TERRAFORM_AWS -name "*.tf"

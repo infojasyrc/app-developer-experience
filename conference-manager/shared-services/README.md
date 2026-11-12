@@ -1,7 +1,7 @@
 # Conference Manager Shared Services
 
 Local resources shared by more than one Conference Manager service. Today it holds the
-MongoDB database used by both `ms-conference-api` (`cm-api`) and `ms-conference-admin` (`cm-admin`).
+MongoDB database used by both `backend` (`cm-api`) and `admin` (`cm-admin`).
 
 ## Content
 
@@ -23,7 +23,7 @@ MongoDB database used by both `ms-conference-api` (`cm-api`) and `ms-conference-
   Makefile, and their `launch-*` targets start the database first.
 
 Credentials come from `.env` (or `.env.public` as fallback). `DB_*` and `DEFAULT_DB` must match the
-values in `ms-conference-api/.env` and `ms-conference-admin/.env`; `MONGO_INITDB_*` is applied only
+values in `backend/.env` and `admin/.env`; `MONGO_INITDB_*` is applied only
 when the volume is empty.
 
 ## Getting started
