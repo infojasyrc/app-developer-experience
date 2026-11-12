@@ -22,13 +22,25 @@ IMAGE_TAG                ?= latest
 
 DIR := "$$(pwd)"
 
+# Local dev stack (webapp + storybook + API + Unleash). The backend compose files go
+# first so relative paths resolve from ../backend/docker-compose (compose project dir).
+BACKEND_DIR      = ../backend
+SHARED_SERVICES  = ../shared-services
+BACKEND_ENV_FILE = $(shell [ -e "$(BACKEND_DIR)/.env" ] && echo "$(BACKEND_DIR)/.env" || echo "$(BACKEND_DIR)/.env.public")
+LOCAL_DEV_COMPOSE = $(CONTAINER_RUNTIME) compose \
+	--env-file $(BACKEND_ENV_FILE) --env-file $(ENV_FILE) \
+	-f $(BACKEND_DIR)/docker-compose/docker-compose.unleash.yml \
+	-f $(BACKEND_DIR)/docker-compose/docker-compose.local.dev.api.yml \
+	-f docker-compose/docker-compose.local.dev.web.yml
+
 DEV_VOLUME = \
 	-v $(DIR):$(CONTAINER_APP_FOLDER) \
 	-v $(CONTAINER_APP_FOLDER)/node_modules \
 	-v $(COMPOSE_PROJECT_NAME)-webapp-packages:$(CONTAINER_APP_FOLDER)/node_modules
 
 .PHONY: docker-clean build-dev build-prod interactive run-storybook \
-	install-dependencies lint unit-tests commit npm-audit dev stop launch-detached help
+	install-dependencies lint unit-tests commit npm-audit dev stop launch-detached \
+	launch-local-dev stop-local-dev help
 
 dev: build-dev install-dependencies launch ## 🚀 Build image, install deps, and launch webapp in dev container
 
@@ -81,6 +93,13 @@ launch-detached: ## 🚀 Launch webapp in dev container (detached, no TTY — fo
 stop: ## 🛑 Stop running webapp dev container
 	@ids=$$($(CONTAINER_RUNTIME) ps -q --filter ancestor=$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-webapp-dev); \
 	if [ -n "$$ids" ]; then printf '%s\n' $$ids | xargs $(CONTAINER_RUNTIME) stop; fi
+
+launch-local-dev: ## 🚀 Launch webapp + storybook with API, Unleash and shared DB (compose)
+	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) launch-db
+	$(LOCAL_DEV_COMPOSE) up
+
+stop-local-dev: ## 🛑 Stop the webapp compose stack (shared DB keeps running)
+	$(LOCAL_DEV_COMPOSE) down
 
 run-storybook: ## 📚 Run Storybook server (port 6006)
 	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \

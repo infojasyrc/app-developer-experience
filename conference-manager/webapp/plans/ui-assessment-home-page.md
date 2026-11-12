@@ -1,5 +1,5 @@
 # UI Assessment — Home Page
-**App:** ms-conference-webapp  
+**App:** webapp  
 **Date:** 2026-06-09  
 **Reviewer role:** Senior Frontend Designer  
 **Scope:** Gear icon · Login button · Version section · Font type  

@@ -1,6 +1,6 @@
 # Migration Plan — Legacy React to Next.js (App Router)
 
-**App:** `ms-conference-webapp`
+**App:** `webapp`
 **Source:** `legacy/src/` (CRA + React Router v5 + Material UI v4)
 **Target:** `src/` (Next.js 14 App Router + Tailwind CSS + TanStack Query)
 **Last updated:** 2026-05-26
