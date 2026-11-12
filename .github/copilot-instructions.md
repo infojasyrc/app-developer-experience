@@ -5,7 +5,7 @@ This monorepo provides backendservices and application templates plus a sample p
 ## 1. Monorepo Layout & Intent
 - Root uses `nx.json` only for directory layout (not full Nx targets): `appsDir=conference-manager`, `libsDir=backend` (template archetypes), `infrastructureDir=cloud`.
 - `backend/` holds language/framework templates (NestJS REST, NestJS GraphQL, FastAPI REST). Treat them as archetypes to copy or reference; do not entangle runtime dependencies.
-- `conference-manager/` is the active product composed of: `ms-conference-api` (NestJS REST, legacy JS), `ms-conference-admin` (FastAPI/Django-style admin), `ms-conference-webapp` (Next.js UI). They communicate over REST (API) and database (admin populates data consumed by API + webapp).
+- `conference-manager/` is the active product composed of: `backend` (NestJS REST, legacy JS), `admin` (FastAPI/Django-style admin), `webapp` (Next.js UI). They communicate over REST (API) and database (admin populates data consumed by API + webapp).
 - `cli/` provides commit workflow helpers (Makefile targets wrapping conventional commit flows).
 - `cloud/terraform/` contains infra modules (aws/azure/network). Avoid modifying unless implementing infra automation tasks.
 - `devops/` contains commented Azure CI examples – placeholders (not active) for container build & push.
@@ -31,9 +31,9 @@ This monorepo provides backendservices and application templates plus a sample p
   make unit-tests
   make stop-local
   ```
-- Conference Manager API (`ms-conference-api`): This is a legacy development `make build-dev && make install-dependencies && make launch-local-dev`
-- Conference Manager Admin (`ms-conference-admin`): `make build-dev && make install-dependencies && make launch-local`.
-- Conference Manager Webapp (`ms-conference-webapp`): `make build-dev && make install-dependencies`.
+- Conference Manager API (`backend`): This is a legacy development `make build-dev && make install-dependencies && make launch-local-dev`
+- Conference Manager Admin (`admin`): `make build-dev && make install-dependencies && make launch-local`.
+- Conference Manager Webapp (`webapp`): `make build-dev && make install-dependencies`.
 - Stop flows: use matching `make stop-*` target.
 - Changelog generation scripts (root `package.json`): `yarn changelog:backend:nestjs-rest-tpl` (Angular preset, tag prefixes). Use after material feature/fix merges.
 
@@ -47,7 +47,7 @@ This monorepo provides backendservices and application templates plus a sample p
 - NestJS templates (hexagonal intent): Keep business logic isolated from transport (controllers). Add env variables via `.env.public`; do not hardcode ports. `PLATFORM` defaults to `linux/amd64`; allowed values: `linux/amd64 | linux/arm64 | linux/x86_64`.
 - Authentication (Conference Manager API): Firebase integration lives under `providers` and `.env` keys (`AUTH_*`). New auth-related features should extend provider abstractions, not bypass them.
 
-### 3.1 Legacy Hybrid API (ms-conference-api)
+### 3.1 Legacy Hybrid API (backend)
 The API runs a hybrid stack: an original Express v1 layer plus newer NestJS modules sharing one process via `ExpressAdapter`.
 
 Legacy Express surface:
@@ -82,11 +82,11 @@ Quick identification heuristic: any `.js` file inside `controllers/v1` requiring
 - Do not mutate husky or commitlint config unless explicitly requested; they enforce consistency across heterogeneous tech stacks.
 
 ## 5. Testing & Quality Signals
-- Use `make lint` and `make unit-tests` in Conference Manager components: ms-conference-api, ms-conference-webapp; `make lint` / `make unit-tests` (backend templates — FastAPI and NestJS — inside Container). Add tests into existing `tests/` directory maintaining folder mirroring source domain (e.g., service/use-case pairs).
+- Use `make lint` and `make unit-tests` in Conference Manager components: `conference-manager/backend`, `conference-manager/webapp`; `make lint` / `make unit-tests` (backend templates — FastAPI and NestJS — inside Container). Add tests into existing `tests/` directory maintaining folder mirroring source domain (e.g., service/use-case pairs).
 - Prefer unit tests in templates; integration tests may require container orchestration (`launch-local`). Avoid altering CI YAML placeholders unless enabling actual pipelines.
 
 ## 6. Extending Templates vs Product Code
-- When enhancing `conference-manager` services, reference templates for structure but modify only product directories (`ms-conference-*`). Do not push product-specific changes back into template archetypes.
+- When enhancing `conference-manager` services, reference templates for structure but modify only product directories (`conference-manager/{backend,webapp,admin}`). Do not push product-specific changes back into template archetypes.
 - New service? Derive from a template by copying its directory; update README & Makefile accordingly. Keep FastAPI layering and the NestJS Make/container contract intact.
 
 ## 7. Infrastructure & Deployment Notes

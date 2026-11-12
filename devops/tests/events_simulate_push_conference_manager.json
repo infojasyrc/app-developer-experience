@@ -9,7 +9,7 @@
     "id": "1111111111111111111111111111111111111111",
     "message": "chore(conference-webapp): simulate conference manager push",
     "added": [
-      "conference-manager/ms-conference-webapp/README.md"
+      "conference-manager/webapp/README.md"
     ],
     "modified": [],
     "removed": []
@@ -19,7 +19,7 @@
       "id": "1111111111111111111111111111111111111111",
       "message": "chore(conference-webapp): simulate conference manager push",
       "added": [
-        "conference-manager/ms-conference-webapp/README.md"
+        "conference-manager/webapp/README.md"
       ],
       "modified": [],
       "removed": []
