@@ -137,7 +137,7 @@ Create or edit `<consumer-repo>/.cursor/mcp.json`:
         "<ADE_ROOT>/tools/knowledge-mcp:/app",
         "-v",
         "knowledge-mcp-packages:/app/.venv",
-        "knowledge-mcp-dev",
+        "app-dev-exp/knowledge-mcp-dev:latest",
         "uv",
         "run",
         "python",
@@ -189,7 +189,7 @@ wrapper (`servers`, not `mcpServers`):
         "<ADE_ROOT>/tools/knowledge-mcp:/app",
         "-v",
         "knowledge-mcp-packages:/app/.venv",
-        "knowledge-mcp-dev",
+        "app-dev-exp/knowledge-mcp-dev:latest",
         "uv",
         "run",
         "python",
@@ -265,7 +265,7 @@ If it fails:
 
 | Symptom | What to check |
 |---|---|
-| Server never starts | Docker is running; `docker images` lists `knowledge-mcp-dev` |
+| Server never starts | Docker is running; `docker images` lists `app-dev-exp/knowledge-mcp-dev:latest` |
 | Volume errors | `<ADE_ROOT>` is absolute and the clone still exists |
 | Empty conventions | `<ADE_ROOT>/CLAUDE.md` exists; run `make sync` |
 | Apple Silicon / platform | Match `--platform` with `.env` / `.env.public` |
