@@ -71,28 +71,28 @@ create-volumes: ## create external container volumes if they do not exist
 install-dependencies: ## install dependencies for dev image
 	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" $(DEV_VOLUME) \
 		--platform $(PLATFORM) \
-		$(IMAGE_DEV):latest /bin/ash -ci "npm i"
+		$(IMAGE_DEV):latest /bin/bash -ci "npm i"
 
 .PHONY: lint
 lint: ## run lint checks
 	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(IMAGE_DEV):latest /bin/ash -ci "npm run lint"
+		$(IMAGE_DEV):latest /bin/bash -ci "npm run lint"
 
 .PHONY: unit-tests
 unit-tests: ## run unit tests with coverage
 	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(IMAGE_DEV):latest /bin/ash -ci "npm run test:unit:coverage"
+		$(IMAGE_DEV):latest /bin/bash -ci "npm run test:unit:coverage"
 
 .PHONY: interactive
 interactive: ## get a bash shell in the container
 	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(IMAGE_DEV):latest /bin/ash
+		$(IMAGE_DEV):latest /bin/bash
 
 .PHONY: launch-unleash
 launch-unleash: ## launch feature toggles with unleash

@@ -50,6 +50,9 @@ jobs:
       - name: Build container for development
         run: make build-dev
 
+      - name: Create container volumes
+        run: make create-volumes
+
       - name: Install dependencies
         run: make install-dependencies
 
@@ -78,6 +81,9 @@ jobs:
 
       - name: Build container for development
         run: make build-dev
+
+      - name: Create container volumes
+        run: make create-volumes
 
       - name: Install dependencies
         run: make install-dependencies

@@ -1,7 +1,9 @@
-ARG NODE_VERSION=20.18.1
+# syntax=docker/dockerfile:1
 
-# development stage (no node_modules baked in)
-FROM node:${NODE_VERSION}-alpine AS development
+ARG NODE_VERSION=26.13
+
+# development stage (Debian slim, no node_modules baked in)
+FROM node:${NODE_VERSION}-slim AS development
 
 WORKDIR /app
 
@@ -17,11 +19,20 @@ COPY . .
 
 RUN npm run build --quiet
 
-# release stage
-FROM development AS release
+# release stage: alpine only, production dependencies only
+FROM node:${NODE_VERSION}-alpine AS release
 
-COPY --from=build /app/node_modules ./node_modules
+ENV NODE_ENV=production
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm ci --omit=dev --ignore-scripts --quiet && npm cache clean --force
+
 COPY --from=build /app/dist ./dist
+
+USER node
 
 EXPOSE 3000
 
