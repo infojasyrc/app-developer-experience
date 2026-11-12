@@ -57,6 +57,7 @@ Short names for branches, commits, PR checkboxes, and agent plans. They are **no
 - **Clean Architecture** — Separation of domain, application, and infrastructure layers
 - **Container-first** — Every service ships as an optimized container image (source only). `CONTAINER_RUNTIME` selects `docker`, `podman`, or `container` (default `docker` in `.env.public`).
 - **Makefile is the Unified CLI Facade** — every package is driven through Make. Callers do not invoke the container engine by hand. Container-first (no host `npm` / `node` / `python`) applies to services and websites on Linux or macOS; IaC under `cloud/` uses the host Terraform CLI via Make, not containers. See `docs/adr/0001-makefile-unified-cli-facade.md`.
+- **Environment files** — Service variables sit at the top of `.env.public` with no blank line between them. After one blank line, development variables follow in this order: `PROJECT_NAME`, `COMPOSE_PROJECT_NAME`, `PLATFORM`, `CONTAINER_RUNTIME`. `PROJECT_NAME` is the image namespace. Full layout: `agents/shared/context/development-guidance.md`.
 
 ---
 

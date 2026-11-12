@@ -10,8 +10,11 @@ endif
 
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
-COMPOSE_PROJECT_NAME = nestjs-rest-tpl
+PROJECT_NAME := $(PROJECT_NAME)
+COMPOSE_PROJECT_NAME := $(COMPOSE_PROJECT_NAME)
 CONTAINER_APP_FOLDER = /app
+IMAGE_DEV = $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-dev
+IMAGE_PROD = $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)
 
 # Available platforms: linux/amd64 | linux/arm64 | linux/x86_64
 PLATFORM := $(PLATFORM)
@@ -37,22 +40,22 @@ docker-clean: ## stop and kill all running containers
 .PHONY: build-dev
 build-dev: ## build docker image for local development
 	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target development \
-		-t $(COMPOSE_PROJECT_NAME) .
+		-t $(IMAGE_DEV):latest .
 
 .PHONY: build-dev-with-npmrc
 build-dev-with-npmrc: ## build docker image for local development with .npmrc
 	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target development \
 		--build-arg NPMRC="$$(cat $(USER_NPMRC))" \
-		-t $(COMPOSE_PROJECT_NAME) .
+		-t $(IMAGE_DEV):latest .
 
 .PHONY: build-prod
 build-prod: ## build production docker image
 	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target release \
-		-t $(COMPOSE_PROJECT_NAME) .
+		-t $(IMAGE_PROD):latest .
 
 .PHONY: build-stable
 build-stable: ## build docker image stable version
-	$(CONTAINER_RUNTIME) build -t $(COMPOSE_PROJECT_NAME):1.0.0 .
+	$(CONTAINER_RUNTIME) build -t $(IMAGE_PROD):1.0.0 .
 
 .PHONY: create-volumes
 create-volumes: ## create external container volumes if they do not exist
@@ -68,28 +71,28 @@ create-volumes: ## create external container volumes if they do not exist
 install-dependencies: ## install dependencies for dev image
 	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" $(DEV_VOLUME) \
 		--platform $(PLATFORM) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "npm i"
+		$(IMAGE_DEV):latest /bin/ash -ci "npm i"
 
 .PHONY: lint
 lint: ## run lint checks
 	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "npm run lint"
+		$(IMAGE_DEV):latest /bin/ash -ci "npm run lint"
 
 .PHONY: unit-tests
 unit-tests: ## run unit tests with coverage
 	$(CONTAINER_RUNTIME) run -t --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash -ci "npm run test:unit:coverage"
+		$(IMAGE_DEV):latest /bin/ash -ci "npm run test:unit:coverage"
 
 .PHONY: interactive
 interactive: ## get a bash shell in the container
 	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(COMPOSE_PROJECT_NAME) /bin/ash
+		$(IMAGE_DEV):latest /bin/ash
 
 .PHONY: launch-unleash
 launch-unleash: ## launch feature toggles with unleash

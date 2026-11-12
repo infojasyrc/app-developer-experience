@@ -9,11 +9,12 @@ endif
 
 .DEFAULT_GOAL := help
 
-COMPOSE_PROJECT_NAME ?= fastapi-rest-tpl
+PROJECT_NAME := $(PROJECT_NAME)
+COMPOSE_PROJECT_NAME := $(COMPOSE_PROJECT_NAME)
 CONTAINER_APP_FOLDER = /app
 PLATFORM := $(PLATFORM)
-IMAGE_DEV = $(COMPOSE_PROJECT_NAME)-dev
-IMAGE_PROD = $(COMPOSE_PROJECT_NAME)
+IMAGE_DEV = $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-dev
+IMAGE_PROD = $(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)
 
 PACKAGE_DIR := $(abspath .)
 
@@ -38,31 +39,31 @@ docker-clean: ## stop and kill all running containers
 
 build-dev: ## build docker image for local development
 	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target dev \
-		-t $(IMAGE_DEV) .
+		-t $(IMAGE_DEV):latest .
 
 build-prod: ## build docker image for production
 	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target prod \
-		-t $(IMAGE_PROD) .
+		-t $(IMAGE_PROD):latest .
 
 install-dependencies: ## install uv packages into the container volume
 	$(CONTAINER_RUNTIME) run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
-		$(IMAGE_DEV) /bin/ash -c "uv lock && uv sync --group dev"
+		$(IMAGE_DEV):latest /bin/ash -c "uv lock && uv sync --group dev"
 
 lint: ## run linters inside the container
 	$(CONTAINER_RUNTIME) run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(DEV_ENV) \
-		$(IMAGE_DEV) /bin/ash -c "uv run black --check src tests && uv run isort --check-only src tests && uv run flake8 src tests"
+		$(IMAGE_DEV):latest /bin/ash -c "uv run black --check src tests && uv run isort --check-only src tests && uv run flake8 src tests"
 
 unit-tests: ## run unit tests with coverage
 	$(CONTAINER_RUNTIME) run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(DEV_ENV) \
-		$(IMAGE_DEV) /bin/ash -c "uv run pytest"
+		$(IMAGE_DEV):latest /bin/ash -c "uv run pytest"
 
 create-volumes: ## create external container volumes if they do not exist
 	@echo "Checking and creating external volumes..."
@@ -84,7 +85,7 @@ interactive: ## open a shell inside the container
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(DEV_ENV) \
-		$(IMAGE_DEV) /bin/ash -c "source .venv/bin/activate && exec ash"
+		$(IMAGE_DEV):latest /bin/ash -c "source .venv/bin/activate && exec ash"
 
 help: ## show all make commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

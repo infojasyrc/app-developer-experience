@@ -29,6 +29,7 @@ Mandatory context, do not duplicate it here: always read @AGENTS.md and @CLAUDE.
 - **Clean Architecture** — separation of domain, application, and infrastructure layers.
 - **Makefile is the Unified CLI Facade** — every package is driven through `make help` / `make <target>`. Never call the underlying CLI by hand. See `docs/adr/0001-makefile-unified-cli-facade.md`.
 - **Container-first** — services, websites, and runtime tools ship as an optimized container image (source only, no dev dependencies). `CONTAINER_RUNTIME` in `.env.public` selects `docker`, `podman`, or `container` (default `docker`). Do not run `npm`, `node`, `python`, or the engine CLI on the host. Makefiles for these packages run on Linux or macOS. This does **not** apply to IaC under `cloud/` (host Terraform via Make).
+- **Environment file order** — service variables first, with no blank line between them. Comments may group them. One blank line, then development variables in this order: `PROJECT_NAME`, `COMPOSE_PROJECT_NAME`, `PLATFORM`, `CONTAINER_RUNTIME`. `PROJECT_NAME` is the image namespace. Full layout: `agents/shared/context/development-guidance.md`.
 - **Coverage** — 80% minimum per component.
 
 ## Workflow: Plan → Implement
