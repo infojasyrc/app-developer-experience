@@ -1,4 +1,4 @@
-"""Align the unmanaged models with the collections written by ms-conference-api.
+"""Align the unmanaged models with the collections written by backend.
 
 Both models are ``managed = False``: no collection is created or altered here, only the Django
 migration state changes. The API creates the collections and their indexes.

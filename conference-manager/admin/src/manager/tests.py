@@ -1,4 +1,4 @@
-"""Contract tests: models must mirror the documents written by ms-conference-api."""
+"""Contract tests: models must mirror the documents written by backend."""
 
 from datetime import datetime, timezone
 

@@ -1,7 +1,7 @@
-"""Read-only mirrors of the collections written by ms-conference-api (Mongoose).
+"""Read-only mirrors of the collections written by backend (Mongoose).
 
 Field names in MongoDB are camelCase; ``db_column`` maps them to Python names.
-Schema source of truth: ms-conference-api ``headquarter.entity.ts`` and ``conference.entity.ts``.
+Schema source of truth: backend ``headquarter.entity.ts`` and ``conference.entity.ts``.
 """
 
 from django.db import models

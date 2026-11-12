@@ -4,7 +4,7 @@ from .models import Conference, Headquarter
 
 
 class ReadOnlyModelAdmin(admin.ModelAdmin):
-    """ms-conference-api owns writes; the admin only displays the data."""
+    """backend owns writes; the admin only displays the data."""
 
     def has_add_permission(self, request):
         return False

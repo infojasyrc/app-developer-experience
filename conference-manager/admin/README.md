@@ -88,26 +88,26 @@ make stop-prod
 
 ## Shared database
 
-MongoDB is shared with `ms-conference-api` and is defined once in
+MongoDB is shared with `backend` and is defined once in
 [`../shared-services`](../shared-services/README.md). `make launch-db`, `make stop-db` and
 `make reset-db` delegate to it:
 
 - `make launch-db` (also run by `launch-local` / `launch-prod`) is idempotent and reuses the
-  database if `ms-conference-api` already started it.
+  database if `backend` already started it.
 - `make stop-local` / `make stop-prod` do not stop the database.
 - `make stop-db` and `make reset-db` affect **both** services.
-- `DB_*` and `DEFAULT_DB` in `.env` must match `shared-services` and `ms-conference-api`.
+- `DB_*` and `DEFAULT_DB` in `.env` must match `shared-services` and `backend`.
   Use `DB_HOST=mongodb` when running in containers.
 - The admin shows, read-only, the `headquarters` and `conferences` collections written by
-  `ms-conference-api`. The Django models in [`src/manager/models.py`](src/manager/models.py) map the
+  `backend`. The Django models in [`src/manager/models.py`](src/manager/models.py) map the
   API's camelCase fields with `db_column` and are `managed = False`: the API owns the schema and writes.
   `src/manager/tests.py` fails if the model columns drift from the API schema.
 - To see data in the admin, seed from the API (single source:
-  `ms-conference-api/src/infrastructure/seed/seed.data.ts`):
+  `backend/src/infrastructure/seed/seed.data.ts`):
 
   ```bash
   make launch-db
-  make -C ../ms-conference-api seed-data
+  make -C ../backend seed-data
   make launch-local
   ```
 
@@ -117,7 +117,7 @@ MongoDB is shared with `ms-conference-api` and is defined once in
 ## Project structure
 
 ```text
-ms-conference-admin/
+admin/
 ├── pyproject.toml      # Python dependencies and tool config
 ├── uv.lock             # Python lock for dependencies
 ├── Dockerfile          # multi-stage: dev, build, prod

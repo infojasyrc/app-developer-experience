@@ -222,7 +222,7 @@ wheels = [
 ]
 
 [[package]]
-name = "ms-conference-admin"
+name = "admin"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

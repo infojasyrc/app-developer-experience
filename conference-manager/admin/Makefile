@@ -19,7 +19,7 @@ COMPOSE_PROJECT_NAME := $(COMPOSE_PROJECT_NAME)
 PLATFORM := $(PLATFORM)
 
 CONTAINER_COMPOSE  = $(CONTAINER_RUNTIME) compose
-# Shared MongoDB lives in ../shared-services (shared with ms-conference-api)
+# Shared MongoDB lives in ../shared-services (shared with backend)
 SHARED_SERVICES = ../shared-services
 
 CONTAINER_APP_FOLDER := /app
@@ -79,13 +79,13 @@ create-volumes: ## create external container volumes (incl. shared network + DB 
 	@$(CONTAINER_RUNTIME) volume inspect $(COMPOSE_PROJECT_NAME)-admin-packages >/dev/null 2>&1 || \
 		(echo "Creating volume: $(COMPOSE_PROJECT_NAME)-admin-packages" && $(CONTAINER_RUNTIME) volume create $(COMPOSE_PROJECT_NAME)-admin-packages)
 
-launch-db: ## launch shared MongoDB (idempotent, shared with ms-conference-api)
+launch-db: ## launch shared MongoDB (idempotent, shared with backend)
 	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) launch-db
 
-stop-db: ## stop shared MongoDB (also affects ms-conference-api)
+stop-db: ## stop shared MongoDB (also affects backend)
 	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) stop-db
 
-reset-db: ## stop shared MongoDB and wipe its data volume (dev only, also affects ms-conference-api)
+reset-db: ## stop shared MongoDB and wipe its data volume (dev only, also affects backend)
 	@$(MAKE) --no-print-directory -C $(SHARED_SERVICES) reset-db
 
 install-dependencies: ## install uv packages into the container volume
