@@ -13,7 +13,7 @@ description: >
 # react-to-nextjs-data-fetching
 
 Implements **Phase C** of the migration plan: data fetching refactor and env
-var migration. Writes files directly into `ms-conference-webapp/`.
+var migration. Writes files directly into `webapp/`.
 
 ---
 
@@ -21,7 +21,7 @@ var migration. Writes files directly into `ms-conference-webapp/`.
 
 ```bash
 # Phase B must be complete
-grep "Phase B" conference-manager/ms-conference-webapp/MIGRATION_PLAN.md | grep "✅"
+grep "Phase B" conference-manager/webapp/MIGRATION_PLAN.md | grep "✅"
 
 npx tsc --noEmit
 ```
@@ -155,8 +155,8 @@ For each env var in the plan's mapping table:
 ```bash
 # Find all occurrences
 grep -rn "REACT_APP_" \
-  conference-manager/ms-conference-webapp/src/ \
-  conference-manager/ms-conference-webapp/app/ \
+  conference-manager/webapp/src/ \
+  conference-manager/webapp/app/ \
   --include="*.tsx" --include="*.ts" --include="*.env*"
 ```
 
@@ -177,7 +177,7 @@ API_SECRET_KEY=...                                  # server-only, no prefix
 ### C6 — Verify
 
 ```bash
-cd conference-manager/ms-conference-webapp
+cd conference-manager/webapp
 
 # TypeScript check
 npx tsc --noEmit

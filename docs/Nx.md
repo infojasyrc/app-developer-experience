@@ -92,7 +92,7 @@ Rules:
    `nx run <project>:test` should each produce the same result as running the
    `make` command directly from that directory.
 
-`conference-manager/ms-conference-admin` and `cli` do not have a
+`conference-manager/admin` and `cli` do not have a
 `project.json` yet — both are still stabilizing their build setup and are
 intentionally out of scope until they're ready.
 `mobile-app/whitewalker` and `mobile-app/caraxes` have no Makefile at all

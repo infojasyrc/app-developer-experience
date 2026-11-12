@@ -77,10 +77,10 @@ within a single `git log`.
 ```
 app-developer-experience/
 ├── conference-manager/          # Full reference solution
-│   ├── ms-conference-api/       #   RESTful API (FastAPI)
-│   ├── ms-conference-admin/     #   Admin dashboard (Django)
-│   ├── ms-conference-webapp/    #   Web frontend (Next.js)
-│   └── docker-compose/          #   Local orchestration
+│   ├── backend/                 #   RESTful API (NestJS)
+│   ├── admin/                   #   Admin dashboard (Django)
+│   ├── webapp/                  #   Web frontend (Next.js)
+│   └── shared-services/         #   Shared local resources (MongoDB)
 ├── backend/                     # Service templates
 │   ├── nestjs-rest-tpl/         #   NestJS REST
 │   ├── nestjs-gql-tpl/          #   NestJS GraphQL
@@ -186,7 +186,7 @@ message format, and rules live in
 [docs/standards/commit-types.md](./docs/standards/commit-types.md) — every
 component links there instead of keeping its own copy.
 
-Scopes should match the affected package. For Conference Manager use project aliases that translate to folders: `cm-api` → `ms-conference-api`, `cm-webapp` → `ms-conference-webapp`, `cm-admin` → `ms-conference-admin`, `cm-tools` → observability files under `ms-conference-api`. Other packages use their own short names (`nestjs-rest-tpl`, etc.).
+Scopes should match the affected package. For Conference Manager use project aliases that translate to folders: `cm-api` → `conference-manager/backend`, `cm-webapp` → `conference-manager/webapp`, `cm-admin` → `conference-manager/admin`, `cm-tools` → observability files under `conference-manager/backend`. Other packages use their own short names (`nestjs-rest-tpl`, etc.).
 
 Node tooling is used for commit hooks regardless of the service's language because
 Husky is the most mature Git hook manager and Commitlint is the most flexible

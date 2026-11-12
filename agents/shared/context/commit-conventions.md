@@ -56,10 +56,10 @@ Conference Manager scopes are **git aliases**, not folder names. Translate befor
 
 | Scope | Translates to | Used by |
 |---|---|---|
-| `cm-webapp` | `conference-manager/ms-conference-webapp/` | frontend-planner, frontend-developer |
-| `cm-api` | `conference-manager/ms-conference-api/` | backend agents (future) |
-| `cm-admin` | `conference-manager/ms-conference-admin/` | backend agents (future) |
-| `cm-tools` | observability files under `conference-manager/ms-conference-api/` (compose + `tools/`) | any agent touching Keycloak, Unleash, Prometheus, Grafana |
+| `cm-webapp` | `conference-manager/webapp/` | frontend-planner, frontend-developer |
+| `cm-api` | `conference-manager/backend/` | backend agents (future) |
+| `cm-admin` | `conference-manager/admin/` | backend agents (future) |
+| `cm-tools` | observability files under `conference-manager/backend/` (compose + `tools/`) | any agent touching Keycloak, Unleash, Prometheus, Grafana |
 | `ecs` | ECS Fargate resources | infra-developer |
 | `iam` | IAM roles and policies | infra-developer |
 | `ecr` | ECR repositories | infra-developer |

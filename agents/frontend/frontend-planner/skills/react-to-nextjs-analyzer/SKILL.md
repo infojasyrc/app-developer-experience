@@ -37,9 +37,9 @@ Before producing any plan, read and map the codebase. Run these scans:
 ```bash
 # Always read paths first
 cat agents/shared/context/monorepo-paths.md
-WEBAPP_LEGACY="conference-manager/ms-conference-webapp/legacy"
-WEBAPP_APP="conference-manager/ms-conference-webapp/src/app"
-FRONTEND_PLANS="conference-manager/ms-conference-webapp/plans"
+WEBAPP_LEGACY="conference-manager/webapp/legacy"
+WEBAPP_APP="conference-manager/webapp/src/app"
+FRONTEND_PLANS="conference-manager/webapp/plans"
 ```
 
 ### 1.1 Route inventory
@@ -78,7 +78,7 @@ grep -rn "createContext\|Provider\|useContext\|Redux\|Zustand\|Jotai" \
 
 ### 1.5 Dependencies audit
 ```bash
-cat conference-manager/ms-conference-webapp/package.json | grep -A 100 '"dependencies"'
+cat conference-manager/webapp/package.json | grep -A 100 '"dependencies"'
 ```
 
 ---
@@ -143,7 +143,7 @@ IF wraps children with context that requires client state
 Generate `MIGRATION_PLAN.md` with this exact structure:
 
 ```markdown
-# Migration Plan: ms-conference-webapp → Next.js 16 App Router
+# Migration Plan: webapp → Next.js 16 App Router
 Generated: {date}
 Source: React 19 + React Router / Client-side only
 Target: Next.js 16 / App Router / RSC-first

@@ -15,7 +15,7 @@ metadata:
 # react-to-nextjs-components
 
 Implements **Phase B** of the migration plan: component classification and
-migration to RSC/RCC. Writes files directly into `ms-conference-webapp/`.
+migration to RSC/RCC. Writes files directly into `webapp/`.
 
 ---
 
@@ -24,10 +24,10 @@ migration to RSC/RCC. Writes files directly into `ms-conference-webapp/`.
 ```bash
 # Always read paths first
 cat agents/shared/context/monorepo-paths.md
-WEBAPP_ROOT="conference-manager/ms-conference-webapp"
-WEBAPP_LEGACY="conference-manager/ms-conference-webapp/legacy"
-WEBAPP_APP="conference-manager/ms-conference-webapp/src/app"
-FRONTEND_PLANS="conference-manager/ms-conference-webapp/plans"
+WEBAPP_ROOT="conference-manager/webapp"
+WEBAPP_LEGACY="conference-manager/webapp/legacy"
+WEBAPP_APP="conference-manager/webapp/src/app"
+FRONTEND_PLANS="conference-manager/webapp/plans"
 
 # Phase A must be complete
 grep "Phase A" $FRONTEND_PLANS/MIGRATION_PLAN.md | grep "✅"
@@ -170,7 +170,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ### B5 — Verify
 
 ```bash
-cd conference-manager/ms-conference-webapp
+cd conference-manager/webapp
 
 # TypeScript check
 npx tsc --noEmit

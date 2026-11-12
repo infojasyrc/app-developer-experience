@@ -17,7 +17,7 @@ In settings.json inside .vscode:
 
 The file `.github/copilot-instructions.md` centralizes project-specific operational knowledge so AI agents become productive immediately without rediscovering patterns. It encodes:
 - Monorepo layout (templates vs product code) to avoid editing archetypes when changing product services.
-- Hybrid legacy + modern architecture for `ms-conference-api` (Express v1 + NestJS) to prevent mixing validation layers or expanding deprecated controllers.
+- Hybrid legacy + modern architecture for `backend` (Express v1 + NestJS) to prevent mixing validation layers or expanding deprecated controllers.
 - Environment/version switching (Node 18 for services vs Node 22.15.0 for commit tooling) to avoid dependency breakage.
 - Standard Makefile and npm workflows per stack so automation is reused instead of ad-hoc commands.
 - Migration guidance: new REST endpoints belong in Nest (`src/interfaces` + `src/modules`) rather than `src/controllers/v1`.
@@ -40,7 +40,7 @@ Effects:
 
 1. Read `.github/copilot-instructions.md` for macro decisions (feature placement, migration path).
 2. Let instruction files shape micro decisions (indentation, naming, layering) during edits.
-3. Backend feature in `ms-conference-api`: apply migration rules (Nest path) + backend style instructions.
+3. Backend feature in `backend`: apply migration rules (Nest path) + backend style instructions.
 4. Webapp UI change: follow Atomic Design structure before adding new component directories.
 
 ## When to Update These Files

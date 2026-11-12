@@ -44,10 +44,10 @@ Short names for branches, commits, PR checkboxes, and agent plans. They are **no
 
 | Project alias | Resolves to |
 |---|---|
-| `cm-api` | `conference-manager/ms-conference-api/` |
-| `cm-webapp` | `conference-manager/ms-conference-webapp/` |
-| `cm-admin` | `conference-manager/ms-conference-admin/` |
-| `cm-tools` | observability files under `conference-manager/ms-conference-api/` (no dedicated folder) |
+| `cm-api` | `conference-manager/backend/` |
+| `cm-webapp` | `conference-manager/webapp/` |
+| `cm-admin` | `conference-manager/admin/` |
+| `cm-tools` | observability files under `conference-manager/backend/` (no dedicated folder) |
 
 ---
 
