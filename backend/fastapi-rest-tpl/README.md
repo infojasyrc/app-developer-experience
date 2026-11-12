@@ -20,6 +20,8 @@ Host: Linux or macOS, with Make and one container engine (`docker`, `podman`, or
 
 The Makefile is the Unified CLI Facade. It loads `.env` if that file exists, otherwise `.env.public`. Lockfile is `uv.lock` — install only through `make install-dependencies`.
 
+`PROJECT_NAME` comes from `.env.public` (default `app-dev-exp`) and is the image namespace. `make build-dev` tags `app-dev-exp/fastapi-rest-tpl-dev:latest`. `make build-prod` tags `app-dev-exp/fastapi-rest-tpl:latest`.
+
 `PLATFORM` comes from `.env.public` (default `linux/amd64`). On Apple Silicon you may set `PLATFORM=linux/arm64` in a local `.env`. Do not use `linux/arm64/v8`.
 
 Local Postgres credentials also come from `.env.public`: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` (defaults `postgres` / `some_password` / `postgres`). Override them in a local `.env`. Local Postgres is `postgres:18-alpine`. If you previously ran this template on Postgres 16, remove the old `$(COMPOSE_PROJECT_NAME)-db-data` volume and run `make create-volumes` again.

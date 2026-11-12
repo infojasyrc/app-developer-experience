@@ -49,6 +49,7 @@ The Makefile loads `.env` if it exists, otherwise `.env.public`. To override def
 | INTEGRATION_API_TOKEN                | Token for downstream integrations                                           | No       |                      |
 | UNLEASH_API_URL                      | Unleash feature-toggle API URL                                              | No       |                      |
 | UNLEASH_API_TOKEN                    | Unleash API token                                                           | No       |                      |
+| PROJECT_NAME                         | Image namespace                                                             | Yes      | app-dev-exp          |
 | COMPOSE_PROJECT_NAME                 | Docker Compose project name                                                 | Yes      | nestjs-gql-tpl       |
 | PLATFORM                             | Docker platform. Allowed: `linux/amd64`, `linux/arm64`, `linux/x86_64`      | Yes      | linux/amd64          |
 | POSTGRES_USER                        | App Postgres user (`docker-compose.db.yml`)                                 | Yes      | postgres             |
@@ -59,6 +60,8 @@ The Makefile loads `.env` if it exists, otherwise `.env.public`. To override def
 | UNLEASH_DB_PASSWORD                  | Unleash Postgres password                                                   | Yes      | some_password        |
 
 On Apple Silicon you may set `PLATFORM=linux/arm64` in a local `.env` for faster builds. The default `linux/amd64` matches CI and cloud.
+
+`make build-dev` tags `app-dev-exp/nestjs-gql-tpl-dev:latest`. `make build-prod` tags `app-dev-exp/nestjs-gql-tpl:latest`.
 
 ### Launch application using containers
 

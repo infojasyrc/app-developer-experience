@@ -31,12 +31,23 @@ Services, websites, and runtime tools select the container engine with
 `CONTAINER_RUNTIME`. Allowed values: `docker`, `podman`, `container` (Apple's
 container CLI). The committed default is `docker`.
 
-Each package `.env.public` opens with:
+Each package `.env.public` keeps service variables first and development variables last.
+
+Service variables sit at the top with no blank line between them. A comment may group them (`# database connection`, `# feature flags`, `# feature flags integration`, `# feature flags database connection`) without a blank line before the comment.
+
+One blank line separates that block from the development variables, in this order: `PROJECT_NAME`, `COMPOSE_PROJECT_NAME`, `PLATFORM`, `CONTAINER_RUNTIME`.
 
 ```bash
+# containers env variables: not used for deployment
+PROJECT_NAME=<image namespace>
+COMPOSE_PROJECT_NAME=<compose project>
+# Available platforms: linux/amd64 | linux/arm64 | linux/x86_64
+PLATFORM=linux/amd64
 # Container engine. Allowed tools: docker | podman | container
 CONTAINER_RUNTIME=docker
 ```
+
+`PROJECT_NAME` is the image namespace. `COMPOSE_PROJECT_NAME` names the Compose project, volumes, and sidecar containers. Makefiles read both from the included env file and do not hardcode them. Backend templates commit `PROJECT_NAME=app-dev-exp`. `build-dev` tags `$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-dev:latest`. `build-prod` tags `$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME):latest`.
 
 Precedence:
 
@@ -361,7 +372,7 @@ Full detail on how this layer relates to `module/iam` (Terraform-native, the one
 
 ## Container platform
 
-Makefile targets pass `--platform $(PLATFORM)` to `$(CONTAINER_RUNTIME)`. `PLATFORM` and `CONTAINER_RUNTIME` are read from the package's `.env.public` (or `.env` if present) — do not hardcode them in the Makefile.
+Makefile targets pass `--platform $(PLATFORM)` to `$(CONTAINER_RUNTIME)`. `PROJECT_NAME`, `COMPOSE_PROJECT_NAME`, `PLATFORM`, and `CONTAINER_RUNTIME` are read from the package's `.env.public` (or `.env` if present) — do not hardcode them in the Makefile. `PROJECT_NAME` prefixes image tags as `$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME)-dev:latest` (development) and `$(PROJECT_NAME)/$(COMPOSE_PROJECT_NAME):latest` (`build-prod`). Backend templates set `PROJECT_NAME=app-dev-exp`.
 
 `CONTAINER_RUNTIME` allowed values: `docker | podman | container`. Default: `docker`.
 
