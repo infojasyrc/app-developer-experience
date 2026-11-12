@@ -6,6 +6,10 @@ Runtime MCP server that exposes ADE conventions (`CLAUDE.md`, `AGENTS.md`,
 This is a **service**, not a bootstrap template. Path alias: `KNOWLEDGE_MCP`
 (`tools/knowledge-mcp/`).
 
+Call `get_convention("all")` (or `"*"`) to list every available topic. Every
+tool and resource is documented in the
+[MCP call reference](../../docs/KnowledgeMCP.md#mcp-call-reference).
+
 ## Conventions
 
 Unified CLI Facade (container-first for this service). From this directory:

@@ -22,6 +22,8 @@ TOPIC_ALIASES = {
     "policy": "tool-policy",
 }
 
+WILDCARD_TOPICS = frozenset({"all", "*"})
+
 STATIC_RESOURCES = (
     ("conventions://tech-stack", "tech-stack"),
     ("conventions://ddd-clean-architecture", "ddd-clean-architecture"),
@@ -45,8 +47,32 @@ def canonicalize_topic(topic: str) -> str:
     return TOPIC_ALIASES.get(normalized, normalized)
 
 
+def list_conventions(store: KnowledgeStore) -> dict:
+    """Return the catalog of queryable topics (no content) with aliases and sources.
+
+    A record answers its own topic and every tag, so both are listed. Keys that
+    are themselves aliases are omitted; they appear under their target topic.
+    """
+    sources: dict[str, set[str]] = {}
+    for record in store.records:
+        for key in {record.topic, *record.tags}:
+            if key not in TOPIC_ALIASES:
+                sources.setdefault(key, set()).add(record.source_path)
+    topics = [
+        {
+            "topic": topic,
+            "source_paths": sorted(paths),
+            "aliases": sorted(alias for alias, target in TOPIC_ALIASES.items() if target == topic),
+        }
+        for topic, paths in sorted(sources.items())
+    ]
+    return {"topic": "all", "count": len(topics), "topics": topics, "excerpts": []}
+
+
 def get_convention(store: KnowledgeStore, topic: str) -> dict:
     canonical = canonicalize_topic(topic)
+    if canonical in WILDCARD_TOPICS:
+        return list_conventions(store)
     excerpts = [
         {
             "source_path": record.source_path,

@@ -18,14 +18,12 @@ You need a local clone of `app-developer-experience` so the server can read
 | Resource | `conventions://container-first` | You need the service/website container lifecycle |
 | Resource | `conventions://component/{name}` | You need a specific area (`backend`, `cli`, …) |
 | Tool | `get_convention(topic)` | You want excerpts + `source_path` |
+| Tool | `get_convention("all")` / `get_convention("*")` | You want the list of every available topic (no content) |
 | Tool | `scaffold_guidance(component_type)` | You are starting a new service/pipeline/app |
 | Tool | `compare_gaps(target_repo_manifest)` | You want a gap report against ADE conventions |
 
-`make`, `make-targets`, `unified-cli-facade`, and `cli-facade` alias
-`makefile` (the Unified CLI Facade; see
-[`docs/adr/0001-makefile-unified-cli-facade.md`](./adr/0001-makefile-unified-cli-facade.md)).
-`container` aliases `container-first`. `terraform` and `infrastructure` alias
-`iac`.
+Every call, its arguments, and its response are in the
+[MCP call reference](#mcp-call-reference), including the full topic alias table.
 
 ---
 
@@ -275,6 +273,7 @@ In the consumer repo, ask the agent (or call the tool) with a topic:
 
 | You want | Call |
 |---|---|
+| Every available topic (catalog, no content) | `get_convention("all")` or `get_convention("*")` |
 | Makefile + containers (services) | `get_convention("container-first")` |
 | Unified CLI Facade (services + IaC) | `get_convention("makefile")` |
 | IaC host Terraform via Make | `get_convention("iac")` |
@@ -344,6 +343,131 @@ gap. The same Django stack in any other repo is a gap.
 
 The tool **does not** create a Makefile, Dockerfile, or commitlint config in
 your repo. You apply the fixes (or ignore a documented exception).
+
+---
+
+## MCP call reference
+
+Every call the `ade-knowledge` server accepts. Tools take arguments and return
+JSON. Resources are read by URI and return Markdown.
+
+### Tools
+
+#### `get_convention(topic)` — one topic
+
+Returns the convention excerpts for a topic or alias. Matching ignores case and
+treats `_` as `-` (`Container_First` works).
+
+```text
+get_convention("container-first")
+get_convention("terraform")      # alias → "iac"
+```
+
+```json
+{
+  "topic": "iac",
+  "excerpts": [
+    { "source_path": "agents/shared/context/development-guidance.md", "topic": "infrastructure-as-code", "content": "…" }
+  ]
+}
+```
+
+`topic` in the response is the canonical topic after alias resolution. An
+unknown topic returns `"excerpts": []`.
+
+#### `get_convention("all")` / `get_convention("*")` — topic catalog
+
+Lists every topic you can pass to `get_convention`, with its aliases and source
+files. It does **not** return content: pick a topic, then call
+`get_convention(<topic>)`.
+
+```text
+get_convention("*")
+```
+
+```json
+{
+  "topic": "all",
+  "count": 85,
+  "topics": [
+    {
+      "topic": "makefile",
+      "source_paths": ["agents/shared/context/development-guidance.md", "…"],
+      "aliases": ["cli-facade", "container-engine", "container-runtime", "make", "make-targets", "unified-cli-facade"]
+    }
+  ],
+  "excerpts": []
+}
+```
+
+`count` grows with the ADE knowledge files. Aliases are not listed as topics of
+their own; they appear under the topic they resolve to.
+
+#### `scaffold_guidance(component_type)`
+
+Tells you which ADE template to copy and which Make lifecycle it must keep.
+
+```text
+scaffold_guidance("nestjs-rest")
+```
+
+Success: `ok: true`, `is_template: true`, `component_type`, `path_alias`,
+`path`, `description`, `how`, `must_keep`, and `lifecycle` (`required`,
+`required_one_of`, `recommended`, `host_forbidden`).
+
+Errors return `ok: false` and `error`:
+
+- `conference-manager` → not a template; the error points to the backend or
+  mobile templates.
+- Unknown or retired type (e.g. `MS_FASTAPI`) → `known_types` lists the valid
+  values.
+
+Valid types: `nestjs-rest`, `nestjs-gql`, `fastapi-rest`, `ci-aws-backend`,
+`ci-aws-webapp`, `deploy-infra`, `mobile-rn`, `mobile-expo`, `cli`,
+`terraform-aws`, `terraform-azure`. Aliases such as `NESTJS_REST` and
+`FASTAPI_REST` are accepted (source: `tools/knowledge-mcp/data/scaffold.yaml`).
+
+#### `compare_gaps(target_repo_manifest)`
+
+Reports which ADE conventions the consumer repo is missing. The manifest fields
+are described in [Step 7](#step-7--report-gaps-in-the-consumer-repo).
+
+```json
+{
+  "ok": true,
+  "gaps": [{ "category": "…", "code": "…", "detail": "…" }],
+  "documented_exceptions": [],
+  "gap_count": 1
+}
+```
+
+### Resources
+
+| URI | Returns |
+|---|---|
+| `conventions://tech-stack` | ADE stack map |
+| `conventions://ddd-clean-architecture` | DDD / Clean Architecture rules |
+| `conventions://plan-template` | Plan template sections |
+| `conventions://container-first` | Service/website container lifecycle |
+| `conventions://component/{name}` | Rules for one area. `name`: `backend`, `cli`, `cloud`, `devops`, `mobile-app`, `conference-manager`, `knowledge-mcp` |
+
+Each resource returns the same excerpts as `get_convention`, as Markdown blocks
+headed by their `source_path`.
+
+### Topic aliases
+
+| Alias | Resolves to |
+|---|---|
+| `make`, `make-targets`, `unified-cli-facade`, `cli-facade`, `container-runtime`, `container-engine` | `makefile` ([ADR 0001](./adr/0001-makefile-unified-cli-facade.md)) |
+| `container` | `container-first` |
+| `terraform`, `infrastructure` | `iac` |
+| `ddd`, `clean-architecture`, `architecture` | `ddd-clean-architecture` |
+| `plan` | `plan-template` |
+| `stack` | `tech-stack` |
+| `permissions`, `guardrails`, `policy` | `tool-policy` |
+| `all`, `*` | Topic catalog (see above) |
+
+Source: `TOPIC_ALIASES` in `tools/knowledge-mcp/src/knowledge/catalog.py`.
 
 ---
 

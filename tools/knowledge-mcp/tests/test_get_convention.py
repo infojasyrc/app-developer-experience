@@ -95,6 +95,30 @@ def test_get_convention_from_cursor_rule(knowledge_store):
     assert any(item["source_path"].endswith(".cursor/rules/backend.mdc") for item in result["excerpts"])
 
 
+def test_get_convention_wildcard_returns_catalog(knowledge_store):
+    for topic in ("all", "*", " ALL "):
+        result = get_convention(knowledge_store, topic)
+        assert result["topic"] == "all"
+        assert result["excerpts"] == []
+        assert result["count"] == len(result["topics"]) > 0
+        for entry in result["topics"]:
+            assert set(entry) == {"topic", "source_paths", "aliases"}
+            assert entry["source_paths"]
+
+
+def test_get_convention_wildcard_includes_known_topics(knowledge_store):
+    catalog = {entry["topic"]: entry for entry in get_convention(knowledge_store, "*")["topics"]}
+    for topic in ("container-first", "makefile", "iac", "tool-policy"):
+        assert topic in catalog
+    assert {"make", "unified-cli-facade"} <= set(catalog["makefile"]["aliases"])
+    assert "agents/shared/context/tool-policy.md" in catalog["tool-policy"]["source_paths"]
+
+
+def test_get_convention_wildcard_topics_resolve(knowledge_store):
+    for entry in get_convention(knowledge_store, "all")["topics"]:
+        assert get_convention(knowledge_store, entry["topic"])["excerpts"], entry["topic"]
+
+
 def test_list_resources_includes_contract_uris(knowledge_store):
     uris = list_resource_uris(knowledge_store)
     assert "conventions://tech-stack" in uris

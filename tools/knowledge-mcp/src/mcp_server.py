@@ -11,7 +11,11 @@ def build_mcp(store: KnowledgeStore) -> FastMCP:
 
     @mcp.tool(name="get_convention")
     def get_convention_tool(topic: str) -> dict:
-        """Return convention excerpts and their source_path for a topic."""
+        """Return convention excerpts and their source_path for a topic.
+
+        Pass "all" or "*" to list every available topic with its aliases and
+        source paths (catalog only, no content); then call get_convention(topic).
+        """
         return get_convention(store, topic)
 
     @mcp.tool(name="scaffold_guidance")
