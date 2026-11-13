@@ -1,28 +1,32 @@
-const mockUnleashClient = {
-  isEnabled: jest.fn(),
-  getVariant: jest.fn(),
-};
-
-const mockUnleashClientModule = {
-  startUnleash: jest.fn(() => mockUnleashClient),
-  destroy: jest.fn(),
-};
-
-jest.mock('unleash-client', () => mockUnleashClientModule);
-
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UnleashService } from './unleash.service';
+import { beforeEach, describe, expect, type Mock, test, vi } from 'vitest';
+import { UnleashService } from './unleash.service.js';
+
+// vi.mock is hoisted above the imports, so the mocks it uses must be hoisted too
+const { mockUnleashClient, mockUnleashClientModule } = vi.hoisted(() => {
+  const mockUnleashClient = {
+    isEnabled: vi.fn(),
+    getVariant: vi.fn(),
+  };
+  const mockUnleashClientModule = {
+    startUnleash: vi.fn(() => mockUnleashClient),
+    destroy: vi.fn(),
+  };
+  return { mockUnleashClient, mockUnleashClientModule };
+});
+
+vi.mock('unleash-client', () => mockUnleashClientModule);
 
 describe('UnleashService', () => {
   let unleashService: UnleashService;
   let mockConfigService: {
-    get: jest.Mock;
+    get: Mock;
   };
 
   beforeEach(async () => {
     mockConfigService = {
-      get: jest.fn(),
+      get: vi.fn(),
     };
     mockUnleashClient.isEnabled.mockReset();
     const app: TestingModule = await Test.createTestingModule({

@@ -1,17 +1,18 @@
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { ConfigService } from '@nestjs/config';
 import { HttpHealthIndicator, TerminusModule } from '@nestjs/terminus';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { EnvironmentVariables } from './../../../../../infrastructure/environment-variables';
+import { EnvironmentVariables } from './../../../../../infrastructure/environment-variables.js';
 
-import { ReadyController } from './ready.controller';
+import { ReadyController } from './ready.controller.js';
 
 const httpHealthIndicatorMock: Partial<HttpHealthIndicator> = {
-  pingCheck: jest.fn(),
+  pingCheck: vi.fn(),
 };
 
 const configServiceMock: Partial<ConfigService<EnvironmentVariables>> = {
-  get: jest.fn().mockReturnValue('TEST'),
+  get: vi.fn().mockReturnValue('TEST'),
 };
 
 describe('ReadyController', () => {
@@ -19,7 +20,7 @@ describe('ReadyController', () => {
   let httpHealthIndicator: HttpHealthIndicator;
 
   beforeEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [TerminusModule],
@@ -44,7 +45,7 @@ describe('ReadyController', () => {
   });
 
   it('should return status ok', async () => {
-    (httpHealthIndicator.pingCheck as jest.Mock).mockResolvedValue({
+    (httpHealthIndicator.pingCheck as Mock).mockResolvedValue({
       'healthcheck-integration': { status: 'up' },
     });
 
@@ -63,7 +64,7 @@ describe('ReadyController', () => {
   });
 
   it('should return with status error', async () => {
-    (httpHealthIndicator.pingCheck as jest.Mock).mockResolvedValue({
+    (httpHealthIndicator.pingCheck as Mock).mockResolvedValue({
       'healthcheck-integration': { status: 'down' },
     });
 

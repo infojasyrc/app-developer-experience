@@ -1,7 +1,7 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { startUnleash, Unleash, destroy, Context } from 'unleash-client';
-import { EnvironmentVariables } from '../environment-variables';
+import { EnvironmentVariables } from '../environment-variables.js';
 
 type ToggleFeatureName = `ms-toggle-${string}`;
 type UserFeatureName = `ms-user-${string}`;

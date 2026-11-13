@@ -5,6 +5,7 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "type": "module",
   "engines": {
     "node": ">=26.13.0"
   },
@@ -18,13 +19,13 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:unit:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
-    "test:unit:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "NODE_OPTIONS=--experimental-vm-modules jest --config ./test/jest-e2e.json",
+    "test:unit": "vitest run",
+    "test:unit:coverage": "vitest run --coverage",
+    "test:unit:watch": "vitest",
+    "test:debug": "vitest --inspect-brk --no-file-parallelism",
+    "test:e2e": "vitest run --config ./vitest.e2e.config.ts",
     "release": "standard-version",
     "prepare": "husky"
   },
@@ -52,15 +53,15 @@
     "@nestjs/cli": "^12.0.13",
     "@nestjs/schematics": "^12.0.13",
     "@nestjs/testing": "^12.5.0",
+    "@swc/core": "^1.16.22",
     "@types/express": "^5.0.6",
-    "@types/jest": "^30.0.0",
-    "@types/lint-staged": "^13.3.0",
     "@types/multer": "^1.4.12",
     "@types/node": "^26.0.0",
     "@types/papaparse": "^5.5.2",
     "@types/supertest": "^7.2.1",
     "@typescript-eslint/eslint-plugin": "^8.71.0",
     "@typescript-eslint/parser": "^8.71.0",
+    "@vitest/coverage-v8": "^5.1.0",
     "commitizen": "^4.3.2",
     "commitlint": "^21.2.2",
     "cz-conventional-changelog": "^3.3.0",
@@ -68,19 +69,17 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.5.6",
     "husky": "^9.1.7",
-    "jest": "^30.5.2",
-    "jest-sonar-reporter": "^2.0.0",
     "lint-staged": "^16.1.2",
     "node-mocks-http": "^1.18.1",
     "prettier": "^3.9.9",
     "source-map-support": "^0.5.21",
     "standard-version": "^9.5.0",
     "supertest": "^7.3.1",
-    "ts-jest": "^29.4.15",
     "ts-loader": "^9.5.1",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "unplugin-swc": "^2.0.0",
+    "vitest": "^5.1.0",
+    "vitest-sonar-reporter": "^3.0.0"
   },
   "overrides": {
     "brace-expansion@1": "1.1.18",
@@ -97,10 +96,6 @@
     "minimatch@10": "10.2.6",
     "picomatch@2": "2.3.2",
     "tmp": "0.2.7"
-  },
-  "jestSonar": {
-    "reportPath": "coverage",
-    "reportFile": "test-report.xml"
   },
   "config": {
     "commitizen": {

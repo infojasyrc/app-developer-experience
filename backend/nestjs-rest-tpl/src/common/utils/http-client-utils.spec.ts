@@ -1,7 +1,8 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
-import { EnvironmentVariables } from '../../infrastructure/environment-variables';
-import { getAPIRequestHeaders } from './http-client-utils';
+import { EnvironmentVariables } from '../../infrastructure/environment-variables.js';
+import { getAPIRequestHeaders } from './http-client-utils.js';
 import { AxiosRequestHeaders } from 'axios';
 
 describe('http-client-utils', () => {
