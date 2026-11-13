@@ -162,11 +162,23 @@ observability is built from day one — not added later.
 
 ### Scaffold a microservice
 
+Copy a template from `backend/`, without generated folders, then drive it
+only through its own Makefile:
+
 ```bash
-make create-nodejs-rest   # NestJS REST template
-make create-nodejs-gql    # NestJS GraphQL template
-make create-py-rest       # FastAPI REST template
+rsync -a --exclude node_modules --exclude .venv --exclude coverage --exclude dist \
+  backend/nestjs-rest-tpl/ backend/orders-api/   # or nestjs-gql-tpl / fastapi-rest-tpl
+cd backend/orders-api && make help
 ```
+
+Rename the template identity (`.env.public` `COMPOSE_PROJECT_NAME`,
+`package.json` / `pyproject.toml` `name`, `project.json`), then run
+`make create-volumes`, `make build-dev`, `make install-dependencies` and
+`make unit-tests`. Agents can ask the Knowledge MCP `scaffold_guidance` tool
+for the same flow. Versioned bundles of each template are published as
+GitHub releases ([release runbook](docs/standards/release-strategy.md)).
+A parameterized `appdevexp new` command is planned
+([analysis §8](docs/analysis/ade-scaffolding-and-knowledge-platform.md#8-migration-roadmap)).
 
 ### Use the interactive commit CLI (Still In progress)
 

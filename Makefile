@@ -1,63 +1,13 @@
 .DEFAULT_GOAL := help # when you run make, it defaults to printing available commands
 
-NODEJS_GQL_FOLDER_TEMPLATE = nestjs-gql-tpl
-NODEJS_NEW_GQL_SERVICE ?= nodejs-gql-example
+# Scaffolding a new service: copy a template from backend/ (see README.md
+# "Scaffold a microservice" and the Knowledge MCP scaffold_guidance tool).
+# The former create-* targets were removed in Phase 0 of
+# docs/analysis/ade-scaffolding-and-knowledge-platform.md.
 
-NODEJS_REST_FOLDER_TEMPLATE = nestjs-rest-tpl
-NODEJS_NEW_REST_SERVICE ?= nodejs-rest-example
-
-PY_FASTAPI_FOLDER_TEMPLATE = fastapi-rest-tpl
-PY_NEW_FASTAPI_SERVICE ?= fastapi-example
-
-OUT_FOLDER = examples
-
-ifeq ($(OS),Windows_NT)
-	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
-else
-	DIR := "$$(pwd)"
-endif
-
-.PHONY: create-nodejs-gql create-nodejs-rest create-py-rest clean-examples \
-	install-dependencies init-husky install-hooks lint-commit setup-commit-validation \
+.PHONY: install-dependencies init-husky install-hooks lint-commit setup-commit-validation \
 	devops-pr-cm-infra-verify devops-ci-cm-build-and-deploy \
 	devops-pr-cm-changed-packages devops-all-tests help
-
-create-nodejs-gql: clean-examples ## create a microservice with nodejs and graphql
-	@if [ -z "$(NODEJS_NEW_GQL_SERVICE)" ]; then \
-		echo "Error: NODEJS_NEW_GQL_SERVICE variable is not set"; \
-		exit 1; \
-	fi
-	@echo "creating new microservice usign nodejs and graphql"
-	@cp -r backend/$(NODEJS_GQL_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(NODEJS_NEW_GQL_SERVICE)"
-	@cd "./$(OUT_FOLDER)/$(NODEJS_NEW_GQL_SERVICE)" && \
-		sed -i.bak 's/$(NODEJS_GQL_FOLDER_TEMPLATE)/$(NODEJS_NEW_GQL_SERVICE)/g' package.json package-lock.json && \
-		rm package.json.bak package-lock.json.bak
-	@echo "microservice created sucessfully at $(NODEJS_NEW_GQL_SERVICE)."
-
-create-nodejs-rest: clean-examples ## create a microservice with nodejs and nestjs
-	@if [ -z "$(NODEJS_NEW_REST_SERVICE)" ]; then \
-		echo "Error: NODEJS_NEW_REST_SERVICE variable is not set"; \
-		exit 1; \
-	fi
-	@echo "creating new rest microservice using nodejs and nestjs"
-	@cp -r backend/$(NODEJS_REST_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(NODEJS_NEW_REST_SERVICE)"
-	@echo "microservice created sucessfully at $(NODEJS_NEW_REST_SERVICE)."
-
-create-py-rest: clean-examples ## create a microservice with fastapi
-	@if [ -z "$(PY_NEW_FASTAPI_SERVICE)" ]; then \
-		echo "Error: PY_NEW_FASTAPI_SERVICE variable is not set"; \
-		exit 1; \
-	fi
-	@echo "creating new gql microservice"
-	@cp -r backend/$(PY_FASTAPI_FOLDER_TEMPLATE) "./$(OUT_FOLDER)/$(PY_NEW_FASTAPI_SERVICE)"
-	@echo "microservice created sucessfully at $(PY_NEW_FASTAPI_SERVICE)."
-
-clean-examples: ## clean previous examples
-	@echo "cleanning previous examples"
-	@find ./$(OUT_FOLDER) -type d -name "$(NODEJS_NEW_GQL_SERVICE)" -exec rm -rf {} +
-	@find ./$(OUT_FOLDER) -type d -name "$(NODEJS_NEW_REST_SERVICE)" -exec rm -rf {} +
-	@find ./$(OUT_FOLDER) -type d -name "$(PY_NEW_FASTAPI_SERVICE)" -exec rm -rf {} +
-	@echo "removed previous examples"
 
 install-dependencies: ## install node dependencies
 	npm install
