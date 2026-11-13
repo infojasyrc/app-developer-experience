@@ -1,5 +1,9 @@
 name: Release & Changelog pipeline
 
+# Tag-only releases: nothing is pushed to `main` (the `main` ruleset requires a
+# PR). Each job tags the triggering commit and publishes a GitHub release.
+# Runbook: docs/standards/release-strategy.md
+
 permissions:
   contents: write
 
@@ -8,6 +12,14 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      packages:
+        description: >
+          Space-separated package keys to release even if they did not change
+          in the last push (tpl-fastapi-rest tpl-nestjs-rest tpl-nestjs-gql)
+        required: false
+        default: ''
+        type: string
 
 jobs:
   get-changed-packages:
@@ -25,24 +37,46 @@ jobs:
       - name: Output changed packages
         run: |
           echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
+          echo "Forced packages: ${{ inputs.packages }}"
 
   release-nestjs-rest-tpl:
-    name: Create a release and publish changelog for backend/nestjs-rest-tpl
+    name: Release backend/nestjs-rest-tpl
     needs: get-changed-packages
-    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-nestjs-rest') }}
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-nestjs-rest') || contains(inputs.packages, 'tpl-nestjs-rest') }}
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-          fetch-depth: 2
-
-      - name: Generate release and changelog for backend/nestjs-rest-tpl
+      - name: Release backend/nestjs-rest-tpl
         uses: ./.github/actions/generate-release-changelog
         with:
           working-directory: ./backend/nestjs-rest-tpl
-          npm-script: changelog:backend:nestjs-rest-tpl
           project-name: nestjs-rest-tpl
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
+
+  release-fastapi-rest-tpl:
+    name: Release backend/fastapi-rest-tpl
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-fastapi-rest') || contains(inputs.packages, 'tpl-fastapi-rest') }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Release backend/fastapi-rest-tpl
+        uses: ./.github/actions/generate-release-changelog
+        with:
+          working-directory: ./backend/fastapi-rest-tpl
+          project-name: fastapi-rest-tpl
+
+  release-nestjs-gql-tpl:
+    name: Release backend/nestjs-gql-tpl
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-nestjs-gql') || contains(inputs.packages, 'tpl-nestjs-gql') }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Release backend/nestjs-gql-tpl
+        uses: ./.github/actions/generate-release-changelog
+        with:
+          working-directory: ./backend/nestjs-gql-tpl
+          project-name: nestjs-gql-tpl

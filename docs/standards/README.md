@@ -17,7 +17,7 @@ links here instead of duplicating the content.
 | Branching | [branching.md](./branching.md) | Trunk-based branch naming convention |
 | Pull requests | [pull-requests.md](./pull-requests.md) | PR structure, work-in-progress, automation |
 | Dependency updates | [dependency-updates.md](./dependency-updates.md) | Node LTS policy, Dependabot and commitlint |
-| Release strategy | [release-strategy.md](./release-strategy.md) | How and when releases are cut (TODO) |
+| Release strategy | [release-strategy.md](./release-strategy.md) | How and when releases are cut; step-by-step backend template release runbook |
 | Versioning | [versioning.md](./versioning.md) | SemVer application across components (TODO) |
 | Changelog | [changelog.md](./changelog.md) | Changelog generation and format (TODO) |
 

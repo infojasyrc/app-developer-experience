@@ -35,7 +35,7 @@ This monorepo provides backendservices and application templates plus a sample p
 - Conference Manager Admin (`admin`): `make build-dev && make install-dependencies && make launch-local`.
 - Conference Manager Webapp (`webapp`): `make build-dev && make install-dependencies`.
 - Stop flows: use matching `make stop-*` target.
-- Changelog generation scripts (root `package.json`): `yarn changelog:backend:nestjs-rest-tpl` (Angular preset, tag prefixes). Use after material feature/fix merges.
+- Backend template releases are tag-only and automatic on merge to `main` (`.github/workflows/release.yml`); do not generate changelogs by hand. Runbook: `docs/standards/release-strategy.md`.
 
 ## 3. Environment & Configuration Patterns
 - Node versions: NestJS templates use the Dockerfile `ARG NODE_VERSION` inside the container — do not install or switch Node on the host for those packages. Root conventional commit tooling requires Node 22.15.0 (see root README). Switch via:

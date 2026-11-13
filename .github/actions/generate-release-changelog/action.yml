@@ -1,120 +1,174 @@
 name: Generate project release and changelog
 
-description: Generate release and commit changelog for a specific project
+description: >
+  Tag-only release for a single monorepo package. Computes the next version from
+  the latest `<project-name>-vX.Y.Z` tag and the conventional commits under
+  `working-directory`, generates release notes for that version only, packages
+  the tracked files of the package (version stamped into the bundle), and
+  publishes a GitHub release. Nothing is pushed to any branch: the tag is
+  created server-side by `gh release create --target`.
 
 inputs:
   working-directory:
-    description: Path to the project
-    required: true
-  npm-script:
-    description: The npm script to generate the changelog
+    description: Path to the package, relative to the repo root (e.g. ./backend/nestjs-rest-tpl)
     required: true
   project-name:
-    description: Name of the project
+    description: Package name; also the tag prefix (`<project-name>-v`)
     required: true
 
 outputs:
+  released:
+    description: "'true' when a release was published, 'false' when there was nothing to release"
+    value: ${{ steps.plan.outputs.released }}
   version:
-    description: New semantic version of the project
+    description: New semantic version of the package
     value: ${{ steps.version.outputs.version }}
   bump:
     description: Recommended bump type
-    value: ${{ steps.bump.outputs.bump }}
+    value: ${{ steps.version.outputs.bump }}
+  tag:
+    description: Tag of the published release
+    value: ${{ steps.version.outputs.tag }}
 
 runs:
   using: composite
   steps:
-    - name: 📥 Checkout code
+    - name: 📥 Checkout code (full history and tags)
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
+    - name: 🧭 Decide whether there is something to release
+      id: plan
+      shell: bash
+      env:
+        PKG_DIR: ${{ inputs.working-directory }}
+        PREFIX: ${{ inputs.project-name }}-v
+      run: |
+        PKG_DIR="${PKG_DIR#./}"
+        LAST_TAG=$(git tag --list "${PREFIX}*" --sort=-v:refname | head -n 1)
+        echo "last_tag=${LAST_TAG}" >> "$GITHUB_OUTPUT"
+        echo "pkg_dir=${PKG_DIR}" >> "$GITHUB_OUTPUT"
+        if [[ -n "$LAST_TAG" && -z "$(git log --format=%H "${LAST_TAG}..HEAD" -- "$PKG_DIR")" ]]; then
+          echo "No commits under ${PKG_DIR} since ${LAST_TAG}; nothing to release."
+          echo "released=false" >> "$GITHUB_OUTPUT"
+        else
+          echo "released=true" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: 🛠 Setup Node.js
+      if: steps.plan.outputs.released == 'true'
       uses: actions/setup-node@v4
       with:
         node-version: 22
 
-    - name: 📦 Install dependencies
+    - name: 📦 Install release tooling
+      if: steps.plan.outputs.released == 'true'
       run: npm install
       shell: bash
 
-    - name: 🔍 Determine bump type
-      id: bump
-      run: |
-        BUMP=$(npx conventional-recommended-bump --preset angular --commit-path ${{ inputs.working-directory }} | jq -r .releaseType)
-        echo "bump=$BUMP" >> $GITHUB_OUTPUT
-      shell: bash
-
-    - name: 🆙 Bump version
+    - name: 🆙 Compute next version
       id: version
+      if: steps.plan.outputs.released == 'true'
+      shell: bash
+      env:
+        PKG_DIR: ${{ steps.plan.outputs.pkg_dir }}
+        LAST_TAG: ${{ steps.plan.outputs.last_tag }}
+        PREFIX: ${{ inputs.project-name }}-v
       run: |
-        if [[ -f "${{ inputs.working-directory }}/pyproject.toml" ]]; then
-          CURRENT=$(grep -E '^version *= *' "${{ inputs.working-directory }}/pyproject.toml" | sed -E 's/version *= *\"([^\"]+)\"/\1/')
-          NEW=$(npx semver "$CURRENT" -i ${{ steps.bump.outputs.bump }})
-          sed -i.bak -E "s/^version *= *\"[^\"]+\"/version = \"$NEW\"/" "${{ inputs.working-directory }}/pyproject.toml"
-          echo "version=$NEW" >> $GITHUB_OUTPUT
-        elif [[ -f "${{ inputs.working-directory }}/package.json" ]]; then
-          CURRENT=$(jq -r .version "${{ inputs.working-directory }}/package.json")
-          NEW=$(npx semver "$CURRENT" -i ${{ steps.bump.outputs.bump }})
-          jq ".version = \"$NEW\"" "${{ inputs.working-directory }}/package.json" > tmp.json && mv tmp.json "${{ inputs.working-directory }}/package.json"
-          echo "version=$NEW" >> $GITHUB_OUTPUT
+        if [[ -n "$LAST_TAG" ]]; then
+          CURRENT="${LAST_TAG#"$PREFIX"}"
+          # Angular rules over the commits that touched the package since the
+          # last tag: breaking change -> major, feat -> minor, anything else ->
+          # patch. (conventional-recommended-bump@6 cannot load the installed
+          # angular preset and silently prints nothing, so it is not used.)
+          SUBJECTS=$(git log --format=%s "${LAST_TAG}..HEAD" -- "$PKG_DIR")
+          BODIES=$(git log --format=%b "${LAST_TAG}..HEAD" -- "$PKG_DIR")
+          if grep -qE '^[a-z]+(\([^)]*\))?!:' <<< "$SUBJECTS" || grep -qE '^BREAKING[ -]CHANGE:' <<< "$BODIES"; then
+            BUMP=major
+          elif grep -qE '^feat(\([^)]*\))?:' <<< "$SUBJECTS"; then
+            BUMP=minor
+          else
+            BUMP=patch
+          fi
+          NEW=$(npx semver "$CURRENT" -i "$BUMP")
         else
-          echo "No version file found" && exit 1
+          # First release: publish the version declared in the package itself.
+          BUMP="initial"
+          if [[ -f "$PKG_DIR/pyproject.toml" ]]; then
+            NEW=$(grep -E '^version *= *' "$PKG_DIR/pyproject.toml" | head -n 1 | sed -E 's/version *= *"([^"]+)"/\1/')
+          elif [[ -f "$PKG_DIR/package.json" ]]; then
+            NEW=$(jq -r .version "$PKG_DIR/package.json")
+          else
+            echo "No version file found in $PKG_DIR" && exit 1
+          fi
         fi
-      shell: bash
+        npx semver "$NEW" > /dev/null || { echo "Invalid version '$NEW'"; exit 1; }
+        TAG="${PREFIX}${NEW}"
+        if git rev-parse -q --verify "refs/tags/${TAG}" > /dev/null; then
+          echo "Tag ${TAG} already exists" && exit 1
+        fi
+        echo "bump=$BUMP" >> "$GITHUB_OUTPUT"
+        echo "version=$NEW" >> "$GITHUB_OUTPUT"
+        echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+        {
+          echo "### ${{ inputs.project-name }}"
+          echo "- previous tag: \`${LAST_TAG:-none}\`"
+          echo "- bump: \`${BUMP}\`"
+          echo "- new tag: \`${TAG}\`"
+        } >> "$GITHUB_STEP_SUMMARY"
 
-    - name: 📝 Generate changelog
-      run: |
-        npm run ${{ inputs.npm-script }} || echo "No changelog script for ${{ inputs.npm-script }}"
-      shell: bash
-
-    - name: 💾 Commit version + changelog
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions@users.noreply.github.com"
-        git remote set-url origin https://x-access-token:${{ env.GH_PAT }}@github.com/${{ github.repository }}.git
-        git add CHANGELOG.md
-        git add package.json || true
-        git add pyproject.toml || true
-        git commit -m "chore(${{ inputs.project-name }}): bump version to ${{ steps.version.outputs.version }}" || echo "No changes"
-        git push origin HEAD
-      shell: bash
-      env:
-        GH_PAT: ${{ env.GH_PAT }}
-      working-directory: ${{ inputs.working-directory }}
-
-    - name: 🏷️ Create version tag
-      id: tag
-      run: |
-        TAG="${{ inputs.project-name }}-v${{ steps.version.outputs.version }}"
-        git tag "$TAG"
-        git push origin "$TAG"
-        echo "tag_name=$TAG" >> $GITHUB_OUTPUT
+    - name: 📝 Generate release notes for this version only
+      if: steps.plan.outputs.released == 'true'
       shell: bash
       env:
-        GH_PAT: ${{ env.GH_PAT }}
-
-    - name: 📚 Package release assets (zip/tar.gz)
+        PKG_DIR: ${{ steps.plan.outputs.pkg_dir }}
+        PREFIX: ${{ inputs.project-name }}-v
+        VERSION: ${{ steps.version.outputs.version }}
       run: |
-        REPO_ROOT="$(git rev-parse --show-toplevel)"
-        # Create archives of just the working directory, saved at the repo root
-        zip -r "${REPO_ROOT}/${{ steps.tag.outputs.tag_name }}.zip" . > /dev/null
-        tar -czf "${REPO_ROOT}/${{ steps.tag.outputs.tag_name }}.tar.gz" . > /dev/null
+        # --context pins the header version; without it conventional-changelog
+        # reads the root package.json version (the cause of the old mismatch).
+        jq -n --arg v "$VERSION" '{version: $v}' > "$RUNNER_TEMP/changelog-context.json"
+        npx conventional-changelog -p angular -r 1 \
+          --commit-path "$PKG_DIR" --tag-prefix "$PREFIX" \
+          --context "$RUNNER_TEMP/changelog-context.json" > "$RUNNER_TEMP/release-notes.md"
+        cat "$RUNNER_TEMP/release-notes.md"
+
+    - name: 📚 Package release assets (tracked files only, version stamped)
+      if: steps.plan.outputs.released == 'true'
       shell: bash
-      working-directory: ${{ inputs.working-directory }}
-
-    - name: 🚀 Publish GitHub release
+      env:
+        PKG_DIR: ${{ steps.plan.outputs.pkg_dir }}
+        VERSION: ${{ steps.version.outputs.version }}
+        TAG: ${{ steps.version.outputs.tag }}
       run: |
-        REPO_ROOT="$(git rev-parse --show-toplevel)"
+        STAGE="$RUNNER_TEMP/stage"
+        DIST="$RUNNER_TEMP/dist"
+        rm -rf "$STAGE" "$DIST" && mkdir -p "$STAGE" "$DIST"
+        git archive --format=tar "HEAD:${PKG_DIR}" | tar -x -C "$STAGE"
+        if [[ -f "$STAGE/pyproject.toml" ]]; then
+          sed -i -E "0,/^version *= *\"[^\"]+\"/s//version = \"${VERSION}\"/" "$STAGE/pyproject.toml"
+        elif [[ -f "$STAGE/package.json" ]]; then
+          jq --arg v "$VERSION" '.version = $v' "$STAGE/package.json" > "$STAGE/package.json.tmp"
+          mv "$STAGE/package.json.tmp" "$STAGE/package.json"
+        fi
+        (cd "$STAGE" && tar -czf "$DIST/${TAG}.tar.gz" . && zip -qr "$DIST/${TAG}.zip" .)
+        (cd "$DIST" && sha256sum "${TAG}.tar.gz" > "${TAG}.tar.gz.sha256" && sha256sum "${TAG}.zip" > "${TAG}.zip.sha256")
+        ls -la "$DIST"
 
-        # Create GitHub release and attach scoped archives only
-        gh release create "${{ steps.tag.outputs.tag_name }}" \
-          --title "${{ inputs.project-name }} v${{ steps.version.outputs.version }}" \
-          --notes-file CHANGELOG.md \
-          --verify-tag \
-          "${REPO_ROOT}/${{ steps.tag.outputs.tag_name }}.zip" \
-          "${REPO_ROOT}/${{ steps.tag.outputs.tag_name }}.tar.gz"
+    - name: 🚀 Publish GitHub release (tag created server-side)
+      if: steps.plan.outputs.released == 'true'
       shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
-      working-directory: ${{ inputs.working-directory }}
+        TAG: ${{ steps.version.outputs.tag }}
+        VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        gh release create "$TAG" \
+          --target "$GITHUB_SHA" \
+          --title "${{ inputs.project-name }} v${VERSION}" \
+          --notes-file "$RUNNER_TEMP/release-notes.md" \
+          "$RUNNER_TEMP/dist/${TAG}.tar.gz" \
+          "$RUNNER_TEMP/dist/${TAG}.tar.gz.sha256" \
+          "$RUNNER_TEMP/dist/${TAG}.zip" \
+          "$RUNNER_TEMP/dist/${TAG}.zip.sha256"

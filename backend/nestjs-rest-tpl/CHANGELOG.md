@@ -1,4 +1,6 @@
-## 1.0.0 (2026-09-15)
+> After 0.1.2, release notes are published on [GitHub Releases](https://github.com/infojasyrc/app-developer-experience/releases?q=nestjs-rest-tpl) (tag-only pipeline, see [release-strategy.md](../../docs/standards/release-strategy.md)). This file is no longer updated.
+
+## 0.1.2 (2026-09-15)
 
 * fix(nx): standardize project.json across ADE components (#249) ([3e94195](https://github.com/infojasyrc/app-developer-experience/commit/3e94195)), closes [#249](https://github.com/infojasyrc/app-developer-experience/issues/249)
 * docs: consolidate team/process standards into docs/standards/ (#248) ([a073270](https://github.com/infojasyrc/app-developer-experience/commit/a073270)), closes [#248](https://github.com/infojasyrc/app-developer-experience/issues/248)
