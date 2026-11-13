@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { AxiosRequestHeaders } from 'axios';
-import { EnvironmentVariables } from './../../infrastructure/environment-variables';
+import { EnvironmentVariables } from './../../infrastructure/environment-variables.js';
 
 export const getAPIRequestHeaders = (
   config: ConfigService<EnvironmentVariables>,
