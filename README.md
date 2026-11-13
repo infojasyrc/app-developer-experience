@@ -93,8 +93,8 @@ app-developer-experience/
 │       ├── aws/                 #   AWS (ECS, ECR, VPC)
 │       └── azure/               #   Azure equivalents
 ├── devops/                      # Reusable pipeline job definitions
-│   ├── ci-aws-backend/          #   Backend container CI → AWS ECR
-│   ├── ci-aws-webapp/           #   Webapp container CI → AWS ECR
+│   ├── ci-aws-backend.yml       #   Backend container CI → AWS ECR
+│   ├── ci-aws-webapp.yml        #   Webapp container CI → AWS ECR
 │   └── deploy_infrastructure/   #   Terraform plan/apply/destroy
 ├── .github/workflows/           # GitHub Actions entrypoints (use devops/ jobs)
 ├── agents/                      # AI agent definitions (Claude Code SDK)

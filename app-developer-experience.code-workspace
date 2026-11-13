@@ -29,8 +29,8 @@
             "path": "./mobile-app/whitewalker"
         },
         {
-            "name": "whitewolf-rn",
-            "path": "./mobile-app/whitewolf-rn"
+            "name": "caraxes",
+            "path": "./mobile-app/caraxes"
         },
         {
             "name": "conference-manager-webapp",
@@ -58,7 +58,7 @@
             "nestjs-rest-template",
             "fastapi-rest-template",
             "whitewalker",
-            "whitewolf-rn",
+            "caraxes",
             "conference-manager-webapp",
             "conference-manager-admin",
             "conference-manager-api",

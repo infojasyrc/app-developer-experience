@@ -60,8 +60,8 @@ Use git aliases in branch names (`cm-api/feat/...`), commit scopes (`feat(cm-api
 | Alias | Resolved Path | Description |
 |---|---|---|
 | `DEVOPS_ROOT` | `devops/` | All pipeline templates |
-| `CI_AWS_BACKEND` | `devops/ci-aws-backend/` | CI for backend microservices → AWS ECR |
-| `CI_AWS_WEBAPP` | `devops/ci-aws-webapp/` | CI for webapp → AWS ECR |
+| `CI_AWS_BACKEND` | `devops/ci-aws-backend.yml` | CI for backend microservices → AWS ECR |
+| `CI_AWS_WEBAPP` | `devops/ci-aws-webapp.yml` | CI for webapp → AWS ECR |
 | `DEPLOY_INFRA` | `devops/deploy_infrastructure/` | Terraform plan/apply/destroy pipelines |
 | `GHA_WORKFLOWS` | `.github/workflows/` | GitHub Actions workflow files |
 | `PIPELINE_REPORTS` | `.github/debug-reports/` | Agent-produced debug reports |
