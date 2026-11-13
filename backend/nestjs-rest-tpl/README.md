@@ -35,6 +35,15 @@ Host: Linux or macOS, with:
 
 Do not install Node, nvm, or npm on the host. The container image uses Node 26.13 (`ARG NODE_VERSION` in the Dockerfile): Debian slim for the development and build stages, alpine for the production image.
 
+### Module format and tests
+
+The template runs NestJS 12 as native ES modules (`"type": "module"`, TypeScript `module: nodenext`):
+
+- Relative imports need the `.js` suffix, for example `import { AppModule } from './app.module.js'`.
+- Unit and e2e tests run on Vitest (`vitest.config.ts`, `vitest.e2e.config.ts`). The SWC plugin emits the decorator metadata that NestJS dependency injection needs.
+- Import test APIs from `vitest` (`describe`, `it`, `expect`, `vi`). Mock modules with `vi.mock`, and put any values its factory uses inside `vi.hoisted`.
+- `make unit-tests` writes coverage and the SonarQube report (`coverage/test-report.xml`).
+
 ## Getting started
 
 All install, lint, test, and run work happens inside the container via Make. Override the engine with `.env` or `make <target> CONTAINER_RUNTIME=podman`.

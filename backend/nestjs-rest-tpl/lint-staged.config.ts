@@ -1,7 +1,7 @@
 // lint-staged.config.ts
-import type { Config } from 'lint-staged';
+import type { Configuration } from 'lint-staged';
 
-const config: Config = {
+const config: Configuration = {
   '*.ts': ['eslint --fix', 'prettier --write'],
 };
 
