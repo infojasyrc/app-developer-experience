@@ -1,15 +1,17 @@
 # syntax=docker/dockerfile:1
 
+ARG NODE_VERSION=26.13
+
 # ─────────────────────────────────────────────
 # Stage 1 — development
-#   Bare node:20-alpine base with WORKDIR set.
+#   Bare node:${NODE_VERSION}-alpine base with WORKDIR set.
 #   Built by `make build-dev` (--target development)
 #   and used as the volume-mounted dev container by
 #   `make launch` and `make install-dependencies`.
 #   Node modules are never baked in — they live in a
 #   named Docker volume managed by the Makefile.
 # ─────────────────────────────────────────────
-FROM node:24-alpine AS development
+FROM node:${NODE_VERSION}-alpine AS development
 
 WORKDIR /app
 
@@ -29,23 +31,6 @@ ENV NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH
 
 ARG NEXT_PUBLIC_VERSION
 ENV NEXT_PUBLIC_VERSION=$NEXT_PUBLIC_VERSION
-
-ARG NEXT_PUBLIC_API_KEY
-ENV NEXT_PUBLIC_API_KEY=$NEXT_PUBLIC_API_KEY
-ARG NEXT_PUBLIC_AUTH_DOMAIN
-ENV NEXT_PUBLIC_AUTH_DOMAIN=$NEXT_PUBLIC_AUTH_DOMAIN
-ARG NEXT_PUBLIC_DATABASE_URL
-ENV NEXT_PUBLIC_DATABASE_URL=$NEXT_PUBLIC_DATABASE_URL
-ARG NEXT_PUBLIC_PROJECT_ID
-ENV NEXT_PUBLIC_PROJECT_ID=$NEXT_PUBLIC_PROJECT_ID
-ARG NEXT_PUBLIC_STORAGE_BUCKET
-ENV NEXT_PUBLIC_STORAGE_BUCKET=$NEXT_PUBLIC_STORAGE_BUCKET
-ARG NEXT_PUBLIC_MESSAGING_SENDER_ID
-ENV NEXT_PUBLIC_MESSAGING_SENDER_ID=$NEXT_PUBLIC_MESSAGING_SENDER_ID
-ARG NEXT_PUBLIC_FIREBASE_APP_ID
-ENV NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID
-ARG NEXT_PUBLIC_MEASUREMENT_ID
-ENV NEXT_PUBLIC_MEASUREMENT_ID=$NEXT_PUBLIC_MEASUREMENT_ID
 
 COPY package*.json ./
 
@@ -70,7 +55,7 @@ RUN npm run build
 #   Node File Tracing (NFT) ensures only the
 #   modules actually required at runtime are present.
 # ─────────────────────────────────────────────
-FROM node:24-alpine AS runtime
+FROM node:${NODE_VERSION}-alpine AS runtime
 
 WORKDIR /app
 
