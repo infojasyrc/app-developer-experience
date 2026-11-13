@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { EnvironmentVariables } from './infrastructure/environment-variables';
+import { AppModule } from './app.module.js';
+import { EnvironmentVariables } from './infrastructure/environment-variables.js';
 
 async function bootstrap() {
   const GLOBAL_PREFIX = 'ms-nestjs-template/v1';

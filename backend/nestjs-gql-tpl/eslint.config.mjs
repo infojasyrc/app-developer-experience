@@ -20,10 +20,7 @@ export default [
         tsconfigRootDir: __dirname,
         sourceType: 'module',
       },
-      globals: {
-        jest: 'readonly',
-      },
-      ecmaVersion: 2021,
+      ecmaVersion: 2023,
     },
     plugins: {
       '@typescript-eslint': tsPlugin,

@@ -6,7 +6,7 @@ import {
   HealthCheck,
 } from '@nestjs/terminus';
 
-import { EnvironmentVariables } from './../../../../../infrastructure/environment-variables';
+import { EnvironmentVariables } from './../../../../../infrastructure/environment-variables.js';
 
 @Controller('ready')
 export class ReadyController {
