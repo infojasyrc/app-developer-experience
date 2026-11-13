@@ -287,7 +287,7 @@ Container-first NestJS templates. Paths: `agents/shared/context/monorepo-paths.m
 | `make launch-local` | Start API + database for local development |
 | `make stop-local` | Stop local services |
 | `make lint` | Run ESLint inside container |
-| `make unit-tests` | Run Jest tests with coverage inside container |
+| `make unit-tests` | Run Vitest tests with coverage inside container (native ESM: relative imports use the `.js` suffix) |
 | `make interactive` | Open a shell inside the container |
 | `make docker-clean` | Kill all containers and prune images |
 | `make help` | List all targets |
