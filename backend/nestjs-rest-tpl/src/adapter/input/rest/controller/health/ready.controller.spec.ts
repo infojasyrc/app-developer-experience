@@ -1,9 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import {
-  HealthCheckError,
-  HttpHealthIndicator,
-  TerminusModule,
-} from '@nestjs/terminus';
+import { HttpHealthIndicator, TerminusModule } from '@nestjs/terminus';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { EnvironmentVariables } from './../../../../../infrastructure/environment-variables';
@@ -67,11 +63,9 @@ describe('ReadyController', () => {
   });
 
   it('should return with status error', async () => {
-    (httpHealthIndicator.pingCheck as jest.Mock).mockRejectedValue(
-      new HealthCheckError('failed', {
-        'healthcheck-integration': { status: 'down' },
-      }),
-    );
+    (httpHealthIndicator.pingCheck as jest.Mock).mockResolvedValue({
+      'healthcheck-integration': { status: 'down' },
+    });
 
     await expect(controller.check()).rejects.toMatchObject({
       response: { status: 'error' },
