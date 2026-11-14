@@ -141,9 +141,6 @@ Use `make init`, `make plan`, and (only with explicit confirmation)
 
 | Target | Purpose |
 |---|---|
-| `make create-nodejs-gql` | Scaffold a new NestJS GraphQL microservice |
-| `make create-nodejs-rest` | Scaffold a new NestJS REST microservice |
-| `make create-py-rest` | Scaffold a new FastAPI microservice |
 | `make install-dependencies` | Install root-level Node deps (husky, commitlint) |
 | `make init-husky` | Initialise Git hooks (run once after fresh clone) |
 | `make setup-commit-validation` | Wire `commit-msg` hook for conventional commits |

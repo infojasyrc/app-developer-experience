@@ -35,7 +35,7 @@ lifecycle:
     - poetry
     - uv
   how:
-    - Copy the matching template directory into the new package. Do not treat root Makefile create-* targets as the product contract.
+    - Copy the matching template directory into the new package, excluding node_modules/, .venv/, coverage/ and dist/.
     - cd into the new package directory.
     - Run make help and use only Make targets.
     - Keep a Makefile and Dockerfile. Make targets must wrap the container engine selected by CONTAINER_RUNTIME (docker, podman, or container; default docker).
@@ -82,14 +82,14 @@ components:
       - ci-aws-backend
       - CI_AWS_BACKEND
     path_alias: CI_AWS_BACKEND
-    path: devops/ci-aws-backend/
+    path: devops/ci-aws-backend.yml
     description: CI pipeline template for backend microservices to AWS ECR
   ci-aws-webapp:
     aliases:
       - ci-aws-webapp
       - CI_AWS_WEBAPP
     path_alias: CI_AWS_WEBAPP
-    path: devops/ci-aws-webapp/
+    path: devops/ci-aws-webapp.yml
     description: CI pipeline template for webapp to AWS ECR
   deploy-infra:
     aliases:
@@ -112,9 +112,9 @@ components:
       - mobile-expo
       - expo
       - MOBILE_EXPO
-      - whitewolf-rn
+      - caraxes
     path_alias: MOBILE_EXPO
-    path: mobile-app/whitewolf-rn/
+    path: mobile-app/caraxes/
     description: Expo mobile template
   cli:
     aliases:
@@ -143,7 +143,7 @@ components:
         - Makefile
       host_forbidden: []
       how:
-        - Copy the matching template directory into the new package. Do not treat root Makefile create-* targets as the product contract.
+        - Copy the matching template directory into the new package, excluding .terraform/ and any *.tfstate files.
         - cd into the new package directory.
         - Run make help and use only Make targets.
         - Keep a Makefile. Do not add a Dockerfile to develop IaC.
@@ -165,7 +165,7 @@ components:
         - Makefile
       host_forbidden: []
       how:
-        - Copy the matching template directory into the new package. Do not treat root Makefile create-* targets as the product contract.
+        - Copy the matching template directory into the new package, excluding .terraform/ and any *.tfstate files.
         - cd into the new package directory.
         - Run make help and use only Make targets.
         - Keep a Makefile. Do not add a Dockerfile to develop IaC.

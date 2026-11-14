@@ -1,5 +1,25 @@
-from knowledge.scaffold import known_component_types, scaffold_guidance
+from knowledge.scaffold import known_component_types, load_catalog, scaffold_guidance
 from mcp_server import build_mcp
+
+
+def test_every_component_path_exists(ade_root):
+    components = load_catalog()["components"]
+    missing = {name: spec["path"] for name, spec in components.items() if not (ade_root / spec["path"]).exists()}
+    assert missing == {}
+
+
+def test_scaffold_guidance_mobile_expo_is_caraxes():
+    for alias in ("mobile-expo", "expo", "caraxes"):
+        result = scaffold_guidance(alias)
+        assert result["ok"] is True
+        assert result["component_type"] == "mobile-expo"
+        assert result["path"] == "mobile-app/caraxes/"
+    assert scaffold_guidance("whitewolf-rn")["ok"] is False
+
+
+def test_scaffold_guidance_ci_aws_paths_are_workflow_files():
+    assert scaffold_guidance("ci-aws-backend")["path"] == "devops/ci-aws-backend.yml"
+    assert scaffold_guidance("ci-aws-webapp")["path"] == "devops/ci-aws-webapp.yml"
 
 
 def test_scaffold_guidance_nestjs_rest_uses_path_alias():
