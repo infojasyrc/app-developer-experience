@@ -1,0 +1,26 @@
+---
+description: Conventions for tools/ade-core/ and backend template manifests (template.yaml)
+globs:
+  - "tools/ade-core/**"
+  - "backend/*/template.yaml"
+alwaysApply: false
+---
+
+# tools/ade-core/ and `template.yaml`
+
+ADE core engine: it reads a backend template's `template.yaml` and renders a
+new project from it, renaming the template and stripping features that are
+turned off. It is **not** a bootstrap template and is not copied into other
+repos. It is the start of the scaffolding platform
+(`docs/analysis/ade-scaffolding-and-knowledge-platform.md`).
+
+- Path alias: `ADE_CORE` in `agents/shared/context/monorepo-paths.md`.
+- Commit scope: `ade-core`.
+- Manifest format and transform ops: `tools/ade-core/README.md` (do not restate it here).
+
+Rules:
+- **Unified CLI Facade + container-first.** `cd tools/ade-core`, run `make help`, and use only Make targets (`build-dev`, `install-dependencies`, `format`, `lint`, `unit-tests`, `validate-manifests`, `combinations`, `render`, `build-prod`). Never run host `python`, `pip`, `uv` or `poetry`.
+- **Coverage.** 80% minimum.
+- **Manifests must stay in sync with their template.** Every transform must match. If a change moves, renames or edits a file, env key, Make target or line that a `backend/<tpl>/template.yaml` references, update the manifest in the same PR and run `make validate-manifests`. CI renders every feature combination and runs the rendered project's Make targets.
+- **Templates stay runnable.** Never put placeholders (`{{ … }}`, `.jinja`) in template sources. Placeholders belong only in `template.yaml` values.
+- **Dependencies and lockfiles are not edited** when a feature is off (the Dockerfiles run `npm ci` / `uv sync --frozen`). Lockfiles are only renamed through `identity`.

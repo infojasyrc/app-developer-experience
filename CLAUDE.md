@@ -17,6 +17,7 @@ infrastructure as code, and a conference management solution.
 4. **DevOps Pipelines** — CI/CD pipelines for containers and IaC (Terraform, Bicep)
 5. **Infrastructure as Code** — AWS (Terraform) and Azure (Bicep) deployments
 6. **Knowledge MCP** — runtime service that exposes ADE conventions to other repos/agents (`tools/knowledge-mcp/`)
+7. **ADE Core** — engine that renders backend templates from their `template.yaml` manifests (`tools/ade-core/`)
 
 ---
 
@@ -35,6 +36,7 @@ See `agents/shared/context/monorepo-paths.md` for canonical paths.
 | GitHub Actions | `.github/workflows/` |
 | AI Agents | `agents/` |
 | Knowledge MCP | `tools/knowledge-mcp/` |
+| ADE Core (template engine) | `tools/ade-core/` |
 | Architecture decisions | `docs/adr/` |
 | Team/process standards | `docs/standards/` |
 

@@ -5,6 +5,7 @@
 - MonoRepo
   - [ ] App Developer Experience (ade)
   - [ ] Knowledge MCP (knowledge-mcp)
+  - [ ] ADE Core (ade-core)
 - Mobile App
   - [ ] React Native (whitewalker)
   - [ ] Expo (caraxes)
