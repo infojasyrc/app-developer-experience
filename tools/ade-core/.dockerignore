@@ -1,0 +1,7 @@
+# Exclude everything
+*
+
+# include only source files
+!pyproject.toml
+!uv.lock
+!src/

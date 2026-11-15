@@ -360,6 +360,29 @@ Design rules:
   temp directory and runs `make lint unit-tests` on each, so a manifest never
   silently rots when template files move.
 
+> **As implemented in Phase 1 (2026-11-14).** The manifests live in
+> `backend/<tpl>/template.yaml` and the engine in `tools/ade-core`. They
+> differ from the sketch above in these ways:
+> - **Lockfiles are kept and only renamed.** The NestJS Dockerfiles run
+>   `npm ci` and FastAPI runs `uv sync --frozen`, so a lockfile cannot be
+>   dropped. The rule "lockfiles are regenerated" above does not hold.
+> - **A disabled feature keeps its dependencies.** It loses its files, env
+>   vars, compose services, Make targets and code references; dependency
+>   pruning, which needs lockfile regeneration, moves to Phase 2. Feature
+>   blocks use `when.<value>` with the ops `remove_files`, `remove_env`,
+>   `remove_make_targets`, `remove_lines` (regex) and `replace` (literal),
+>   instead of `when_none`, `remove_dependencies` and `code_edits`.
+> - **Every op must match**, or the render fails with the manifest entry
+>   that drifted.
+> - **Parameters are inlined per manifest** (no `$ref`), so a release bundle
+>   is self-contained; a test keeps the common ones identical.
+> - **`min_engine_version`** (the `ade-core` version) replaces
+>   `min_cli_version` until the CLI embeds the engine.
+> - **No conditional edits yet.** `edits` supports `dotenv_set` and
+>   `json_set` only, and has no `when` key.
+>
+> Reference: `tools/ade-core/README.md`.
+
 ### 4.2 Backend template parameters
 
 Precedence: **CLI flag / MCP argument > answers file (`--answers`) > detected project context > template default.**
@@ -404,6 +427,11 @@ Precedence: **CLI flag / MCP argument > answers file (`--answers`) > detected pr
 
 The compatibility matrix lives in the manifests (`features.*.values`) and is
 validated by the core, so the CLI and MCP give identical errors.
+
+> **Phase 1 status.** `database`, `feature_flags` (NestJS) and `auth`
+> (FastAPI) are modelled. `migrations=alembic` is **not** modelled yet: the
+> FastAPI template ships the Alembic dependency but no migration wiring to
+> switch on or off.
 
 ### 4.4 "According to the project": the `ProjectInspector`
 
@@ -839,6 +867,7 @@ Each phase ships on its own and leaves the repo consistent.
 | **0 — Cleanup** | Deprecate root `create-*` (print a pointer to `appdevexp new`, or delegate to the containerized CLI). Fix `scaffold.yaml` / `monorepo-paths.md` drift (`mobile-app/caraxes/`, `devops/ci-aws-*.yml`). Add release jobs for `fastapi-rest-tpl` and `nestjs-gql-tpl`; fix the title vs changelog version mismatch | Every template has a current GitHub release; `scaffold_guidance` returns real paths |
 | ↳ *Phase 0 status* | *Implemented (plan: `docs/plans/20261113-ade-scaffolding-phase-0.md`). Root `create-*` targets were **removed** rather than deprecated. Release jobs are tag-only (see §3.1 status note)* | *Pending: first `workflow_dispatch` run after merge* |
 | **1 — Manifests** | `template.yaml` in all three backend templates. CI job that renders every feature combination and runs `make lint unit-tests` on the result | Manifest CI is green on `main` |
+| ↳ *Phase 1 status* | *Implemented (plan: `docs/plans/20261114-ade-scaffolding-phase-1.md`). Engine started early as `tools/ade-core`; 12 combinations rendered and verified by `render-and-verify` in `pull_request_backend.yml` (see §4.1 note)* | *Pending: `workflow_dispatch` run on `main` after merge* |
 | **2 — Core + `new`** | Extract `tools/ade-core` from `tools/knowledge-mcp`. `appdevexp new` with plan/apply and `--dry-run`. Bundles get a manifest and checksum; `artifacts-index.json` is published | `appdevexp new` creates a project that passes `make unit-tests` from a GitHub release |
 | **3 — MCP + knowledge release** | `appdevexp mcp`. `knowledge-vX` release. `sync pull`. `tools/knowledge-mcp` becomes an adapter over the core | Consumer repos work with no ADE clone |
 | **4 — Workflows** | Reusable `workflow_call` workflows built from the existing composite actions; `workflows-v1` tag. Convert `devops/*.yml` into caller asset-templates; `appdevexp add workflow` | A consumer deploys with a ≤ 30 line caller workflow |

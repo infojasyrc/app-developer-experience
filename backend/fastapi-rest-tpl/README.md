@@ -8,6 +8,10 @@ This is a template to build rest api using fastapi.
 - [Getting started](#getting-started)
 - [Team Standards](#team-standards)
 
+## Template manifest
+
+Optional features (feature flags, database, auth) and the renaming rules for new services are declared in [`template.yaml`](template.yaml). It is rendered by [`tools/ade-core`](../../tools/ade-core/README.md), and CI builds and tests every feature combination.
+
 ## Getting started
 
 ### Requirements

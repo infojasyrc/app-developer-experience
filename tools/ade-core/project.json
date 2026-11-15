@@ -1,0 +1,27 @@
+{
+  "name": "ade-core",
+  "sourceRoot": "tools/ade-core",
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make unit-tests",
+        "cwd": "tools/ade-core"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make lint",
+        "cwd": "tools/ade-core"
+      }
+    },
+    "validate-manifests": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make validate-manifests",
+        "cwd": "tools/ade-core"
+      }
+    }
+  }
+}

@@ -69,6 +69,7 @@ Conference Manager scopes are **git aliases**, not folder names. Translate befor
 | `agents` | Agent definitions and skills | any agent |
 | `deps` | Dependency changes | any agent |
 | `knowledge-mcp` | `tools/knowledge-mcp/` | Knowledge MCP server. Do not use `cm-tools` or `tools` for this package. |
+| `ade-core` | `tools/ade-core/` | ADE core engine (manifests, rendering). Template manifests themselves use the template scope or `backend`. |
 
 ---
 

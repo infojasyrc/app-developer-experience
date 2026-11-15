@@ -1,0 +1,124 @@
+# Template manifest (manifest_schema 1) — read by tools/ade-core.
+# Describes how to rename this living template and how to strip optional
+# features. Every transform must match the files below, or rendering fails:
+# when you move or rename a file referenced here, update this manifest in the
+# same PR. CI renders every feature combination and runs the Make targets on
+# each result (.github/workflows/pull_request_backend.yml).
+manifest_schema: 1
+artifact: nestjs-rest
+kind: project-template
+min_engine_version: 0.1.0
+description: NestJS RESTful service (DDD, container-first)
+
+identity:
+  token: nestjs-rest-tpl
+  files:
+    - .env.public
+    - package.json
+    - package-lock.json
+    - project.json
+    - docker-compose/docker-compose.local.yml
+    - README.md
+
+# package-lock.json is kept (the Dockerfile runs `npm ci`); only its name is renamed.
+exclude:
+  - node_modules/
+  - coverage/
+  - dist/
+  - CHANGELOG.md
+
+parameters:
+  type: object
+  additionalProperties: false
+  required: [name]
+  properties:
+    name:
+      type: string
+      pattern: "^[a-z][a-z0-9-]{1,48}$"
+      description: Service name (kebab-case); replaces the template name everywhere
+    project_name:
+      type: string
+      pattern: "^[a-z][a-z0-9-]*$"
+      default: app-dev-exp
+      description: Container image namespace (`<project_name>/<name>`)
+    compose_project_name:
+      type: string
+      pattern: "^[a-z][a-z0-9_-]*$"
+      default: "{{ name }}"
+      description: .env.public COMPOSE_PROJECT_NAME
+    platform:
+      type: string
+      enum: [linux/amd64, linux/arm64, linux/x86_64]
+      default: linux/amd64
+    container_runtime:
+      type: string
+      enum: [docker, podman, container]
+      default: docker
+    output_dir:
+      type: string
+      default: "backend/{{ name }}"
+      description: Path of the new project inside its monorepo (nx project.json sourceRoot / cwd)
+    http_port:
+      type: integer
+      minimum: 1024
+      maximum: 65535
+      default: 4000
+
+# Turning a feature off removes its wiring (files, env, compose, Make targets,
+# code). Dependencies stay in package.json / package-lock.json (pruning them
+# needs a lockfile regeneration; planned for Phase 2).
+features:
+  feature_flags:
+    description: Unleash feature toggles
+    values: [unleash, none]
+    default: unleash
+    when:
+      none:
+        remove_files:
+          - src/infrastructure/unleash/
+          - docker-compose/docker-compose.unleash.yml
+        remove_env: [UNLEASH_API_URL, UNLEASH_API_TOKEN, UNLEASH_DB_NAME, UNLEASH_DB_USERNAME, UNLEASH_DB_PASSWORD]
+        remove_make_targets: [launch-unleash, stop-unleash]
+        remove_lines:
+          - { file: .env.public, pattern: "^# feature flags$" }
+          - { file: src/infrastructure/environment-variables.ts, pattern: "^\\s+UNLEASH_API_(URL|TOKEN): string;$" }
+          - { file: docker-compose/docker-compose.yml, pattern: "^\\s+- UNLEASH_API_(URL|TOKEN)=$" }
+          - { file: docker-compose/docker-compose.yml, pattern: "^\\s+depends_on:$|^\\s+- unleash$" }
+          - { file: Makefile, pattern: "\\$\\(COMPOSE_PROJECT_NAME\\)-unleash-db-data" }
+        replace:
+          - file: Makefile
+            find: "-f docker-compose/docker-compose.unleash.yml -f docker-compose/docker-compose.local.yml"
+            with: "-f docker-compose/docker-compose.local.yml"
+  database:
+    description: PostgreSQL for local development
+    values: [postgres, none]
+    default: postgres
+    when:
+      none:
+        remove_files:
+          - docker-compose/docker-compose.db.yml
+        remove_env: [POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB]
+        remove_make_targets: [launch-db, stop-db]
+        remove_lines:
+          - { file: .env.public, pattern: "^# database connection$" }
+          - { file: Makefile, pattern: "\\$\\(COMPOSE_PROJECT_NAME\\)-db-data" }
+
+edits:
+  - file: .env.public
+    dotenv_set:
+      HTTP_PORT: "{{ http_port }}"
+      PROJECT_NAME: "{{ project_name }}"
+      COMPOSE_PROJECT_NAME: "{{ compose_project_name }}"
+      PLATFORM: "{{ platform }}"
+      CONTAINER_RUNTIME: "{{ container_runtime }}"
+  - file: project.json
+    json_set:
+      sourceRoot: "{{ output_dir }}"
+      "targets.*.options.cwd": "{{ output_dir }}"
+
+next_steps:
+  - make create-volumes
+  - make build-dev
+  - make install-dependencies
+  - make lint
+  - make unit-tests

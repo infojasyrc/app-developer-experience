@@ -43,6 +43,10 @@ The template runs NestJS 12 as native ES modules (`"type": "module"`, TypeScript
 - Import test APIs from `vitest` (`describe`, `it`, `expect`, `vi`). Mock modules with `vi.mock`, and put any values its factory uses inside `vi.hoisted`.
 - `make unit-tests` writes coverage and the SonarQube report (`coverage/test-report.xml`).
 
+## Template manifest
+
+Optional features (feature flags, database, auth) and the renaming rules for new services are declared in [`template.yaml`](template.yaml). It is rendered by [`tools/ade-core`](../../tools/ade-core/README.md), and CI builds and tests every feature combination.
+
 ## Getting started
 
 All install, lint, test, and run work happens inside the container via Make. Override the engine with `.env` or `make <target> CONTAINER_RUNTIME=podman`.

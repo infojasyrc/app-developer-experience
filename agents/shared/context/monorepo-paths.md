@@ -85,6 +85,7 @@ Use git aliases in branch names (`cm-api/feat/...`), commit scopes (`feat(cm-api
 | Alias | Resolved Path | Description |
 |---|---|---|
 | `KNOWLEDGE_MCP` | `tools/knowledge-mcp/` | Knowledge MCP server (runtime service, not a bootstrap template) |
+| `ADE_CORE` | `tools/ade-core/` | ADE core engine: `template.yaml` manifests and rendering (not a bootstrap template) |
 
 ## Shared Documentation
 
