@@ -1,0 +1,56 @@
+manifest_schema: 1
+artifact: sample
+kind: project-template
+min_engine_version: 0.1.0
+description: Sample template used by ade-core unit tests
+identity:
+  token: sample-tpl
+  files: [.env.public, package.json, project.json, README.md, src/core/core.ts]
+exclude: [node_modules/, CHANGELOG.md]
+parameters:
+  type: object
+  additionalProperties: false
+  required: [name]
+  properties:
+    name: { type: string, pattern: "^[a-z][a-z0-9-]{1,48}$" }
+    project_name: { type: string, default: app-dev-exp }
+    compose_project_name: { type: string, default: "{{ name }}" }
+    platform: { type: string, enum: [linux/amd64, linux/arm64], default: linux/amd64 }
+    container_runtime: { type: string, enum: [docker, podman, container], default: docker }
+    output_dir: { type: string, default: "backend/{{ name }}" }
+    http_port: { type: integer, minimum: 1024, maximum: 65535, default: 4000 }
+features:
+  flags:
+    values: [enabled, none]
+    default: enabled
+    when:
+      none:
+        remove_files: [src/flags/, docker-compose/flags.yml]
+        remove_env: [FLAGS_URL]
+        remove_make_targets: [launch-flags]
+        remove_lines:
+          - { file: .env.public, pattern: "^# flags$" }
+          - { file: src/core/env.ts, pattern: "^\\s+FLAGS_URL: string;$" }
+  database:
+    values: [postgres, none]
+    default: postgres
+    when:
+      none:
+        remove_files: [docker-compose/db.yml]
+        remove_env: [DB_USER]
+        remove_make_targets: [launch-db]
+        replace:
+          - { file: Makefile, find: " $(COMPOSE_PROJECT_NAME)-db-data", with: "" }
+edits:
+  - file: .env.public
+    dotenv_set:
+      HTTP_PORT: "{{ http_port }}"
+      PROJECT_NAME: "{{ project_name }}"
+      COMPOSE_PROJECT_NAME: "{{ compose_project_name }}"
+      PLATFORM: "{{ platform }}"
+      CONTAINER_RUNTIME: "{{ container_runtime }}"
+  - file: project.json
+    json_set:
+      sourceRoot: "{{ output_dir }}"
+      "targets.*.options.cwd": "{{ output_dir }}"
+next_steps: [make build]

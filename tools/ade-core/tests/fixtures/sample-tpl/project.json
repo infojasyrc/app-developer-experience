@@ -1,0 +1,8 @@
+{
+  "name": "sample-tpl",
+  "sourceRoot": "backend/sample-tpl",
+  "targets": {
+    "lint": { "options": { "cwd": "backend/sample-tpl" } },
+    "test": { "options": { "cwd": "backend/sample-tpl" } }
+  }
+}
