@@ -4,6 +4,15 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: >
+          Space-separated package keys to verify regardless of changes
+          (tpl-fastapi-rest tpl-nestjs-rest tpl-nestjs-gql ade-core; ade-core renders every template)
+        required: false
+        default: 'tpl-fastapi-rest tpl-nestjs-rest tpl-nestjs-gql ade-core'
+        type: string
 
 permissions:
   contents: read
@@ -30,13 +39,14 @@ jobs:
       - name: Output changed packages
         run: |
           echo "Changed packages: ${{ steps.changed-packages.outputs.changed_packages }}"
+          echo "Requested packages: ${{ inputs.packages }}"
           echo ""
           echo "Summary: ${{ steps.changed-packages.outputs.summary }}"
 
   nestjs-rest-tpl-unit-tests:
     name: running lint and unit tests for nestjs rest template
     needs: get-changed-packages
-    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-nestjs-rest') }}
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-nestjs-rest') || contains(inputs.packages, 'tpl-nestjs-rest') }}
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -68,7 +78,7 @@ jobs:
   nestjs-gql-tpl-unit-tests:
     name: running lint and unit tests for nestjs graphql template
     needs: get-changed-packages
-    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-nestjs-gql') }}
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-nestjs-gql') || contains(inputs.packages, 'tpl-nestjs-gql') }}
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -100,7 +110,7 @@ jobs:
   fastapi-rest-tpl-unit-tests:
     name: running lint and unit tests for fastapi rest template
     needs: get-changed-packages
-    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-fastapi-rest') }}
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-fastapi-rest') || contains(inputs.packages, 'tpl-fastapi-rest') }}
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -126,9 +136,123 @@ jobs:
       - name: Build container for production
         run: make build-prod
 
+  # ade-core: the engine that renders backend templates from their template.yaml manifests
+  ade-core-unit-tests:
+    name: running lint, unit tests and manifest validation for ade-core
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'ade-core') || contains(inputs.packages, 'ade-core') }}
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./tools/ade-core
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build container for development
+        run: make build-dev
+
+      - name: Install dependencies
+        run: make install-dependencies
+
+      - name: Run Linting
+        run: make lint
+
+      - name: Run Unit Tests
+        run: make unit-tests
+
+      - name: Render every feature combination of every manifest
+        run: make validate-manifests
+
+      - name: Build container for production
+        run: make build-prod
+
+  # Manifest CI (analysis §8, Phase 1): which template × feature combinations to render
+  manifest-combinations:
+    name: list template feature combinations
+    needs: get-changed-packages
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'tpl-') || contains(needs.get-changed-packages.outputs.changed_packages, 'ade-core') || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      count: ${{ steps.matrix.outputs.count }}
+    defaults:
+      run:
+        working-directory: ./tools/ade-core
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build ade-core
+        run: make build-dev && make install-dependencies
+
+      - id: matrix
+        name: Compute the matrix (changed templates; every template when ade-core changed)
+        env:
+          PACKAGES: ${{ needs.get-changed-packages.outputs.changed_packages }} ${{ inputs.packages }}
+        run: |
+          MATRIX=$(make -s combinations PACKAGES="$PACKAGES" | tail -n 1)
+          echo "$MATRIX" | jq .
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+          echo "count=$(echo "$MATRIX" | jq '.include | length')" >> "$GITHUB_OUTPUT"
+
+  render-and-verify:
+    name: render ${{ matrix.name }} and run its Make targets
+    needs: manifest-combinations
+    if: ${{ needs.manifest-combinations.result == 'success' && fromJSON(needs.manifest-combinations.outputs.count) > 0 }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix: ${{ fromJSON(needs.manifest-combinations.outputs.matrix) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build ade-core
+        working-directory: ./tools/ade-core
+        run: make build-dev && make install-dependencies
+
+      - name: Render ${{ matrix.template }} (${{ matrix.features }})
+        working-directory: ./tools/ade-core
+        run: |
+          make render TEMPLATE="${{ matrix.template }}" NAME="${{ matrix.name }}" \
+            FEATURES="${{ matrix.features }}" OUT_DIR="${{ runner.temp }}/render/${{ matrix.name }}"
+
+      - name: Create container volumes
+        working-directory: ${{ runner.temp }}/render/${{ matrix.name }}
+        run: make create-volumes
+
+      - name: Build container for development
+        working-directory: ${{ runner.temp }}/render/${{ matrix.name }}
+        run: make build-dev
+
+      - name: Install dependencies
+        working-directory: ${{ runner.temp }}/render/${{ matrix.name }}
+        run: make install-dependencies
+
+      - name: Run Linting
+        working-directory: ${{ runner.temp }}/render/${{ matrix.name }}
+        run: make lint
+
+      - name: Run Unit Tests
+        working-directory: ${{ runner.temp }}/render/${{ matrix.name }}
+        run: make unit-tests
+
+      - name: Build container for production
+        working-directory: ${{ runner.temp }}/render/${{ matrix.name }}
+        run: make build-prod
+
   pr-gate-templates:
     name: pr-gate-templates
-    needs: [get-changed-packages, nestjs-rest-tpl-unit-tests, nestjs-gql-tpl-unit-tests, fastapi-rest-tpl-unit-tests]
+    needs:
+      - get-changed-packages
+      - nestjs-rest-tpl-unit-tests
+      - nestjs-gql-tpl-unit-tests
+      - fastapi-rest-tpl-unit-tests
+      - ade-core-unit-tests
+      - manifest-combinations
+      - render-and-verify
     if: always()
     runs-on: ubuntu-24.04
     steps:

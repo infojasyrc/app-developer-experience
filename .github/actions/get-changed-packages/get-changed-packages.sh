@@ -42,6 +42,7 @@ get_changed_packages() {
     "mobile-app/whitewalker/|mobile-rn|React Native mobile template"
     "mobile-app/caraxes/|mobile-expo|Expo mobile template"
     "tools/knowledge-mcp/|knowledge-mcp|knowledge MCP server"
+    "tools/ade-core/|ade-core|ADE core engine (template manifests and rendering)"
   )
 
   local components=()
