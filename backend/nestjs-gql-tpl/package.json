@@ -34,7 +34,7 @@
     "@nestjs/terminus": "^12.1.0",
     "@types/unzipper": "^0.10.11",
     "axios": "^1.20.0",
-    "graphql": "^16.11.0",
+    "graphql": "^17.1.0",
     "moment": "^2.31.0",
     "papaparse": "^5.7.0",
     "reflect-metadata": "^0.2.2",
