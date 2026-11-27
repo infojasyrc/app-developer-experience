@@ -11,6 +11,18 @@ IMAGE_DEV = $(COMPOSE_PROJECT_NAME)-cli-dev
 IMAGE_PROD = $(COMPOSE_PROJECT_NAME)-cli
 
 PACKAGE_DIR := $(abspath .)
+# ade-core is a path dependency (pyproject: ../tools/ade-core): mounted at /tools/ade-core
+# for development and passed as the named build context `ade-core` for images.
+ADE_CORE_DIR := $(abspath $(PACKAGE_DIR)/../tools/ade-core)
+PYINSTALLER_FLAGS = --onefile --copy-metadata readchar --copy-metadata inquirer --copy-metadata ade-core \
+	--collect-data ade_core --collect-data jsonschema_specifications --name=appdevexp
+
+# scaffold inputs: make scaffold TARGET_DIR=/abs/path/to/repo ARGS="new service --template nestjs-rest --name orders-api"
+TARGET_DIR ?= $(CURDIR)
+ARGS ?= --help
+# template bundles and the artifacts index are cached on the host so they survive container runs
+CACHE_DIR ?= $(HOME)/.cache/appdevexp
+TTY_FLAG := $(shell [ -t 0 ] && echo "-it" || echo "-i")
 
 ifeq ($(OS),Windows_NT)
 	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
@@ -21,14 +33,15 @@ endif
 DEV_VOLUME = \
 	-v $(DIR):$(CONTAINER_APP_FOLDER) \
 	-v $(CONTAINER_APP_FOLDER)/.venv \
-	-v $(COMPOSE_PROJECT_NAME)-cli-packages:$(CONTAINER_APP_FOLDER)/.venv
+	-v $(COMPOSE_PROJECT_NAME)-cli-packages:$(CONTAINER_APP_FOLDER)/.venv \
+	-v $(ADE_CORE_DIR):/tools/ade-core
 
 DEV_ENV = \
 	-e PYTHONPATH=$(CONTAINER_APP_FOLDER):$(CONTAINER_APP_FOLDER)/src \
 	-e GIT_PYTHON_REFRESH=$(GIT_PYTHON_REFRESH)
 
 .PHONY: build-dev build-prod create-volumes install-dependencies run-unit-tests \
-	cli basic-commit interactive-commit build-local-package docker-clean interactive help
+	cli basic-commit interactive-commit build-local-package scaffold list-artifacts docker-clean interactive help
 
 create-volumes: ## create external container volumes if they do not exist
 	@echo "Checking and creating external volumes..."
@@ -37,11 +50,26 @@ create-volumes: ## create external container volumes if they do not exist
 
 build-dev: ## build image for cli local development
 	docker build --platform $(PLATFORM) --target dev \
+		--build-context ade-core=$(ADE_CORE_DIR) \
 		-t $(IMAGE_DEV) .
 
-build-prod: ## build image for cli production
+build-prod: ## build image for cli production (contains the appdevexp binary)
 	docker build --platform $(PLATFORM) --target prod \
+		--build-context ade-core=$(ADE_CORE_DIR) \
 		-t $(IMAGE_PROD) .
+
+scaffold: ## run appdevexp (prod image) against TARGET_DIR: make scaffold TARGET_DIR=/abs/repo ARGS="new service ..."
+	@mkdir -p "$(CACHE_DIR)"
+	docker run $(TTY_FLAG) --rm --platform $(PLATFORM) \
+		--user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp -e XDG_CACHE_HOME=/cache \
+		-e APPDEVEXP_INDEX_URL -e GITHUB_TOKEN \
+		-v "$(CACHE_DIR)":/cache/appdevexp \
+		-v "$(TARGET_DIR)":/work -w /work \
+		$(IMAGE_PROD) $(ARGS)
+
+list-artifacts: ## list released ADE templates and versions (prod image)
+	@$(MAKE) --no-print-directory scaffold ARGS="list"
 
 docker-clean: ## stop and kill running containers and prune images
 ifeq ($(OS),Windows_NT)
@@ -92,7 +120,7 @@ build-local-package: ## build standalone binary package inside container
 		--platform $(PLATFORM) \
 		$(DEV_VOLUME) \
 		$(DEV_ENV) \
-		$(IMAGE_DEV) /bin/sh -c "uv run pyinstaller --onefile --copy-metadata readchar --copy-metadata inquirer --name=appdevexp src/main.py"
+		$(IMAGE_DEV) /bin/sh -c "uv run pyinstaller $(PYINSTALLER_FLAGS) src/main.py"
 
 interactive: ## get a shell in the container with venv activated
 	docker run -it --rm --net=host --workdir="$(CONTAINER_APP_FOLDER)" \

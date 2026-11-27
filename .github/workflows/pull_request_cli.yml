@@ -9,6 +9,8 @@ on:
       - main
     paths:
       - cli/**
+      # appdevexp embeds the ADE core engine (path dependency)
+      - tools/ade-core/**
 
 env:
   PLATFORM: linux/amd64

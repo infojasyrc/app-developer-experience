@@ -2,13 +2,22 @@ import click
 import inquirer
 import re
 
+from ade_core import __version__ as ENGINE_VERSION
 from core.repo import validate_git_repo
-from constants import CONVENTIONAL_TYPES
+from constants import CLI_VERSION, CONVENTIONAL_TYPES
+from commands.list_cmd import list_artifacts
+from commands.new import new
+
 
 @click.group()
+@click.version_option(CLI_VERSION, prog_name="appdevexp", message=f"%(prog)s %(version)s (ade-core {ENGINE_VERSION})")
 def cli():
-    """Monorepo Commit CLI - A tool for handling commits in a monorepo"""
+    """appdevexp - scaffold projects from ADE templates and handle monorepo commits."""
     pass
+
+
+cli.add_command(new)
+cli.add_command(list_artifacts)
 
 @cli.command()
 @click.option("-m", "--message", help="Commit message", required=False)

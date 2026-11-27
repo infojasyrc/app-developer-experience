@@ -1,6 +1,9 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.12-slim AS dev
+# Build with the ADE core engine as a named context (see the Makefile):
+#   docker build --build-context ade-core=../tools/ade-core --target prod .
+
+FROM python:3.13-slim AS dev
 
 # Copy uv binary
 COPY --from=ghcr.io/astral-sh/uv:0.12.9 /uv /uvx /bin/
@@ -27,6 +30,9 @@ FROM dev AS build
 WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
+# ade-core path dependency (pyproject: ../tools/ade-core)
+COPY --from=ade-core pyproject.toml /tools/ade-core/pyproject.toml
+COPY --from=ade-core src /tools/ade-core/src
 
 RUN uv sync --frozen --no-dev --no-install-project
 
@@ -38,7 +44,12 @@ COPY src ./src
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-RUN uv run pyinstaller --onefile --copy-metadata readchar --copy-metadata inquirer --name=appdevexp src/main.py
+# --collect-data: ade-core ships the knowledge catalog YAML and jsonschema its meta-schemas
+RUN uv run pyinstaller --onefile \
+    --copy-metadata readchar --copy-metadata inquirer --copy-metadata ade-core \
+    --collect-data ade_core --collect-data jsonschema_specifications \
+    --name=appdevexp src/main.py \
+    && chmod 0755 /app/dist/appdevexp
 
 VOLUME /app/dist
 
