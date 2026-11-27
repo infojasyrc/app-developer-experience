@@ -78,14 +78,14 @@ Use git aliases in branch names (`cm-api/feat/...`), commit scopes (`feat(cm-api
 
 | Alias | Resolved Path | Description |
 |---|---|---|
-| `CLI_ROOT` | `cli/` | Interactive conventional commits CLI (Python) |
+| `CLI_ROOT` | `cli/` | `appdevexp` CLI (Python): `new service` / `list` scaffolding from released templates (embeds `ADE_CORE`), plus conventional commits |
 
 ## Runtime tools
 
 | Alias | Resolved Path | Description |
 |---|---|---|
-| `KNOWLEDGE_MCP` | `tools/knowledge-mcp/` | Knowledge MCP server (runtime service, not a bootstrap template) |
-| `ADE_CORE` | `tools/ade-core/` | ADE core engine: `template.yaml` manifests and rendering (not a bootstrap template) |
+| `KNOWLEDGE_MCP` | `tools/knowledge-mcp/` | Knowledge MCP server (runtime service, not a bootstrap template); adapter over `ade_core.knowledge` |
+| `ADE_CORE` | `tools/ade-core/` | ADE core engine: knowledge domain, `template.yaml` manifests, rendering, artifact sources, plan/apply scaffolding, artifacts index (not a bootstrap template) |
 
 ## Shared Documentation
 

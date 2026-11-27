@@ -17,7 +17,7 @@ infrastructure as code, and a conference management solution.
 4. **DevOps Pipelines** — CI/CD pipelines for containers and IaC (Terraform, Bicep)
 5. **Infrastructure as Code** — AWS (Terraform) and Azure (Bicep) deployments
 6. **Knowledge MCP** — runtime service that exposes ADE conventions to other repos/agents (`tools/knowledge-mcp/`)
-7. **ADE Core** — engine that renders backend templates from their `template.yaml` manifests (`tools/ade-core/`)
+7. **ADE Core** — engine behind scaffolding and knowledge: manifests, rendering, release resolution, plan/apply (`tools/ade-core/`); `appdevexp new` (`cli/`) uses it to scaffold child projects — see `docs/AdoptingADE.md`
 
 ---
 
