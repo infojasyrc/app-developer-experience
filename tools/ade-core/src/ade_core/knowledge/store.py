@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from knowledge.models import ConventionRecord
+from ade_core.knowledge.models import ConventionRecord
 
 
 class KnowledgeStore:

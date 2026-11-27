@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from knowledge.store import KnowledgeStore
+from ade_core.knowledge.store import KnowledgeStore
 
 TOPIC_ALIASES = {
     "make-targets": "makefile",

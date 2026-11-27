@@ -1,8 +1,9 @@
 from pathlib import Path
 
+from ade_core.knowledge.ingest import ingest
+from ade_core.knowledge.store import KnowledgeStore
+
 from infrastructure.settings import get_settings
-from knowledge.ingest import ingest
-from knowledge.store import KnowledgeStore
 
 
 def load_store() -> KnowledgeStore:

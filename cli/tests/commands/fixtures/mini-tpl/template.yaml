@@ -1,0 +1,29 @@
+manifest_schema: 1
+artifact: mini
+kind: project-template
+min_engine_version: 0.1.0
+description: Minimal template used by the appdevexp CLI tests
+identity:
+  token: mini-tpl
+  files: [.env.public, README.md]
+parameters:
+  type: object
+  additionalProperties: false
+  required: [name]
+  properties:
+    name: { type: string, pattern: "^[a-z][a-z0-9-]{1,48}$" }
+    http_port: { type: integer, minimum: 1024, maximum: 65535, default: 4000 }
+    output_dir: { type: string, default: "backend/{{ name }}" }
+features:
+  database:
+    values: [postgres, none]
+    default: postgres
+    when:
+      none:
+        remove_files: [src/db.ts]
+        remove_env: [DB_USER]
+edits:
+  - file: .env.public
+    dotenv_set:
+      HTTP_PORT: "{{ http_port }}"
+next_steps: [make build-dev, make unit-tests]

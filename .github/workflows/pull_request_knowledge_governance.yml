@@ -1,6 +1,6 @@
 name: Pull Request Verification for AI-agent knowledge sources
 
-# Guards the sources tools/knowledge-mcp ingests into its knowledge index
+# Guards the sources tools/knowledge-mcp ingests (via ade-core) into its knowledge index
 
 on:
   pull_request:
@@ -16,9 +16,9 @@ on:
       - docs/standards/pull-requests.md
       - docs/plans/TEMPLATE.md
       - backend/README.md
-      - tools/knowledge-mcp/src/knowledge/ingest.py
-      - tools/knowledge-mcp/src/knowledge/catalog.py
-      - tools/knowledge-mcp/data/reference.yaml
+      - tools/ade-core/src/ade_core/knowledge/ingest.py
+      - tools/ade-core/src/ade_core/knowledge/catalog.py
+      - tools/ade-core/src/ade_core/knowledge/data/reference.yaml
 
 permissions:
   contents: read

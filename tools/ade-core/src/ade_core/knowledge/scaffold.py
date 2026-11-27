@@ -7,7 +7,7 @@ import yaml
 
 
 def _default_catalog_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "data" / "scaffold.yaml"
+    return Path(__file__).resolve().parent / "data" / "scaffold.yaml"
 
 
 def _normalize(value: str) -> str:

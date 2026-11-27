@@ -1,7 +1,7 @@
 [project]
 name = "ade-core"
-version = "0.1.0"
-description = "ADE core engine: template manifests and deterministic rendering"
+version = "0.2.0"
+description = "ADE core engine: knowledge, template manifests, artifact resolution and scaffolding"
 authors = [
   { name = "App Developer Experience" }
 ]
@@ -21,8 +21,18 @@ dev = [
   "pytest-cov==6.0.0",
 ]
 
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ade_core"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/ade_core"]
+
 [tool.uv]
-package = false
+package = true
 
 [tool.black]
 line-length = 120

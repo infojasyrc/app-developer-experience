@@ -1,16 +1,13 @@
 from pathlib import Path
 
+from ade_core.knowledge.build import build_index
+
 from infrastructure.settings import get_settings
-from knowledge.ingest import ingest
-from knowledge.store import KnowledgeStore
 
 
 def sync_index() -> Path:
     settings = get_settings()
-    records = ingest(settings.resolve_ade_root())
-    out = Path(settings.index_path)
-    KnowledgeStore(records).save(out)
-    return out
+    return build_index(settings.resolve_ade_root(), Path(settings.index_path))
 
 
 def main() -> None:

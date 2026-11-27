@@ -176,6 +176,12 @@ download the asset without a token. The work left:
 > `conventional-changelog` reading the root `package.json` version; the
 > action now pins it with `--context`. Runbook:
 > `docs/standards/release-strategy.md`.
+>
+> **Status (Phase 2, 2026-11-27).** Item 3 already held after Phase 1:
+> `template.yaml` is a tracked file, so it is at the bundle root. Item 5 is
+> implemented: `publish-artifacts-index` in `release.yml` publishes
+> `artifacts-index.json` on the rolling `index` release. The optional
+> attestation in item 4 is still open.
 
 ### 3.2 Bundle and index format
 
@@ -368,7 +374,10 @@ Design rules:
 >   dropped. The rule "lockfiles are regenerated" above does not hold.
 > - **A disabled feature keeps its dependencies.** It loses its files, env
 >   vars, compose services, Make targets and code references; dependency
->   pruning, which needs lockfile regeneration, moves to Phase 2. Feature
+>   pruning, which needs lockfile regeneration, was planned for Phase 2 and
+>   is **deferred to Phase 5**. The engine never runs installs, and the
+>   Dockerfiles need lockfiles in sync (`npm ci`, `uv sync --frozen`).
+>   Pruning belongs with `update`'s regeneration step. Feature
 >   blocks use `when.<value>` with the ops `remove_files`, `remove_env`,
 >   `remove_make_targets`, `remove_lines` (regex) and `replace` (literal),
 >   instead of `when_none`, `remove_dependencies` and `code_edits`.
@@ -869,6 +878,7 @@ Each phase ships on its own and leaves the repo consistent.
 | **1 — Manifests** | `template.yaml` in all three backend templates. CI job that renders every feature combination and runs `make lint unit-tests` on the result | Manifest CI is green on `main` |
 | ↳ *Phase 1 status* | *Implemented (plan: `docs/plans/20261114-ade-scaffolding-phase-1.md`). Engine started early as `tools/ade-core`; 12 combinations rendered and verified by `render-and-verify` in `pull_request_backend.yml` (see §4.1 note)* | *Pending: `workflow_dispatch` run on `main` after merge* |
 | **2 — Core + `new`** | Extract `tools/ade-core` from `tools/knowledge-mcp`. `appdevexp new` with plan/apply and `--dry-run`. Bundles get a manifest and checksum; `artifacts-index.json` is published | `appdevexp new` creates a project that passes `make unit-tests` from a GitHub release |
+| ↳ *Phase 2 status* | *Implemented (plan: `docs/plans/20261127-ade-scaffolding-phase-2.md`). The knowledge domain moved to `ade_core.knowledge`, and `knowledge-mcp` and `cli` consume `ade-core` as a uv path dependency. `appdevexp new service` / `list` use GitHub release + `path:` sources, a `ProjectInspector` subset and the `.ade/answers.yaml` receipt (pulled forward from Phase 5). Index on the rolling `index` release. Dependency pruning is deferred to Phase 5. `appdevexp` runs from an ADE clone (`make -C cli scaffold`) until Phase 7. Child-project guide: `docs/AdoptingADE.md`* | *Verified locally from the real `nestjs-rest-tpl-v0.3.0` and `fastapi-rest-tpl-v0.2.0` bundles. Pending: first `index` publish after merge* |
 | **3 — MCP + knowledge release** | `appdevexp mcp`. `knowledge-vX` release. `sync pull`. `tools/knowledge-mcp` becomes an adapter over the core | Consumer repos work with no ADE clone |
 | **4 — Workflows** | Reusable `workflow_call` workflows built from the existing composite actions; `workflows-v1` tag. Convert `devops/*.yml` into caller asset-templates; `appdevexp add workflow` | A consumer deploys with a ≤ 30 line caller workflow |
 | **5 — Lifecycle** | `.ade/` receipt, `update` (3-way merge, branch → PR), `doctor` (supersedes `compare_gaps`) | A project generated at `0.2.0` upgrades to `0.3.0` through a PR |

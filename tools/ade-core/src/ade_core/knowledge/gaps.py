@@ -21,7 +21,7 @@ SERVICE_STACKS = frozenset(
 
 
 def _default_reference_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "data" / "reference.yaml"
+    return Path(__file__).resolve().parent / "data" / "reference.yaml"
 
 
 @lru_cache

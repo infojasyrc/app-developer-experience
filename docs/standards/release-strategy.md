@@ -77,16 +77,18 @@ Applies to `backend/fastapi-rest-tpl`, `backend/nestjs-rest-tpl` and
    cd /tmp/<tpl> && shasum -a 256 -c <tpl>-vX.Y.Z.tar.gz.sha256
    ```
 
-6. **Consume the template.** The repository is public, so no token is needed:
+6. **Consume the template.** Use `appdevexp new service`, which resolves the
+   version from the artifacts index (below), verifies the checksum, renames
+   the template and records `.ade/answers.yaml`. The full guide for child
+   projects is [AdoptingADE.md](../AdoptingADE.md).
 
    ```bash
-   mkdir orders-api && cd orders-api
-   curl -fsSL https://github.com/infojasyrc/app-developer-experience/releases/download/<tpl>-vX.Y.Z/<tpl>-vX.Y.Z.tar.gz | tar -xz
-   make help
+   make -C cli scaffold TARGET_DIR=/abs/path/to/repo \
+     ARGS="new service --template <artifact>@X.Y.Z --name orders-api --dry-run"
    ```
 
-   Then rename the template identity and follow the template README
-   (Make targets only, no host `npm` / `python`).
+   Downloading the raw bundle (`curl -fsSL …/<tpl>-vX.Y.Z.tar.gz | tar -xz`)
+   still works, but then you must rename the template identity by hand.
 
 7. **Roll back a bad release.** Delete the release and its tag, then fix the
    template in a new PR. The next run computes the version from the previous
@@ -102,3 +104,28 @@ Applies to `backend/fastapi-rest-tpl`, `backend/nestjs-rest-tpl` and
      `./.github/actions/generate-release-changelog` with `working-directory`
      and `project-name` (the tag prefix).
    - Add the key to the `packages` input description.
+   - Add the new job to `needs` and to the `if` of `publish-artifacts-index`.
+
+### Artifacts index (`artifacts-index.json`)
+
+`appdevexp` resolves template versions from `artifacts-index.json`. This file
+is attached to a rolling GitHub release tagged **`index`** (not marked
+"Latest"). The download URL is
+`https://github.com/infojasyrc/app-developer-experience/releases/download/index/artifacts-index.json`.
+
+| Rule | Detail |
+|---|---|
+| **When it is rebuilt** | The `publish-artifacts-index` job in `release.yml` runs after any template release job succeeds, or on `workflow_dispatch` with `index` in `packages` |
+| **What it contains** | Every `<tpl>-vX.Y.Z` release whose tag contains `backend/<tpl>/template.yaml`. Releases before Phase 1 are skipped. Each version lists the bundle URL, its sha256 (from the `.sha256` asset), `manifest_schema` and `min_engine_version` |
+| **How it is built** | `make build-index` in `tools/ade-core` (`python -m ade_core index`) |
+| **Do not delete** | Deleting the `index` release breaks `appdevexp list/new` until the next rebuild |
+
+**Rebuild it by hand,** for example after deleting a bad release:
+
+```bash
+gh workflow run release.yml --ref main -f packages="index"
+gh release download index -p artifacts-index.json -O - | jq '.artifacts | map_values(.latest)'
+```
+
+Rolling back a template release (step 7) also requires rebuilding the
+index, so that clients stop resolving the deleted version.

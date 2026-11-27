@@ -1,4 +1,4 @@
-from knowledge.gaps import STACK_MISMATCH, compare_gaps
+from ade_core.knowledge.gaps import STACK_MISMATCH, compare_gaps
 
 
 def _complete_manifest(**overrides) -> dict:

@@ -1,3 +1,3 @@
-"""ADE core engine: template manifests and deterministic rendering."""
+"""ADE core engine: knowledge, template manifests, artifact resolution and scaffolding."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

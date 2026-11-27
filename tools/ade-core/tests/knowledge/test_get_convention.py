@@ -1,5 +1,4 @@
-from knowledge.catalog import get_convention, list_resource_uris, read_resource
-from mcp_server import build_mcp
+from ade_core.knowledge.catalog import get_convention, list_resource_uris, read_resource
 
 
 def _joined(result: dict) -> str:
@@ -132,18 +131,3 @@ def test_read_resource_container_first(knowledge_store):
     body = read_resource(knowledge_store, "conventions://container-first")
     assert "development-guidance.md" in body
     assert "build-dev" in body
-
-
-def test_mcp_registers_get_convention_tool(knowledge_store):
-    mcp = build_mcp(knowledge_store)
-    assert callable(mcp.list_convention_uris)
-    assert "conventions://container-first" in mcp.list_convention_uris()
-    result = get_convention(mcp.knowledge_store, "container-first")
-    assert result["excerpts"]
-    manager = getattr(mcp, "_tool_manager", None)
-    tools = getattr(manager, "_tools", None) if manager is not None else None
-    if tools:
-        assert "get_convention" in tools
-        assert "scaffold_guidance" in tools
-        assert "compare_gaps" in tools
-        assert "get_convention_tool" not in tools

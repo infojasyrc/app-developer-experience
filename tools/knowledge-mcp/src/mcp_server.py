@@ -1,9 +1,8 @@
+from ade_core.knowledge.catalog import get_convention, list_resource_uris, read_resource
+from ade_core.knowledge.gaps import compare_gaps
+from ade_core.knowledge.scaffold import scaffold_guidance
+from ade_core.knowledge.store import KnowledgeStore
 from mcp.server.fastmcp import FastMCP
-
-from knowledge.catalog import get_convention, list_resource_uris, read_resource
-from knowledge.gaps import compare_gaps
-from knowledge.scaffold import scaffold_guidance
-from knowledge.store import KnowledgeStore
 
 
 def build_mcp(store: KnowledgeStore) -> FastMCP:

@@ -3,14 +3,14 @@ import sys
 from pathlib import Path
 
 import pytest
+from ade_core.knowledge.ingest import ingest
+from ade_core.knowledge.store import KnowledgeStore
 from fastapi.testclient import TestClient
 
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
 sys.path.insert(0, src_path)
 
 from infrastructure.settings import get_settings  # noqa: E402
-from knowledge.ingest import ingest  # noqa: E402
-from knowledge.store import KnowledgeStore  # noqa: E402
 
 
 def _find_ade_root() -> Path | None:
