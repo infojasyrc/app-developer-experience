@@ -27,6 +27,10 @@ FEATURES ?=
 OUT_DIR ?=
 # combinations input: changed package keys from get-changed-packages (empty = all templates)
 PACKAGES ?=
+# build-index inputs: make build-index RELEASES_DIR=/abs/releases INDEX_OUT=/abs/out/artifacts-index.json
+RELEASES_DIR ?=
+INDEX_OUT ?=
+REGISTRY ?= infojasyrc/app-developer-experience
 
 DEV_VOLUME = \
 	-v $(DIR):$(CONTAINER_APP_FOLDER) \
@@ -39,7 +43,7 @@ DEV_ENV = \
 	-e PYTHONPATH=$(CONTAINER_APP_FOLDER)/src
 
 .PHONY: docker-clean build-dev build-prod install-dependencies lint unit-tests \
-	format validate-manifests combinations render interactive help
+	format validate-manifests combinations render build-index interactive help
 
 docker-clean: ## stop and kill all running containers
 	$(CONTAINER_RUNTIME) ps -qa | xargs $(CONTAINER_RUNTIME) kill; $(CONTAINER_RUNTIME) container prune --force; $(CONTAINER_RUNTIME) system prune --force;
@@ -104,6 +108,19 @@ render: ## render a template: TEMPLATE=<dir under backend/> NAME=<name> FEATURES
 		$(DEV_ENV) \
 		-v "$(OUT_DIR)":/out \
 		$(IMAGE_DEV):latest /bin/ash -c "/app/.venv/bin/python -m ade_core render /repo/backend/$(TEMPLATE) --out /out --name $(NAME) $(foreach f,$(FEATURES),--feature $(f))"
+
+build-index: ## build artifacts-index.json: RELEASES_DIR=<abs dir> INDEX_OUT=<abs file> [REGISTRY=owner/repo]
+	@[ -n "$(RELEASES_DIR)" ] && [ -n "$(INDEX_OUT)" ] || { echo "RELEASES_DIR and INDEX_OUT are required"; exit 1; }
+	mkdir -p "$(dir $(INDEX_OUT))"
+	$(CONTAINER_RUNTIME) run --rm --workdir="$(CONTAINER_APP_FOLDER)" \
+		--platform $(PLATFORM) \
+		--user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp \
+		$(DEV_VOLUME) \
+		$(DEV_ENV) \
+		-v "$(RELEASES_DIR)":/releases:ro \
+		-v "$(dir $(INDEX_OUT))":/index-out \
+		$(IMAGE_DEV):latest /bin/ash -c "/app/.venv/bin/python -m ade_core index --releases-dir /releases --registry $(REGISTRY) --out /index-out/$(notdir $(INDEX_OUT))"
 
 interactive: ## open a shell inside the container
 	$(CONTAINER_RUNTIME) run -it --rm --workdir="$(CONTAINER_APP_FOLDER)" \

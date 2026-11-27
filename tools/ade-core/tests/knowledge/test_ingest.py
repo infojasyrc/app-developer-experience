@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from knowledge.ingest import ingest, parse_frontmatter, parse_markdown_sections, parse_mdc
-from knowledge.models import ConventionRecord
-from knowledge.store import KnowledgeStore
+from ade_core.knowledge.ingest import ingest, parse_frontmatter, parse_markdown_sections, parse_mdc
+from ade_core.knowledge.models import ConventionRecord
+from ade_core.knowledge.store import KnowledgeStore
 
 
 def test_parse_frontmatter_extracts_globs():

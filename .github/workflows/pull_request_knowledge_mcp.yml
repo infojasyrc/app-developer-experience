@@ -29,7 +29,8 @@ jobs:
   knowledge-mcp-unit-tests:
     name: lint and unit tests for knowledge MCP
     needs: get-changed-packages
-    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'knowledge-mcp') }}
+    # knowledge-mcp is an adapter over ade-core (knowledge domain), so an engine change re-tests it
+    if: ${{ contains(needs.get-changed-packages.outputs.changed_packages, 'knowledge-mcp') || contains(needs.get-changed-packages.outputs.changed_packages, 'ade-core') }}
     runs-on: ubuntu-24.04
     defaults:
       run:

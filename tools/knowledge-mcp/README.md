@@ -6,6 +6,15 @@ Runtime MCP server that exposes ADE conventions (`CLAUDE.md`, `AGENTS.md`,
 This is a **service**, not a bootstrap template. Path alias: `KNOWLEDGE_MCP`
 (`tools/knowledge-mcp/`).
 
+Since Phase 2 of the
+[scaffolding platform roadmap](../../docs/analysis/ade-scaffolding-and-knowledge-platform.md#8-migration-roadmap),
+this package is an **adapter**: the knowledge domain (ingestion, catalog,
+`scaffold_guidance`, `compare_gaps`, `data/scaffold.yaml`, `data/reference.yaml`)
+lives in [`tools/ade-core`](../ade-core/README.md) under `ade_core.knowledge`.
+`ade-core` is a uv path dependency: the Makefile mounts it for development and
+passes it to image builds as the named build context `ade-core`, so a change
+there re-runs this package's CI.
+
 Call `get_convention("all")` (or `"*"`) to list every available topic. Every
 tool and resource is documented in the
 [MCP call reference](../../docs/KnowledgeMCP.md#mcp-call-reference).
@@ -117,7 +126,7 @@ Tools:
 - `scaffold_guidance(component_type)` — which template alias to copy (`NESTJS_REST`, `FASTAPI_REST`, `NESTJS_GQL`) plus the required Makefile lifecycle. Services keep Docker; `terraform-aws` is host Terraform via Make. `conference-manager` is not a template.
 - `compare_gaps(target_repo_manifest)` — missing Makefile/Dockerfile/Make targets for services; IaC packages (`package_kind: iac` or terraform stack) require a Makefile that wraps host Terraform, not a Dockerfile. Conference Manager Django vs FastAPI/NestJS is a documented exception, not a gap.
 
-Reference dataset: `data/reference.yaml` (manual PRs; review quarterly or when a plan adopts a new pattern). Owner: `CODEOWNERS`.
+Reference dataset: `tools/ade-core/src/ade_core/knowledge/data/reference.yaml` (manual PRs; review quarterly or when a plan adopts a new pattern). Owner: `CODEOWNERS`.
 
 ## Feedback loop
 
@@ -126,10 +135,10 @@ Reference dataset: `data/reference.yaml` (manual PRs; review quarterly or when a
 When a gap is real (not a documented exception like Conference Manager's Django stack):
 
 1. Open a **human** pull request against this monorepo.
-2. Update the matching source of truth: `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/*.mdc`, `agents/shared/context/development-guidance.md`, and/or `data/reference.yaml`.
+2. Update the matching source of truth: `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/*.mdc`, `agents/shared/context/development-guidance.md`, and/or `tools/ade-core/src/ade_core/knowledge/data/reference.yaml`.
 3. Do not teach the MCP a second copy of the rule. Ingestion re-reads those files on `make sync`.
 
-False positives belong in `data/reference.yaml` under `documented_exceptions`, with a pointer to the rule that accepts them — not as silent skips in consumer repos.
+False positives belong in `tools/ade-core/src/ade_core/knowledge/data/reference.yaml` under `documented_exceptions`, with a pointer to the rule that accepts them — not as silent skips in consumer repos.
 
 ## Use from another repository
 

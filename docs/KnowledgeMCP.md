@@ -425,7 +425,7 @@ Errors return `ok: false` and `error`:
 Valid types: `nestjs-rest`, `nestjs-gql`, `fastapi-rest`, `ci-aws-backend`,
 `ci-aws-webapp`, `deploy-infra`, `mobile-rn`, `mobile-expo`, `cli`,
 `terraform-aws`, `terraform-azure`. Aliases such as `NESTJS_REST` and
-`FASTAPI_REST` are accepted (source: `tools/knowledge-mcp/data/scaffold.yaml`).
+`FASTAPI_REST` are accepted (source: `tools/ade-core/src/ade_core/knowledge/data/scaffold.yaml`).
 
 #### `compare_gaps(target_repo_manifest)`
 
@@ -467,7 +467,7 @@ headed by their `source_path`.
 | `permissions`, `guardrails`, `policy` | `tool-policy` |
 | `all`, `*` | Topic catalog (see above) |
 
-Source: `TOPIC_ALIASES` in `tools/knowledge-mcp/src/knowledge/catalog.py`.
+Source: `TOPIC_ALIASES` in `tools/ade-core/src/ade_core/knowledge/catalog.py`.
 
 ---
 
@@ -479,7 +479,7 @@ just your repo):
 1. Open a pull request on `app-developer-experience`.
 2. Edit the source of truth: `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/*.mdc`,
    `agents/shared/context/development-guidance.md`, and/or
-   `tools/knowledge-mcp/data/reference.yaml`.
+   `tools/ade-core/src/ade_core/knowledge/data/reference.yaml`.
 3. Do not add a second copy of the rule inside the MCP package. Run
    `make sync` after the knowledge files change.
 

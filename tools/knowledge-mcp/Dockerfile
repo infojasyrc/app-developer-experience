@@ -23,6 +23,9 @@ WORKDIR /app
 
 COPY pyproject.toml /app/pyproject.toml
 COPY uv.lock /app/uv.lock
+# ade-core path dependency (pyproject: ../ade-core), from the named build context
+COPY --from=ade-core pyproject.toml /ade-core/pyproject.toml
+COPY --from=ade-core src /ade-core/src
 
 RUN uv sync --frozen --no-dev --no-install-project
 
@@ -38,7 +41,6 @@ WORKDIR /app
 
 COPY --from=build /app/.venv /app/.venv
 COPY src /app/src
-COPY data /app/data
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthcheck/')"

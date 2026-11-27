@@ -1,5 +1,4 @@
-from knowledge.scaffold import known_component_types, load_catalog, scaffold_guidance
-from mcp_server import build_mcp
+from ade_core.knowledge.scaffold import known_component_types, load_catalog, scaffold_guidance
 
 
 def test_every_component_path_exists(ade_root):
@@ -102,10 +101,3 @@ def test_scaffold_guidance_terraform_azure_does_not_require_dockerfile():
     assert result["ok"] is True
     assert result["must_keep"] == ["Makefile"]
     assert "Dockerfile" not in result["must_keep"]
-
-
-def test_mcp_exposes_scaffold_guidance(knowledge_store):
-    mcp = build_mcp(knowledge_store)
-    result = scaffold_guidance("nestjs-gql")
-    assert result["path_alias"] == "NESTJS_GQL"
-    assert callable(mcp.list_convention_uris)

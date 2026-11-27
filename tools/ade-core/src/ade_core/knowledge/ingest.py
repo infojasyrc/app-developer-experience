@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from knowledge.models import ConventionRecord
+from ade_core.knowledge.models import ConventionRecord
 
 HEADING_RE = re.compile(r"^(#{1,3})\s+(.+?)\s*$", re.MULTILINE)
 FRONTMATTER_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n(.*)\Z", re.DOTALL)

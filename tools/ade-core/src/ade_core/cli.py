@@ -9,6 +9,7 @@ from pathlib import Path
 
 from ade_core import __version__
 from ade_core.application.combinations import discover_templates, github_matrix, validate
+from ade_core.application.index_builder import build_index
 from ade_core.application.render import render_template
 from ade_core.domain.errors import AdeCoreError, ParameterError
 
@@ -53,6 +54,16 @@ def _cmd_combinations(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_index(args: argparse.Namespace) -> int:
+    index = build_index(Path(args.releases_dir), args.registry)
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(index.dumps(), encoding="utf-8")
+    summary = ", ".join(f"{name}@{item.latest} ({len(item.versions)})" for name, item in index.artifacts.items())
+    print(f"Wrote {out}: {summary or 'no artifacts'}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="ade_core", description="ADE core engine")
     parser.add_argument("--version", action="version", version=f"ade-core {__version__}")
@@ -75,6 +86,12 @@ def build_parser() -> argparse.ArgumentParser:
     combos.add_argument("--repo", default=".", help="ADE repository root")
     combos.add_argument("--packages", default="", help="changed package keys; empty means every template")
     combos.set_defaults(func=_cmd_combinations)
+
+    index = sub.add_parser("index", help="build artifacts-index.json from gathered release data")
+    index.add_argument("--releases-dir", required=True, help="one folder per tag: template.yaml + <tag>.tar.gz.sha256")
+    index.add_argument("--registry", required=True, help="GitHub owner/repo that hosts the releases")
+    index.add_argument("--out", required=True, help="output file (artifacts-index.json)")
+    index.set_defaults(func=_cmd_index)
     return parser
 
 

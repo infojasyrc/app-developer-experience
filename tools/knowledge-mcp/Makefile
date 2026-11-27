@@ -20,6 +20,9 @@ CONTAINER_NAME = $(COMPOSE_PROJECT_NAME)
 
 PACKAGE_DIR := $(abspath .)
 REPO_ROOT := $(abspath $(PACKAGE_DIR)/../..)
+# ade-core is a path dependency (pyproject: ../ade-core). It is mounted at /ade-core
+# for development and passed as the named build context `ade-core` for images.
+ADE_CORE_DIR := $(abspath $(PACKAGE_DIR)/../ade-core)
 
 ifeq ($(OS),Windows_NT)
 	DIR := $(shell powershell "(New-Object -ComObject Scripting.FileSystemObject).GetFolder('.').ShortPath")
@@ -31,7 +34,8 @@ DEV_VOLUME = \
 	-v $(DIR):$(CONTAINER_APP_FOLDER) \
 	-v $(CONTAINER_APP_FOLDER)/.venv \
 	-v $(COMPOSE_PROJECT_NAME)-packages:$(CONTAINER_APP_FOLDER)/.venv \
-	-v $(REPO_ROOT):/repo:ro
+	-v $(REPO_ROOT):/repo:ro \
+	-v $(ADE_CORE_DIR):/ade-core
 
 DEV_ENV = \
 	-e ADE_ROOT=/repo \
@@ -50,10 +54,12 @@ endif
 
 build-dev: ## build container image for local development
 	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target dev \
+		--build-context ade-core=$(ADE_CORE_DIR) \
 		-t $(IMAGE_DEV):latest .
 
 build-prod: ## build container image for production
 	$(CONTAINER_RUNTIME) build --platform $(PLATFORM) --target prod \
+		--build-context ade-core=$(ADE_CORE_DIR) \
 		-t $(IMAGE_PROD):latest .
 
 install-dependencies: ## install packages into the container volume

@@ -4,6 +4,9 @@ from pathlib import Path
 
 import pytest
 
+from ade_core.knowledge.ingest import ingest
+from ade_core.knowledge.store import KnowledgeStore
+
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
@@ -23,6 +26,11 @@ def ade_root() -> Path:
     if root is None:
         pytest.skip("ADE_ROOT not available")
     return root
+
+
+@pytest.fixture
+def knowledge_store(ade_root: Path) -> KnowledgeStore:
+    return KnowledgeStore(ingest(ade_root))
 
 
 @pytest.fixture
